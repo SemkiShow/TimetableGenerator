@@ -6,7 +6,7 @@ set -e
 if [ "$1" == "" ]; then
     clear
     ./reset_save_files.sh --soft
-    cmake -B build
+    cmake -B build -DCMAKE_BUILD_TYPE=Release
     cmake --build build -j ${nproc}
     ./build/bin/main
 fi
