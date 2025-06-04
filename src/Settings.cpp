@@ -40,7 +40,7 @@ void Load(std::string fileName)
     {
         label = Split(buf, '=')[0];
         value = Split(buf, '=')[1];
-        
+
         if (label == "vsync") vsync = value == "true";
     }
     settingsFile.close();

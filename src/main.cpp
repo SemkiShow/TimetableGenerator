@@ -1,5 +1,6 @@
 #include "Settings.hpp"
 #include "UI.hpp"
+#include "Timetable.hpp"
 
 #if defined(PLATFORM_WEB)
     #include <emscripten/emscripten.h>
@@ -16,7 +17,7 @@ int main()
     flags |= FLAG_WINDOW_RESIZABLE;
     SetConfigFlags(flags);
 	#endif
-    
+
     InitWindow(windowSize[0], windowSize[1], "Timetable Generator");
     SetExitKey(-1);
 
