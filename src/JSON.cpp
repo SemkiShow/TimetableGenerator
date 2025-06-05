@@ -197,19 +197,19 @@ void ParseJSON(std::string json, JSONObject* jsonObject)
         {
             std::vector<std::string> keyValuePair = Split(values[i], ':', 2);
             for (int i = 0; i < keyValuePair.size(); i++)
-                keyValuePair[i] = TrimQuotes(TrimSpaces(keyValuePair[i]));
+                keyValuePair[i] = TrimSpaces(keyValuePair[i]);
 
             if (keyValuePair[1][0] == '{' || keyValuePair[1][0] == '[')
             {
-                jsonObject->objectPairs[keyValuePair[0]] = JSONObject();
-                ParseJSON(values[i], &jsonObject->objectPairs[keyValuePair[0]]);
+                jsonObject->objectPairs[TrimQuotes(keyValuePair[0])] = JSONObject();
+                ParseJSON(values[i], &jsonObject->objectPairs[TrimQuotes(keyValuePair[0])]);
             }
             else if (keyValuePair[1] == "true" || keyValuePair[1] == "false")
-                jsonObject->boolPairs[keyValuePair[0]] = keyValuePair[1] == "true";
+                jsonObject->boolPairs[TrimQuotes(keyValuePair[0])] = keyValuePair[1] == "true";
             else if (IsNumber(keyValuePair[1]))
-                jsonObject->intPairs[keyValuePair[0]] = stoi(keyValuePair[1]);
+                jsonObject->intPairs[TrimQuotes(keyValuePair[0])] = stoi(keyValuePair[1]);
             else
-                jsonObject->stringPairs[keyValuePair[0]] = keyValuePair[1];
+                jsonObject->stringPairs[TrimQuotes(keyValuePair[0])] = TrimQuotes(keyValuePair[1]);
         }
     }
 }

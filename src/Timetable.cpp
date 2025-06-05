@@ -102,7 +102,6 @@ void SaveTimetable(std::string fileName, Timetable* timetable)
             // Lesson
             for (int k = 0; k < timetable->classes[i].days[j].lessons.size(); k++)
             {
-
                 jsonObject.objectPairs["classes"].objectPairs[timetable->classes[i].name].objectPairs["lessons"].objects[j].objects.push_back(JSONObject());
                 jsonObject.objectPairs["classes"].objectPairs[timetable->classes[i].name].objectPairs["lessons"].objects[j].objects[k].type = JSON_LIST;
                 jsonObject.objectPairs["classes"].objectPairs[timetable->classes[i].name].objectPairs["lessons"].objects[j].objects[k].format = JSON_INLINE;
@@ -206,10 +205,10 @@ void LoadTimetable(std::string fileName, Timetable* timetable)
                 timetable->classes[i].days[j].lessons.push_back(TimetableLesson());
                 for (int m = 0; m < classPair.second.objectPairs["lessons"].objects[j].objects[k].objects.size(); m++)
                 {
-                    std::string classID = classPair.second.objectPairs["lessons"].objects[j].objects[k].objects[m].stringPairs["id"];
+                    std::string lessonID = classPair.second.objectPairs["lessons"].objects[j].objects[k].objects[m].stringPairs["id"];
                     for (int n = 0; n < timetable->lessons.size(); n++)
                     {
-                        if (classID == timetable->lessons[n].id)
+                        if (lessonID == timetable->lessons[n].id)
                         {
                             timetable->classes[i].days[j].lessons[k].lessons.push_back(&timetable->lessons[n]);
                             break;
