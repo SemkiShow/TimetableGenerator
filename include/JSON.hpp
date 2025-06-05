@@ -6,7 +6,6 @@
 
 enum JSONObjectType
 {
-    JSON_NONE,
     JSON_OBJECT,
     JSON_LIST
 };
@@ -19,7 +18,7 @@ enum JSONObjectFormat
 
 struct JSONObject
 {
-    JSONObjectType type = JSON_NONE;
+    JSONObjectType type = JSON_OBJECT;
     JSONObjectFormat format = JSON_NEWLINE;
     std::vector<std::string> strings;
     std::vector<int> ints;

@@ -8,7 +8,16 @@
 
 int main()
 {
+    srand(time(0));
     Load("settings.txt");
+
+    Timetable timetableSave;
+    GenerateRandomTimetable(&timetableSave);
+    SaveTimetable("save", &timetableSave);
+
+    Timetable timetableLoad;
+    LoadTimetable("save", &timetableLoad);
+    SaveTimetable("load", &timetableLoad);
 
     #if !defined(PLATFORM_WEB)
     int flags = 0;
@@ -23,14 +32,10 @@ int main()
 
     rlImGuiSetup(true);
 
-    #if defined(PLATFORM_WEB)
-        emscripten_set_main_loop(DrawFrame, 0, 1);
-    #else
-        while (!WindowShouldClose())
-        {
-            DrawFrame();
-        }
-    #endif
+    while (!WindowShouldClose())
+    {
+        DrawFrame();
+    }
 
     Save("settings.txt");
     rlImGuiShutdown();
