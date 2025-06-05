@@ -146,8 +146,14 @@ void LoadTimetable(std::string fileName, Timetable* timetable)
             timetable->lessons[i].classNames.push_back(lesson.second.objectPairs["classNames"].strings[j]);
         for (int j = 0; j < lesson.second.objectPairs["classrooms"].strings.size(); j++)
         {
-            timetable->lessons[i].classrooms.push_back(new Classroom());
-            timetable->lessons[i].classrooms[j]->name = lesson.second.objectPairs["classrooms"].strings[j];
+            for (int k = 0; k < timetable->classrooms.size(); k++)
+            {
+                if (lesson.second.objectPairs["classrooms"].strings[j] == timetable->classrooms[k].name)
+                {
+                    timetable->lessons[i].classrooms.push_back(&timetable->classrooms[k]);
+                    break;
+                }
+            }
         }
         i++;
     }
