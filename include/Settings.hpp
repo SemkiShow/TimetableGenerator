@@ -4,6 +4,7 @@
 #include <filesystem>
 
 extern bool vsync;
+extern bool mergedFont;
 
 extern std::vector<std::string> timetables;
 extern std::vector<std::string> templates;

@@ -3,7 +3,7 @@
 set -e
 
 if [ ! -f settings.txt ] || [ "$1" == "" ]; then
-    printf "vsync=true\nlast-timetable=\n" > settings.txt
+    printf "vsync=true\nlast-timetable=\nmerged-font=false\n" > settings.txt
 fi
 if [ ! -d timetables ]; then
     mkdir timetables

@@ -14,6 +14,8 @@ void DrawFrame()
     BeginDrawing();
 
     rlImGuiBegin();
+    ImGuiIO& io = ImGui::GetIO();
+    ImGui::PushFont(io.Fonts->Fonts.back());
 
     ClearBackground(BLACK);
 
@@ -49,6 +51,7 @@ void DrawFrame()
         else SetWindowState(FLAG_VSYNC_HINT);
     }
 
+    ImGui::PopFont();
     rlImGuiEnd();
 
     EndDrawing();
@@ -61,7 +64,12 @@ void ShowSettings(bool* isOpen)
         ImGui::End();
         return;
     }
-    ImGui::Checkbox("vsync", &vsync);
+    if (ImGui::TreeNode("Developer options"))
+    {
+        ImGui::Checkbox("vsync", &vsync);
+        ImGui::Checkbox("merged-font", &mergedFont);
+        ImGui::TreePop();
+    }
     ImGui::End();
 }
 
@@ -83,7 +91,6 @@ void ShowClassrooms(bool* isOpen)
             if (classroomsVector[i] == "") continue;
             currentTimetable.classrooms.push_back(Classroom());
             currentTimetable.classrooms[currentTimetable.classrooms.size()-1].name = classroomsVector[i];
-            std::cout << classroomsVector[i] << "\n";
         }
         classrooms = "";
         *isOpen = false;

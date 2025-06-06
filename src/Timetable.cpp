@@ -130,7 +130,6 @@ void LoadTimetable(std::string path, Timetable* timetable)
     LoadJSON(path, &jsonObject);
 
     timetable->name = std::filesystem::path(path).stem().string();
-    std::cout << "The timetable name is " << timetable->name << "\n";
 
     // Classrooms
     for (int i = 0; i < jsonObject.objectPairs["classrooms"].strings.size(); i++)

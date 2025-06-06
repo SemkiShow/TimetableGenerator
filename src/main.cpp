@@ -35,6 +35,21 @@ int main()
     ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     #endif
 
+    // Load missing glyphs
+    ImGuiIO& io = ImGui::GetIO();
+    io.Fonts->AddFontDefault();
+    ImFontGlyphRangesBuilder builder;
+    builder.AddRanges(io.Fonts->GetGlyphRangesCyrillic());
+    builder.AddRanges(io.Fonts->GetGlyphRangesVietnamese());
+    builder.AddText(u8"ąćęłńóśźżĄĆĘŁŃÓŚŹŻ");
+    ImVector<ImWchar> glyphRanges;
+    builder.BuildRanges(&glyphRanges);
+    ImFontConfig fontConfig;
+    fontConfig.MergeMode = true;
+    fontConfig.PixelSnapH = true;
+    ImFont* font = io.Fonts->AddFontFromFileTTF("resources/Roboto-Regular.ttf", 16.0f, (mergedFont ? &fontConfig : nullptr), glyphRanges.Data);
+    io.Fonts->Build();
+
     while (!WindowShouldClose())
     {
         DrawFrame();

@@ -3,6 +3,7 @@
 #include "Timetable.hpp"
 
 bool vsync = true;
+bool mergedFont = false;
 
 std::vector<std::string> Split(std::string input, char delimiter)
 {
@@ -41,6 +42,7 @@ void Save(std::string fileName)
     settingsFile.open(fileName, std::ios::out);
     settingsFile << "vsync=" << (vsync ? "true" : "false") << '\n';
     settingsFile << "last-timetable=" << currentTimetable.name << '\n';
+    settingsFile << "merged-font=" << (mergedFont ? "true" : "false") << '\n';
     settingsFile.close();
 
     // Save timetable
@@ -64,6 +66,7 @@ void Load(std::string fileName)
             currentTimetable = Timetable();
             LoadTimetable("templates/" + value + ".json", &currentTimetable);
         }
+        if (label == "merged-font") mergedFont = value == "true";
     }
     settingsFile.close();
 }
