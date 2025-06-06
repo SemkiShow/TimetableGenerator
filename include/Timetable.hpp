@@ -18,7 +18,7 @@ struct Classroom
 
 struct Lesson
 {
-    std::string id;
+    std::string id = "";
     std::string name = "";
     std::vector<std::string> classNames;
     std::vector<Classroom*> classrooms;

@@ -27,6 +27,7 @@ void DrawFrame()
             std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
             currentTimetable = Timetable();
             SaveTimetable(filePathName, &currentTimetable);
+            LoadTimetable(filePathName, &currentTimetable);
         }
         ImGuiFileDialog::Instance()->Close();
     }
@@ -72,7 +73,7 @@ void ShowClassrooms(bool* isOpen)
         ImGui::End();
         return;
     }
-    ImGui::InputTextMultiline("", &classrooms);
+    ImGui::InputTextMultiline("##", &classrooms);
     if (ImGui::Button("Ok"))
     {
         currentTimetable.classrooms.clear();
@@ -81,7 +82,7 @@ void ShowClassrooms(bool* isOpen)
         {
             if (classroomsVector[i] == "") continue;
             currentTimetable.classrooms.push_back(Classroom());
-            currentTimetable.classrooms[i].name = classroomsVector[i];
+            currentTimetable.classrooms[currentTimetable.classrooms.size()-1].name = classroomsVector[i];
             std::cout << classroomsVector[i] << "\n";
         }
         classrooms = "";
@@ -129,7 +130,10 @@ void ShowMenuBar()
                 isClassrooms = true;
                 classrooms = "";
                 for (int i = 0; i < currentTimetable.classrooms.size(); i++)
-                    classrooms += currentTimetable.classrooms[i].name + '\n';
+                {
+                    classrooms += currentTimetable.classrooms[i].name;
+                    if (i < currentTimetable.classrooms.size()-1) classrooms += "\n";
+                }
                 ShowClassrooms(&isClassrooms);
             }
             ImGui::EndMenu();
