@@ -32,7 +32,7 @@ std::string JSONToString(JSONObject jsonObject)
         for (int i = 0; i < jsonObject.bools.size(); i++)
         {
             if (jsonObject.format == JSON_NEWLINE) output += INDENTATION;
-            output += std::to_string(jsonObject.bools[i]);
+            output += (jsonObject.bools[i] ? "true" : "false");
             if (i < jsonObject.bools.size()-1 ||
             jsonObject.objects.size() > 0) output += ", ";
             if (jsonObject.format == JSON_NEWLINE) output += '\n';
@@ -74,7 +74,7 @@ std::string JSONToString(JSONObject jsonObject)
         for (auto pair: jsonObject.boolPairs)
         {
             if (jsonObject.format == JSON_NEWLINE) output += INDENTATION;
-            output += '"' + pair.first + "\": " + std::to_string(pair.second);
+            output += '"' + pair.first + "\": " + (pair.second ? "true" : "false");
             if (i < jsonObject.boolPairs.size()-1 ||
                 jsonObject.objectPairs.size() > 0) output += ", ";
             if (jsonObject.format == JSON_NEWLINE) output += '\n';
