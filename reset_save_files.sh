@@ -3,10 +3,18 @@
 set -e
 
 if [ ! -f settings.txt ] || [ "$1" == "" ]; then
-    printf "vsync=true\n" > settings.txt
+    printf "vsync=true\nlast-timetable=\n" > settings.txt
 fi
-if [ ! -d timetables ] && [ "$1" == "" ]; then
+if [ ! -d timetables ]; then
     mkdir timetables
-    mkdir timetables/templates
+fi
+if [ ! -d templates ]; then
+    mkdir templates
+fi
+if [ "$1" == "" ]; then
+    rm -r timetables/*
+fi
+if [ "$1" == "" ]; then
+    rm -r templates/*
 fi
 

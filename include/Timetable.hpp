@@ -4,6 +4,7 @@
 #include <iostream>
 #include <random>
 #include <ctime>
+#include <filesystem>
 
 struct WorkTime
 {
@@ -18,7 +19,7 @@ struct Classroom
 struct Lesson
 {
     std::string id;
-    std::string name;
+    std::string name = "";
     std::vector<std::string> classNames;
     std::vector<Classroom*> classrooms;
 };
@@ -50,12 +51,15 @@ struct Class
 
 struct Timetable
 {
+    std::string name = "";
     std::vector<Classroom> classrooms;
     std::vector<Lesson> lessons;
     std::vector<Teacher> teachers;
     std::vector<Class> classes;
 };
 
-void SaveTimetable(std::string fileName, Timetable* timetable);
-void LoadTimetable(std::string fileName, Timetable* timetable);
+extern Timetable currentTimetable;
+
+void SaveTimetable(std::string path, Timetable* timetable);
+void LoadTimetable(std::string path, Timetable* timetable);
 void GenerateRandomTimetable(Timetable* timetable);

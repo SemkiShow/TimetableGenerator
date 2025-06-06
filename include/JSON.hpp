@@ -30,5 +30,5 @@ struct JSONObject
     std::unordered_map<std::string, JSONObject> objectPairs;
 };
 
-void SaveJSON(std::string fileName, JSONObject* jsonObject);
-void LoadJSON(std::string fileName, JSONObject* jsonObject);
+void SaveJSON(std::string path, JSONObject* jsonObject);
+void LoadJSON(std::string path, JSONObject* jsonObject);

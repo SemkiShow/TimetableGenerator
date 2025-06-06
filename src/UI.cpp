@@ -1,7 +1,10 @@
 #include "UI.hpp"
 #include "Settings.hpp"
+#include "Timetable.hpp"
 
 bool isSettings = false;
+bool isClassrooms = false;
+
 int menuOffset = 20;
 int windowSize[2] = {16*50*2, 9*50*2};
 bool lastVsync = vsync;
@@ -16,6 +19,27 @@ void DrawFrame()
 
     ShowMenuBar();
     if (isSettings) ShowSettings(&isSettings);
+    if (isClassrooms) ShowClassrooms(&isClassrooms);
+    if (ImGuiFileDialog::Instance()->Display("New Template", ImGuiWindowFlags_NoCollapse, ImVec2(750.f, 500.f)))
+    {
+        if (ImGuiFileDialog::Instance()->IsOk())
+        {
+            std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+            currentTimetable = Timetable();
+            SaveTimetable(filePathName, &currentTimetable);
+        }
+        ImGuiFileDialog::Instance()->Close();
+    }
+    if (ImGuiFileDialog::Instance()->Display("Choose Template", ImGuiWindowFlags_NoCollapse, ImVec2(750.f, 500.f)))
+    {
+        if (ImGuiFileDialog::Instance()->IsOk())
+        {
+            std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+            currentTimetable = Timetable();
+            LoadTimetable(filePathName, &currentTimetable);
+        }
+        ImGuiFileDialog::Instance()->Close();
+    }
 
     if (lastVsync != vsync)
     {
@@ -25,7 +49,7 @@ void DrawFrame()
     }
 
     rlImGuiEnd();
-    
+
     EndDrawing();
 }
 
@@ -40,16 +64,73 @@ void ShowSettings(bool* isOpen)
     ImGui::End();
 }
 
+std::string classrooms = "";
+void ShowClassrooms(bool* isOpen)
+{
+    if (!ImGui::Begin("Classrooms", isOpen))
+    {
+        ImGui::End();
+        return;
+    }
+    ImGui::InputTextMultiline("", &classrooms);
+    if (ImGui::Button("Ok"))
+    {
+        currentTimetable.classrooms.clear();
+        std::vector<std::string> classroomsVector = Split(classrooms, '\n');
+        for (int i = 0; i < classroomsVector.size(); i++)
+        {
+            if (classroomsVector[i] == "") continue;
+            currentTimetable.classrooms.push_back(Classroom());
+            currentTimetable.classrooms[i].name = classroomsVector[i];
+            std::cout << classroomsVector[i] << "\n";
+        }
+        classrooms = "";
+        *isOpen = false;
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Cancel"))
+    {
+        classrooms = "";
+        *isOpen = false;
+    }
+    ImGui::End();
+}
+
 void ShowMenuBar()
 {
     if (ImGui::BeginMainMenuBar())
     {
-        if (ImGui::BeginMenu("Menu"))
+        if (ImGui::BeginMenu("File"))
         {
+            if (ImGui::MenuItem("New"))
+            {
+                IGFD::FileDialogConfig config;
+                config.path = "templates";
+                config.flags = ImGuiFileDialogFlags_ConfirmOverwrite;
+                ImGuiFileDialog::Instance()->OpenDialog("New Template", "New File", ".json", config);
+            }
+            if (ImGui::MenuItem("Open"))
+            {
+                IGFD::FileDialogConfig config;
+                config.path = "templates";
+                ImGuiFileDialog::Instance()->OpenDialog("Choose Template", "Choose File", ".json", config);
+            }
             if (ImGui::MenuItem("Settings"))
             {
                 isSettings = true;
                 ShowSettings(&isSettings);
+            }
+            ImGui::EndMenu();
+        }
+        if (currentTimetable.name != "" && ImGui::BeginMenu(currentTimetable.name.c_str()))
+        {
+            if (ImGui::MenuItem("Classrooms"))
+            {
+                isClassrooms = true;
+                classrooms = "";
+                for (int i = 0; i < currentTimetable.classrooms.size(); i++)
+                    classrooms += currentTimetable.classrooms[i].name + '\n';
+                ShowClassrooms(&isClassrooms);
             }
             ImGui::EndMenu();
         }

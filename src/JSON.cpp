@@ -96,13 +96,13 @@ std::string JSONToString(JSONObject jsonObject)
     return output;
 }
 
-void SaveJSON(std::string fileName, JSONObject* jsonObject)
+void SaveJSON(std::string path, JSONObject* jsonObject)
 {
-    std::ofstream timetableFile("timetables/" + fileName + ".json");
+    std::ofstream timetableFile(path);
     indentationLevel = 0;
     timetableFile << JSONToString(*jsonObject);
     timetableFile.close();
-    std::cout << "Saved " << fileName << ".json\n";
+    std::cout << "Saved " << path << "\n";
 }
 
 std::string TrimSpaces(const std::string& input)
@@ -198,6 +198,7 @@ void ParseJSON(std::string json, JSONObject* jsonObject)
             std::vector<std::string> keyValuePair = Split(values[i], ':', 2);
             for (int i = 0; i < keyValuePair.size(); i++)
                 keyValuePair[i] = TrimSpaces(keyValuePair[i]);
+            if (keyValuePair[0].size() == 0 || keyValuePair[1].size() == 0) return;
 
             if (keyValuePair[1][0] == '{' || keyValuePair[1][0] == '[')
             {
@@ -214,9 +215,9 @@ void ParseJSON(std::string json, JSONObject* jsonObject)
     }
 }
 
-void LoadJSON(std::string fileName, JSONObject* jsonObject)
+void LoadJSON(std::string path, JSONObject* jsonObject)
 {
-    std::ifstream timetableFile("timetables/" + fileName + ".json");
+    std::ifstream timetableFile(path);
     std::string buf, json;
     while (std::getline(timetableFile, buf))
         for (int i = 0; i < buf.size(); i++) if (buf[i] != '\t') json += buf[i];
@@ -224,5 +225,5 @@ void LoadJSON(std::string fileName, JSONObject* jsonObject)
 
     ParseJSON(json, jsonObject);
 
-    std::cout << "Loaded " << fileName << ".json\n";
+    std::cout << "Loaded " << path << "\n";
 }

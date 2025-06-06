@@ -1,7 +1,9 @@
 #include "Timetable.hpp"
 #include "JSON.hpp"
 
-void SaveTimetable(std::string fileName, Timetable* timetable)
+Timetable currentTimetable;
+
+void SaveTimetable(std::string path, Timetable* timetable)
 {
     JSONObject jsonObject;
     jsonObject.type = JSON_OBJECT;
@@ -119,13 +121,16 @@ void SaveTimetable(std::string fileName, Timetable* timetable)
         }
     }
 
-    SaveJSON(fileName, &jsonObject);
+    SaveJSON(path, &jsonObject);
 }
 
-void LoadTimetable(std::string fileName, Timetable* timetable)
+void LoadTimetable(std::string path, Timetable* timetable)
 {
     JSONObject jsonObject;
-    LoadJSON(fileName, &jsonObject);
+    LoadJSON(path, &jsonObject);
+
+    timetable->name = std::filesystem::path(path).stem().string();
+    std::cout << "The timetable name is " << timetable->name << "\n";
 
     // Classrooms
     for (int i = 0; i < jsonObject.objectPairs["classrooms"].strings.size(); i++)

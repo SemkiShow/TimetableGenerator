@@ -13,11 +13,11 @@ int main()
 
     Timetable timetableSave;
     GenerateRandomTimetable(&timetableSave);
-    SaveTimetable("save", &timetableSave);
+    SaveTimetable("timetables/save.json", &timetableSave);
 
     Timetable timetableLoad;
-    LoadTimetable("save", &timetableLoad);
-    SaveTimetable("load", &timetableLoad);
+    LoadTimetable("timetables/save.json", &timetableLoad);
+    SaveTimetable("timetables/load.json", &timetableLoad);
 
     #if !defined(PLATFORM_WEB)
     int flags = 0;
@@ -31,6 +31,9 @@ int main()
     SetExitKey(-1);
 
     rlImGuiSetup(true);
+    #ifdef IMGUI_HAS_DOCK
+    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    #endif
 
     while (!WindowShouldClose())
     {
