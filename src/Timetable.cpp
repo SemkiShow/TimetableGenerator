@@ -299,21 +299,22 @@ void GenerateRandomTimetable(Timetable* timetable)
             }
         }
     }
-    for (int i = 0; i < 2; i++)
+    int classLettersPerClassNumber = 3;
+    for (int i = 1; i < 3; i++)
     {
-        for (int m = 0; m < 3; m++)
+        for (int m = 0; m < classLettersPerClassNumber; m++)
         {
             timetable->classes.push_back(Class());
-            timetable->classes[i*3+m].number = std::to_string(i);
-            timetable->classes[i*3+m].letter = 'a' + m;
-            timetable->classes[i*3+m].teacher = &timetable->teachers[rand() % timetable->teachers.size()];
+            timetable->classes[(i-1)*classLettersPerClassNumber + m].number = std::to_string(i);
+            timetable->classes[(i-1)*classLettersPerClassNumber + m].letter = 'a' + m;
+            timetable->classes[(i-1)*classLettersPerClassNumber + m].teacher = &timetable->teachers[rand() % timetable->teachers.size()];
             for (int j = 0; j < 7; j++)
             {
                 for (int k = 0; k < 3; k++)
                 {
-                    timetable->classes[i*3+m].days[j].lessons.push_back(TimetableLesson());
-                    timetable->classes[i*3+m].days[j].lessons[k].lessons.push_back(&timetable->lessons[rand() % timetable->lessons.size()]);
-                    timetable->classes[i*3+m].days[j].lessons[k].teachers.push_back(&timetable->teachers[rand() % timetable->teachers.size()]);
+                    timetable->classes[(i-1)*classLettersPerClassNumber + m].days[j].lessons.push_back(TimetableLesson());
+                    timetable->classes[(i-1)*classLettersPerClassNumber + m].days[j].lessons[k].lessons.push_back(&timetable->lessons[rand() % timetable->lessons.size()]);
+                    timetable->classes[(i-1)*classLettersPerClassNumber + m].days[j].lessons[k].teachers.push_back(&timetable->teachers[rand() % timetable->teachers.size()]);
                 }
             }
         }

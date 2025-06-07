@@ -81,6 +81,7 @@ void ShowClassrooms(bool* isOpen)
 int currentLessonIndex = 0;
 bool newLesson = false;
 bool allClasses = true;
+std::unordered_map<std::string, bool> lessonClassGroups;
 std::unordered_map<std::string, bool> lessonClasses;
 bool allClassrooms = true;
 std::unordered_map<std::string, bool> lessonClassrooms;
@@ -97,12 +98,33 @@ void ShowEditLesson(bool* isOpen)
     if (ImGui::Checkbox((allClasses ? "Deselect all##1" : "Select all##1"), &allClasses))
     {
         for (int i = 0; i < tmpTmpTimetable.classes.size(); i++)
+        {
+            lessonClassGroups[tmpTmpTimetable.classes[i].number] = allClasses;
             lessonClasses[tmpTmpTimetable.classes[i].number + tmpTmpTimetable.classes[i].letter] = allClasses;
+        }
     }
     if (tmpTmpTimetable.classes.size() == 0) ImGui::TextColored(ImVec4(255, 0, 0, 255), "You need to add classes\nin the Classes menu\nto select classes for this lesson!");
+    std::string lastClassNumber = "";
     for (int i = 0; i < tmpTmpTimetable.classes.size(); i++)
+    {
+        if (lastClassNumber != tmpTmpTimetable.classes[i].number)
+        {
+            lastClassNumber = tmpTmpTimetable.classes[i].number;
+            if (ImGui::Checkbox(tmpTmpTimetable.classes[i].number.c_str(), &lessonClassGroups[tmpTmpTimetable.classes[i].number]))
+            {
+                for (int j = 0; j < tmpTmpTimetable.classes.size(); j++)
+                {
+                    if (tmpTmpTimetable.classes[j].number == tmpTmpTimetable.classes[i].number)
+                        lessonClasses[tmpTmpTimetable.classes[j].number + tmpTmpTimetable.classes[j].letter] =
+                            lessonClassGroups[tmpTmpTimetable.classes[i].number];
+                }
+            }
+        }
+        ImGui::Indent();
         ImGui::Checkbox((tmpTmpTimetable.classes[i].number + tmpTmpTimetable.classes[i].letter).c_str(),
             &lessonClasses[tmpTmpTimetable.classes[i].number + tmpTmpTimetable.classes[i].letter]);
+        ImGui::Unindent();
+    }
     ImGui::NextColumn();
     ImGui::Text("classrooms");
     if (ImGui::Checkbox((allClassrooms ? "Deselect all##2" : "Select all##2"), &allClassrooms))
@@ -156,9 +178,13 @@ void ShowLessons(bool* isOpen)
         tmpTimetable.lessons.push_back(Lesson());
         currentLessonIndex = tmpTimetable.lessons.size()-1;
         newLesson = true;
+        lessonClassGroups.clear();
         lessonClasses.clear();
         for (int i = 0; i < tmpTimetable.classes.size(); i++)
+        {
+            lessonClassGroups[tmpTimetable.classes[i].number] = true;
             lessonClasses[tmpTimetable.classes[i].number + tmpTimetable.classes[i].letter] = true;
+        }
         lessonClassrooms.clear();
         for (int i = 0; i < tmpTimetable.classrooms.size(); i++)
             lessonClassrooms[tmpTimetable.classrooms[i].name] = true;
@@ -186,9 +212,13 @@ void ShowLessons(bool* isOpen)
             allClasses = allClassrooms = true;
             currentLessonIndex = i;
             newLesson = false;
+            lessonClassGroups.clear();
             lessonClasses.clear();
-            for (int j = 0; j < tmpTmpTimetable.classes.size(); j++)
-                lessonClasses[tmpTmpTimetable.classes[j].number + tmpTmpTimetable.classes[j].letter] = false;
+            for (int i = 0; i < tmpTimetable.classes.size(); i++)
+            {
+                lessonClassGroups[tmpTimetable.classes[i].number] = true;
+                lessonClasses[tmpTimetable.classes[i].number + tmpTimetable.classes[i].letter] = false;
+            }
             for (int j = 0; j < tmpTmpTimetable.lessons[i].classNames.size(); j++)
                 lessonClasses[tmpTmpTimetable.lessons[i].classNames[j]] = true;
             lessonClassrooms.clear();
@@ -323,6 +353,7 @@ void DrawFrame()
             SaveTimetable("templates/" + currentTimetable.name + ".json", &currentTimetable);
             currentTimetable = Timetable();
             LoadTimetable(filePathName, &currentTimetable);
+            SaveTimetable(filePathName, &currentTimetable);
         }
         ImGuiFileDialog::Instance()->Close();
     }

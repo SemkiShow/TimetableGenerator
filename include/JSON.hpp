@@ -1,6 +1,6 @@
 #include <string>
 #include <vector>
-#include <unordered_map>
+#include <map>
 #include <fstream>
 #include <iostream>
 
@@ -24,10 +24,10 @@ struct JSONObject
     std::vector<int> ints;
     std::vector<bool> bools;
     std::vector<JSONObject> objects;
-    std::unordered_map<std::string, std::string> stringPairs;
-    std::unordered_map<std::string, int> intPairs;
-    std::unordered_map<std::string, bool> boolPairs;
-    std::unordered_map<std::string, JSONObject> objectPairs;
+    std::map<std::string, std::string> stringPairs;
+    std::map<std::string, int> intPairs;
+    std::map<std::string, bool> boolPairs;
+    std::map<std::string, JSONObject> objectPairs;
 };
 
 void SaveJSON(std::string path, JSONObject* jsonObject);
