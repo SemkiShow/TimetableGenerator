@@ -11,8 +11,4 @@ extern int windowSize[2];
 extern std::string classrooms;
 
 void LoadFonts();
-
 void DrawFrame();
-void ShowSettings(bool* isOpen);
-void ShowClassrooms(bool* isOpen);
-void ShowMenuBar();

@@ -9,6 +9,7 @@
 int main()
 {
     srand(time(0));
+
     Timetable timetableSave;
     timetableSave.name = "save";
     GenerateRandomTimetable(&timetableSave);
@@ -17,6 +18,7 @@ int main()
     Timetable timetableLoad;
     LoadTimetable("timetables/save.json", &timetableLoad);
     SaveTimetable("timetables/load.json", &timetableLoad);
+
     Load("settings.txt");
 
     #if !defined(PLATFORM_WEB)

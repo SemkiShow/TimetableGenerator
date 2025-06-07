@@ -3,6 +3,7 @@
 #include "UI.hpp"
 
 Timetable currentTimetable;
+Timetable tmpTimetable;
 
 void SaveTimetable(std::string path, Timetable* timetable)
 {
@@ -88,36 +89,37 @@ void SaveTimetable(std::string path, Timetable* timetable)
     for (int i = 0; i < timetable->classes.size(); i++)
     {
         // Class name
-        jsonObject.objectPairs["classes"].objectPairs[timetable->classes[i].name] = JSONObject();
-        jsonObject.objectPairs["classes"].objectPairs[timetable->classes[i].name].type = JSON_OBJECT;
+        std::string className = timetable->classes[i].number + timetable->classes[i].letter;
+        jsonObject.objectPairs["classes"].objectPairs[className] = JSONObject();
+        jsonObject.objectPairs["classes"].objectPairs[className].type = JSON_OBJECT;
 
         // Teacher name
-        jsonObject.objectPairs["classes"].objectPairs[timetable->classes[i].name].stringPairs["teacher"] = timetable->classes[i].teacher->name;
+        jsonObject.objectPairs["classes"].objectPairs[className].stringPairs["teacher"] = timetable->classes[i].teacher->name;
 
         // Lessons
-        jsonObject.objectPairs["classes"].objectPairs[timetable->classes[i].name].objectPairs["lessons"] = JSONObject();
-        jsonObject.objectPairs["classes"].objectPairs[timetable->classes[i].name].objectPairs["lessons"].type = JSON_LIST;
+        jsonObject.objectPairs["classes"].objectPairs[className].objectPairs["lessons"] = JSONObject();
+        jsonObject.objectPairs["classes"].objectPairs[className].objectPairs["lessons"].type = JSON_LIST;
 
         // Day
         for (int j = 0; j < 7; j++)
         {
-            jsonObject.objectPairs["classes"].objectPairs[timetable->classes[i].name].objectPairs["lessons"].objects.push_back(JSONObject());
-            jsonObject.objectPairs["classes"].objectPairs[timetable->classes[i].name].objectPairs["lessons"].objects[j].type = JSON_LIST;
+            jsonObject.objectPairs["classes"].objectPairs[className].objectPairs["lessons"].objects.push_back(JSONObject());
+            jsonObject.objectPairs["classes"].objectPairs[className].objectPairs["lessons"].objects[j].type = JSON_LIST;
 
             // Lesson
             for (int k = 0; k < timetable->classes[i].days[j].lessons.size(); k++)
             {
-                jsonObject.objectPairs["classes"].objectPairs[timetable->classes[i].name].objectPairs["lessons"].objects[j].objects.push_back(JSONObject());
-                jsonObject.objectPairs["classes"].objectPairs[timetable->classes[i].name].objectPairs["lessons"].objects[j].objects[k].type = JSON_LIST;
-                jsonObject.objectPairs["classes"].objectPairs[timetable->classes[i].name].objectPairs["lessons"].objects[j].objects[k].format = JSON_INLINE;
+                jsonObject.objectPairs["classes"].objectPairs[className].objectPairs["lessons"].objects[j].objects.push_back(JSONObject());
+                jsonObject.objectPairs["classes"].objectPairs[className].objectPairs["lessons"].objects[j].objects[k].type = JSON_LIST;
+                jsonObject.objectPairs["classes"].objectPairs[className].objectPairs["lessons"].objects[j].objects[k].format = JSON_INLINE;
                 for (int m = 0; m < timetable->classes[i].days[j].lessons[k].lessons.size(); m++)
                 {
-                    jsonObject.objectPairs["classes"].objectPairs[timetable->classes[i].name].objectPairs["lessons"].objects[j].objects[k].objects.push_back(JSONObject());
-                    jsonObject.objectPairs["classes"].objectPairs[timetable->classes[i].name].objectPairs["lessons"].objects[j].objects[k].objects[m].type = JSON_OBJECT;
-                    jsonObject.objectPairs["classes"].objectPairs[timetable->classes[i].name].objectPairs["lessons"].objects[j].objects[k].objects[m].format = JSON_INLINE;
-                    jsonObject.objectPairs["classes"].objectPairs[timetable->classes[i].name].objectPairs["lessons"].objects[j].objects[k].objects[m].stringPairs["id"] =
+                    jsonObject.objectPairs["classes"].objectPairs[className].objectPairs["lessons"].objects[j].objects[k].objects.push_back(JSONObject());
+                    jsonObject.objectPairs["classes"].objectPairs[className].objectPairs["lessons"].objects[j].objects[k].objects[m].type = JSON_OBJECT;
+                    jsonObject.objectPairs["classes"].objectPairs[className].objectPairs["lessons"].objects[j].objects[k].objects[m].format = JSON_INLINE;
+                    jsonObject.objectPairs["classes"].objectPairs[className].objectPairs["lessons"].objects[j].objects[k].objects[m].stringPairs["id"] =
                         timetable->classes[i].days[j].lessons[k].lessons[m]->id;
-                    jsonObject.objectPairs["classes"].objectPairs[timetable->classes[i].name].objectPairs["lessons"].objects[j].objects[k].objects[m].stringPairs["teacher"] =
+                    jsonObject.objectPairs["classes"].objectPairs[className].objectPairs["lessons"].objects[j].objects[k].objects[m].stringPairs["teacher"] =
                         timetable->classes[i].days[j].lessons[k].teachers[m]->name;
                 }
             }
@@ -125,6 +127,20 @@ void SaveTimetable(std::string path, Timetable* timetable)
     }
 
     SaveJSON(path, &jsonObject);
+}
+
+std::string ExtractNumberFromBeginning(std::string input)
+{
+    for (int i = 0; i < input.size(); i++)
+    {
+        try
+        {
+            int number = stoi(input.substr(0, i));
+            return std::to_string(number);
+        }
+        catch (const std::exception&) {}
+    }
+    return "-1";
 }
 
 void LoadTimetable(std::string path, Timetable* timetable)
@@ -196,7 +212,8 @@ void LoadTimetable(std::string path, Timetable* timetable)
     for (auto classPair: jsonObject.objectPairs["classes"].objectPairs)
     {
         timetable->classes.push_back(Class());
-        timetable->classes[i].name = classPair.first;
+        timetable->classes[i].number = ExtractNumberFromBeginning(classPair.first);
+        timetable->classes[i].letter = classPair.first.substr(timetable->classes[i].number.size());
         for (int j = 0; j < timetable->teachers.size(); j++)
         {
             if (classPair.second.stringPairs["teacher"] == timetable->teachers[j].name)
@@ -236,13 +253,7 @@ void LoadTimetable(std::string path, Timetable* timetable)
         i++;
     }
 
-    // UI-related setup
-    classrooms = "";
-    for (int i = 0; i < timetable->classrooms.size(); i++)
-    {
-        classrooms += timetable->classrooms[i].name;
-        if (i < timetable->classrooms.size()-1) classrooms += "\n";
-    }
+    if (timetable == &currentTimetable) tmpTimetable = currentTimetable;
 }
 
 void GenerateRandomTimetable(Timetable* timetable)
@@ -287,21 +298,22 @@ void GenerateRandomTimetable(Timetable* timetable)
             }
         }
     }
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 2; i++)
     {
-        timetable->classes.push_back(Class());
-        for (int j = 0; j < 5; j++)
+        for (int m = 0; m < 3; m++)
         {
-            timetable->classes[i].name += 'a' + rand() % 26;
-        }
-        timetable->classes[i].teacher = &timetable->teachers[rand() % timetable->teachers.size()];
-        for (int j = 0; j < 7; j++)
-        {
-            for (int k = 0; k < 3; k++)
+            timetable->classes.push_back(Class());
+            timetable->classes[i*3+m].number = std::to_string(i);
+            timetable->classes[i*3+m].letter = 'a' + m;
+            timetable->classes[i*3+m].teacher = &timetable->teachers[rand() % timetable->teachers.size()];
+            for (int j = 0; j < 7; j++)
             {
-                timetable->classes[i].days[j].lessons.push_back(TimetableLesson());
-                timetable->classes[i].days[j].lessons[k].lessons.push_back(&timetable->lessons[rand() % timetable->lessons.size()]);
-                timetable->classes[i].days[j].lessons[k].teachers.push_back(&timetable->teachers[rand() % timetable->teachers.size()]);
+                for (int k = 0; k < 3; k++)
+                {
+                    timetable->classes[i*3+m].days[j].lessons.push_back(TimetableLesson());
+                    timetable->classes[i*3+m].days[j].lessons[k].lessons.push_back(&timetable->lessons[rand() % timetable->lessons.size()]);
+                    timetable->classes[i*3+m].days[j].lessons[k].teachers.push_back(&timetable->teachers[rand() % timetable->teachers.size()]);
+                }
             }
         }
 
@@ -310,7 +322,9 @@ void GenerateRandomTimetable(Timetable* timetable)
     {
         for (int j = 0; j < 4; j++)
         {
-            timetable->lessons[i].classNames.push_back(timetable->classes[rand() % timetable->classes.size()].name);
+            int randomClassIndex = rand() % timetable->classes.size();
+            std::string className = timetable->classes[randomClassIndex].number + timetable->classes[randomClassIndex].letter;
+            timetable->lessons[i].classNames.push_back(className);
         }
     }
 }

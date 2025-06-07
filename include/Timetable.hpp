@@ -44,7 +44,8 @@ struct Day
 
 struct Class
 {
-    std::string name = "";
+    std::string number = "0";
+    std::string letter = "";
     Teacher* teacher;
     Day days[7];
 };
@@ -59,6 +60,7 @@ struct Timetable
 };
 
 extern Timetable currentTimetable;
+extern Timetable tmpTimetable;
 
 void SaveTimetable(std::string path, Timetable* timetable);
 void LoadTimetable(std::string path, Timetable* timetable);
