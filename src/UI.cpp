@@ -7,12 +7,39 @@ bool isClassrooms = false;
 
 int menuOffset = 20;
 int windowSize[2] = {16*50*2, 9*50*2};
+
 bool lastVsync = vsync;
+bool lastMergedFont = mergedFont;
+
+void LoadFonts()
+{
+    ImGuiIO& io = ImGui::GetIO();
+    io.Fonts->Clear();
+    io.Fonts->AddFontDefault();
+    ImFontGlyphRangesBuilder builder;
+    builder.AddRanges(io.Fonts->GetGlyphRangesCyrillic());
+    builder.AddRanges(io.Fonts->GetGlyphRangesVietnamese());
+    builder.AddText(u8"ąćęłńóśźżĄĆĘŁŃÓŚŹŻ");
+    ImVector<ImWchar> glyphRanges;
+    builder.BuildRanges(&glyphRanges);
+    ImFontConfig fontConfig;
+    fontConfig.MergeMode = mergedFont;
+    fontConfig.PixelSnapH = true;
+    ImFont* font = io.Fonts->AddFontFromFileTTF("resources/DroidSansMono.ttf", 13.0f, &fontConfig, glyphRanges.Data);
+    io.Fonts->TexID = 0;
+    io.Fonts->Build();
+}
 
 void DrawFrame()
 {
     BeginDrawing();
 
+    if (lastMergedFont != mergedFont)
+    {
+        lastMergedFont = mergedFont;
+        LoadFonts();
+        rlImGuiReloadFonts();
+    }
     rlImGuiBegin();
     ImGuiIO& io = ImGui::GetIO();
     ImGui::PushFont(io.Fonts->Fonts.back());

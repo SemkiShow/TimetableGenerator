@@ -8,6 +8,8 @@ extern bool isSettings;
 extern int menuOffset;
 extern int windowSize[2];
 
+void LoadFonts();
+
 void DrawFrame();
 void ShowSettings(bool* isOpen);
 void ShowClassrooms(bool* isOpen);
