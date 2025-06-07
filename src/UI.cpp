@@ -28,6 +28,7 @@ void LoadFonts()
     ImFont* font = io.Fonts->AddFontFromFileTTF("resources/DroidSansMono.ttf", 13.0f, &fontConfig, glyphRanges.Data);
     io.Fonts->TexID = 0;
     io.Fonts->Build();
+    rlImGuiReloadFonts();
 }
 
 void DrawFrame()
@@ -38,7 +39,6 @@ void DrawFrame()
     {
         lastMergedFont = mergedFont;
         LoadFonts();
-        rlImGuiReloadFonts();
     }
     rlImGuiBegin();
     ImGuiIO& io = ImGui::GetIO();
@@ -119,15 +119,10 @@ void ShowClassrooms(bool* isOpen)
             currentTimetable.classrooms.push_back(Classroom());
             currentTimetable.classrooms[currentTimetable.classrooms.size()-1].name = classroomsVector[i];
         }
-        classrooms = "";
         *isOpen = false;
     }
     ImGui::SameLine();
-    if (ImGui::Button("Cancel"))
-    {
-        classrooms = "";
-        *isOpen = false;
-    }
+    if (ImGui::Button("Cancel")) *isOpen = false;
     ImGui::End();
 }
 
@@ -162,12 +157,6 @@ void ShowMenuBar()
             if (ImGui::MenuItem("Classrooms"))
             {
                 isClassrooms = true;
-                classrooms = "";
-                for (int i = 0; i < currentTimetable.classrooms.size(); i++)
-                {
-                    classrooms += currentTimetable.classrooms[i].name;
-                    if (i < currentTimetable.classrooms.size()-1) classrooms += "\n";
-                }
                 ShowClassrooms(&isClassrooms);
             }
             ImGui::EndMenu();
