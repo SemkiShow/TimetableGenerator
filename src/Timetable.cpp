@@ -4,6 +4,7 @@
 
 Timetable currentTimetable;
 Timetable tmpTimetable;
+Timetable tmpTmpTimetable;
 
 void SaveTimetable(std::string path, Timetable* timetable)
 {
@@ -253,7 +254,7 @@ void LoadTimetable(std::string path, Timetable* timetable)
         i++;
     }
 
-    if (timetable == &currentTimetable) tmpTimetable = currentTimetable;
+    if (timetable == &currentTimetable) tmpTmpTimetable = tmpTimetable = currentTimetable;
 }
 
 void GenerateRandomTimetable(Timetable* timetable)

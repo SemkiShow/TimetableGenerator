@@ -61,6 +61,7 @@ struct Timetable
 
 extern Timetable currentTimetable;
 extern Timetable tmpTimetable;
+extern Timetable tmpTmpTimetable;
 
 void SaveTimetable(std::string path, Timetable* timetable);
 void LoadTimetable(std::string path, Timetable* timetable);
