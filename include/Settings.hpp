@@ -6,6 +6,7 @@
 extern bool vsync;
 extern bool mergedFont;
 extern int timetableAutosaveInterval;
+extern int lessonsPerDay;
 
 extern std::vector<std::string> timetables;
 extern std::vector<std::string> templates;

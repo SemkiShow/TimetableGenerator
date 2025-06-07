@@ -76,10 +76,10 @@ void SaveTimetable(std::string path, Timetable* timetable)
             jsonObject.objectPairs["teachers"].objectPairs[timetable->teachers[i].name].objectPairs["workDays"].objects[j].type = JSON_LIST;
             jsonObject.objectPairs["teachers"].objectPairs[timetable->teachers[i].name].objectPairs["workDays"].objects[j].format = JSON_INLINE;
             // Lesson number
-            for (int k = 0; k < timetable->teachers[i].workTime[j].lessonNumbers.size(); k++)
+            for (int k = 0; k < timetable->teachers[i].workDays[j].lessonNumbers.size(); k++)
             {
                 jsonObject.objectPairs["teachers"].objectPairs[timetable->teachers[i].name].objectPairs["workDays"].objects[j].ints.push_back(
-                    timetable->teachers[i].workTime[j].lessonNumbers[k]);
+                    timetable->teachers[i].workDays[j].lessonNumbers[k]);
             }
         }
     }
@@ -202,7 +202,7 @@ void LoadTimetable(std::string path, Timetable* timetable)
         {
             for (int k = 0; k < teacher.second.objectPairs["workDays"].objects[j].ints.size(); k++)
             {
-                timetable->teachers[i].workTime[j].lessonNumbers.push_back(teacher.second.objectPairs["workDays"].objects[j].ints[k]);
+                timetable->teachers[i].workDays[j].lessonNumbers.push_back(teacher.second.objectPairs["workDays"].objects[j].ints[k]);
             }
         }
         i++;
@@ -295,7 +295,7 @@ void GenerateRandomTimetable(Timetable* timetable)
         {
             for (int k = 0; k < rand() % 15; k++)
             {
-                timetable->teachers[i].workTime[j].lessonNumbers.push_back(rand() % 8);
+                timetable->teachers[i].workDays[j].lessonNumbers.push_back(rand() % 8);
             }
         }
     }

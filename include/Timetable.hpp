@@ -6,7 +6,7 @@
 #include <ctime>
 #include <filesystem>
 
-struct WorkTime
+struct WorkDay
 {
     std::vector<int> lessonNumbers;
 };
@@ -28,7 +28,7 @@ struct Teacher
 {
     std::string name = "";
     std::vector<Lesson*> lessons;
-    WorkTime workTime[7];
+    WorkDay workDays[7];
 };
 
 struct TimetableLesson
