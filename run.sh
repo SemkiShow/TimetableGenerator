@@ -7,7 +7,7 @@ if [ "$1" == "" ]; then
     clear
     ./reset_save_files.sh --soft
     cmake -B build -DCMAKE_BUILD_TYPE=Release
-    cmake --build build -j ${nproc}
+    cmake --build build -j
     ./build/bin/main
 fi
 
@@ -16,7 +16,7 @@ if [ "$1" == "-d" ] || [ "$1" == "--debug" ]; then
     clear
     ./reset_save_files.sh --soft
     cmake -B build_debug -DCMAKE_BUILD_TYPE=Debug
-    cmake --build build_debug -j ${nproc}
+    cmake --build build_debug -j
     gdb -ex run ./build_debug/bin/main
 fi
 
@@ -29,7 +29,7 @@ if [ "$1" == "-w" ] || [ "$1" == "--web" ]; then
     else
         emcmake cmake -B build_web -DPLATFORM=Web -DSHELL=Full
     fi
-    cmake --build build_web -j ${nproc}
+    cmake --build build_web -j
     emrun ./build_web/bin/main.html
 fi
 
