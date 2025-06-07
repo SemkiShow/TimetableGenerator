@@ -65,6 +65,7 @@ void DrawFrame()
         if (ImGuiFileDialog::Instance()->IsOk())
         {
             std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+            SaveTimetable("templates/" + currentTimetable.name + ".json", &currentTimetable);
             currentTimetable = Timetable();
             LoadTimetable(filePathName, &currentTimetable);
         }

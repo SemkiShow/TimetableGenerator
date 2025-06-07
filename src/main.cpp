@@ -12,6 +12,7 @@ int main()
     Load("settings.txt");
 
     Timetable timetableSave;
+    timetableSave.name = "save";
     GenerateRandomTimetable(&timetableSave);
     SaveTimetable("timetables/save.json", &timetableSave);
 

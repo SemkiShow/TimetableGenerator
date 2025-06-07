@@ -46,7 +46,7 @@ void Save(std::string fileName)
     settingsFile.close();
 
     // Save timetable
-    if (currentTimetable.name != "") SaveTimetable("templates/" + currentTimetable.name + ".json", &currentTimetable);
+    SaveTimetable("templates/" + currentTimetable.name + ".json", &currentTimetable);
 }
 
 void Load(std::string fileName)
@@ -69,11 +69,4 @@ void Load(std::string fileName)
         if (label == "merged-font") mergedFont = value == "true";
     }
     settingsFile.close();
-
-    classrooms = "";
-    for (int i = 0; i < currentTimetable.classrooms.size(); i++)
-    {
-        classrooms += currentTimetable.classrooms[i].name;
-        if (i < currentTimetable.classrooms.size()-1) classrooms += "\n";
-    }
 }

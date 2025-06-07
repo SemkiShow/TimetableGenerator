@@ -1,10 +1,13 @@
 #include "Timetable.hpp"
 #include "JSON.hpp"
+#include "UI.hpp"
 
 Timetable currentTimetable;
 
 void SaveTimetable(std::string path, Timetable* timetable)
 {
+    if (timetable->name == "") return;
+
     JSONObject jsonObject;
     jsonObject.type = JSON_OBJECT;
 
@@ -231,6 +234,14 @@ void LoadTimetable(std::string path, Timetable* timetable)
             }
         }
         i++;
+    }
+
+    // UI-related setup
+    classrooms = "";
+    for (int i = 0; i < timetable->classrooms.size(); i++)
+    {
+        classrooms += timetable->classrooms[i].name;
+        if (i < timetable->classrooms.size()-1) classrooms += "\n";
     }
 }
 
