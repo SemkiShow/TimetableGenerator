@@ -4,6 +4,7 @@
 
 bool vsync = true;
 bool mergedFont = false;
+int timetableAutosaveInterval = 60;
 
 std::vector<std::string> Split(std::string input, char delimiter)
 {
@@ -43,6 +44,7 @@ void Save(std::string fileName)
     settingsFile << "vsync=" << (vsync ? "true" : "false") << '\n';
     settingsFile << "last-timetable=" << currentTimetable.name << '\n';
     settingsFile << "merged-font=" << (mergedFont ? "true" : "false") << '\n';
+    settingsFile << "timetable-autosave-interval=" << timetableAutosaveInterval << '\n';
     settingsFile.close();
 
     // Save timetable
@@ -67,6 +69,7 @@ void Load(std::string fileName)
             LoadTimetable("templates/" + value + ".json", &currentTimetable);
         }
         if (label == "merged-font") mergedFont = value == "true";
+        if (label == "timetable-autosave-interval") timetableAutosaveInterval = stoi(value);
     }
     settingsFile.close();
 }

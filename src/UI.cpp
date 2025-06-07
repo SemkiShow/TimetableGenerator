@@ -8,6 +8,8 @@ bool isClassrooms = false;
 int menuOffset = 20;
 int windowSize[2] = {16*50*2, 9*50*2};
 
+int timetableSaveTimer = GetTime();
+
 bool lastVsync = vsync;
 bool lastMergedFont = mergedFont;
 
@@ -72,6 +74,12 @@ void DrawFrame()
         ImGuiFileDialog::Instance()->Close();
     }
 
+    if (GetTime() - timetableSaveTimer > timetableAutosaveInterval)
+    {
+        timetableSaveTimer = GetTime();
+        SaveTimetable("templates/" + currentTimetable.name + ".json", &currentTimetable);
+    }
+
     if (lastVsync != vsync)
     {
         lastVsync = vsync;
@@ -96,6 +104,7 @@ void ShowSettings(bool* isOpen)
     {
         ImGui::Checkbox("vsync", &vsync);
         ImGui::Checkbox("merged-font", &mergedFont);
+        ImGui::DragInt("timetable-autosave-interval", &timetableAutosaveInterval, 1.0f, 0, 600);
         ImGui::TreePop();
     }
     ImGui::End();
