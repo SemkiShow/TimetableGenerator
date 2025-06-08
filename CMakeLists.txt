@@ -56,7 +56,7 @@ FetchContent_MakeAvailable(ImGuiFileDialog)
 target_link_libraries(ImGuiFileDialog PRIVATE imgui)
 
 # Our Project
-file(GLOB SOURCES src/*.cpp)
+file(GLOB_RECURSE SOURCES src/*.cpp)
 
 add_executable(main ${SOURCES})
 target_include_directories(main PRIVATE include/)
