@@ -18,12 +18,13 @@ int timetableSaveTimer = GetTime();
 
 bool lastVsync = vsync;
 bool lastMergedFont = mergedFont;
+int lastFontSize = fontSize;
 
 void LoadFonts()
 {
     ImGuiIO& io = ImGui::GetIO();
     io.Fonts->Clear();
-    io.Fonts->AddFontDefault();
+    ImFont* defaultFont = io.Fonts->AddFontFromFileTTF("resources/ProggyClean.ttf", (float)fontSize);
     ImFontGlyphRangesBuilder builder;
     builder.AddRanges(io.Fonts->GetGlyphRangesCyrillic());
     builder.AddRanges(io.Fonts->GetGlyphRangesVietnamese());
@@ -33,7 +34,7 @@ void LoadFonts()
     ImFontConfig fontConfig;
     fontConfig.MergeMode = mergedFont;
     fontConfig.PixelSnapH = true;
-    ImFont* font = io.Fonts->AddFontFromFileTTF("resources/DroidSansMono.ttf", 13.0f, &fontConfig, glyphRanges.Data);
+    ImFont* font = io.Fonts->AddFontFromFileTTF("resources/DroidSansMono.ttf", (float)fontSize, &fontConfig, glyphRanges.Data);
     io.Fonts->TexID = 0;
     io.Fonts->Build();
     rlImGuiReloadFonts();
@@ -54,6 +55,7 @@ void ShowSettings(bool* isOpen)
         ImGui::Checkbox("vsync", &vsync);
         ImGui::Checkbox("merged-font", &mergedFont);
         ImGui::DragInt("timetable-autosave-interval", &timetableAutosaveInterval, 1.0f, 0, 600);
+        ImGui::InputInt("font-size", &fontSize);
         ImGui::TreePop();
     }
     ImGui::End();
@@ -123,9 +125,11 @@ void DrawFrame()
 {
     BeginDrawing();
 
-    if (lastMergedFont != mergedFont)
+    if (lastMergedFont != mergedFont || lastFontSize != fontSize)
     {
         lastMergedFont = mergedFont;
+        fontSize = std::max(5, fontSize);
+        lastFontSize = fontSize;
         LoadFonts();
     }
     rlImGuiBegin();

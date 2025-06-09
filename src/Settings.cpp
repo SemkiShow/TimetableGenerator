@@ -6,6 +6,7 @@ bool vsync = true;
 bool mergedFont = false;
 int timetableAutosaveInterval = 60;
 int lessonsPerDay = 8;
+int fontSize = 16;
 
 std::vector<std::string> Split(std::string input, char delimiter)
 {
@@ -47,6 +48,7 @@ void Save(std::string fileName)
     settingsFile << "merged-font=" << (mergedFont ? "true" : "false") << '\n';
     settingsFile << "timetable-autosave-interval=" << timetableAutosaveInterval << '\n';
     settingsFile << "lessons-per-day=" << lessonsPerDay << '\n';
+    settingsFile << "font-size=" << fontSize << '\n';
     settingsFile.close();
 
     // Save timetable
@@ -73,6 +75,7 @@ void Load(std::string fileName)
         if (label == "merged-font") mergedFont = value == "true";
         if (label == "timetable-autosave-interval") timetableAutosaveInterval = stoi(value);
         if (label == "lessons-per-day") lessonsPerDay = stoi(value);
+        if (label == "font-size") fontSize = stoi(value);
     }
     settingsFile.close();
 }
