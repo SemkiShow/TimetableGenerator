@@ -78,6 +78,15 @@ void ShowMenuBar()
                 config.path = "templates";
                 ImGuiFileDialog::Instance()->OpenDialog("Choose Template", "Choose File", ".json", config);
             }
+            if (ImGui::MenuItem("Save"))
+                SaveTimetable("templates/" + currentTimetable.name + ".json", &currentTimetable);
+            if (ImGui::MenuItem("Save As"))
+            {
+                IGFD::FileDialogConfig config;
+                config.path = "templates";
+                config.flags = ImGuiFileDialogFlags_ConfirmOverwrite;
+                ImGuiFileDialog::Instance()->OpenDialog("Save Template As", "Save File As", ".json", config);
+            }
             if (ImGui::MenuItem("Settings")) isSettings = true;
             ImGui::EndMenu();
         }
@@ -152,6 +161,16 @@ void DrawFrame()
             currentTimetable = Timetable();
             LoadTimetable(filePathName, &currentTimetable);
             SaveTimetable(filePathName, &currentTimetable);
+        }
+        ImGuiFileDialog::Instance()->Close();
+    }
+    if (ImGuiFileDialog::Instance()->Display("Save Template As", ImGuiWindowFlags_NoCollapse, ImVec2(750.f, 500.f)))
+    {
+        if (ImGuiFileDialog::Instance()->IsOk())
+        {
+            std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+            SaveTimetable(filePathName, &currentTimetable);
+            LoadTimetable(filePathName, &currentTimetable);
         }
         ImGuiFileDialog::Instance()->Close();
     }
