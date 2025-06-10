@@ -5,6 +5,7 @@
 #include <random>
 #include <ctime>
 #include <filesystem>
+#include <map>
 
 struct WorkDay
 {
@@ -18,45 +19,56 @@ struct Classroom
 
 struct Lesson
 {
-    std::string id = "";
     std::string name = "";
-    std::vector<std::string> classNames;
-    std::vector<Classroom*> classrooms;
+    std::vector<int> classIDs;
+    std::vector<int> classroomIDs;
 };
 
 struct Teacher
 {
     std::string name = "";
-    std::vector<Lesson*> lessons;
+    std::vector<int> lessonIDs;
     WorkDay workDays[7];
+};
+
+struct LessonTeacherPair
+{
+    int lessonID = -1;
+    int teacherID = -1;
 };
 
 struct TimetableLesson
 {
-    std::vector<Lesson*> lessons;
-    std::vector<Teacher*> teachers;
+    int amount = 1;
+    std::vector<LessonTeacherPair> lessonTeacherPairs;
 };
 
 struct Day
 {
-    std::vector<TimetableLesson> lessons;
+    std::vector<int> lessonNumbers;
+    std::vector<int> timetableLessonIDs;
 };
 
 struct Class
 {
-    std::string number = "0";
+    std::string number = "-1";
     std::string letter = "";
-    Teacher* teacher;
+    int teacherID = -1;
+    std::map<int, TimetableLesson> timetableLessons;
     Day days[7];
 };
 
 struct Timetable
 {
     std::string name = "";
-    std::vector<Classroom> classrooms;
-    std::vector<Lesson> lessons;
-    std::vector<Teacher> teachers;
-    std::vector<Class> classes;
+    int maxClassroomID = -1;
+    int maxLessonID = -1;
+    int maxTeacherID = -1;
+    int maxClassID = -1;
+    std::map<int, Classroom> classrooms;
+    std::map<int, Lesson> lessons;
+    std::map<int, Teacher> teachers;
+    std::map<int, Class> classes;
 };
 
 extern Timetable currentTimetable;
@@ -64,5 +76,6 @@ extern Timetable tmpTimetable;
 extern Timetable tmpTmpTimetable;
 
 void SaveTimetable(std::string path, Timetable* timetable);
+std::string ExtractNumberFromBeginning(std::string input);
 void LoadTimetable(std::string path, Timetable* timetable);
 void GenerateRandomTimetable(Timetable* timetable);

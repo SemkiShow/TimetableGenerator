@@ -19,8 +19,8 @@ void ShowClassrooms(bool* isOpen)
         for (int i = 0; i < classroomsVector.size(); i++)
         {
             if (classroomsVector[i] == "") continue;
-            currentTimetable.classrooms.push_back(Classroom());
-            currentTimetable.classrooms[currentTimetable.classrooms.size()-1].name = classroomsVector[i];
+            currentTimetable.classrooms[i] = Classroom();
+            currentTimetable.classrooms[i].name = classroomsVector[i];
         }
         *isOpen = false;
     }

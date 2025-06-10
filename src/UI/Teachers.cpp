@@ -2,14 +2,49 @@
 #include "Settings.hpp"
 #include "Timetable.hpp"
 
-bool isEditTeacher = false;
-int currentTeacherIndex = 0;
+int currentTeacherID = 0;
 bool newTeacher = false;
 bool allTeacherLessons = true;
-std::unordered_map<std::string, bool> teacherLessons;
+std::unordered_map<int, bool> teacherLessons;
 bool allAvailableTeacherLessonsVertical[7];
 std::vector<bool> allAvailableTeacherLessonsHorizontal;
 std::unordered_map<int, bool> availableTeacherLessons;
+
+static void ResetVariables()
+{
+    allTeacherLessons = false;
+    for (int i = 0; i < 7; i++)
+        allAvailableTeacherLessonsVertical[i] = true;
+    allAvailableTeacherLessonsHorizontal.clear();
+    for (int i = 0; i < lessonsPerDay; i++)
+        allAvailableTeacherLessonsHorizontal.push_back(true);
+    if (newTeacher)
+    {
+        for (int i = 0; i < 7; i++)
+        {
+            for (int j = 0; j < lessonsPerDay; j++)
+                tmpTimetable.teachers[currentTeacherID].workDays[i].lessonNumbers.push_back(j);
+        }
+    }
+    teacherLessons.clear();
+    for (auto& lesson: tmpTimetable.lessons)
+        teacherLessons[lesson.first] = false;
+    for (int i = 0; i < tmpTimetable.teachers[currentTeacherID].lessonIDs.size(); i++)
+        teacherLessons[tmpTimetable.teachers[currentTeacherID].lessonIDs[i]] = true;
+    availableTeacherLessons.clear();
+    for (int i = 0; i < 7; i++)
+    {
+        for (int j = 0; j < lessonsPerDay; j++)
+            availableTeacherLessons[i*lessonsPerDay+j] = newTeacher;
+    }
+    for (int i = 0; i < 7; i++)
+    {
+        for (int j = 0; j < tmpTimetable.teachers[currentTeacherID].workDays[i].lessonNumbers.size(); j++)
+            availableTeacherLessons[i*lessonsPerDay + tmpTimetable.teachers[currentTeacherID].workDays[i].lessonNumbers[j]] = true;
+    }
+}
+
+bool isEditTeacher = false;
 void ShowEditTeacher(bool* isOpen)
 {
     if (!ImGui::Begin(((newTeacher ? "New" : "Edit") + std::string(" Teacher")).c_str(), isOpen))
@@ -17,36 +52,37 @@ void ShowEditTeacher(bool* isOpen)
         ImGui::End();
         return;
     }
-    ImGui::InputText("name", &tmpTmpTimetable.teachers[currentTeacherIndex].name);
+    ImGui::InputText("name", &tmpTmpTimetable.teachers[currentTeacherID].name);
     ImGui::Separator();
     ImGui::Text("lessons");
     if (ImGui::Checkbox((allTeacherLessons ? "Deselect all##1" : "Select all##1"), &allTeacherLessons))
     {
-        for (int i = 0; i < tmpTmpTimetable.lessons.size(); i++)
-            teacherLessons[tmpTmpTimetable.lessons[i].id] = allTeacherLessons;
+        for (auto& lesson: tmpTmpTimetable.lessons)
+            teacherLessons[lesson.first] = allTeacherLessons;
     }
     if (tmpTmpTimetable.lessons.size() == 0) ImGui::TextColored(ImVec4(255, 0, 0, 255), "You need to add lessons\nin the Lessons menu\nto select lessons for this teacher!");
     ImGui::Columns(3);
-    for (int i = 0; i < tmpTmpTimetable.lessons.size(); i++)
+    for (auto& lesson: tmpTmpTimetable.lessons)
     {
-        ImGui::PushID(i);
-        ImGui::Checkbox("", &teacherLessons[tmpTmpTimetable.lessons[i].id]);
+        ImGui::PushID(lesson.first);
+        ImGui::Checkbox("", &teacherLessons[lesson.first]);
         ImGui::SameLine();
-        ImGui::Text(tmpTmpTimetable.lessons[i].name.c_str());
+        ImGui::Text(tmpTmpTimetable.lessons[lesson.first].name.c_str());
         ImGui::NextColumn();
         std::string classNames = "";
-        for (int j = 0; j < tmpTmpTimetable.lessons[i].classNames.size(); j++)
+        for (int j = 0; j < tmpTmpTimetable.lessons[lesson.first].classIDs.size(); j++)
         {
-            classNames += tmpTmpTimetable.lessons[i].classNames[j];
-            if (j < tmpTmpTimetable.lessons[i].classNames.size()-1) classNames += ' ';
+            classNames += currentTimetable.classes[tmpTmpTimetable.lessons[lesson.first].classIDs[j]].number;
+            classNames += currentTimetable.classes[tmpTmpTimetable.lessons[lesson.first].classIDs[j]].letter;
+            if (j < tmpTmpTimetable.lessons[lesson.first].classIDs.size()-1) classNames += ' ';
         }
         ImGui::Text(classNames.c_str());
         ImGui::NextColumn();
         std::string lessonClassrooms = "";
-        for (int j = 0; j < tmpTmpTimetable.lessons[i].classrooms.size(); j++)
+        for (int j = 0; j < tmpTmpTimetable.lessons[lesson.first].classroomIDs.size(); j++)
         {
-            lessonClassrooms += tmpTmpTimetable.lessons[i].classrooms[j]->name;
-            if (j < tmpTmpTimetable.lessons[i].classrooms.size()-1) lessonClassrooms += ' ';
+            lessonClassrooms += currentTimetable.classrooms[tmpTmpTimetable.lessons[lesson.first].classroomIDs[j]].name;
+            if (j < tmpTmpTimetable.lessons[lesson.first].classroomIDs.size()-1) lessonClassrooms += ' ';
         }
         ImGui::Text(lessonClassrooms.c_str());
         ImGui::NextColumn();
@@ -67,18 +103,19 @@ void ShowEditTeacher(bool* isOpen)
             allAvailableTeacherLessonsHorizontal[i] = availableTeacherLessonsHorizontal;
             for (int j = 0; j < 7; j++)
             {
-                for (int k = 0; k < tmpTmpTimetable.teachers[currentTeacherIndex].workDays[j].lessonNumbers.size(); k++)
+                for (int k = 0; k < tmpTmpTimetable.teachers[currentTeacherID].workDays[j].lessonNumbers.size(); k++)
                 {
-                    if (tmpTmpTimetable.teachers[currentTeacherIndex].workDays[j].lessonNumbers[k] == i)
+                    if (tmpTmpTimetable.teachers[currentTeacherID].workDays[j].lessonNumbers[k] == i)
                     {
-                        tmpTmpTimetable.teachers[currentTeacherIndex].workDays[j].lessonNumbers.erase(
-                            tmpTmpTimetable.teachers[currentTeacherIndex].workDays[j].lessonNumbers.begin() + k);
+                        tmpTmpTimetable.teachers[currentTeacherID].workDays[j].lessonNumbers.erase(
+                            tmpTmpTimetable.teachers[currentTeacherID].workDays[j].lessonNumbers.begin() + k);
                         availableTeacherLessons[j*lessonsPerDay+i] = availableTeacherLessonsHorizontal;
+                        k--;
                     }
                 }
                 if (availableTeacherLessonsHorizontal)
                 {
-                    tmpTmpTimetable.teachers[currentTeacherIndex].workDays[j].lessonNumbers.push_back(i);
+                    tmpTmpTimetable.teachers[currentTeacherID].workDays[j].lessonNumbers.push_back(i);
                     availableTeacherLessons[j*lessonsPerDay+i] = availableTeacherLessonsHorizontal;
                 }
             }
@@ -107,29 +144,32 @@ void ShowEditTeacher(bool* isOpen)
     ImGui::Columns(1);
     if (ImGui::Button("Ok"))
     {
-        tmpTmpTimetable.teachers[currentTeacherIndex].lessons.clear();
-        for (int i = 0; i < tmpTmpTimetable.lessons.size(); i++)
+        tmpTmpTimetable.teachers[currentTeacherID].lessonIDs.clear();
+        for (auto& lesson: tmpTmpTimetable.lessons)
         {
-            if (teacherLessons[tmpTmpTimetable.lessons[i].id])
-                tmpTmpTimetable.teachers[currentTeacherIndex].lessons.push_back(&tmpTmpTimetable.lessons[i]);
+            if (teacherLessons[lesson.first])
+                tmpTmpTimetable.teachers[currentTeacherID].lessonIDs.push_back(lesson.first);
         }
         for (int i = 0; i < 7; i++)
         {
-            tmpTmpTimetable.teachers[currentTeacherIndex].workDays[i].lessonNumbers.clear();
+            tmpTmpTimetable.teachers[currentTeacherID].workDays[i].lessonNumbers.clear();
             for (int j = 0; j < lessonsPerDay; j++)
             {
                 if (availableTeacherLessons[i*lessonsPerDay+j])
-                    tmpTmpTimetable.teachers[currentTeacherIndex].workDays[i].lessonNumbers.push_back(j);
+                    tmpTmpTimetable.teachers[currentTeacherID].workDays[i].lessonNumbers.push_back(j);
             }
         }
-        tmpTimetable = tmpTmpTimetable;
+        tmpTimetable.teachers = tmpTmpTimetable.teachers;
         *isOpen = false;
     }
     ImGui::SameLine();
     if (ImGui::Button("Cancel"))
     {
-        if (newTeacher) tmpTimetable.teachers.pop_back();
-        tmpTmpTimetable = tmpTimetable;
+        if (newTeacher)
+        {
+            tmpTimetable.teachers.erase(currentTeacherID);
+            currentTimetable.maxTeacherID--;
+        }
         *isOpen = false;
     }
     ImGui::End();
@@ -145,94 +185,53 @@ void ShowTeachers(bool* isOpen)
     }
     if (ImGui::Button("+"))
     {
-        allTeacherLessons = false;
-        for (int j = 0; j < 7; j++)
-            allAvailableTeacherLessonsVertical[j] = true;
-        allAvailableTeacherLessonsHorizontal.clear();
-        for (int j = 0; j < lessonsPerDay; j++)
-            allAvailableTeacherLessonsHorizontal.push_back(true);
-        tmpTimetable.teachers.push_back(Teacher());
-        currentTeacherIndex = tmpTimetable.teachers.size()-1;
+        currentTimetable.maxTeacherID++;
+        tmpTimetable.teachers[currentTimetable.maxTeacherID] = Teacher();
+        currentTeacherID = currentTimetable.maxTeacherID;
         newTeacher = true;
-        teacherLessons.clear();
-        for (int i = 0; i < tmpTimetable.lessons.size(); i++)
-            teacherLessons[tmpTimetable.lessons[i].id] = false;
-        availableTeacherLessons.clear();
-        for (int i = 0; i < 7; i++)
-        {
-            tmpTimetable.teachers[currentTeacherIndex].workDays[i].lessonNumbers.clear();
-            for (int j = 0; j < lessonsPerDay; j++)
-            {
-                availableTeacherLessons[i*lessonsPerDay+j] = true;
-                tmpTimetable.teachers[currentTeacherIndex].workDays[i].lessonNumbers.push_back(j);
-            }
-        }
-        tmpTmpTimetable = tmpTimetable;
+        ResetVariables();
+        tmpTmpTimetable.teachers = tmpTimetable.teachers;
         isEditTeacher = true;
     }
     ImGui::Separator();
     ImGui::Columns(2);
-    for (int i = 0; i < tmpTimetable.teachers.size(); i++)
+    for (auto it = tmpTimetable.teachers.begin(); it != tmpTimetable.teachers.end();)
     {
-        ImGui::PushID(i);
+        ImGui::PushID(it->first);
         if (ImGui::Button("-"))
         {
-            tmpTimetable.teachers.erase(tmpTimetable.teachers.begin() + i);
-            if (i >= tmpTimetable.teachers.size())
-            {
-                ImGui::PopID();
-                continue;
-            }
-            tmpTmpTimetable = tmpTimetable;
+            ImGui::PopID();
+            it = tmpTimetable.teachers.erase(it);
+            continue;
         }
         ImGui::SameLine();
         if (ImGui::Button("Edit"))
         {
-            allTeacherLessons = false;
-            for (int j = 0; j < 7; j++)
-                allAvailableTeacherLessonsVertical[j] = true;
-            allAvailableTeacherLessonsHorizontal.clear();
-            for (int j = 0; j < lessonsPerDay; j++)
-                allAvailableTeacherLessonsHorizontal.push_back(true);
-            currentTeacherIndex = i;
+            currentTeacherID = it->first;
             newTeacher = false;
-            teacherLessons.clear();
-            for (int j = 0; j < tmpTimetable.lessons.size(); j++)
-                teacherLessons[tmpTimetable.lessons[j].id] = false;
-            for (int j = 0; j < tmpTimetable.teachers[i].lessons.size(); j++)
-                teacherLessons[tmpTimetable.teachers[i].lessons[j]->id] = true;
-            availableTeacherLessons.clear();
-            for (int j = 0; j < 7; j++)
-            {
-                for (int k = 0; k < lessonsPerDay; k++)
-                    availableTeacherLessons[j*lessonsPerDay+k] = false;
-            }
-            for (int j = 0; j < 7; j++)
-            {
-                for (int k = 0; k < tmpTimetable.teachers[currentTeacherIndex].workDays[j].lessonNumbers.size(); k++)
-                    availableTeacherLessons[j*lessonsPerDay + tmpTimetable.teachers[currentTeacherIndex].workDays[j].lessonNumbers[k]] = true;
-            }
-            tmpTmpTimetable = tmpTimetable;
+            ResetVariables();
+            tmpTmpTimetable.teachers = tmpTimetable.teachers;
             isEditTeacher = true;
         }
         ImGui::SameLine();
-        ImGui::Text(tmpTimetable.teachers[i].name.c_str());
+        ImGui::Text(it->second.name.c_str());
         ImGui::NextColumn();
         std::string lessonNames = "";
-        for (int j = 0; j < tmpTimetable.teachers[i].lessons.size(); j++)
+        for (int j = 0; j < tmpTimetable.teachers[it->first].lessonIDs.size(); j++)
         {
-            lessonNames += tmpTimetable.teachers[i].lessons[j]->name;
-            if (j < tmpTimetable.teachers[i].lessons.size()-1) lessonNames += ' ';
+            lessonNames += currentTimetable.lessons[tmpTimetable.teachers[it->first].lessonIDs[j]].name;
+            if (j < tmpTimetable.teachers[it->first].lessonIDs.size()-1) lessonNames += ' ';
         }
         ImGui::Text(lessonNames.c_str());
         ImGui::NextColumn();
         ImGui::PopID();
+        it++;
     }
     ImGui::Columns(1);
     ImGui::Separator();
     if (ImGui::Button("Ok"))
     {
-        currentTimetable = tmpTimetable;
+        currentTimetable.teachers = tmpTimetable.teachers;
         *isOpen = false;
     }
     ImGui::SameLine();

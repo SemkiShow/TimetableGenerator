@@ -57,6 +57,7 @@ target_link_libraries(ImGuiFileDialog PRIVATE imgui)
 
 # Our Project
 file(GLOB_RECURSE SOURCES src/*.cpp)
+list(FILTER SOURCES EXCLUDE REGEX src/UI/Classes.cpp)
 
 add_executable(main ${SOURCES})
 target_include_directories(main PRIVATE include/)

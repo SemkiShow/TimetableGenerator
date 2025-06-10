@@ -114,6 +114,14 @@ void ShowMenuBar()
                 tmpTimetable = currentTimetable;
                 isTeachers = true;
             }
+            // if (ImGui::MenuItem("Classes"))
+            // {
+            //     classTeacherValues = "";
+            //     for (int i = 0; i < currentTimetable.teachers.size(); i++)
+            //         classTeacherValues += currentTimetable.teachers[i].name + '\0';
+            //     tmpTimetable = currentTimetable;
+            //     isClasses = true;
+            // }
             ImGui::EndMenu();
         }
         ImGui::EndMainMenuBar();
@@ -145,6 +153,9 @@ void DrawFrame()
     if (isEditLesson) ShowEditLesson(&isEditLesson);
     if (isTeachers) ShowTeachers(&isTeachers);
     if (isEditTeacher) ShowEditTeacher(&isEditTeacher);
+    // if (isCombineLessons) ShowCombineLessons(&isCombineLessons);
+    // if (isClasses) ShowClasses(&isClasses);
+    // if (isEditClass) ShowEditClass(&isEditClass);
     if (ImGuiFileDialog::Instance()->Display("New Template", ImGuiWindowFlags_NoCollapse, ImVec2(750.f, 500.f)))
     {
         if (ImGuiFileDialog::Instance()->IsOk())

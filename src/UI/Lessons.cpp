@@ -2,14 +2,34 @@
 #include "Settings.hpp"
 #include "Timetable.hpp"
 
-bool isEditLesson = false;
-int currentLessonIndex = 0;
+static int currentLessonID = 0;
 bool newLesson = false;
 bool allLessonClasses = true;
 std::unordered_map<std::string, bool> lessonClassGroups;
-std::unordered_map<std::string, bool> lessonClasses;
+std::unordered_map<int, bool> lessonClasses;
 bool allLessonClassrooms = true;
-std::unordered_map<std::string, bool> lessonClassrooms;
+std::unordered_map<int, bool> lessonClassrooms;
+
+static void ResetVariables()
+{
+    allLessonClasses = allLessonClassrooms = true;
+    lessonClassGroups.clear();
+    lessonClasses.clear();
+    for (auto& classPair: currentTimetable.classes)
+    {
+        lessonClassGroups[classPair.second.number] = true;
+        lessonClasses[classPair.first] = newLesson;
+    }
+    for (int i = 0; i < tmpTimetable.lessons[currentLessonID].classIDs.size(); i++)
+        lessonClasses[tmpTimetable.lessons[currentLessonID].classIDs[i]] = true;
+    lessonClassrooms.clear();
+    for (auto& classroom: currentTimetable.classrooms)
+        lessonClassrooms[classroom.first] = newLesson;
+    for (int i = 0; i < tmpTimetable.lessons[currentLessonID].classroomIDs.size(); i++)
+        lessonClassrooms[tmpTimetable.lessons[currentLessonID].classroomIDs[i]] = true;
+}
+
+bool isEditLesson = false;
 void ShowEditLesson(bool* isOpen)
 {
     if (!ImGui::Begin(((newLesson ? "New" : "Edit") + std::string(" Lesson")).c_str(), isOpen))
@@ -17,73 +37,70 @@ void ShowEditLesson(bool* isOpen)
         ImGui::End();
         return;
     }
-    ImGui::InputText("name", &tmpTmpTimetable.lessons[currentLessonIndex].name);
+    ImGui::InputText("name", &tmpTmpTimetable.lessons[currentLessonID].name);
     ImGui::Columns(2);
     ImGui::Text("classes");
     if (ImGui::Checkbox((allLessonClasses ? "Deselect all##1" : "Select all##1"), &allLessonClasses))
     {
-        for (int i = 0; i < tmpTmpTimetable.classes.size(); i++)
+        for (auto& classPair: tmpTmpTimetable.classes)
         {
-            lessonClassGroups[tmpTmpTimetable.classes[i].number] = allLessonClasses;
-            lessonClasses[tmpTmpTimetable.classes[i].number + tmpTmpTimetable.classes[i].letter] = allLessonClasses;
+            lessonClassGroups[classPair.second.number] = allLessonClasses;
+            lessonClasses[classPair.first] = allLessonClasses;
         }
     }
     if (tmpTmpTimetable.classes.size() == 0) ImGui::TextColored(ImVec4(255, 0, 0, 255), "You need to add classes\nin the Classes menu\nto select classes for this lesson!");
     std::string lastClassNumber = "";
-    for (int i = 0; i < tmpTmpTimetable.classes.size(); i++)
+    for (auto& classPair: tmpTmpTimetable.classes)
     {
-        if (lastClassNumber != tmpTmpTimetable.classes[i].number)
+        if (lastClassNumber != classPair.second.number)
         {
-            lastClassNumber = tmpTmpTimetable.classes[i].number;
-            if (ImGui::Checkbox(tmpTmpTimetable.classes[i].number.c_str(), &lessonClassGroups[tmpTmpTimetable.classes[i].number]))
+            lastClassNumber = classPair.second.number;
+            if (ImGui::Checkbox(classPair.second.number.c_str(), &lessonClassGroups[classPair.second.number]))
             {
-                for (int j = 0; j < tmpTmpTimetable.classes.size(); j++)
+                for (auto& classPair2: tmpTmpTimetable.classes)
                 {
-                    if (tmpTmpTimetable.classes[j].number == tmpTmpTimetable.classes[i].number)
-                        lessonClasses[tmpTmpTimetable.classes[j].number + tmpTmpTimetable.classes[j].letter] =
-                            lessonClassGroups[tmpTmpTimetable.classes[i].number];
+                    if (classPair2.second.number == classPair.second.number)
+                        lessonClasses[classPair2.first] = lessonClassGroups[classPair.second.number];
                 }
             }
         }
         ImGui::Indent();
-        ImGui::Checkbox((tmpTmpTimetable.classes[i].number + tmpTmpTimetable.classes[i].letter).c_str(),
-            &lessonClasses[tmpTmpTimetable.classes[i].number + tmpTmpTimetable.classes[i].letter]);
+        ImGui::Checkbox((classPair.second.number + classPair.second.letter).c_str(), &lessonClasses[classPair.first]);
         ImGui::Unindent();
     }
     ImGui::NextColumn();
     ImGui::Text("classrooms");
     if (ImGui::Checkbox((allLessonClassrooms ? "Deselect all##2" : "Select all##2"), &allLessonClassrooms))
     {
-        for (int i = 0; i < tmpTmpTimetable.classrooms.size(); i++)
-            lessonClassrooms[tmpTmpTimetable.classrooms[i].name] = allLessonClassrooms;
+        for (auto& classroom: tmpTmpTimetable.classrooms)
+            lessonClassrooms[classroom.first] = allLessonClassrooms;
     }
     if (tmpTmpTimetable.classrooms.size() == 0) ImGui::TextColored(ImVec4(255, 0, 0, 255), "You need to add classrooms\nin the Classrooms menu\nto select classrooms for this lesson!");
-    for (int i = 0; i < tmpTmpTimetable.classrooms.size(); i++)
-        ImGui::Checkbox(tmpTmpTimetable.classrooms[i].name.c_str(), &lessonClassrooms[tmpTmpTimetable.classrooms[i].name]);
+    for (auto& classroom: tmpTmpTimetable.classrooms)
+        ImGui::Checkbox(classroom.second.name.c_str(), &lessonClassrooms[classroom.first]);
     ImGui::NextColumn();
     ImGui::Columns(1);
     if (ImGui::Button("Ok"))
     {
-        tmpTmpTimetable.lessons[currentLessonIndex].classNames.clear();
-        for (int i = 0; i < tmpTmpTimetable.classes.size(); i++)
+        tmpTmpTimetable.lessons[currentLessonID].classIDs.clear();
+        for (auto& classPair: tmpTmpTimetable.classes)
         {
-            if (lessonClasses[tmpTmpTimetable.classes[i].number + tmpTmpTimetable.classes[i].letter])
-                tmpTmpTimetable.lessons[currentLessonIndex].classNames.push_back(tmpTmpTimetable.classes[i].number + tmpTmpTimetable.classes[i].letter);
+            if (lessonClasses[classPair.first])
+                tmpTmpTimetable.lessons[currentLessonID].classIDs.push_back(classPair.first);
         }
-        tmpTmpTimetable.lessons[currentLessonIndex].classrooms.clear();
-        for (int i = 0; i < tmpTmpTimetable.classrooms.size(); i++)
+        tmpTmpTimetable.lessons[currentLessonID].classroomIDs.clear();
+        for (auto& classroom: tmpTmpTimetable.classrooms)
         {
-            if (lessonClassrooms[tmpTmpTimetable.classrooms[i].name])
-                tmpTmpTimetable.lessons[currentLessonIndex].classrooms.push_back(&tmpTmpTimetable.classrooms[i]);
+            if (lessonClassrooms[classroom.first])
+                tmpTmpTimetable.lessons[currentLessonID].classroomIDs.push_back(classroom.first);
         }
-        tmpTimetable = tmpTmpTimetable;
+        tmpTimetable.lessons = tmpTmpTimetable.lessons;
         *isOpen = false;
     }
     ImGui::SameLine();
     if (ImGui::Button("Cancel"))
     {
-        if (newLesson) tmpTimetable.lessons.pop_back();
-        tmpTmpTimetable = tmpTimetable;
+        if (newLesson) tmpTimetable.lessons.erase(currentLessonID);
         *isOpen = false;
     }
     ImGui::End();
@@ -99,94 +116,62 @@ void ShowLessons(bool* isOpen)
     }
     if (ImGui::Button("+"))
     {
-        allLessonClasses = allLessonClassrooms = true;
-        int maxLessonID = 0;
-        for (int i = 0; i < tmpTimetable.lessons.size(); i++)
-        {
-            if (stoi(tmpTimetable.lessons[i].id) > maxLessonID)
-                maxLessonID = stoi(tmpTimetable.lessons[i].id);
-        }
-        tmpTimetable.lessons.push_back(Lesson());
-        currentLessonIndex = tmpTimetable.lessons.size()-1;
-        tmpTimetable.lessons[currentLessonIndex].id = std::to_string(maxLessonID+1);
+        currentTimetable.maxLessonID++;
+        tmpTimetable.lessons[currentTimetable.maxLessonID] = Lesson();
+        currentLessonID = tmpTimetable.maxLessonID;
         newLesson = true;
-        lessonClassGroups.clear();
-        lessonClasses.clear();
-        for (int i = 0; i < tmpTimetable.classes.size(); i++)
-        {
-            lessonClassGroups[tmpTimetable.classes[i].number] = true;
-            lessonClasses[tmpTimetable.classes[i].number + tmpTimetable.classes[i].letter] = true;
-        }
-        lessonClassrooms.clear();
-        for (int i = 0; i < tmpTimetable.classrooms.size(); i++)
-            lessonClassrooms[tmpTimetable.classrooms[i].name] = true;
-        tmpTmpTimetable = tmpTimetable;
+        ResetVariables();
+        tmpTmpTimetable.lessons = tmpTimetable.lessons;
         isEditLesson = true;
     }
     ImGui::Separator();
     ImGui::Columns(3);
-    for (int i = 0; i < tmpTimetable.lessons.size(); i++)
+    for (auto it = tmpTimetable.lessons.begin(); it != tmpTimetable.lessons.end();)
     {
-        ImGui::PushID(i);
+        ImGui::PushID(it->first);
         if (ImGui::Button("-"))
         {
-            tmpTimetable.lessons.erase(tmpTimetable.lessons.begin() + i);
-            if (i >= tmpTimetable.lessons.size())
-            {
-                ImGui::PopID();
-                continue;
-            }
-            tmpTmpTimetable = tmpTimetable;
+            ImGui::PopID();
+            it = tmpTimetable.lessons.erase(it);
+            continue;
         }
         ImGui::SameLine();
         if (ImGui::Button("Edit"))
         {
-            allLessonClasses = allLessonClassrooms = true;
-            currentLessonIndex = i;
+            currentLessonID = it->first;
             newLesson = false;
-            lessonClassGroups.clear();
-            lessonClasses.clear();
-            for (int i = 0; i < tmpTimetable.classes.size(); i++)
-            {
-                lessonClassGroups[tmpTimetable.classes[i].number] = true;
-                lessonClasses[tmpTimetable.classes[i].number + tmpTimetable.classes[i].letter] = false;
-            }
-            for (int j = 0; j < tmpTimetable.lessons[i].classNames.size(); j++)
-                lessonClasses[tmpTimetable.lessons[i].classNames[j]] = true;
-            lessonClassrooms.clear();
-            for (int j = 0; j < tmpTimetable.classrooms.size(); j++)
-                lessonClassrooms[tmpTimetable.classrooms[j].name] = false;
-            for (int j = 0; j < tmpTimetable.lessons[i].classrooms.size(); j++)
-                lessonClassrooms[tmpTimetable.lessons[i].classrooms[j]->name] = true;
-            tmpTmpTimetable = tmpTimetable;
+            ResetVariables();
+            tmpTmpTimetable.lessons = tmpTimetable.lessons;
             isEditLesson = true;
         }
         ImGui::SameLine();
-        ImGui::Text(tmpTimetable.lessons[i].name.c_str());
+        ImGui::Text(it->second.name.c_str());
         ImGui::NextColumn();
         std::string classNames = "";
-        for (int j = 0; j < tmpTimetable.lessons[i].classNames.size(); j++)
+        for (int i = 0; i < it->second.classIDs.size(); i++)
         {
-            classNames += tmpTimetable.lessons[i].classNames[j];
-            if (j < tmpTimetable.lessons[i].classNames.size()-1) classNames += ' ';
+            classNames += currentTimetable.classes[it->second.classIDs[i]].number;
+            classNames += currentTimetable.classes[it->second.classIDs[i]].letter;
+            if (i < it->second.classIDs.size()-1) classNames += ' ';
         }
         ImGui::Text(classNames.c_str());
         ImGui::NextColumn();
         std::string lessonClassrooms = "";
-        for (int j = 0; j < tmpTimetable.lessons[i].classrooms.size(); j++)
+        for (int i = 0; i < it->second.classroomIDs.size(); i++)
         {
-            lessonClassrooms += tmpTimetable.lessons[i].classrooms[j]->name;
-            if (j < tmpTimetable.lessons[i].classrooms.size()-1) lessonClassrooms += ' ';
+            lessonClassrooms += currentTimetable.classrooms[it->second.classroomIDs[i]].name;
+            if (i < it->second.classroomIDs.size()-1) lessonClassrooms += ' ';
         }
         ImGui::Text(lessonClassrooms.c_str());
         ImGui::NextColumn();
         ImGui::PopID();
+        it++;
     }
     ImGui::Columns(1);
     ImGui::Separator();
     if (ImGui::Button("Ok"))
     {
-        currentTimetable = tmpTimetable;
+        currentTimetable.lessons = tmpTimetable.lessons;
         *isOpen = false;
     }
     ImGui::SameLine();
