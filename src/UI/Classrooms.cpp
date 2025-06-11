@@ -33,6 +33,7 @@ void ShowEditClassroom(bool* isOpen)
     {
         ImGui::InputText("name", &tmpTmpTimetable.classrooms[currentClassroomID].name);
     }
+    ImGui::Separator();
     if (ImGui::Button("Ok"))
     {
         if (newClassroom)
@@ -64,7 +65,7 @@ void ShowClassrooms(bool* isOpen)
     if (ImGui::Button("+"))
     {
         newClassroom = true;
-        classroomsStartNumber = classroomsEndNumber = stoi(tmpTimetable.classrooms[currentTimetable.maxClassID].name);
+        classroomsStartNumber = classroomsEndNumber = stoi(tmpTimetable.classrooms[currentTimetable.maxClassroomID].name)+1;
         classroomsAmount = 1;
         isEditClassroom = true;
     }
@@ -89,6 +90,7 @@ void ShowClassrooms(bool* isOpen)
         ImGui::PopID();
         it++;
     }
+    ImGui::Separator();
     if (ImGui::Button("Ok"))
     {
         currentTimetable.classrooms = tmpTimetable.classrooms;
