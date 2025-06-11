@@ -168,7 +168,7 @@ void ShowEditTeacher(bool* isOpen)
         if (newTeacher)
         {
             tmpTimetable.teachers.erase(currentTeacherID);
-            currentTimetable.maxTeacherID--;
+            tmpTimetable.maxTeacherID--;
         }
         *isOpen = false;
     }
@@ -185,9 +185,9 @@ void ShowTeachers(bool* isOpen)
     }
     if (ImGui::Button("+"))
     {
-        currentTimetable.maxTeacherID++;
-        tmpTimetable.teachers[currentTimetable.maxTeacherID] = Teacher();
-        currentTeacherID = currentTimetable.maxTeacherID;
+        tmpTimetable.maxTeacherID++;
+        tmpTimetable.teachers[tmpTimetable.maxTeacherID] = Teacher();
+        currentTeacherID = tmpTimetable.maxTeacherID;
         newTeacher = true;
         ResetVariables();
         tmpTmpTimetable.teachers = tmpTimetable.teachers;
@@ -232,6 +232,7 @@ void ShowTeachers(bool* isOpen)
     if (ImGui::Button("Ok"))
     {
         currentTimetable.teachers = tmpTimetable.teachers;
+        currentTimetable.maxTeacherID = tmpTimetable.maxTeacherID;
         *isOpen = false;
     }
     ImGui::SameLine();

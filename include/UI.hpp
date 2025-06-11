@@ -16,9 +16,9 @@ extern bool isEditLesson;
 extern bool isLessons;
 extern bool isEditTeacher;
 extern bool isTeachers;
-// extern bool isCombineLessons;
-// extern bool isEditClass;
-// extern bool isClasses;
+extern bool isCombineLessons;
+extern bool isEditClass;
+extern bool isClasses;
 
 void ShowEditClassroom(bool* isOpen);
 void ShowClassrooms(bool* isOpen);
@@ -26,9 +26,9 @@ void ShowEditLesson(bool* isOpen);
 void ShowLessons(bool* isOpen);
 void ShowEditTeacher(bool* isOpen);
 void ShowTeachers(bool* isOpen);
-// void ShowCombineLessons(bool* isOpen);
-// void ShowEditClass(bool* isOpen);
-// void ShowClasses(bool* isOpen);
+void ShowCombineLessons(bool* isOpen);
+void ShowEditClass(bool* isOpen);
+void ShowClasses(bool* isOpen);
 
 void LoadFonts();
 void DrawFrame();

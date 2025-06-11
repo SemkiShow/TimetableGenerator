@@ -69,6 +69,7 @@ struct Timetable
     std::map<int, Lesson> lessons;
     std::map<int, Teacher> teachers;
     std::map<int, Class> classes;
+    std::vector<int> orderedClasses;
 };
 
 extern Timetable currentTimetable;

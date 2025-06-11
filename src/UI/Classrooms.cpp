@@ -40,9 +40,9 @@ void ShowEditClassroom(bool* isOpen)
         {
             for (int i = classroomsStartNumber; i <= classroomsEndNumber; i++)
             {
-                currentTimetable.maxClassroomID++;
-                tmpTmpTimetable.classrooms[currentTimetable.maxClassroomID] = Classroom();
-                tmpTmpTimetable.classrooms[currentTimetable.maxClassroomID].name = std::to_string(i);
+                tmpTimetable.maxClassroomID++;
+                tmpTmpTimetable.classrooms[tmpTimetable.maxClassroomID] = Classroom();
+                tmpTmpTimetable.classrooms[tmpTimetable.maxClassroomID].name = std::to_string(i);
             }
         }
         tmpTimetable.classrooms = tmpTmpTimetable.classrooms;
@@ -65,7 +65,7 @@ void ShowClassrooms(bool* isOpen)
     if (ImGui::Button("+"))
     {
         newClassroom = true;
-        classroomsStartNumber = classroomsEndNumber = stoi(tmpTimetable.classrooms[currentTimetable.maxClassroomID].name)+1;
+        classroomsStartNumber = classroomsEndNumber = stoi(tmpTimetable.classrooms[tmpTimetable.maxClassroomID].name)+1;
         classroomsAmount = 1;
         isEditClassroom = true;
     }
@@ -94,6 +94,7 @@ void ShowClassrooms(bool* isOpen)
     if (ImGui::Button("Ok"))
     {
         currentTimetable.classrooms = tmpTimetable.classrooms;
+        currentTimetable.maxClassroomID = tmpTimetable.maxClassroomID;
         *isOpen = false;
     }
     ImGui::SameLine();

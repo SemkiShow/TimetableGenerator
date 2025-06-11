@@ -97,26 +97,31 @@ void ShowMenuBar()
             if (ImGui::MenuItem("Classrooms"))
             {
                 tmpTimetable.classrooms = currentTimetable.classrooms;
+                tmpTimetable.maxClassroomID = currentTimetable.maxClassroomID;
                 isClassrooms = true;
             }
             if (ImGui::MenuItem("Lessons"))
             {
-                tmpTimetable = currentTimetable;
+                tmpTimetable.lessons = currentTimetable.lessons;
+                tmpTimetable.maxLessonID = currentTimetable.maxLessonID;
                 isLessons = true;
             }
             if (ImGui::MenuItem("Teachers"))
             {
-                tmpTimetable = currentTimetable;
+                tmpTimetable.teachers = currentTimetable.teachers;
+                tmpTimetable.maxTeacherID = currentTimetable.maxTeacherID;
                 isTeachers = true;
             }
-            // if (ImGui::MenuItem("Classes"))
-            // {
-            //     classTeacherValues = "";
-            //     for (int i = 0; i < currentTimetable.teachers.size(); i++)
-            //         classTeacherValues += currentTimetable.teachers[i].name + '\0';
-            //     tmpTimetable = currentTimetable;
-            //     isClasses = true;
-            // }
+            if (ImGui::MenuItem("Classes"))
+            {
+                classTeacherValues = "";
+                for (auto& teacher: currentTimetable.teachers)
+                    classTeacherValues += currentTimetable.teachers[teacher.first].name + '\0';
+                tmpTimetable.classes = currentTimetable.classes;
+                tmpTimetable.maxClassID = currentTimetable.maxClassID;
+                tmpTimetable.orderedClasses = currentTimetable.orderedClasses;
+                isClasses = true;
+            }
             ImGui::EndMenu();
         }
         ImGui::EndMainMenuBar();
@@ -145,13 +150,13 @@ void DrawFrame()
     if (isSettings) ShowSettings(&isSettings);
     if (isEditClassroom) ShowEditClassroom(&isEditClassroom);
     if (isClassrooms) ShowClassrooms(&isClassrooms);
-    if (isLessons) ShowLessons(&isLessons);
     if (isEditLesson) ShowEditLesson(&isEditLesson);
-    if (isTeachers) ShowTeachers(&isTeachers);
+    if (isLessons) ShowLessons(&isLessons);
     if (isEditTeacher) ShowEditTeacher(&isEditTeacher);
-    // if (isCombineLessons) ShowCombineLessons(&isCombineLessons);
-    // if (isClasses) ShowClasses(&isClasses);
-    // if (isEditClass) ShowEditClass(&isEditClass);
+    if (isTeachers) ShowTeachers(&isTeachers);
+    if (isCombineLessons) ShowCombineLessons(&isCombineLessons);
+    if (isEditClass) ShowEditClass(&isEditClass);
+    if (isClasses) ShowClasses(&isClasses);
     if (ImGuiFileDialog::Instance()->Display("New Template", ImGuiWindowFlags_NoCollapse, ImVec2(750.f, 500.f)))
     {
         if (ImGuiFileDialog::Instance()->IsOk())

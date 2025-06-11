@@ -261,6 +261,24 @@ void LoadTimetable(std::string path, Timetable* timetable)
         }
     }
 
+    std::map<int, Class> tmpClasses = timetable->classes;
+    int classesLeft = tmpClasses.size();
+    while (tmpClasses.size() > 0)
+    {
+        std::string number = tmpClasses.begin()->second.number;
+        for (auto it = tmpClasses.begin(); it != tmpClasses.end();)
+        {
+            if (it->second.number == number)
+            {
+                timetable->orderedClasses.push_back(it->first);
+                it = tmpClasses.erase(it);
+                std::cout << tmpClasses.size() << "\n";
+                continue;
+            }
+            it++;
+        }
+    }
+
     if (timetable == &currentTimetable) tmpTmpTimetable = tmpTimetable = currentTimetable;
 }
 

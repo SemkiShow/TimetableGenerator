@@ -116,8 +116,8 @@ void ShowLessons(bool* isOpen)
     }
     if (ImGui::Button("+"))
     {
-        currentTimetable.maxLessonID++;
-        tmpTimetable.lessons[currentTimetable.maxLessonID] = Lesson();
+        tmpTimetable.maxLessonID++;
+        tmpTimetable.lessons[tmpTimetable.maxLessonID] = Lesson();
         currentLessonID = tmpTimetable.maxLessonID;
         newLesson = true;
         ResetVariables();
@@ -172,6 +172,7 @@ void ShowLessons(bool* isOpen)
     if (ImGui::Button("Ok"))
     {
         currentTimetable.lessons = tmpTimetable.lessons;
+        currentTimetable.maxLessonID = tmpTimetable.maxLessonID;
         *isOpen = false;
     }
     ImGui::SameLine();
