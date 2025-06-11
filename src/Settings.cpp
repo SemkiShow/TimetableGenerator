@@ -8,6 +8,8 @@ int timetableAutosaveInterval = 60;
 int lessonsPerDay = 8;
 int fontSize = 16;
 
+std::string version;
+
 std::vector<std::string> Split(std::string input, char delimiter)
 {
     std::vector<std::string> output;
@@ -78,4 +80,8 @@ void Load(std::string fileName)
         if (label == "font-size") fontSize = stoi(value);
     }
     settingsFile.close();
+
+    std::ifstream versionFile("version.txt");
+    std::getline(versionFile, version);
+    versionFile.close();
 }

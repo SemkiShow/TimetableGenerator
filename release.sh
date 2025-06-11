@@ -14,7 +14,8 @@ cp build_win/bin/main.exe .
 
 # Zipping the build
 ./reset_save_files.sh
-zip release.zip main main.exe resources/* templates/ timetables/ LICENSE README.md settings.txt
+echo $1 > version.txt
+zip release.zip main main.exe resources/* templates/ timetables/ LICENSE README.md settings.txt version.txt
 rm main main.exe
 
 # Creating a GitHub release

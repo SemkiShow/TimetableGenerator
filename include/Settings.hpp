@@ -9,6 +9,8 @@ extern int timetableAutosaveInterval;
 extern int lessonsPerDay;
 extern int fontSize;
 
+extern std::string version;
+
 extern std::vector<std::string> timetables;
 extern std::vector<std::string> templates;
 

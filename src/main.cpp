@@ -29,7 +29,7 @@ int main()
     SetConfigFlags(flags);
 	#endif
 
-    InitWindow(windowSize[0], windowSize[1], "Timetable Generator");
+    InitWindow(windowSize[0], windowSize[1], ("Timetable Generator " + version).c_str());
     SetExitKey(-1);
 
     rlImGuiSetup(true);
