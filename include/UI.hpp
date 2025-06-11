@@ -9,8 +9,8 @@ extern int menuOffset;
 extern int windowSize[2];
 extern std::unordered_map<int, std::string> weekDays;
 
-extern std::string classrooms;
 extern std::string classTeacherValues;
+extern bool isEditClassroom;
 extern bool isClassrooms;
 extern bool isEditLesson;
 extern bool isLessons;
@@ -20,6 +20,7 @@ extern bool isTeachers;
 // extern bool isEditClass;
 // extern bool isClasses;
 
+void ShowEditClassroom(bool* isOpen);
 void ShowClassrooms(bool* isOpen);
 void ShowEditLesson(bool* isOpen);
 void ShowLessons(bool* isOpen);

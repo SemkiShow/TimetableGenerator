@@ -2,8 +2,58 @@
 #include "Settings.hpp"
 #include "Timetable.hpp"
 
+bool newClassroom = false;
+int currentClassroomID = 0;
+int classroomsStartNumber, classroomsEndNumber, classroomsAmount;
+
+bool isEditClassroom = false;
+void ShowEditClassroom(bool* isOpen)
+{
+    if (!ImGui::Begin(((newClassroom ? "New" : "Edit") + std::string(" Classroom")).c_str(), isOpen))
+    {
+        ImGui::End();
+        return;
+    }
+    if (newClassroom)
+    {
+        if (ImGui::InputInt("start-number", &classroomsStartNumber))
+        {
+            classroomsEndNumber = classroomsStartNumber + classroomsAmount - 1;
+        }
+        if (ImGui::InputInt("end-number", &classroomsEndNumber))
+        {
+            classroomsAmount = classroomsStartNumber - classroomsEndNumber + 1;
+        }
+        if (ImGui::InputInt("amount", &classroomsAmount))
+        {
+            classroomsEndNumber = classroomsStartNumber + classroomsAmount - 1;
+        }
+    }
+    else
+    {
+        ImGui::InputText("name", &tmpTmpTimetable.classrooms[currentClassroomID].name);
+    }
+    if (ImGui::Button("Ok"))
+    {
+        if (newClassroom)
+        {
+            for (int i = classroomsStartNumber; i <= classroomsEndNumber; i++)
+            {
+                currentTimetable.maxClassroomID++;
+                tmpTmpTimetable.classrooms[currentTimetable.maxClassroomID] = Classroom();
+                tmpTmpTimetable.classrooms[currentTimetable.maxClassroomID].name = std::to_string(i);
+            }
+        }
+        tmpTimetable.classrooms = tmpTmpTimetable.classrooms;
+        *isOpen = false;
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Cancel")) *isOpen = false;
+    ImGui::End();
+
+}
+
 bool isClassrooms = false;
-std::string classrooms = "";
 void ShowClassrooms(bool* isOpen)
 {
     if (!ImGui::Begin("Classrooms", isOpen))
@@ -11,17 +61,37 @@ void ShowClassrooms(bool* isOpen)
         ImGui::End();
         return;
     }
-    ImGui::InputTextMultiline("##", &classrooms);
+    if (ImGui::Button("+"))
+    {
+        newClassroom = true;
+        classroomsStartNumber = classroomsEndNumber = stoi(tmpTimetable.classrooms[currentTimetable.maxClassID].name);
+        classroomsAmount = 1;
+        isEditClassroom = true;
+    }
+    for (auto it = tmpTimetable.classrooms.begin(); it != tmpTimetable.classrooms.end();)
+    {
+        ImGui::PushID(it->first);
+        if (ImGui::Button("-"))
+        {
+            ImGui::PopID();
+            it = tmpTimetable.classrooms.erase(it);
+            continue;
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Edit"))
+        {
+            newClassroom = false;
+            currentClassroomID = it->first;
+            isEditClassroom = true;
+        }
+        ImGui::SameLine();
+        ImGui::LabelText("", it->second.name.c_str());
+        ImGui::PopID();
+        it++;
+    }
     if (ImGui::Button("Ok"))
     {
-        currentTimetable.classrooms.clear();
-        std::vector<std::string> classroomsVector = Split(classrooms, '\n');
-        for (int i = 0; i < classroomsVector.size(); i++)
-        {
-            if (classroomsVector[i] == "") continue;
-            currentTimetable.classrooms[i] = Classroom();
-            currentTimetable.classrooms[i].name = classroomsVector[i];
-        }
+        currentTimetable.classrooms = tmpTimetable.classrooms;
         *isOpen = false;
     }
     ImGui::SameLine();

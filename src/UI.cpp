@@ -96,12 +96,7 @@ void ShowMenuBar()
         {
             if (ImGui::MenuItem("Classrooms"))
             {
-                classrooms = "";
-                for (int i = 0; i < currentTimetable.classrooms.size(); i++)
-                {
-                    classrooms += currentTimetable.classrooms[i].name;
-                    if (i < currentTimetable.classrooms.size()-1) classrooms += "\n";
-                }
+                tmpTimetable.classrooms = currentTimetable.classrooms;
                 isClassrooms = true;
             }
             if (ImGui::MenuItem("Lessons"))
@@ -148,6 +143,7 @@ void DrawFrame()
 
     ShowMenuBar();
     if (isSettings) ShowSettings(&isSettings);
+    if (isEditClassroom) ShowEditClassroom(&isEditClassroom);
     if (isClassrooms) ShowClassrooms(&isClassrooms);
     if (isLessons) ShowLessons(&isLessons);
     if (isEditLesson) ShowEditLesson(&isEditLesson);
