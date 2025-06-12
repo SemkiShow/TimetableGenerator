@@ -27,7 +27,7 @@ static void ResetVariables()
         }
     }
     teacherLessons.clear();
-    for (auto& lesson: tmpTimetable.lessons)
+    for (auto& lesson: currentTimetable.lessons)
         teacherLessons[lesson.first] = false;
     for (int i = 0; i < tmpTimetable.teachers[currentTeacherID].lessonIDs.size(); i++)
         teacherLessons[tmpTimetable.teachers[currentTeacherID].lessonIDs[i]] = true;
@@ -57,32 +57,32 @@ void ShowEditTeacher(bool* isOpen)
     ImGui::Text("lessons");
     if (ImGui::Checkbox((allTeacherLessons ? "Deselect all##1" : "Select all##1"), &allTeacherLessons))
     {
-        for (auto& lesson: tmpTmpTimetable.lessons)
+        for (auto& lesson: currentTimetable.lessons)
             teacherLessons[lesson.first] = allTeacherLessons;
     }
-    if (tmpTmpTimetable.lessons.size() == 0) ImGui::TextColored(ImVec4(255, 0, 0, 255), "You need to add lessons\nin the Lessons menu\nto select lessons for this teacher!");
+    if (currentTimetable.lessons.size() == 0) ImGui::TextColored(ImVec4(255, 0, 0, 255), "You need to add lessons\nin the Lessons menu\nto select lessons for this teacher!");
     ImGui::Columns(3);
-    for (auto& lesson: tmpTmpTimetable.lessons)
+    for (auto& lesson: currentTimetable.lessons)
     {
         ImGui::PushID(lesson.first);
         ImGui::Checkbox("", &teacherLessons[lesson.first]);
         ImGui::SameLine();
-        ImGui::Text(tmpTmpTimetable.lessons[lesson.first].name.c_str());
+        ImGui::Text(lesson.second.name.c_str());
         ImGui::NextColumn();
         std::string classNames = "";
-        for (int j = 0; j < tmpTmpTimetable.lessons[lesson.first].classIDs.size(); j++)
+        for (int j = 0; j < lesson.second.classIDs.size(); j++)
         {
-            classNames += currentTimetable.classes[tmpTmpTimetable.lessons[lesson.first].classIDs[j]].number;
-            classNames += currentTimetable.classes[tmpTmpTimetable.lessons[lesson.first].classIDs[j]].letter;
-            if (j < tmpTmpTimetable.lessons[lesson.first].classIDs.size()-1) classNames += ' ';
+            classNames += currentTimetable.classes[lesson.second.classIDs[j]].number;
+            classNames += currentTimetable.classes[lesson.second.classIDs[j]].letter;
+            if (j < lesson.second.classIDs.size()-1) classNames += ' ';
         }
         ImGui::Text(classNames.c_str());
         ImGui::NextColumn();
         std::string lessonClassrooms = "";
-        for (int j = 0; j < tmpTmpTimetable.lessons[lesson.first].classroomIDs.size(); j++)
+        for (int j = 0; j < lesson.second.classroomIDs.size(); j++)
         {
-            lessonClassrooms += currentTimetable.classrooms[tmpTmpTimetable.lessons[lesson.first].classroomIDs[j]].name;
-            if (j < tmpTmpTimetable.lessons[lesson.first].classroomIDs.size()-1) lessonClassrooms += ' ';
+            lessonClassrooms += currentTimetable.classrooms[lesson.second.classroomIDs[j]].name;
+            if (j < lesson.second.classroomIDs.size()-1) lessonClassrooms += ' ';
         }
         ImGui::Text(lessonClassrooms.c_str());
         ImGui::NextColumn();
@@ -145,7 +145,7 @@ void ShowEditTeacher(bool* isOpen)
     if (ImGui::Button("Ok"))
     {
         tmpTmpTimetable.teachers[currentTeacherID].lessonIDs.clear();
-        for (auto& lesson: tmpTmpTimetable.lessons)
+        for (auto& lesson: currentTimetable.lessons)
         {
             if (teacherLessons[lesson.first])
                 tmpTmpTimetable.teachers[currentTeacherID].lessonIDs.push_back(lesson.first);

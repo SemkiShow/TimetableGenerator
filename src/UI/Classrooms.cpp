@@ -65,7 +65,14 @@ void ShowClassrooms(bool* isOpen)
     if (ImGui::Button("+"))
     {
         newClassroom = true;
-        classroomsStartNumber = classroomsEndNumber = stoi(tmpTimetable.classrooms[tmpTimetable.maxClassroomID].name)+1;
+        try
+        {
+            classroomsStartNumber = classroomsEndNumber = stoi(tmpTimetable.classrooms[tmpTimetable.maxClassroomID].name)+1;
+        }
+        catch (const std::exception&)
+        {
+
+        }
         classroomsAmount = 1;
         isEditClassroom = true;
     }

@@ -42,22 +42,22 @@ void ShowEditLesson(bool* isOpen)
     ImGui::Text("classes");
     if (ImGui::Checkbox((allLessonClasses ? "Deselect all##1" : "Select all##1"), &allLessonClasses))
     {
-        for (auto& classPair: tmpTmpTimetable.classes)
+        for (auto& classPair: currentTimetable.classes)
         {
             lessonClassGroups[classPair.second.number] = allLessonClasses;
             lessonClasses[classPair.first] = allLessonClasses;
         }
     }
-    if (tmpTmpTimetable.classes.size() == 0) ImGui::TextColored(ImVec4(255, 0, 0, 255), "You need to add classes\nin the Classes menu\nto select classes for this lesson!");
+    if (currentTimetable.classes.size() == 0) ImGui::TextColored(ImVec4(255, 0, 0, 255), "You need to add classes\nin the Classes menu\nto select classes for this lesson!");
     std::string lastClassNumber = "";
-    for (auto& classPair: tmpTmpTimetable.classes)
+    for (auto& classPair: currentTimetable.classes)
     {
         if (lastClassNumber != classPair.second.number)
         {
             lastClassNumber = classPair.second.number;
             if (ImGui::Checkbox(classPair.second.number.c_str(), &lessonClassGroups[classPair.second.number]))
             {
-                for (auto& classPair2: tmpTmpTimetable.classes)
+                for (auto& classPair2: currentTimetable.classes)
                 {
                     if (classPair2.second.number == classPair.second.number)
                         lessonClasses[classPair2.first] = lessonClassGroups[classPair.second.number];
@@ -72,10 +72,10 @@ void ShowEditLesson(bool* isOpen)
     ImGui::Text("classrooms");
     if (ImGui::Checkbox((allLessonClassrooms ? "Deselect all##2" : "Select all##2"), &allLessonClassrooms))
     {
-        for (auto& classroom: tmpTmpTimetable.classrooms)
+        for (auto& classroom: currentTimetable.classrooms)
             lessonClassrooms[classroom.first] = allLessonClassrooms;
     }
-    if (tmpTmpTimetable.classrooms.size() == 0) ImGui::TextColored(ImVec4(255, 0, 0, 255), "You need to add classrooms\nin the Classrooms menu\nto select classrooms for this lesson!");
+    if (currentTimetable.classrooms.size() == 0) ImGui::TextColored(ImVec4(255, 0, 0, 255), "You need to add classrooms\nin the Classrooms menu\nto select classrooms for this lesson!");
     for (auto& classroom: tmpTmpTimetable.classrooms)
         ImGui::Checkbox(classroom.second.name.c_str(), &lessonClassrooms[classroom.first]);
     ImGui::NextColumn();
@@ -83,13 +83,13 @@ void ShowEditLesson(bool* isOpen)
     if (ImGui::Button("Ok"))
     {
         tmpTmpTimetable.lessons[currentLessonID].classIDs.clear();
-        for (auto& classPair: tmpTmpTimetable.classes)
+        for (auto& classPair: currentTimetable.classes)
         {
             if (lessonClasses[classPair.first])
                 tmpTmpTimetable.lessons[currentLessonID].classIDs.push_back(classPair.first);
         }
         tmpTmpTimetable.lessons[currentLessonID].classroomIDs.clear();
-        for (auto& classroom: tmpTmpTimetable.classrooms)
+        for (auto& classroom: currentTimetable.classrooms)
         {
             if (lessonClassrooms[classroom.first])
                 tmpTmpTimetable.lessons[currentLessonID].classroomIDs.push_back(classroom.first);
