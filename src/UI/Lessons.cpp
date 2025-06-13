@@ -50,22 +50,22 @@ void ShowEditLesson(bool* isOpen)
     }
     if (currentTimetable.classes.size() == 0) ImGui::TextColored(ImVec4(255, 0, 0, 255), "You need to add classes\nin the Classes menu\nto select classes for this lesson!");
     std::string lastClassNumber = "";
-    for (auto& classPair: currentTimetable.classes)
+    for (int classID: currentTimetable.orderedClasses)
     {
-        if (lastClassNumber != classPair.second.number)
+        if (lastClassNumber != currentTimetable.classes[classID].number)
         {
-            lastClassNumber = classPair.second.number;
-            if (ImGui::Checkbox(classPair.second.number.c_str(), &lessonClassGroups[classPair.second.number]))
+            lastClassNumber = currentTimetable.classes[classID].number;
+            if (ImGui::Checkbox(currentTimetable.classes[classID].number.c_str(), &lessonClassGroups[currentTimetable.classes[classID].number]))
             {
-                for (auto& classPair2: currentTimetable.classes)
+                for (auto& classPair: currentTimetable.classes)
                 {
-                    if (classPair2.second.number == classPair.second.number)
-                        lessonClasses[classPair2.first] = lessonClassGroups[classPair.second.number];
+                    if (classPair.second.number == currentTimetable.classes[classID].number)
+                        lessonClasses[classPair.first] = lessonClassGroups[currentTimetable.classes[classID].number];
                 }
             }
         }
         ImGui::Indent();
-        ImGui::Checkbox((classPair.second.number + classPair.second.letter).c_str(), &lessonClasses[classPair.first]);
+        ImGui::Checkbox((currentTimetable.classes[classID].number + currentTimetable.classes[classID].letter).c_str(), &lessonClasses[classID]);
         ImGui::Unindent();
     }
     ImGui::NextColumn();

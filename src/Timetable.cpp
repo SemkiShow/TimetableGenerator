@@ -234,6 +234,8 @@ void LoadTimetable(std::string path, Timetable* timetable)
         timetable->classes[stoi(classPair.first)].teacherID = classPair.second.intPairs["teacherID"];
         for (auto& lesson : classPair.second.objectPairs["lessons"].objectPairs)
         {
+            if (stoi(lesson.first) > timetable->classes[stoi(classPair.first)].maxTimetableLessonID)
+                timetable->classes[stoi(classPair.first)].maxTimetableLessonID = stoi(lesson.first);
             timetable->classes[stoi(classPair.first)].timetableLessons[stoi(lesson.first)] = TimetableLesson();
             timetable->classes[stoi(classPair.first)].timetableLessons[stoi(lesson.first)].amount = lesson.second.ints[0];
             for (int i = 0; i < lesson.second.objects.size(); i++)
@@ -272,7 +274,7 @@ void LoadTimetable(std::string path, Timetable* timetable)
             {
                 timetable->orderedClasses.push_back(it->first);
                 it = tmpClasses.erase(it);
-                std::cout << tmpClasses.size() << "\n";
+                std::cout << "Adding items to the orderedClasses list... " << tmpClasses.size() << " items left\n";
                 continue;
             }
             it++;
@@ -368,7 +370,7 @@ void GenerateRandomTimetable(Timetable* timetable)
         for (int j = 0; j < 4; j++)
         {
             auto it = timetable->classes.begin();
-            std::advance(it, rand() % timetable->classes.size());
+            std::advance(it, rand() % (timetable->classes.size() - 1));
             timetable->lessons[i].classIDs.push_back(it->first);
         }
     }

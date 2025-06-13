@@ -54,6 +54,7 @@ struct Class
     std::string number = "-1";
     std::string letter = "";
     int teacherID = -1;
+    int maxTimetableLessonID = -1;
     std::map<int, TimetableLesson> timetableLessons;
     Day days[7];
 };

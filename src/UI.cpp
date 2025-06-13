@@ -116,7 +116,14 @@ void ShowMenuBar()
             {
                 classTeacherValues = "";
                 for (auto& teacher: currentTimetable.teachers)
-                    classTeacherValues += currentTimetable.teachers[teacher.first].name + '\0';
+                {
+                    if (teacher.second.name == "")
+                    {
+                        classTeacherValues += "test\0";
+                    }
+                    classTeacherValues += teacher.second.name + '\0';
+                }
+                classTeacherValues += '\0';
                 tmpTimetable.classes = currentTimetable.classes;
                 tmpTimetable.maxClassID = currentTimetable.maxClassID;
                 tmpTimetable.orderedClasses = currentTimetable.orderedClasses;
