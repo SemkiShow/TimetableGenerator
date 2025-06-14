@@ -2,10 +2,6 @@
 #include "UI.hpp"
 #include "Timetable.hpp"
 
-#if defined(PLATFORM_WEB)
-    #include <emscripten/emscripten.h>
-#endif
-
 int main()
 {
     srand(time(0));

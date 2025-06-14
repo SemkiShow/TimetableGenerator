@@ -64,25 +64,6 @@ target_compile_features(main PRIVATE cxx_std_17)
 set_target_properties(main PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 target_link_libraries(main raylib imgui rlimgui ImGuiFileDialog)
 
-# Web Configurations
-if ("${PLATFORM}" STREQUAL "Web")
-    # Tell Emscripten to build an example.html file.
-    set_target_properties(main PROPERTIES SUFFIX ".html")
-    target_link_options(main PUBLIC
-        "-sASSERTIONS=1"
-        "-sFORCE_FILESYSTEM"
-        "-sALLOW_MEMORY_GROWTH"
-        "-sUSE_GLFW=3"
-        "-sEXPORTED_RUNTIME_METHODS=['HEAPF32']"
-        "--preload-file=${CMAKE_SOURCE_DIR}/resources@resources"
-        "--preload-file=${CMAKE_SOURCE_DIR}/settings.txt@settings.txt"
-    )
-    if ("${SHELL}" STREQUAL "Minimal")
-        target_link_options(main PUBLIC "--shell-file" "${CMAKE_SOURCE_DIR}/src/shell_minimal.html")
-    endif()
-endif()
-
-
 # Checks if OSX and links appropriate frameworks (Only required on MacOS)
 if (APPLE)
     target_link_libraries(main "-framework IOKit")
