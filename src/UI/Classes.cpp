@@ -142,6 +142,7 @@ void ShowCombineLessons(bool* isOpen)
         int counter = 0;
         for (auto& lesson: currentTimetable.lessons)
         {
+            if (lesson.first == 0 || lesson.first == 1) continue;
             if (!classLessons[std::to_string(lesson.first) + "2"]) continue;
             for (auto& teacher: currentTimetable.teachers)
             {
@@ -323,6 +324,7 @@ void ShowEditClass(bool* isOpen)
     }
     for (auto& lesson: currentTimetable.lessons)
     {
+        if (lesson.first == 0 || lesson.first == 1) continue;
         if (!classLessons[std::to_string(lesson.first) + "0"]) continue;
         ImGui::PushID(lesson.first*(currentTimetable.teachers.size()+1));
         ImGui::Checkbox(lesson.second.name.c_str(), &classLessons[std::to_string(lesson.first) + "1"]);

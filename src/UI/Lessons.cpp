@@ -128,6 +128,11 @@ void ShowLessons(bool* isOpen)
     ImGui::Columns(3);
     for (auto it = tmpTimetable.lessons.begin(); it != tmpTimetable.lessons.end();)
     {
+        if (it->first == 0 || it->first == 1)
+        {
+            it++;
+            continue;
+        }
         ImGui::PushID(it->first);
         if (ImGui::Button("-"))
         {

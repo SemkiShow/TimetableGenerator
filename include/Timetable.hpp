@@ -9,7 +9,7 @@
 
 struct WorkDay
 {
-    std::vector<int> lessonNumbers;
+    std::vector<int> lessonIDs;
 };
 
 struct Classroom
