@@ -20,13 +20,13 @@ static void ResetVariables()
         lessonClassGroups[classPair.second.number] = true;
         lessonClasses[classPair.first] = newLesson;
     }
-    for (int i = 0; i < tmpTimetable.lessons[currentLessonID].classIDs.size(); i++)
-        lessonClasses[tmpTimetable.lessons[currentLessonID].classIDs[i]] = true;
+    for (int i = 0; i < tmpTmpTimetable.lessons[currentLessonID].classIDs.size(); i++)
+        lessonClasses[tmpTmpTimetable.lessons[currentLessonID].classIDs[i]] = true;
     lessonClassrooms.clear();
     for (auto& classroom: currentTimetable.classrooms)
         lessonClassrooms[classroom.first] = newLesson;
-    for (int i = 0; i < tmpTimetable.lessons[currentLessonID].classroomIDs.size(); i++)
-        lessonClassrooms[tmpTimetable.lessons[currentLessonID].classroomIDs[i]] = true;
+    for (int i = 0; i < tmpTmpTimetable.lessons[currentLessonID].classroomIDs.size(); i++)
+        lessonClassrooms[tmpTmpTimetable.lessons[currentLessonID].classroomIDs[i]] = true;
 }
 
 bool isEditLesson = false;
@@ -98,11 +98,7 @@ void ShowEditLesson(bool* isOpen)
         *isOpen = false;
     }
     ImGui::SameLine();
-    if (ImGui::Button("Cancel"))
-    {
-        if (newLesson) tmpTimetable.lessons.erase(currentLessonID);
-        *isOpen = false;
-    }
+    if (ImGui::Button("Cancel")) *isOpen = false;
     ImGui::End();
 }
 
@@ -116,12 +112,12 @@ void ShowLessons(bool* isOpen)
     }
     if (ImGui::Button("+"))
     {
-        tmpTimetable.maxLessonID++;
-        tmpTimetable.lessons[tmpTimetable.maxLessonID] = Lesson();
-        currentLessonID = tmpTimetable.maxLessonID;
         newLesson = true;
-        ResetVariables();
         tmpTmpTimetable.lessons = tmpTimetable.lessons;
+        tmpTmpTimetable.maxLessonID++;
+        tmpTmpTimetable.lessons[tmpTmpTimetable.maxLessonID] = Lesson();
+        currentLessonID = tmpTmpTimetable.maxLessonID;
+        ResetVariables();
         isEditLesson = true;
     }
     ImGui::Separator();
@@ -143,10 +139,10 @@ void ShowLessons(bool* isOpen)
         ImGui::SameLine();
         if (ImGui::Button("Edit"))
         {
-            currentLessonID = it->first;
             newLesson = false;
-            ResetVariables();
             tmpTmpTimetable.lessons = tmpTimetable.lessons;
+            currentLessonID = it->first;
+            ResetVariables();
             isEditLesson = true;
         }
         ImGui::SameLine();

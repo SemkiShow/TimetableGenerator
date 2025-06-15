@@ -24,14 +24,14 @@ static void ResetVariables()
         for (int i = 0; i < 7; i++)
         {
             for (int j = 0; j < lessonsPerDay; j++)
-                tmpTimetable.teachers[currentTeacherID].workDays[i].lessonIDs.push_back(1);
+                tmpTmpTimetable.teachers[currentTeacherID].workDays[i].lessonIDs.push_back(1);
         }
     }
     teacherLessons.clear();
     for (auto& lesson: currentTimetable.lessons)
         teacherLessons[lesson.first] = false;
-    for (int i = 0; i < tmpTimetable.teachers[currentTeacherID].lessonIDs.size(); i++)
-        teacherLessons[tmpTimetable.teachers[currentTeacherID].lessonIDs[i]] = true;
+    for (int i = 0; i < tmpTmpTimetable.teachers[currentTeacherID].lessonIDs.size(); i++)
+        teacherLessons[tmpTmpTimetable.teachers[currentTeacherID].lessonIDs[i]] = true;
     availableTeacherLessons.clear();
     for (int i = 0; i < 7; i++)
     {
@@ -40,9 +40,9 @@ static void ResetVariables()
     }
     for (int i = 0; i < 7; i++)
     {
-        for (int j = 0; j < tmpTimetable.teachers[currentTeacherID].workDays[i].lessonIDs.size(); j++)
+        for (int j = 0; j < tmpTmpTimetable.teachers[currentTeacherID].workDays[i].lessonIDs.size(); j++)
             availableTeacherLessons[i*lessonsPerDay+j] =
-                tmpTimetable.teachers[currentTeacherID].workDays[i].lessonIDs[j];
+                tmpTmpTimetable.teachers[currentTeacherID].workDays[i].lessonIDs[j];
     }
 }
 
@@ -162,15 +162,7 @@ void ShowEditTeacher(bool* isOpen)
         *isOpen = false;
     }
     ImGui::SameLine();
-    if (ImGui::Button("Cancel"))
-    {
-        if (newTeacher)
-        {
-            tmpTimetable.teachers.erase(currentTeacherID);
-            tmpTimetable.maxTeacherID--;
-        }
-        *isOpen = false;
-    }
+    if (ImGui::Button("Cancel")) *isOpen = false;
     ImGui::End();
 }
 
@@ -184,12 +176,12 @@ void ShowTeachers(bool* isOpen)
     }
     if (ImGui::Button("+"))
     {
-        tmpTimetable.maxTeacherID++;
-        tmpTimetable.teachers[tmpTimetable.maxTeacherID] = Teacher();
-        currentTeacherID = tmpTimetable.maxTeacherID;
         newTeacher = true;
-        ResetVariables();
         tmpTmpTimetable.teachers = tmpTimetable.teachers;
+        tmpTmpTimetable.maxTeacherID++;
+        tmpTmpTimetable.teachers[tmpTmpTimetable.maxTeacherID] = Teacher();
+        currentTeacherID = tmpTmpTimetable.maxTeacherID;
+        ResetVariables();
         isEditTeacher = true;
     }
     ImGui::Separator();
@@ -206,10 +198,10 @@ void ShowTeachers(bool* isOpen)
         ImGui::SameLine();
         if (ImGui::Button("Edit"))
         {
-            currentTeacherID = it->first;
             newTeacher = false;
-            ResetVariables();
             tmpTmpTimetable.teachers = tmpTimetable.teachers;
+            currentTeacherID = it->first;
+            ResetVariables();
             isEditTeacher = true;
         }
         ImGui::SameLine();

@@ -32,8 +32,8 @@ static void ResetVariables()
     }
     for (int i = 0; i < 7; i++)
     {
-        for (int j = 0; j < tmpTimetable.classes[currentClassID].days[i].lessonNumbers.size(); j++)
-            availableClassLessons[i*lessonsPerDay + tmpTimetable.classes[currentClassID].days[i].lessonNumbers[j]] = true;
+        for (int j = 0; j < tmpTmpTimetable.classes[currentClassID].days[i].lessonNumbers.size(); j++)
+            availableClassLessons[i*lessonsPerDay + tmpTmpTimetable.classes[currentClassID].days[i].lessonNumbers[j]] = true;
     }
 
     allClassLessons = true;
@@ -60,7 +60,7 @@ static void ResetVariables()
         for (int i = 0; i < lesson.second.classIDs.size(); i++)
         {
             if (currentClassID == lesson.second.classIDs[i] ||
-                (tmpTimetable.classes[currentClassID].number == tmpTimetable.classes[lesson.second.classIDs[i]].number
+                (tmpTmpTimetable.classes[currentClassID].number == tmpTmpTimetable.classes[lesson.second.classIDs[i]].number
                     && bulkEditClass))
             {
                 classIDFound = true;
@@ -90,7 +90,7 @@ static void ResetVariables()
         for (auto& teacher: currentTimetable.teachers)
         {
             bool lessonTeacherPairFound = false;
-            for (auto& timetableLesson: tmpTimetable.classes[currentClassID].timetableLessons)
+            for (auto& timetableLesson: tmpTmpTimetable.classes[currentClassID].timetableLessons)
             {
                 if (timetableLesson.second.lessonTeacherPairs.size() != 1) continue;
                 if (lesson.first == timetableLesson.second.lessonTeacherPairs[0].lessonID &&
@@ -451,19 +451,7 @@ void ShowEditClass(bool* isOpen)
         *isOpen = false;
     }
     ImGui::SameLine();
-    if (ImGui::Button("Cancel"))
-    {
-        if (newClass)
-        {
-            tmpTimetable.orderedClasses.erase(
-                find(tmpTimetable.orderedClasses.begin(), tmpTimetable.orderedClasses.end(), currentClassID));
-            tmpTimetable.classes.erase(currentClassID);
-        }
-        tmpTmpTimetable.classes = tmpTimetable.classes;
-        tmpTmpTimetable.maxClassID = tmpTimetable.maxClassID;
-        tmpTmpTimetable.orderedClasses = tmpTimetable.orderedClasses;
-        *isOpen = false;
-    }
+    if (ImGui::Button("Cancel")) *isOpen = false;
     ImGui::End();
 }
 
@@ -479,15 +467,15 @@ void ShowClasses(bool* isOpen)
     {
         newClass = true;
         bulkEditClass = true;
-        tmpTimetable.maxClassID++;
-        currentClassID = tmpTimetable.maxClassID;
-        tmpTimetable.orderedClasses.push_back(currentClassID);
-        tmpTimetable.classes[currentClassID] = Class();
-        tmpTimetable.classes[currentClassID].number = "0";
-        ResetVariables();
         tmpTmpTimetable.classes = tmpTimetable.classes;
         tmpTmpTimetable.maxClassID = tmpTimetable.maxClassID;
         tmpTmpTimetable.orderedClasses = tmpTimetable.orderedClasses;
+        tmpTmpTimetable.maxClassID++;
+        currentClassID = tmpTmpTimetable.maxClassID;
+        tmpTmpTimetable.orderedClasses.push_back(currentClassID);
+        tmpTmpTimetable.classes[currentClassID] = Class();
+        tmpTmpTimetable.classes[currentClassID].number = "0";
+        ResetVariables();
         isEditClass = true;
     }
     ImGui::Separator();
@@ -525,11 +513,11 @@ void ShowClasses(bool* isOpen)
                 }
                 newClass = false;
                 bulkEditClass = true;
-                currentClassID = tmpTimetable.orderedClasses[i];
-                ResetVariables();
                 tmpTmpTimetable.classes = tmpTimetable.classes;
                 tmpTmpTimetable.maxClassID = tmpTimetable.maxClassID;
                 tmpTmpTimetable.orderedClasses = tmpTimetable.orderedClasses;
+                currentClassID = tmpTmpTimetable.orderedClasses[i];
+                ResetVariables();
                 isEditClass = true;
             }
             ImGui::SameLine();
@@ -545,15 +533,15 @@ void ShowClasses(bool* isOpen)
                     if (tmpTimetable.classes[tmpTimetable.orderedClasses[j]].number == lastClassNumber) currentClassID = j;
                 }
                 currentClassID++;
-                tmpTimetable.maxClassID++;
-                tmpTimetable.orderedClasses.insert(tmpTimetable.orderedClasses.begin() + currentClassID, tmpTimetable.maxClassID);
-                tmpTimetable.classes[tmpTimetable.maxClassID] = Class();
-                tmpTimetable.classes[tmpTimetable.maxClassID].number = tmpTimetable.classes[tmpTimetable.orderedClasses[currentClassID-1]].number;
-                currentClassID = tmpTimetable.maxClassID;
-                ResetVariables();
                 tmpTmpTimetable.classes = tmpTimetable.classes;
                 tmpTmpTimetable.maxClassID = tmpTimetable.maxClassID;
                 tmpTmpTimetable.orderedClasses = tmpTimetable.orderedClasses;
+                tmpTmpTimetable.maxClassID++;
+                tmpTmpTimetable.orderedClasses.insert(tmpTmpTimetable.orderedClasses.begin() + currentClassID, tmpTmpTimetable.maxClassID);
+                tmpTmpTimetable.classes[tmpTmpTimetable.maxClassID] = Class();
+                tmpTmpTimetable.classes[tmpTmpTimetable.maxClassID].number = tmpTmpTimetable.classes[tmpTmpTimetable.orderedClasses[currentClassID-1]].number;
+                currentClassID = tmpTmpTimetable.maxClassID;
+                ResetVariables();
                 isEditClass = true;
             }
             ImGui::Unindent();
@@ -576,11 +564,11 @@ void ShowClasses(bool* isOpen)
         {
             newClass = false;
             bulkEditClass = false;
-            currentClassID = tmpTimetable.orderedClasses[i];
-            ResetVariables();
             tmpTmpTimetable.classes = tmpTimetable.classes;
             tmpTmpTimetable.maxClassID = tmpTimetable.maxClassID;
             tmpTmpTimetable.orderedClasses = tmpTimetable.orderedClasses;
+            currentClassID = tmpTmpTimetable.orderedClasses[i];
+            ResetVariables();
             isEditClass = true;
         }
         ImGui::SameLine();
