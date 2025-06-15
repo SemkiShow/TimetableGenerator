@@ -323,8 +323,8 @@ void GenerateRandomTimetable(Timetable* timetable)
         }
         for (int j = 0; j < 7; j++)
         {
-            for (int k = 0; k < rand() % 15; k++)
-                timetable->teachers[i].workDays[j].lessonIDs.push_back(rand() % 8);
+            for (int k = 0; k < lessonsPerDay; k++)
+                timetable->teachers[i].workDays[j].lessonIDs.push_back(rand() % timetable->lessons.size());
         }
     }
     int classLettersPerClassNumber = 3;
