@@ -20,6 +20,7 @@ extern bool isTeachers;
 extern bool isCombineLessons;
 extern bool isEditClass;
 extern bool isClasses;
+extern bool isAbout;
 
 void ShowEditClassroom(bool* isOpen);
 void ShowClassrooms(bool* isOpen);

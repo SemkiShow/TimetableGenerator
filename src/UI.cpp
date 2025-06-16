@@ -61,6 +61,21 @@ void ShowSettings(bool* isOpen)
     ImGui::End();
 }
 
+bool isAbout = false;
+void ShowAbout(bool* isOpen)
+{
+    if (!ImGui::Begin("About", isOpen))
+    {
+        ImGui::End();
+        return;
+    }
+    ImGui::Text(("TimetableGenerator " + version).c_str());
+    ImGui::Text("A tool for creating timetables easily");
+    ImGui::Text("Developed by Semki Show");
+    ImGui::Text("Licensed under GPLv3 License.");
+    ImGui::End();
+}
+
 void ShowMenuBar()
 {
     if (ImGui::BeginMainMenuBar())
@@ -137,6 +152,11 @@ void ShowMenuBar()
             }
             ImGui::EndMenu();
         }
+        if (ImGui::BeginMenu("Help"))
+        {
+            if (ImGui::MenuItem("About")) isAbout = true;
+            ImGui::EndMenu();
+        }
         ImGui::EndMainMenuBar();
     }
     return;
@@ -170,6 +190,7 @@ void DrawFrame()
     if (isCombineLessons) ShowCombineLessons(&isCombineLessons);
     if (isEditClass) ShowEditClass(&isEditClass);
     if (isClasses) ShowClasses(&isClasses);
+    if (isAbout) ShowAbout(&isAbout);
     if (ImGuiFileDialog::Instance()->Display("New Template", ImGuiWindowFlags_NoCollapse, ImVec2(750.f, 500.f)))
     {
         if (ImGuiFileDialog::Instance()->IsOk())
