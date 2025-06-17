@@ -22,7 +22,7 @@ void ShowEditClassroom(bool* isOpen)
         }
         if (ImGui::InputInt("end-number", &classroomsEndNumber))
         {
-            classroomsAmount = classroomsStartNumber - classroomsEndNumber + 1;
+            classroomsAmount = classroomsEndNumber - classroomsStartNumber + 1;
         }
         if (ImGui::InputInt("amount", &classroomsAmount))
         {

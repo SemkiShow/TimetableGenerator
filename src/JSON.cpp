@@ -155,9 +155,11 @@ void ParseJSON(std::string json, JSONObject* jsonObject)
     int bracketLevel = 0;
     int startIndex = 0;
     std::vector<std::string> values;
+    bool insideString = false;
     for (int i = 0; i < json.size(); i++)
     {
-        if (json[i] == '{' || json[i] == '[')
+        if (json[i] == '\"') insideString = !insideString;
+        if (json[i] == '{' || json[i] == '[' && !insideString)
         {
             bracketLevel++;
             if (bracketLevel == 1)
@@ -166,13 +168,13 @@ void ParseJSON(std::string json, JSONObject* jsonObject)
                 startIndex = i+1;
             }
         }
-        if (json[i] == '}' || json[i] == ']')
+        if (json[i] == '}' || json[i] == ']' && !insideString)
         {
             if (bracketLevel == 1 && json.size() > 2) values.push_back(json.substr(startIndex, i - startIndex));
             bracketLevel--;
             if (bracketLevel <= 0) break;
         }
-        if (json[i] == ',' && bracketLevel == 1)
+        if (json[i] == ',' && bracketLevel == 1 && !insideString)
         {
             values.push_back(json.substr(startIndex, i - startIndex));
             startIndex = i+1;

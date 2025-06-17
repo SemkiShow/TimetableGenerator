@@ -14,7 +14,7 @@ struct WorkDay
 
 struct Classroom
 {
-    std::string name;
+    std::string name = "";
 };
 
 struct Lesson
@@ -51,7 +51,7 @@ struct Day
 
 struct Class
 {
-    std::string number = "-1";
+    std::string number = "";
     std::string letter = "";
     int teacherID = -1;
     int maxTimetableLessonID = -1;

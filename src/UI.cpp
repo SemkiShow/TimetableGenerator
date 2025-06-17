@@ -124,11 +124,17 @@ void ShowMenuBar()
             if (ImGui::MenuItem("Teachers"))
             {
                 teacherLessonValues = "";
+                teacherLessonValues += "no lesson";
+                teacherLessonValues += '\0';
+                teacherLessonValues += "any lesson";
+                teacherLessonValues += '\0';
                 for (auto& lesson: currentTimetable.lessons)
                 {
                     if (lesson.second.name == "")
-                        teacherLessonValues += "test\0";
-                    teacherLessonValues += lesson.second.name + '\0';
+                        teacherLessonValues += "error";
+                    else
+                        teacherLessonValues += lesson.second.name;
+                    teacherLessonValues += '\0';
                 }
                 teacherLessonValues += '\0';
                 tmpTimetable.teachers = currentTimetable.teachers;
@@ -197,10 +203,6 @@ void DrawFrame()
         {
             std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
             currentTimetable = Timetable();
-            currentTimetable.lessons[0] = Lesson();
-            currentTimetable.lessons[0].name = "no lesson";
-            currentTimetable.lessons[1] = Lesson();
-            currentTimetable.lessons[1].name = "any lesson";
             SaveTimetable(filePathName, &currentTimetable);
             LoadTimetable(filePathName, &currentTimetable);
         }

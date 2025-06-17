@@ -187,6 +187,7 @@ void LoadTimetable(std::string path, Timetable* timetable)
     // Classrooms
     for (auto& classroom: jsonObject.objectPairs["classrooms"].stringPairs)
     {
+        if (classroom.second == "") continue;
         if (stoi(classroom.first) > timetable->maxClassroomID)
             timetable->maxClassroomID = stoi(classroom.first);
         timetable->classrooms[stoi(classroom.first)] = Classroom();
@@ -196,6 +197,7 @@ void LoadTimetable(std::string path, Timetable* timetable)
     // Lessons
     for (auto& lesson: jsonObject.objectPairs["lessons"].objectPairs)
     {
+        if (lesson.second.stringPairs["name"] == "") continue;
         if (stoi(lesson.first) > timetable->maxLessonID)
             timetable->maxLessonID = stoi(lesson.first);
         timetable->lessons[stoi(lesson.first)] = Lesson();
@@ -209,6 +211,7 @@ void LoadTimetable(std::string path, Timetable* timetable)
     // Teachers
     for (auto& teacher: jsonObject.objectPairs["teachers"].objectPairs)
     {
+        if (teacher.second.stringPairs["name"] == "") continue;
         if (stoi(teacher.first) > timetable->maxTeacherID)
             timetable->maxTeacherID = stoi(teacher.first);
         timetable->teachers[stoi(teacher.first)] = Teacher();
@@ -227,6 +230,7 @@ void LoadTimetable(std::string path, Timetable* timetable)
     // Classes
     for (auto& classPair: jsonObject.objectPairs["classes"].objectPairs)
     {
+        if (classPair.second.stringPairs["number"] == "") continue;
         if (stoi(classPair.first) > timetable->maxClassID)
             timetable->maxClassID = stoi(classPair.first);
         timetable->classes[stoi(classPair.first)] = Class();
@@ -295,10 +299,6 @@ void GenerateRandomTimetable(Timetable* timetable)
             timetable->classrooms[i].name += '0' + rand() % 10;
         }
     }
-    timetable->lessons[0] = Lesson();
-    timetable->lessons[0].name = "no lesson";
-    timetable->lessons[1] = Lesson();
-    timetable->lessons[1].name = "any lesson";
     for (int i = 0; i < 15; i++)
     {
         timetable->lessons[i+2] = Lesson();
