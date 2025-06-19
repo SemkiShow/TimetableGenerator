@@ -319,11 +319,7 @@ void ShowEditClass(bool* isOpen)
     }
     ImGui::Separator();
     ImGui::Columns(2);
-    if (ImGui::Checkbox((allClassLessons ? "Deselect all##1" : "Select all##1"), &allClassLessons))
-    {
-        for (auto& lesson: currentTimetable.lessons)
-            classLessons[std::to_string(lesson.first) + "1"] = allClassLessons;
-    }
+    ImGui::LabelText("##3", "");
     for (auto& lesson: currentTimetable.lessons)
     {
         if (!classLessons[std::to_string(lesson.first) + "0"]) continue;

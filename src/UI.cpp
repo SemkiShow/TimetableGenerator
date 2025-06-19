@@ -109,6 +109,10 @@ void ShowMenuBar()
         }
         if (currentTimetable.name != "" && ImGui::BeginMenu(currentTimetable.name.c_str()))
         {
+            if (ImGui::MenuItem("Setup wizard"))
+            {
+                isWizard = true;
+            }
             if (ImGui::MenuItem("Classrooms"))
             {
                 tmpTimetable.classrooms = currentTimetable.classrooms;
@@ -197,6 +201,7 @@ void DrawFrame()
     if (isEditClass) ShowEditClass(&isEditClass);
     if (isClasses) ShowClasses(&isClasses);
     if (isAbout) ShowAbout(&isAbout);
+    if (isWizard) ShowWizard(&isWizard);
     if (ImGuiFileDialog::Instance()->Display("New Template", ImGuiWindowFlags_NoCollapse, ImVec2(750.f, 500.f)))
     {
         if (ImGuiFileDialog::Instance()->IsOk())
