@@ -188,41 +188,44 @@ void LoadTimetable(std::string path, Timetable* timetable)
     for (auto& classroom: jsonObject.objectPairs["classrooms"].stringPairs)
     {
         if (classroom.second == "") continue;
-        if (stoi(classroom.first) > timetable->maxClassroomID)
-            timetable->maxClassroomID = stoi(classroom.first);
-        timetable->classrooms[stoi(classroom.first)] = Classroom();
-        timetable->classrooms[stoi(classroom.first)].name = classroom.second;
+        int classroomID = stoi(classroom.first);
+        if (classroomID > timetable->maxClassroomID)
+            timetable->maxClassroomID = classroomID;
+        timetable->classrooms[classroomID] = Classroom();
+        timetable->classrooms[classroomID].name = classroom.second;
     }
 
     // Lessons
     for (auto& lesson: jsonObject.objectPairs["lessons"].objectPairs)
     {
         if (lesson.second.stringPairs["name"] == "") continue;
-        if (stoi(lesson.first) > timetable->maxLessonID)
-            timetable->maxLessonID = stoi(lesson.first);
-        timetable->lessons[stoi(lesson.first)] = Lesson();
-        timetable->lessons[stoi(lesson.first)].name = lesson.second.stringPairs["name"];
+        int lessonID = stoi(lesson.first);
+        if (lessonID > timetable->maxLessonID)
+            timetable->maxLessonID = lessonID;
+        timetable->lessons[lessonID] = Lesson();
+        timetable->lessons[lessonID].name = lesson.second.stringPairs["name"];
         for (int i = 0; i < lesson.second.objectPairs["classIDs"].ints.size(); i++)
-            timetable->lessons[stoi(lesson.first)].classIDs.push_back(lesson.second.objectPairs["classIDs"].ints[i]);
+            timetable->lessons[lessonID].classIDs.push_back(lesson.second.objectPairs["classIDs"].ints[i]);
         for (int i = 0; i < lesson.second.objectPairs["classroomIDs"].ints.size(); i++)
-            timetable->lessons[stoi(lesson.first)].classroomIDs.push_back(lesson.second.objectPairs["classroomIDs"].ints[i]);
+            timetable->lessons[lessonID].classroomIDs.push_back(lesson.second.objectPairs["classroomIDs"].ints[i]);
     }
 
     // Teachers
     for (auto& teacher: jsonObject.objectPairs["teachers"].objectPairs)
     {
         if (teacher.second.stringPairs["name"] == "") continue;
-        if (stoi(teacher.first) > timetable->maxTeacherID)
-            timetable->maxTeacherID = stoi(teacher.first);
-        timetable->teachers[stoi(teacher.first)] = Teacher();
-        timetable->teachers[stoi(teacher.first)].name = teacher.second.stringPairs["name"];
+        int teacherID = stoi(teacher.first);
+        if (teacherID > timetable->maxTeacherID)
+            timetable->maxTeacherID = teacherID;
+        timetable->teachers[teacherID] = Teacher();
+        timetable->teachers[teacherID].name = teacher.second.stringPairs["name"];
         for (int i = 0; i < teacher.second.objectPairs["lessonIDs"].ints.size(); i++)
-            timetable->teachers[stoi(teacher.first)].lessonIDs.push_back(teacher.second.objectPairs["lessonIDs"].ints[i]);
+            timetable->teachers[teacherID].lessonIDs.push_back(teacher.second.objectPairs["lessonIDs"].ints[i]);
         for (int i = 0; i < teacher.second.objectPairs["workDays"].objects.size(); i++)
         {
             for (int j = 0; j < teacher.second.objectPairs["workDays"].objects[i].ints.size(); j++)
             {
-                timetable->teachers[stoi(teacher.first)].workDays[i].lessonIDs.push_back(teacher.second.objectPairs["workDays"].objects[i].ints[j]);
+                timetable->teachers[teacherID].workDays[i].lessonIDs.push_back(teacher.second.objectPairs["workDays"].objects[i].ints[j]);
             }
         }
     }
@@ -231,38 +234,39 @@ void LoadTimetable(std::string path, Timetable* timetable)
     for (auto& classPair: jsonObject.objectPairs["classes"].objectPairs)
     {
         if (classPair.second.stringPairs["number"] == "") continue;
-        if (stoi(classPair.first) > timetable->maxClassID)
-            timetable->maxClassID = stoi(classPair.first);
-        timetable->classes[stoi(classPair.first)] = Class();
-        timetable->classes[stoi(classPair.first)].number = classPair.second.stringPairs["number"];
-        timetable->classes[stoi(classPair.first)].letter = classPair.second.stringPairs["letter"];
-        timetable->classes[stoi(classPair.first)].teacherID = classPair.second.intPairs["teacherID"];
+        int classID = stoi(classPair.first);
+        if (classID > timetable->maxClassID)
+            timetable->maxClassID = classID;
+        timetable->classes[classID] = Class();
+        timetable->classes[classID].number = classPair.second.stringPairs["number"];
+        timetable->classes[classID].letter = classPair.second.stringPairs["letter"];
+        timetable->classes[classID].teacherID = classPair.second.intPairs["teacherID"];
         for (auto& lesson : classPair.second.objectPairs["lessons"].objectPairs)
         {
-            if (stoi(lesson.first) > timetable->classes[stoi(classPair.first)].maxTimetableLessonID)
-                timetable->classes[stoi(classPair.first)].maxTimetableLessonID = stoi(lesson.first);
-            timetable->classes[stoi(classPair.first)].timetableLessons[stoi(lesson.first)] = TimetableLesson();
-            timetable->classes[stoi(classPair.first)].timetableLessons[stoi(lesson.first)].amount = lesson.second.ints[0];
+            if (lessonID > timetable->classes[classID].maxTimetableLessonID)
+                timetable->classes[classID].maxTimetableLessonID = lessonID;
+            timetable->classes[classID].timetableLessons[lessonID] = TimetableLesson();
+            timetable->classes[classID].timetableLessons[lessonID].amount = lesson.second.ints[0];
             for (int i = 0; i < lesson.second.objects.size(); i++)
             {
-                timetable->classes[stoi(classPair.first)].timetableLessons[stoi(lesson.first)].lessonTeacherPairs.push_back(LessonTeacherPair());
-                timetable->classes[stoi(classPair.first)].timetableLessons[stoi(lesson.first)].lessonTeacherPairs[i].lessonID =
+                timetable->classes[classID].timetableLessons[lessonID].lessonTeacherPairs.push_back(LessonTeacherPair());
+                timetable->classes[classID].timetableLessons[lessonID].lessonTeacherPairs[i].lessonID =
                     lesson.second.objects[i].intPairs["lessonID"];
-                timetable->classes[stoi(classPair.first)].timetableLessons[stoi(lesson.first)].lessonTeacherPairs[i].teacherID =
+                timetable->classes[classID].timetableLessons[lessonID].lessonTeacherPairs[i].teacherID =
                     lesson.second.objects[i].intPairs["teacherID"];
             }
         }
         for (int i = 0; i < classPair.second.objectPairs["lessonNumbers"].objects.size(); i++)
         {
             for (int j = 0; j < classPair.second.objectPairs["lessonNumbers"].objects[i].ints.size(); j++)
-                timetable->classes[stoi(classPair.first)].days[i].lessonNumbers.push_back(
+                timetable->classes[classID].days[i].lessonNumbers.push_back(
                     classPair.second.objectPairs["lessonNumbers"].objects[i].ints[j]);
         }
         for (int i = 0; i < classPair.second.objectPairs["days"].objects.size(); i++)
         {
             for (int j = 0; j < classPair.second.objectPairs["days"].objects[i].ints.size(); j++)
             {
-                timetable->classes[stoi(classPair.first)].days[i].timetableLessonIDs.push_back(
+                timetable->classes[classID].days[i].timetableLessonIDs.push_back(
                     classPair.second.objectPairs["days"].objects[i].ints[j]);
             }
         }
