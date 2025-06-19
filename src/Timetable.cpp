@@ -243,6 +243,7 @@ void LoadTimetable(std::string path, Timetable* timetable)
         timetable->classes[classID].teacherID = classPair.second.intPairs["teacherID"];
         for (auto& lesson : classPair.second.objectPairs["lessons"].objectPairs)
         {
+            int lessonID = stoi(lesson.first);
             if (lessonID > timetable->classes[classID].maxTimetableLessonID)
                 timetable->classes[classID].maxTimetableLessonID = lessonID;
             timetable->classes[classID].timetableLessons[lessonID] = TimetableLesson();
