@@ -71,7 +71,7 @@ void ShowAbout(bool* isOpen)
     }
     ImGui::Text(("TimetableGenerator " + version).c_str());
     ImGui::Text("A tool for creating timetables easily");
-    ImGui::Text("Developed by Semki Show");
+    ImGui::Text("Developed by SemkiShow");
     ImGui::Text("Licensed under GPLv3 License.");
     ImGui::End();
 }

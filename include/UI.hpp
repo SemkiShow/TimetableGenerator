@@ -1,3 +1,5 @@
+#pragma once
+
 #include "raylib.h"
 #include "imgui.h"
 #include "misc/cpp/imgui_stdlib.h"

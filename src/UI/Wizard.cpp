@@ -24,10 +24,7 @@ void ShowWizard(bool* isOpen)
     ImGui::ProgressBar(wizardStep * 1.0 / (WIZARD_STEPS-1));
     ImGui::Text(("Step " + std::to_string(wizardStep + 1)).c_str());
     ImGui::Text(wizardTexts[wizardStep]);
-    if (wizardStep > 0 && ImGui::Button("Back"))
-    {
-        wizardStep--;
-    }
+    if (wizardStep > 0 && ImGui::Button("Back")) wizardStep--;
     if (wizardStep > 0) ImGui::SameLine();
     if (ImGui::Button("Next"))
     {
