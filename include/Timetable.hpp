@@ -9,6 +9,8 @@
 #include <filesystem>
 #include <map>
 
+#define DAYS_PER_WEEK 7
+
 struct WorkDay
 {
     std::vector<int> lessonIDs;
@@ -30,7 +32,7 @@ struct Teacher
 {
     std::string name = "";
     std::vector<int> lessonIDs;
-    WorkDay workDays[7];
+    WorkDay workDays[DAYS_PER_WEEK];
 };
 
 struct LessonTeacherPair
@@ -58,7 +60,7 @@ struct Class
     int teacherID = -1;
     int maxTimetableLessonID = -1;
     std::map<int, TimetableLesson> timetableLessons;
-    Day days[7];
+    Day days[DAYS_PER_WEEK];
 };
 
 struct Timetable

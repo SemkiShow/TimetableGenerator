@@ -13,25 +13,25 @@ std::unordered_map<std::string, bool> classLessons;
 std::unordered_map<int, int> classLessonAmounts;
 std::unordered_map<int, bool> allClassLessonTeachers;
 std::unordered_map<std::string, bool> classLessonTeachers;
-bool allAvailableClassLessonsVertical[7];
+bool allAvailableClassLessonsVertical[DAYS_PER_WEEK];
 std::vector<bool> allAvailableClassLessonsHorizontal;
 std::unordered_map<int, bool> availableClassLessons;
 
 static void ResetVariables()
 {
-    for (int i = 0; i < 7; i++)
+    for (int i = 0; i < DAYS_PER_WEEK; i++)
         allAvailableClassLessonsVertical[i] = true;
     allAvailableClassLessonsHorizontal.clear();
     for (int i = 0; i < lessonsPerDay; i++)
         allAvailableClassLessonsHorizontal.push_back(true);
 
     availableClassLessons.clear();
-    for (int i = 0; i < 7; i++)
+    for (int i = 0; i < DAYS_PER_WEEK; i++)
     {
         for (int j = 0; j < lessonsPerDay; j++)
             availableClassLessons[i*lessonsPerDay+j] = newClass;
     }
-    for (int i = 0; i < 7; i++)
+    for (int i = 0; i < DAYS_PER_WEEK; i++)
     {
         for (int j = 0; j < tmpTmpTimetable.classes[currentClassID].days[i].lessonNumbers.size(); j++)
             availableClassLessons[i*lessonsPerDay + tmpTmpTimetable.classes[currentClassID].days[i].lessonNumbers[j]] = true;
@@ -121,19 +121,22 @@ void ShowCombineLessons(bool* isOpen)
         return;
     }
     ImGui::Columns(2);
+    int pushID = 0;
     for (auto& lesson: currentTimetable.lessons)
     {
         if (!classLessons[std::to_string(lesson.first) + "0"]) continue;
-        ImGui::PushID(lesson.first*(tmpTmpTimetable.maxTeacherID+1));
+        ImGui::PushID(pushID);
         ImGui::Checkbox(lesson.second.name.c_str(), &classLessons[std::to_string(lesson.first) + "2"]);
         ImGui::NextColumn();
         ImGui::PopID();
+        pushID++;
         for (auto& teacher: currentTimetable.teachers)
         {
             if (!classLessonTeachers[std::to_string(lesson.first) + teacher.second.name + "0"]) continue;
-            ImGui::PushID(lesson.first*(tmpTmpTimetable.maxTeacherID+1)+teacher.first+1);
+            ImGui::PushID(pushID);
             ImGui::Checkbox(teacher.second.name.c_str(), &classLessonTeachers[std::to_string(lesson.first) + teacher.second.name + "2"]);
             ImGui::PopID();
+            pushID++;
         }
         ImGui::NextColumn();
         ImGui::Separator();
@@ -196,14 +199,15 @@ void ShowEditClass(bool* isOpen)
     ImGui::Columns(8);
     ImGui::LabelText("##1", "");
     ImGui::LabelText("##2", "");
+    int pushID = 3;
     for (int i = 0; i < lessonsPerDay; i++)
     {
-        ImGui::PushID(i+3);
+        ImGui::PushID(pushID);
         bool availableClassLessonsHorizontal = allAvailableClassLessonsHorizontal[i];
         if (ImGui::Checkbox(std::to_string(i).c_str(), &availableClassLessonsHorizontal))
         {
             allAvailableClassLessonsHorizontal[i] = availableClassLessonsHorizontal;
-            for (int j = 0; j < 7; j++)
+            for (int j = 0; j < DAYS_PER_WEEK; j++)
             {
                 for (int k = 0; k < tmpTmpTimetable.classes[currentClassID].days[j].lessonNumbers.size(); k++)
                 {
@@ -223,23 +227,26 @@ void ShowEditClass(bool* isOpen)
             }
         }
         ImGui::PopID();
+        pushID++;
     }
     ImGui::NextColumn();
-    for (int i = 0; i < 7; i++)
+    for (int i = 0; i < DAYS_PER_WEEK; i++)
     {
         ImGui::Text(weekDays[i].c_str());
-        ImGui::PushID(i*(lessonsPerDay+1)+7+tmpTmpTimetable.lessons.size());
+        ImGui::PushID(pushID);
         if (ImGui::Checkbox((allAvailableClassLessonsVertical[i] ? "Deselect all" : "Select all"), &allAvailableClassLessonsVertical[i]))
         {
             for (int j = 0; j < lessonsPerDay; j++)
                 availableClassLessons[i*lessonsPerDay+j] = allAvailableClassLessonsVertical[i];
         }
         ImGui::PopID();
+        pushID++;
         for (int j = 0; j < lessonsPerDay; j++)
         {
-            ImGui::PushID(i*(lessonsPerDay+1)+j+tmpTmpTimetable.lessons.size());
+            ImGui::PushID(pushID);
             ImGui::Checkbox("", &availableClassLessons[i*lessonsPerDay+j]);
             ImGui::PopID();
+            pushID++;
         }
         ImGui::NextColumn();
     }
@@ -272,10 +279,11 @@ void ShowEditClass(bool* isOpen)
             it++;
             continue;
         }
-        ImGui::PushID(it->first);
+        ImGui::PushID(pushID);
         if (ImGui::Button("-"))
         {
             ImGui::PopID();
+            pushID++;
             it = tmpTmpTimetable.classes[currentClassID].timetableLessons.erase(it);
             break;
         }
@@ -315,6 +323,7 @@ void ShowEditClass(bool* isOpen)
         }
         ImGui::InputInt(text.c_str(), &it->second.amount);
         ImGui::PopID();
+        pushID++;
         it++;
     }
     ImGui::Separator();
@@ -323,7 +332,7 @@ void ShowEditClass(bool* isOpen)
     for (auto& lesson: currentTimetable.lessons)
     {
         if (!classLessons[std::to_string(lesson.first) + "0"]) continue;
-        ImGui::PushID(lesson.first*(currentTimetable.teachers.size()+1));
+        ImGui::PushID(pushID);
         ImGui::InputInt(lesson.second.name.c_str(), &classLessonAmounts[lesson.first]);
         ImGui::NextColumn();
         if (ImGui::Checkbox((allClassLessonTeachers[lesson.first] ? "Deselect all##1" : "Select all##1"),
@@ -334,13 +343,15 @@ void ShowEditClass(bool* isOpen)
                 allClassLessonTeachers[lesson.first];
         }
         ImGui::PopID();
+        pushID++;
         for (auto& teacher: currentTimetable.teachers)
         {
             if (!classLessonTeachers[std::to_string(lesson.first) + teacher.second.name + "0"]) continue;
-            ImGui::PushID(lesson.first*(currentTimetable.teachers.size()+1)+teacher.first+1);
+            ImGui::PushID(pushID);
             ImGui::Checkbox(teacher.second.name.c_str(),
                 &classLessonTeachers[std::to_string(lesson.first) + teacher.second.name + "1"]);
             ImGui::PopID();
+            pushID++;
         }
         ImGui::NextColumn();
         ImGui::Separator();
@@ -348,7 +359,7 @@ void ShowEditClass(bool* isOpen)
     ImGui::Columns(1);
     if (ImGui::Button("Ok"))
     {
-        for (int i = 0; i < 7; i++)
+        for (int i = 0; i < DAYS_PER_WEEK; i++)
         {
             tmpTmpTimetable.classes[currentClassID].days[i].lessonNumbers.clear();
             for (int j = 0; j < lessonsPerDay; j++)
