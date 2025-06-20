@@ -34,3 +34,5 @@ struct JSONObject
 
 void SaveJSON(std::string path, JSONObject* jsonObject);
 void LoadJSON(std::string path, JSONObject* jsonObject);
+void ParseJSON(std::string json, JSONObject* jsonObject);
+std::string JSONToString(JSONObject jsonObject);

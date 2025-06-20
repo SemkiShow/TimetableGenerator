@@ -1,6 +1,7 @@
 #include "Settings.hpp"
 #include "UI.hpp"
 #include "Timetable.hpp"
+#include "Updates.hpp"
 
 int main()
 {
@@ -16,6 +17,7 @@ int main()
     SaveTimetable("timetables/load.json", &timetableLoad);
 
     Load("settings.txt");
+    CheckForUpdates(false);
 
     #if !defined(PLATFORM_WEB)
     int flags = 0;

@@ -24,6 +24,7 @@ extern bool isEditClass;
 extern bool isClasses;
 extern bool isAbout;
 extern bool isWizard;
+extern bool isNewVersion;
 
 void ShowEditClassroom(bool* isOpen);
 void ShowClassrooms(bool* isOpen);

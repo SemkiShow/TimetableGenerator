@@ -1,6 +1,7 @@
 #include "UI.hpp"
 #include "Settings.hpp"
 #include "Timetable.hpp"
+#include "Updates.hpp"
 
 int menuOffset = 20;
 int windowSize[2] = {16*50*2, 9*50*2};
@@ -73,6 +74,27 @@ void ShowAbout(bool* isOpen)
     ImGui::Text("A tool for creating timetables easily");
     ImGui::Text("Developed by SemkiShow");
     ImGui::Text("Licensed under GPLv3 License.");
+    ImGui::End();
+}
+
+bool isNewVersion = false;
+void ShowNewVersion(bool* isOpen)
+{
+    if (!ImGui::Begin("About", isOpen))
+    {
+        ImGui::End();
+        return;
+    }
+    ImGui::Text(("The latest version is " + latestVersion).c_str());
+    ImGui::Text(("Your version is " + version).c_str());
+    if (version == latestVersion) ImGui::Text("There are no new versions available");
+    else
+    {
+        ImGui::Text("A new version is available!");
+        ImGui::Text("Download it using");
+        ImGui::SameLine();
+        ImGui::TextLinkOpenURL("this link", "https://github.com/SemkiShow/TimetableGenerator/releases");
+    }
     ImGui::End();
 }
 
@@ -164,6 +186,7 @@ void ShowMenuBar()
         }
         if (ImGui::BeginMenu("Help"))
         {
+            if (ImGui::MenuItem("Check for updates")) CheckForUpdates();
             if (ImGui::MenuItem("About")) isAbout = true;
             ImGui::EndMenu();
         }
@@ -202,6 +225,7 @@ void DrawFrame()
     if (isClasses) ShowClasses(&isClasses);
     if (isAbout) ShowAbout(&isAbout);
     if (isWizard) ShowWizard(&isWizard);
+    if (isNewVersion) ShowNewVersion(&isNewVersion);
     if (ImGuiFileDialog::Instance()->Display("New Template", ImGuiWindowFlags_NoCollapse, ImVec2(750.f, 500.f)))
     {
         if (ImGuiFileDialog::Instance()->IsOk())
