@@ -80,7 +80,7 @@ void ShowAbout(bool* isOpen)
 bool isNewVersion = false;
 void ShowNewVersion(bool* isOpen)
 {
-    if (!ImGui::Begin("About", isOpen))
+    if (!ImGui::Begin("Updates", isOpen))
     {
         ImGui::End();
         return;
@@ -93,7 +93,7 @@ void ShowNewVersion(bool* isOpen)
         ImGui::Text("A new version is available!");
         ImGui::Text("Download it using");
         ImGui::SameLine();
-        ImGui::TextLinkOpenURL("this link", "https://github.com/SemkiShow/TimetableGenerator/releases");
+        ImGui::TextLinkOpenURL("this link", ("https://github.com/SemkiShow/TimetableGenerator/releases/tag/" + latestVersion).c_str());
     }
     ImGui::End();
 }

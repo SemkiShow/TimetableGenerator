@@ -41,5 +41,5 @@ void CheckForUpdates(bool showWindow)
     latestVersion = "loading...";
     if (showWindow) isNewVersion = true;
     latestVersion = GetLatestVesionName();
-    if (latestVersion != version) isNewVersion = true;
+    if (latestVersion != version && latestVersion != "-1") isNewVersion = true;
 }
