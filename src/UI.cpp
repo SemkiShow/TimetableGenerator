@@ -98,6 +98,57 @@ void ShowNewVersion(bool* isOpen)
     ImGui::End();
 }
 
+void OpenClassrooms()
+{
+    tmpTimetable.classrooms = currentTimetable.classrooms;
+    tmpTimetable.maxClassroomID = currentTimetable.maxClassroomID;
+    isClassrooms = true;
+}
+
+void OpenLessons()
+{
+    tmpTimetable.lessons = currentTimetable.lessons;
+    tmpTimetable.maxLessonID = currentTimetable.maxLessonID;
+    isLessons = true;
+}
+
+void OpenTeachers()
+{
+    teacherLessonValues = "";
+    teacherLessonValues += "no lesson";
+    teacherLessonValues += '\0';
+    teacherLessonValues += "any lesson";
+    teacherLessonValues += '\0';
+    for (auto& lesson: currentTimetable.lessons)
+    {
+        if (lesson.second.name == "")
+            teacherLessonValues += "error";
+        else
+            teacherLessonValues += lesson.second.name;
+        teacherLessonValues += '\0';
+    }
+    teacherLessonValues += '\0';
+    tmpTimetable.teachers = currentTimetable.teachers;
+    tmpTimetable.maxTeacherID = currentTimetable.maxTeacherID;
+    isTeachers = true;
+}
+
+void OpenClasses()
+{
+    classTeacherValues = "";
+    for (auto& teacher: currentTimetable.teachers)
+    {
+        if (teacher.second.name == "")
+            classTeacherValues += "test\0";
+        classTeacherValues += teacher.second.name + '\0';
+    }
+    classTeacherValues += '\0';
+    tmpTimetable.classes = currentTimetable.classes;
+    tmpTimetable.maxClassID = currentTimetable.maxClassID;
+    tmpTimetable.orderedClasses = currentTimetable.orderedClasses;
+    isClasses = true;
+}
+
 void ShowMenuBar()
 {
     if (ImGui::BeginMainMenuBar())
@@ -135,53 +186,10 @@ void ShowMenuBar()
             {
                 isWizard = true;
             }
-            if (ImGui::MenuItem("Classrooms"))
-            {
-                tmpTimetable.classrooms = currentTimetable.classrooms;
-                tmpTimetable.maxClassroomID = currentTimetable.maxClassroomID;
-                isClassrooms = true;
-            }
-            if (ImGui::MenuItem("Lessons"))
-            {
-                tmpTimetable.lessons = currentTimetable.lessons;
-                tmpTimetable.maxLessonID = currentTimetable.maxLessonID;
-                isLessons = true;
-            }
-            if (ImGui::MenuItem("Teachers"))
-            {
-                teacherLessonValues = "";
-                teacherLessonValues += "no lesson";
-                teacherLessonValues += '\0';
-                teacherLessonValues += "any lesson";
-                teacherLessonValues += '\0';
-                for (auto& lesson: currentTimetable.lessons)
-                {
-                    if (lesson.second.name == "")
-                        teacherLessonValues += "error";
-                    else
-                        teacherLessonValues += lesson.second.name;
-                    teacherLessonValues += '\0';
-                }
-                teacherLessonValues += '\0';
-                tmpTimetable.teachers = currentTimetable.teachers;
-                tmpTimetable.maxTeacherID = currentTimetable.maxTeacherID;
-                isTeachers = true;
-            }
-            if (ImGui::MenuItem("Classes"))
-            {
-                classTeacherValues = "";
-                for (auto& teacher: currentTimetable.teachers)
-                {
-                    if (teacher.second.name == "")
-                        classTeacherValues += "test\0";
-                    classTeacherValues += teacher.second.name + '\0';
-                }
-                classTeacherValues += '\0';
-                tmpTimetable.classes = currentTimetable.classes;
-                tmpTimetable.maxClassID = currentTimetable.maxClassID;
-                tmpTimetable.orderedClasses = currentTimetable.orderedClasses;
-                isClasses = true;
-            }
+            if (ImGui::MenuItem("Classrooms")) OpenClasses();
+            if (ImGui::MenuItem("Lessons")) OpenLessons();
+            if (ImGui::MenuItem("Teachers")) OpenTeachers();
+            if (ImGui::MenuItem("Classes")) OpenClasses();
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Help"))

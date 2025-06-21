@@ -26,6 +26,11 @@ extern bool isAbout;
 extern bool isWizard;
 extern bool isNewVersion;
 
+void OpenClassrooms();
+void OpenLessons();
+void OpenTeachers();
+void OpenClasses();
+
 void ShowEditClassroom(bool* isOpen);
 void ShowClassrooms(bool* isOpen);
 void ShowEditLesson(bool* isOpen);

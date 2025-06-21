@@ -12,7 +12,7 @@ const char* wizardTexts[WIZARD_STEPS] = {
     "The next step is to assign lessons to classes.\nAfter you are done, press Ok and continue to the next step.",
     "You are done! Now press the Generate timetable button to begin the timetable finding process!"
 };
-bool* wizardMenus[WIZARD_STEPS] = {&isClassrooms, &isClasses, &isLessons, &isTeachers, &isClasses};
+void (*wizardMenus[])() = {OpenClassrooms, OpenClasses, OpenLessons, OpenTeachers, OpenClasses};
 
 void ShowWizard(bool* isOpen)
 {
@@ -28,7 +28,7 @@ void ShowWizard(bool* isOpen)
     if (wizardStep > 0) ImGui::SameLine();
     if (ImGui::Button("Next"))
     {
-        if (wizardStep < WIZARD_STEPS-1) *wizardMenus[wizardStep] = true;
+        if (wizardStep < WIZARD_STEPS-1) wizardMenus[wizardStep]();
         wizardStep++;
         if (wizardStep >= WIZARD_STEPS) *isOpen = false;
     }
