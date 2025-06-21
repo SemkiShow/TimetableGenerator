@@ -176,7 +176,7 @@ void ShowLessons(bool* isOpen)
         ImGui::Text(lessonClassrooms.c_str());
         ImGui::NextColumn();
         ImGui::PopID();
-        it++;
+        ++it;
     }
     ImGui::Columns(1);
     ImGui::Separator();

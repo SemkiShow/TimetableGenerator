@@ -1,4 +1,5 @@
 #include "Searching.hpp"
+#include "Settings.hpp"
 
 int GetLessonsAmount(std::map<int, TimetableLesson> timetableLessons)
 {
@@ -12,7 +13,12 @@ int GetLessonPlacesAmount(Day days[DAYS_PER_WEEK])
 {
     int output;
     for (int i = 0; i < DAYS_PER_WEEK; i++)
-        output += days[i].lessonNumbers.size();
+    {
+        for (int j = 0; j < days[i].lessons.size(); j++)
+        {
+            if (days[i].lessons[j]) output++;
+        }
+    }
     return output;
 }
 
@@ -43,16 +49,20 @@ void RandomizeTimetable(Timetable* timetable)
             for (int i = 0; i < lesson.second.amount; i++)
                 timetableLessonIDs.push_back(lesson.first);
         }
-        auto rng = std::default_random_engine();
+        auto rng = std::default_random_engine(time(0));
         std::shuffle(timetableLessonIDs.begin(), timetableLessonIDs.end(), rng);
         counter = 0;
         for (int i = 0; i < DAYS_PER_WEEK; i++)
         {
             classPair.second.days[i].timetableLessonIDs.clear();
-            for (int j = 0; j < classPair.second.days[i].lessonNumbers.size(); j++)
+            for (int j = 0; j < classPair.second.days[i].lessons.size(); j++)
             {
-                classPair.second.days[i].timetableLessonIDs.push_back(timetableLessonIDs[counter]);
-                counter++;
+                if (classPair.second.days[i].lessons[j])
+                {
+                    classPair.second.days[i].timetableLessonIDs.push_back(timetableLessonIDs[counter]);
+                    counter++;
+                }
+                else classPair.second.days[i].timetableLessonIDs.push_back(-3);
             }
         }
     }

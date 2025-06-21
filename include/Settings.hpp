@@ -10,6 +10,8 @@ extern bool mergedFont;
 extern int timetableAutosaveInterval;
 extern int lessonsPerDay;
 extern int fontSize;
+extern int minFreePeriods;
+extern int maxFreePeriods;
 
 extern std::string version;
 

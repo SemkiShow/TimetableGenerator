@@ -15,7 +15,6 @@ std::unordered_map<int, bool> allClassLessonTeachers;
 std::unordered_map<std::string, bool> classLessonTeachers;
 bool allAvailableClassLessonsVertical[DAYS_PER_WEEK];
 std::vector<bool> allAvailableClassLessonsHorizontal;
-std::unordered_map<int, bool> availableClassLessons;
 
 static void ResetVariables()
 {
@@ -25,16 +24,14 @@ static void ResetVariables()
     for (int i = 0; i < lessonsPerDay; i++)
         allAvailableClassLessonsHorizontal.push_back(true);
 
-    availableClassLessons.clear();
     for (int i = 0; i < DAYS_PER_WEEK; i++)
     {
-        for (int j = 0; j < lessonsPerDay; j++)
-            availableClassLessons[i*lessonsPerDay+j] = newClass;
-    }
-    for (int i = 0; i < DAYS_PER_WEEK; i++)
-    {
-        for (int j = 0; j < tmpTmpTimetable.classes[currentClassID].days[i].lessonNumbers.size(); j++)
-            availableClassLessons[i*lessonsPerDay + tmpTmpTimetable.classes[currentClassID].days[i].lessonNumbers[j]] = true;
+        if (tmpTmpTimetable.classes[currentClassID].days[i].lessons.size() < lessonsPerDay)
+        {
+            int iterations = lessonsPerDay - tmpTmpTimetable.classes[currentClassID].days[i].lessons.size();
+            for (int j = 0; j < iterations; j++)
+                tmpTmpTimetable.classes[currentClassID].days[i].lessons.push_back(newClass);
+        }
     }
 
     allClassLessons = true;
@@ -208,23 +205,7 @@ void ShowEditClass(bool* isOpen)
         {
             allAvailableClassLessonsHorizontal[i] = availableClassLessonsHorizontal;
             for (int j = 0; j < DAYS_PER_WEEK; j++)
-            {
-                for (int k = 0; k < tmpTmpTimetable.classes[currentClassID].days[j].lessonNumbers.size(); k++)
-                {
-                    if (tmpTmpTimetable.classes[currentClassID].days[j].lessonNumbers[k] == i)
-                    {
-                        tmpTmpTimetable.classes[currentClassID].days[j].lessonNumbers.erase(
-                            tmpTmpTimetable.classes[currentClassID].days[j].lessonNumbers.begin() + k);
-                        availableClassLessons[j*lessonsPerDay+i] = availableClassLessonsHorizontal;
-                        k--;
-                    }
-                }
-                if (availableClassLessonsHorizontal)
-                {
-                    tmpTmpTimetable.classes[currentClassID].days[j].lessonNumbers.push_back(i);
-                    availableClassLessons[j*lessonsPerDay+i] = availableClassLessonsHorizontal;
-                }
-            }
+                tmpTmpTimetable.classes[currentClassID].days[j].lessons[i] = allAvailableClassLessonsHorizontal[i];
         }
         ImGui::PopID();
         pushID++;
@@ -237,14 +218,16 @@ void ShowEditClass(bool* isOpen)
         if (ImGui::Checkbox((allAvailableClassLessonsVertical[i] ? "Deselect all" : "Select all"), &allAvailableClassLessonsVertical[i]))
         {
             for (int j = 0; j < lessonsPerDay; j++)
-                availableClassLessons[i*lessonsPerDay+j] = allAvailableClassLessonsVertical[i];
+                tmpTmpTimetable.classes[currentClassID].days[i].lessons[j] = allAvailableClassLessonsVertical[i];
         }
         ImGui::PopID();
         pushID++;
         for (int j = 0; j < lessonsPerDay; j++)
         {
             ImGui::PushID(pushID);
-            ImGui::Checkbox("", &availableClassLessons[i*lessonsPerDay+j]);
+            bool isLessonAvailable = tmpTmpTimetable.classes[currentClassID].days[i].lessons[j];
+            if (ImGui::Checkbox("", &isLessonAvailable))
+                tmpTmpTimetable.classes[currentClassID].days[i].lessons[j] = isLessonAvailable;
             ImGui::PopID();
             pushID++;
         }
@@ -276,7 +259,7 @@ void ShowEditClass(bool* isOpen)
     {
         if (it->second.lessonTeacherPairs.size() <= 1)
         {
-            it++;
+            ++it;
             continue;
         }
         ImGui::PushID(pushID);
@@ -324,7 +307,7 @@ void ShowEditClass(bool* isOpen)
         ImGui::InputInt(text.c_str(), &it->second.amount);
         ImGui::PopID();
         pushID++;
-        it++;
+        ++it;
     }
     ImGui::Separator();
     ImGui::Columns(2);
@@ -359,15 +342,6 @@ void ShowEditClass(bool* isOpen)
     ImGui::Columns(1);
     if (ImGui::Button("Ok"))
     {
-        for (int i = 0; i < DAYS_PER_WEEK; i++)
-        {
-            tmpTmpTimetable.classes[currentClassID].days[i].lessonNumbers.clear();
-            for (int j = 0; j < lessonsPerDay; j++)
-            {
-                if (availableClassLessons[i*lessonsPerDay+j])
-                    tmpTmpTimetable.classes[currentClassID].days[i].lessonNumbers.push_back(j);
-            }
-        }
         for (auto it = tmpTmpTimetable.classes[currentClassID].timetableLessons.begin(); it != tmpTmpTimetable.classes[currentClassID].timetableLessons.end();)
         {
             if (it->second.lessonTeacherPairs.size() <= 1)
@@ -375,7 +349,7 @@ void ShowEditClass(bool* isOpen)
                 it = tmpTmpTimetable.classes[currentClassID].timetableLessons.erase(it);
                 continue;
             }
-            it++;
+            ++it;
         }
         for (auto& lesson: currentTimetable.lessons)
         {
@@ -409,7 +383,7 @@ void ShowEditClass(bool* isOpen)
                         it = tmpTmpTimetable.classes.erase(it);
                         continue;
                     }
-                    it++;
+                    ++it;
                 }
             }
             int orderedClassesID = -1;
@@ -499,15 +473,15 @@ void ShowClasses(bool* isOpen)
             if (ImGui::Button("-"))
             {
                 ImGui::PopID();
-                for (auto it2 = tmpTimetable.classes.begin(); it2 != tmpTimetable.classes.end();)
+                for (auto it = tmpTimetable.classes.begin(); it != tmpTimetable.classes.end();)
                 {
-                    if (it2->second.number == lastClassNumber)
+                    if (it->second.number == lastClassNumber)
                     {
-                        tmpTimetable.orderedClasses.erase(find(tmpTimetable.orderedClasses.begin(), tmpTimetable.orderedClasses.end(), it2->first));
-                        it2 = tmpTimetable.classes.erase(it2);
+                        tmpTimetable.orderedClasses.erase(find(tmpTimetable.orderedClasses.begin(), tmpTimetable.orderedClasses.end(), it->first));
+                        it = tmpTimetable.classes.erase(it);
                         continue;
                     }
-                    it2++;
+                    ++it;
                 }
                 break;
             }

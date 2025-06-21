@@ -6,7 +6,6 @@
 #include <iostream>
 #include <random>
 #include <ctime>
-#include <filesystem>
 #include <map>
 
 #define DAYS_PER_WEEK 7
@@ -39,6 +38,7 @@ struct LessonTeacherPair
 {
     int lessonID = -1;
     int teacherID = -1;
+    int classroomID = -1;
 };
 
 struct TimetableLesson
@@ -49,7 +49,7 @@ struct TimetableLesson
 
 struct Day
 {
-    std::vector<int> lessonNumbers;
+    std::vector<bool> lessons;
     std::vector<int> timetableLessonIDs;
 };
 
@@ -66,6 +66,8 @@ struct Class
 struct Timetable
 {
     std::string name = "";
+    int errors = -1;
+    int bonusPoints = -1;
     int maxClassroomID = -1;
     int maxLessonID = -1;
     int maxTeacherID = -1;

@@ -95,7 +95,7 @@ void ShowClassrooms(bool* isOpen)
         ImGui::SameLine();
         ImGui::LabelText("", it->second.name.c_str());
         ImGui::PopID();
-        it++;
+        ++it;
     }
     ImGui::Separator();
     if (ImGui::Button("Ok"))

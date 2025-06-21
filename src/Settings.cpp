@@ -7,6 +7,8 @@ bool mergedFont = false;
 int timetableAutosaveInterval = 60;
 int lessonsPerDay = 8;
 int fontSize = 16;
+int minFreePeriods = 0;
+int maxFreePeriods = 0;
 
 std::string version;
 
@@ -51,6 +53,8 @@ void Save(std::string fileName)
     settingsFile << "timetable-autosave-interval=" << timetableAutosaveInterval << '\n';
     settingsFile << "lessons-per-day=" << lessonsPerDay << '\n';
     settingsFile << "font-size=" << fontSize << '\n';
+    settingsFile << "min-free-periods=" << minFreePeriods << '\n';
+    settingsFile << "max-free-periods=" << maxFreePeriods << '\n';
     settingsFile.close();
 
     // Save timetable
@@ -78,6 +82,8 @@ void Load(std::string fileName)
         if (label == "timetable-autosave-interval") timetableAutosaveInterval = stoi(value);
         if (label == "lessons-per-day") lessonsPerDay = stoi(value);
         if (label == "font-size") fontSize = stoi(value);
+        if (label == "min-free-periods") minFreePeriods = stoi(value);
+        if (label == "max-free-periods") maxFreePeriods = stoi(value);
     }
     settingsFile.close();
 

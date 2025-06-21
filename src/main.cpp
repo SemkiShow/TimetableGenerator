@@ -2,6 +2,7 @@
 #include "UI.hpp"
 #include "Timetable.hpp"
 #include "Updates.hpp"
+#include "Searching.hpp"
 
 int main()
 {
@@ -18,6 +19,11 @@ int main()
 
     Load("settings.txt");
     CheckForUpdates(false);
+
+    Timetable testTimetable = currentTimetable;
+    RandomizeTimetable(&testTimetable);
+    ScoreTimetable(&testTimetable);
+    std::cout << "The current timetable score is " << testTimetable.bonusPoints - testTimetable.errors << '\n';
 
     #if !defined(PLATFORM_WEB)
     int flags = 0;
