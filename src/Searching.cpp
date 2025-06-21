@@ -11,7 +11,7 @@ int GetLessonsAmount(std::map<int, TimetableLesson> timetableLessons)
 
 int GetLessonPlacesAmount(Day days[DAYS_PER_WEEK])
 {
-    int output;
+    int output = 0;
     for (int i = 0; i < DAYS_PER_WEEK; i++)
     {
         for (int j = 0; j < days[i].lessons.size(); j++)

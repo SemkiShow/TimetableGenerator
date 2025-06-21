@@ -23,6 +23,8 @@ int main()
     Timetable testTimetable = currentTimetable;
     RandomizeTimetable(&testTimetable);
     ScoreTimetable(&testTimetable);
+    // std::cout << "The current timetable bonus points count is " << testTimetable.bonusPoints << '\n';
+    // std::cout << "The current timetable errors count is " << testTimetable.errors << '\n';
     std::cout << "The current timetable score is " << testTimetable.bonusPoints - testTimetable.errors << '\n';
 
     #if !defined(PLATFORM_WEB)
