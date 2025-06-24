@@ -1,5 +1,4 @@
 #include "Settings.hpp"
-#include "UI.hpp"
 #include "Timetable.hpp"
 
 bool vsync = true;
