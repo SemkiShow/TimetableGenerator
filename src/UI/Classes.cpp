@@ -213,7 +213,7 @@ void ShowEditClass(bool* isOpen)
     ImGui::NextColumn();
     for (int i = 0; i < DAYS_PER_WEEK; i++)
     {
-        ImGui::Text(weekDays[i].c_str());
+        ImGui::Text("%s", weekDays[i].c_str());
         ImGui::PushID(pushID);
         if (ImGui::Checkbox((allAvailableClassLessonsVertical[i] ? "Deselect all" : "Select all"), &allAvailableClassLessonsVertical[i]))
         {
@@ -503,7 +503,7 @@ void ShowClasses(bool* isOpen)
                 isEditClass = true;
             }
             ImGui::SameLine();
-            ImGui::Text(lastClassNumber.c_str());
+            ImGui::Text("%s", lastClassNumber.c_str());
             ImGui::Indent();
             if (ImGui::Button("+"))
             {
@@ -554,14 +554,14 @@ void ShowClasses(bool* isOpen)
             isEditClass = true;
         }
         ImGui::SameLine();
-        ImGui::Text((tmpTimetable.classes[tmpTimetable.orderedClasses[i]].number + tmpTimetable.classes[tmpTimetable.orderedClasses[i]].letter).c_str());
+        ImGui::Text("%s", (tmpTimetable.classes[tmpTimetable.orderedClasses[i]].number + tmpTimetable.classes[tmpTimetable.orderedClasses[i]].letter).c_str());
         ImGui::PopID();
         buttonID++;
         ImGui::Unindent();
         ImGui::NextColumn();
         if (currentTimetable.teachers.find(tmpTimetable.classes[tmpTimetable.orderedClasses[i]].teacherID) !=
         currentTimetable.teachers.end())
-            ImGui::LabelText("", currentTimetable.teachers[tmpTimetable.classes[tmpTimetable.orderedClasses[i]].teacherID].name.c_str());
+            ImGui::LabelText("", "%s", currentTimetable.teachers[tmpTimetable.classes[tmpTimetable.orderedClasses[i]].teacherID].name.c_str());
         ImGui::NextColumn();
     }
     ImGui::Columns(1);

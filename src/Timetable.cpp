@@ -1,6 +1,5 @@
 #include "Timetable.hpp"
 #include "JSON.hpp"
-#include "UI.hpp"
 #include "Settings.hpp"
 
 Timetable currentTimetable;

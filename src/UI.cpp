@@ -76,7 +76,7 @@ void ShowAbout(bool* isOpen)
         ImGui::End();
         return;
     }
-    ImGui::Text(("TimetableGenerator " + version).c_str());
+    ImGui::Text("%s", ("TimetableGenerator " + version).c_str());
     ImGui::Text("A tool for creating timetables easily");
     ImGui::Text("Developed by SemkiShow");
     ImGui::Text("Licensed under GPLv3 License.");
@@ -91,8 +91,8 @@ void ShowNewVersion(bool* isOpen)
         ImGui::End();
         return;
     }
-    ImGui::Text(("The latest version is " + latestVersion).c_str());
-    ImGui::Text(("Your version is " + version).c_str());
+    ImGui::Text("%s", ("The latest version is " + latestVersion).c_str());
+    ImGui::Text("%s", ("Your version is " + version).c_str());
     if (version == latestVersion) ImGui::Text("There are no new versions available");
     else
     {

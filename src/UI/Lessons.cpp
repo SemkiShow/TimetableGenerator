@@ -1,5 +1,4 @@
 #include "UI.hpp"
-#include "Settings.hpp"
 #include "Timetable.hpp"
 
 static int currentLessonID = 0;
@@ -156,7 +155,7 @@ void ShowLessons(bool* isOpen)
             isEditLesson = true;
         }
         ImGui::SameLine();
-        ImGui::Text(it->second.name.c_str());
+        ImGui::Text("%s", it->second.name.c_str());
         ImGui::NextColumn();
         std::string classNames = "";
         for (int i = 0; i < it->second.classIDs.size(); i++)
@@ -165,7 +164,7 @@ void ShowLessons(bool* isOpen)
             classNames += currentTimetable.classes[it->second.classIDs[i]].letter;
             if (i < it->second.classIDs.size()-1) classNames += ' ';
         }
-        ImGui::Text(classNames.c_str());
+        ImGui::Text("%s", classNames.c_str());
         ImGui::NextColumn();
         std::string lessonClassrooms = "";
         for (int i = 0; i < it->second.classroomIDs.size(); i++)
@@ -173,7 +172,7 @@ void ShowLessons(bool* isOpen)
             lessonClassrooms += currentTimetable.classrooms[it->second.classroomIDs[i]].name;
             if (i < it->second.classroomIDs.size()-1) lessonClassrooms += ' ';
         }
-        ImGui::Text(lessonClassrooms.c_str());
+        ImGui::Text("%s", lessonClassrooms.c_str());
         ImGui::NextColumn();
         ImGui::PopID();
         ++it;

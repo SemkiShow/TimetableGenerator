@@ -1,5 +1,4 @@
 #include "Searching.hpp"
-#include "Settings.hpp"
 
 int GetLessonsAmount(std::map<int, TimetableLesson> timetableLessons)
 {
