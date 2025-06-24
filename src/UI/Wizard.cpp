@@ -13,9 +13,17 @@ const char* wizardTexts[WIZARD_STEPS] = {
     "You are done! Now press the Generate timetable button to begin the timetable finding process!"
 };
 void (*wizardMenus[])() = {OpenClassrooms, OpenClasses, OpenLessons, OpenTeachers, OpenClasses};
+bool* wizardToggles[] = {&isClassrooms, &isClasses, &isLessons, &isTeachers, &isClasses};
+bool openWizard = false;
 
 void ShowWizard(bool* isOpen)
 {
+    if (wizardStep > 0 && wizardStep < WIZARD_STEPS && !*wizardToggles[wizardStep-1] && openWizard)
+    {
+        openWizard = false;
+        *isOpen = true;
+    }
+    if (!*isOpen) return;
     if (!ImGui::Begin("Setup wizard", isOpen))
     {
         ImGui::End();
@@ -28,7 +36,12 @@ void ShowWizard(bool* isOpen)
     if (wizardStep > 0) ImGui::SameLine();
     if (ImGui::Button("Next"))
     {
-        if (wizardStep < WIZARD_STEPS-1) wizardMenus[wizardStep]();
+        if (wizardStep < WIZARD_STEPS-1)
+        {
+            wizardMenus[wizardStep]();
+            openWizard = true;
+            *isOpen = false;
+        }
         wizardStep++;
         if (wizardStep >= WIZARD_STEPS) *isOpen = false;
     }

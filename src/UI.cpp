@@ -237,7 +237,7 @@ void DrawFrame()
     if (isEditClass) ShowEditClass(&isEditClass);
     if (isClasses) ShowClasses(&isClasses);
     if (isAbout) ShowAbout(&isAbout);
-    if (isWizard) ShowWizard(&isWizard);
+    ShowWizard(&isWizard);
     if (isNewVersion) ShowNewVersion(&isNewVersion);
     if (ImGuiFileDialog::Instance()->Display("New Template", ImGuiWindowFlags_NoCollapse, ImVec2(750.f, 500.f)))
     {
