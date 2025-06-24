@@ -39,7 +39,7 @@ void GetLatestVesionName()
         if (res) std::cerr << "Status " << res->status << std::endl;
         else std::cerr << "No response received" << std::endl;
     }
-    latestVersion = "-1";
+    latestVersion = "\nError: no network connection!";
 }
 
 void CheckForUpdates(bool showWindow)

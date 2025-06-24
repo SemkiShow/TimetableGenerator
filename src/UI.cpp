@@ -94,7 +94,7 @@ void ShowNewVersion(bool* isOpen)
     ImGui::Text("%s", ("The latest version is " + latestVersion).c_str());
     ImGui::Text("%s", ("Your version is " + version).c_str());
     if (version == latestVersion) ImGui::Text("There are no new versions available");
-    else
+    else if (latestVersion[0] != '\n')
     {
         ImGui::Text("A new version is available!");
         ImGui::Text("Download it using");
