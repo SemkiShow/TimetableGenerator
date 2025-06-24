@@ -12,8 +12,9 @@
 #include "Settings.hpp"
 
 std::string latestVersion = "";
+bool newVersionAvailable = false;
 
-std::string GetLatestVesionName()
+void GetLatestVesionName()
 {
     httplib::SSLClient cli("api.github.com", 443);
     cli.set_default_headers({{"User-Agent", "TimetableGenerator"}});
@@ -24,7 +25,12 @@ std::string GetLatestVesionName()
     {
         JSONObject jsonObject;
         ParseJSON(res->body, &jsonObject);
-        if (!jsonObject.objects.empty()) return jsonObject.objects[0].stringPairs["tag_name"];
+        if (!jsonObject.objects.empty())
+        {
+            latestVersion = jsonObject.objects[0].stringPairs["tag_name"];
+            if (latestVersion != version) isNewVersion = true;
+            return;
+        }
         else std::cerr << "No releases found in JSON response" << std::endl;
     }
     else
@@ -33,13 +39,13 @@ std::string GetLatestVesionName()
         if (res) std::cerr << "Status " << res->status << std::endl;
         else std::cerr << "No response received" << std::endl;
     }
-    return "-1";
+    latestVersion = "-1";
 }
 
 void CheckForUpdates(bool showWindow)
 {
     latestVersion = "loading...";
     if (showWindow) isNewVersion = true;
-    latestVersion = GetLatestVesionName();
-    if (latestVersion != version && latestVersion != "-1") isNewVersion = true;
+    std::thread networkThread(GetLatestVesionName);
+    networkThread.detach();
 }

@@ -1,7 +1,8 @@
 #include <iostream>
 #include <string>
+#include <thread>
 
 extern std::string latestVersion;
 
-std::string GetLatestVesionName();
+void GetLatestVesionName();
 void CheckForUpdates(bool showWindow = true);
