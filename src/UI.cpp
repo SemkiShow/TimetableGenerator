@@ -14,6 +14,7 @@ std::unordered_map<int, std::string> weekDays{
     {5, "Saturday"},
     {6, "Sunday"}
 };
+std::vector<std::string> timetableFiles;
 
 int timetableSaveTimer = GetTime();
 
@@ -103,6 +104,51 @@ void ShowNewVersion(bool* isOpen)
     ImGui::End();
 }
 
+bool isNewTimetable = false;
+bool newTimetable = false;
+std::string timetableName = "";
+void ShowNewTimetable(bool* isOpen)
+{
+    if (!ImGui::Begin((newTimetable ? "New timetable" : "Save timetable as"), isOpen))
+    {
+        ImGui::End();
+        return;
+    }
+    ImGui::Text("Enter the timetable name\n(for example, the name of the school)");
+    ImGui::InputText("", &timetableName);
+    if (ImGui::Button("Ok"))
+    {
+        if (newTimetable) currentTimetable = Timetable();
+        SaveTimetable("templates/" + timetableName + ".json", &currentTimetable);
+        LoadTimetable("templates/" + timetableName + ".json", &currentTimetable);
+        SaveTimetable("templates/" + timetableName + ".json", &currentTimetable);
+        *isOpen = false;
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Cancel")) *isOpen = false;
+    ImGui::End();
+}
+
+bool isOpenTimetable = false;
+void ShowOpenTimetable(bool* isOpen)
+{
+    if (!ImGui::Begin("Open timetable", isOpen))
+    {
+        ImGui::End();
+        return;
+    }
+    ImGui::Text("Select a timetable to open");
+    for (int i = 0; i < timetableFiles.size(); i++)
+    {
+        if (ImGui::Button(timetableFiles[i].c_str()))
+        {
+            LoadTimetable("templates/" + timetableFiles[i] + ".json", &currentTimetable);
+            *isOpen = false;
+        }
+    }
+    ImGui::End();
+}
+
 void OpenClassrooms()
 {
     tmpTimetable.classrooms = currentTimetable.classrooms;
@@ -162,35 +208,31 @@ void ShowMenuBar()
         {
             if (ImGui::MenuItem("New"))
             {
-                IGFD::FileDialogConfig config;
-                config.path = "templates";
-                config.flags = ImGuiFileDialogFlags_ConfirmOverwrite;
-                ImGuiFileDialog::Instance()->OpenDialog("New Template", "New File", ".json", config);
+                newTimetable = true;
+                timetableName = "";
+                isNewTimetable = true;
             }
             if (ImGui::MenuItem("Open"))
             {
-                IGFD::FileDialogConfig config;
-                config.path = "templates";
-                ImGuiFileDialog::Instance()->OpenDialog("Choose Template", "Choose File", ".json", config);
+                ListFiles("templates/", &timetableFiles);
+                for (int i = 0; i < timetableFiles.size(); i++)
+                    timetableFiles[i] = std::filesystem::path(timetableFiles[i]).stem().string();
+                isOpenTimetable = true;
             }
             if (ImGui::MenuItem("Save"))
                 SaveTimetable("templates/" + currentTimetable.name + ".json", &currentTimetable);
             if (ImGui::MenuItem("Save As"))
             {
-                IGFD::FileDialogConfig config;
-                config.path = "templates";
-                config.flags = ImGuiFileDialogFlags_ConfirmOverwrite;
-                ImGuiFileDialog::Instance()->OpenDialog("Save Template As", "Save File As", ".json", config);
+                newTimetable = false;
+                timetableName = currentTimetable.name;
+                isNewTimetable = true;
             }
             if (ImGui::MenuItem("Settings")) isSettings = true;
             ImGui::EndMenu();
         }
         if (currentTimetable.name != "" && ImGui::BeginMenu(currentTimetable.name.c_str()))
         {
-            if (ImGui::MenuItem("Setup wizard"))
-            {
-                isWizard = true;
-            }
+            if (ImGui::MenuItem("Setup wizard")) isWizard = true;
             if (ImGui::MenuItem("Classrooms")) OpenClasses();
             if (ImGui::MenuItem("Lessons")) OpenLessons();
             if (ImGui::MenuItem("Teachers")) OpenTeachers();
@@ -239,39 +281,8 @@ void DrawFrame()
     if (isAbout) ShowAbout(&isAbout);
     ShowWizard(&isWizard);
     if (isNewVersion) ShowNewVersion(&isNewVersion);
-    if (ImGuiFileDialog::Instance()->Display("New Template", ImGuiWindowFlags_NoCollapse, ImVec2(750.f, 500.f)))
-    {
-        if (ImGuiFileDialog::Instance()->IsOk())
-        {
-            std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
-            currentTimetable = Timetable();
-            SaveTimetable(filePathName, &currentTimetable);
-            LoadTimetable(filePathName, &currentTimetable);
-        }
-        ImGuiFileDialog::Instance()->Close();
-    }
-    if (ImGuiFileDialog::Instance()->Display("Choose Template", ImGuiWindowFlags_NoCollapse, ImVec2(750.f, 500.f)))
-    {
-        if (ImGuiFileDialog::Instance()->IsOk())
-        {
-            std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
-            SaveTimetable("templates/" + currentTimetable.name + ".json", &currentTimetable);
-            currentTimetable = Timetable();
-            LoadTimetable(filePathName, &currentTimetable);
-            SaveTimetable(filePathName, &currentTimetable);
-        }
-        ImGuiFileDialog::Instance()->Close();
-    }
-    if (ImGuiFileDialog::Instance()->Display("Save Template As", ImGuiWindowFlags_NoCollapse, ImVec2(750.f, 500.f)))
-    {
-        if (ImGuiFileDialog::Instance()->IsOk())
-        {
-            std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
-            SaveTimetable(filePathName, &currentTimetable);
-            LoadTimetable(filePathName, &currentTimetable);
-        }
-        ImGuiFileDialog::Instance()->Close();
-    }
+    if (isNewTimetable) ShowNewTimetable(&isNewTimetable);
+    if (isOpenTimetable) ShowOpenTimetable(&isOpenTimetable);
 
     if (GetTime() - timetableSaveTimer > timetableAutosaveInterval)
     {

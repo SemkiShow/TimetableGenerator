@@ -10,7 +10,7 @@ int fontSize = 16;
 int minFreePeriods = 0;
 int maxFreePeriods = 0;
 
-std::string version;
+std::string version = "";
 
 std::vector<std::string> Split(std::string input, char delimiter)
 {
