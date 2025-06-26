@@ -197,6 +197,11 @@ void ShowTeachers(bool* isOpen)
         ImGui::End();
         return;
     }
+    ImGui::InputInt("min-free-periods", &minFreePeriods);
+    if (minFreePeriods < 0) minFreePeriods = 0;
+    ImGui::InputInt("max-free-periods", &maxFreePeriods);
+    if (maxFreePeriods < 0) maxFreePeriods = 0;
+    if (maxFreePeriods < minFreePeriods) maxFreePeriods = minFreePeriods;
     if (ImGui::Button("+"))
     {
         newTeacher = true;

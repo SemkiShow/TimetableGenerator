@@ -52,11 +52,6 @@ void ShowSettings(bool* isOpen)
     }
     ImGui::InputInt("lessons-per-day", &lessonsPerDay);
     if (lessonsPerDay < 0) lessonsPerDay = 0;
-    ImGui::InputInt("min-free-periods", &minFreePeriods);
-    if (minFreePeriods < 0) minFreePeriods = 0;
-    ImGui::InputInt("max-free-periods", &maxFreePeriods);
-    if (maxFreePeriods < 0) maxFreePeriods = 0;
-    if (maxFreePeriods < minFreePeriods) maxFreePeriods = minFreePeriods;
     if (ImGui::TreeNode("Developer options"))
     {
         ImGui::Checkbox("vsync", &vsync);
