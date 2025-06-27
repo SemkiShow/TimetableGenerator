@@ -12,7 +12,23 @@
 #include "Settings.hpp"
 
 std::string latestVersion = "";
+std::vector<std::string> releaseNotes;
 bool newVersionAvailable = false;
+
+std::vector<std::string> MultiSplit(const std::string& input, const std::string& delimiter)
+{
+    std::vector<std::string> output;
+    size_t start = 0;
+    size_t end;
+
+    while ((end = input.find(delimiter, start)) != std::string::npos) {
+        output.push_back(input.substr(start, end - start));
+        start = end + delimiter.length();
+    }
+    output.push_back(input.substr(start));
+
+    return output;
+}
 
 void GetLatestVesionName()
 {
@@ -28,6 +44,7 @@ void GetLatestVesionName()
         if (!jsonObject.objects.empty())
         {
             latestVersion = jsonObject.objects[0].stringPairs["tag_name"];
+            releaseNotes = MultiSplit(jsonObject.objects[0].stringPairs["body"], "\\n");
             if (latestVersion != version) isNewVersion = true;
             return;
         }
@@ -45,6 +62,8 @@ void GetLatestVesionName()
 void CheckForUpdates(bool showWindow)
 {
     latestVersion = "loading...";
+    releaseNotes.clear();
+    releaseNotes.push_back("loading...");
     if (showWindow) isNewVersion = true;
     std::thread networkThread(GetLatestVesionName);
     networkThread.detach();

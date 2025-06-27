@@ -95,6 +95,12 @@ void ShowNewVersion(bool* isOpen)
         ImGui::Text("Download it using");
         ImGui::SameLine();
         ImGui::TextLinkOpenURL("this link", ("https://github.com/SemkiShow/TimetableGenerator/releases/tag/" + latestVersion).c_str());
+        if (ImGui::TreeNode("Release notes"))
+        {
+            for (int i = 0; i < releaseNotes.size()-1; i++)
+                ImGui::Text(releaseNotes[i].c_str());
+            ImGui::TreePop();
+        }
     }
     ImGui::End();
 }
