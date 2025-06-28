@@ -86,7 +86,7 @@ void ShowEditTeacher(bool* isOpen)
         ImGui::PushID(pushID);
         ImGui::Checkbox("", &teacherLessons[lesson.first]);
         ImGui::SameLine();
-        ImGui::Text(lesson.second.name.c_str());
+        ImGui::Text("%s", lesson.second.name.c_str());
         ImGui::NextColumn();
         std::string classNames = "";
         for (int j = 0; j < lesson.second.classIDs.size(); j++)
@@ -95,7 +95,7 @@ void ShowEditTeacher(bool* isOpen)
             classNames += currentTimetable.classes[lesson.second.classIDs[j]].letter;
             if (j < lesson.second.classIDs.size()-1) classNames += ' ';
         }
-        ImGui::Text(classNames.c_str());
+        ImGui::Text("%s", classNames.c_str());
         ImGui::NextColumn();
         std::string lessonClassrooms = "";
         for (int j = 0; j < lesson.second.classroomIDs.size(); j++)
@@ -103,7 +103,7 @@ void ShowEditTeacher(bool* isOpen)
             lessonClassrooms += currentTimetable.classrooms[lesson.second.classroomIDs[j]].name;
             if (j < lesson.second.classroomIDs.size()-1) lessonClassrooms += ' ';
         }
-        ImGui::Text(lessonClassrooms.c_str());
+        ImGui::Text("%s", lessonClassrooms.c_str());
         ImGui::NextColumn();
         ImGui::PopID();
         pushID++;
@@ -112,8 +112,8 @@ void ShowEditTeacher(bool* isOpen)
     ImGui::Separator();
     ImGui::Text("available-lessons");
     ImGui::Columns(8);
-    ImGui::LabelText("##1", "");
-    ImGui::LabelText("##2", "");
+    ImGui::LabelText("##1", "%s", "");
+    ImGui::LabelText("##2", "%s", "");
     for (int i = 0; i < lessonsPerDay; i++)
     {
         ImGui::PushID(pushID);
@@ -130,7 +130,7 @@ void ShowEditTeacher(bool* isOpen)
     ImGui::NextColumn();
     for (int i = 0; i < DAYS_PER_WEEK; i++)
     {
-        ImGui::Text(weekDays[i].c_str());
+        ImGui::Text("%s", weekDays[i].c_str());
         ImGui::PushID(pushID);
         if (ImGui::Combo("", &allAvailableTeacherLessonsVertical[i], teacherLessonValues.c_str()))
         {
@@ -235,7 +235,7 @@ void ShowTeachers(bool* isOpen)
             isEditTeacher = true;
         }
         ImGui::SameLine();
-        ImGui::Text(it->second.name.c_str());
+        ImGui::Text("%s", it->second.name.c_str());
         ImGui::NextColumn();
         std::string lessonNames = "";
         for (int j = 0; j < tmpTimetable.teachers[it->first].lessonIDs.size(); j++)
@@ -243,7 +243,7 @@ void ShowTeachers(bool* isOpen)
             lessonNames += currentTimetable.lessons[tmpTimetable.teachers[it->first].lessonIDs[j]].name;
             if (j < tmpTimetable.teachers[it->first].lessonIDs.size()-1) lessonNames += ' ';
         }
-        ImGui::Text(lessonNames.c_str());
+        ImGui::Text("%s", lessonNames.c_str());
         ImGui::NextColumn();
         ImGui::PopID();
         ++it;

@@ -1,5 +1,5 @@
 #include "UI.hpp"
-#include "Settings.hpp"
+#include "Settings.hpp" // IWYU pragma: keep
 #include "Timetable.hpp"
 
 bool newClassroom = false;
@@ -93,7 +93,7 @@ void ShowClassrooms(bool* isOpen)
             isEditClassroom = true;
         }
         ImGui::SameLine();
-        ImGui::LabelText("", it->second.name.c_str());
+        ImGui::LabelText("", "%s", it->second.name.c_str());
         ImGui::PopID();
         ++it;
     }
