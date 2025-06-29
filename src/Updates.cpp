@@ -1,13 +1,5 @@
-#define WIN32_LEAN_AND_MEAN
-#define NOGDI
-#define NOMINMAX
-#define NODRAWTEXT
-#define NOUSER
-
-#define CPPHTTPLIB_OPENSSL_SUPPORT
-#include "httplib.h"
-#include "UI.hpp"
 #include "Updates.hpp"
+#include "UI.hpp"
 #include "JSON.hpp"
 #include "Settings.hpp"
 
@@ -30,33 +22,59 @@ std::vector<std::string> MultiSplit(const std::string& input, const std::string&
     return output;
 }
 
-void GetLatestVesionName()
+size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp)
 {
-    httplib::SSLClient cli("api.github.com", 443);
-    cli.set_default_headers({{"User-Agent", "TimetableGenerator"}});
-    cli.set_ca_cert_path("resources/cacert.pem");
+    ((std::string*)userp)->append((char*)contents, size * nmemb);
+    return size * nmemb;
+}
 
-    auto res = cli.Get("/repos/SemkiShow/TimetableGenerator/releases");
-    if (res && res->status == 200)
+void GetLatestVersionName()
+{
+    CURL* curl = curl_easy_init();
+    if (!curl)
     {
-        JSONObject jsonObject;
-        ParseJSON(res->body, &jsonObject);
-        if (!jsonObject.objects.empty())
-        {
-            latestVersion = jsonObject.objects[0].stringPairs["tag_name"];
-            releaseNotes = MultiSplit(jsonObject.objects[0].stringPairs["body"], "\\n");
-            if (latestVersion != version) isNewVersion = true;
-            return;
-        }
-        else std::cerr << "No releases found in JSON response" << std::endl;
+        std::cerr << "Failed to initialize CURL" << std::endl;
+        latestVersion = "\nError: CURL init failed!";
+        return;
+    }
+
+    std::string readBuffer;
+    curl_easy_setopt(curl, CURLOPT_URL, "https://api.github.com/repos/SemkiShow/TimetableGenerator/releases");
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+    curl_easy_setopt(curl, CURLOPT_USERAGENT, "TimetableGenerator");
+    curl_easy_setopt(curl, CURLOPT_CAINFO, "resources/cacert.pem");
+
+    CURLcode res = curl_easy_perform(curl);
+    if (res != CURLE_OK)
+    {
+        std::cerr << "CURL request failed: " << curl_easy_strerror(res) << std::endl;
+        latestVersion = "\nError: network request failed!";
     }
     else
     {
-        std::cerr << "HTTP request failed: ";
-        if (res) std::cerr << "Status " << res->status << std::endl;
-        else std::cerr << "No response received" << std::endl;
+        long responseCode = 0;
+        curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &responseCode);
+        if (responseCode == 200)
+        {
+            JSONObject jsonObject;
+            ParseJSON(readBuffer, &jsonObject);
+            if (!jsonObject.objects.empty())
+            {
+                latestVersion = jsonObject.objects[0].stringPairs["tag_name"];
+                releaseNotes = MultiSplit(jsonObject.objects[0].stringPairs["body"], "\\n");
+                if (latestVersion != version) isNewVersion = true;
+            }
+            else std::cerr << "No releases found in JSON response" << std::endl;
+        }
+        else
+        {
+            std::cerr << "HTTP request failed: Status " << responseCode << std::endl;
+            latestVersion = "\nError: bad HTTP status!";
+        }
     }
-    latestVersion = "\nError: no network connection!";
+
+    curl_easy_cleanup(curl);
 }
 
 void CheckForUpdates(bool showWindow)
@@ -65,6 +83,6 @@ void CheckForUpdates(bool showWindow)
     releaseNotes.clear();
     releaseNotes.push_back("loading...");
     if (showWindow) isNewVersion = true;
-    std::thread networkThread(GetLatestVesionName);
+    std::thread networkThread(GetLatestVersionName);
     networkThread.detach();
 }

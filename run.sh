@@ -7,7 +7,7 @@ if [ "$1" == "" ]; then
     clear
     ./reset_save_files.sh --soft
     cmake -B build -DCMAKE_BUILD_TYPE=Release
-    cmake --build build -j
+    cmake --build build -j32
     ./build/bin/main
 fi
 
@@ -16,7 +16,7 @@ if [ "$1" == "-d" ] || [ "$1" == "--debug" ]; then
     clear
     ./reset_save_files.sh --soft
     cmake -B build_debug -DCMAKE_BUILD_TYPE=Debug
-    cmake --build build_debug -j
+    cmake --build build_debug -j32
     gdb -ex run ./build_debug/bin/main
 fi
 
@@ -24,8 +24,8 @@ fi
 if [ "$1" == "-w" ] || [ "$1" == "--windows" ]; then
     clear
     ./reset_save_files.sh --soft
-    cmake -B build_win -DCMAKE_TOOLCHAIN_FILE=mingw-w64-x86_64.cmake -DCMAKE_BUILD_TYPE=Release
-    cmake --build build_win -j
+    cmake -B build_win -DCMAKE_TOOLCHAIN_FILE="$(pwd)/mingw-w64-x86_64.cmake" -DCMAKE_BUILD_TYPE=Release
+    cmake --build build_win -j32
     wine ./build_win/bin/main.exe
 fi
 
