@@ -6,7 +6,7 @@ int currentTeacherID = 0;
 bool newTeacher = false;
 bool allTeacherLessons = true;
 std::unordered_map<int, bool> teacherLessons;
-int allAvailableTeacherLessonsVertical[DAYS_PER_WEEK];
+std::vector<int> allAvailableTeacherLessonsVertical;
 std::vector<int> allAvailableTeacherLessonsHorizontal;
 std::unordered_map<int, int> availableTeacherLessons;
 std::string teacherLessonValues = "";
@@ -14,23 +14,22 @@ std::string teacherLessonValues = "";
 static void ResetVariables()
 {
     allTeacherLessons = false;
-    for (int i = 0; i < DAYS_PER_WEEK; i++)
-        allAvailableTeacherLessonsVertical[i] = 1;
+    allAvailableTeacherLessonsVertical.clear();
+    allAvailableTeacherLessonsVertical.resize(daysPerWeek, 1);
     allAvailableTeacherLessonsHorizontal.clear();
-    for (int i = 0; i < lessonsPerDay; i++)
-        allAvailableTeacherLessonsHorizontal.push_back(1);
+    allAvailableTeacherLessonsHorizontal.resize(lessonsPerDay, 1);
     teacherLessons.clear();
     for (auto& lesson: currentTimetable.lessons)
         teacherLessons[lesson.first] = false;
     for (int i = 0; i < tmpTmpTimetable.teachers[currentTeacherID].lessonIDs.size(); i++)
         teacherLessons[tmpTmpTimetable.teachers[currentTeacherID].lessonIDs[i]] = true;
     availableTeacherLessons.clear();
-    for (int i = 0; i < DAYS_PER_WEEK; i++)
+    for (int i = 0; i < daysPerWeek; i++)
     {
         for (int j = 0; j < lessonsPerDay; j++)
             availableTeacherLessons[i*lessonsPerDay+j] = 1;
     }
-    for (int i = 0; i < DAYS_PER_WEEK; i++)
+    for (int i = 0; i < daysPerWeek; i++)
     {
         for (int j = 0; j < tmpTmpTimetable.teachers[currentTeacherID].workDays[i].lessonIDs.size(); j++)
         {
@@ -54,8 +53,10 @@ static void ResetVariables()
     }
     if (newTeacher)
     {
-        for (int i = 0; i < DAYS_PER_WEEK; i++)
+        tmpTmpTimetable.teachers[currentTeacherID].workDays.resize(daysPerWeek);
+        for (int i = 0; i < daysPerWeek; i++)
         {
+            tmpTmpTimetable.teachers[currentTeacherID].workDays[i].lessonIDs.resize(lessonsPerDay);
             for (int j = 0; j < lessonsPerDay; j++)
                 tmpTmpTimetable.teachers[currentTeacherID].workDays[i].lessonIDs.push_back(1);
         }
@@ -111,15 +112,16 @@ void ShowEditTeacher(bool* isOpen)
     ImGui::Columns(1);
     ImGui::Separator();
     ImGui::Text("available-lessons");
-    ImGui::Columns(DAYS_PER_WEEK + 1);
+    ImGui::Columns(daysPerWeek + 1);
     ImGui::LabelText("##1", "%s", "");
     ImGui::LabelText("##2", "%s", "");
+    allAvailableTeacherLessonsHorizontal.resize(lessonsPerDay, 1);
     for (int i = 0; i < lessonsPerDay; i++)
     {
         ImGui::PushID(pushID);
         if (ImGui::Combo(std::to_string(i).c_str(), &allAvailableTeacherLessonsHorizontal[i], teacherLessonValues.c_str()))
         {
-            for (int j = 0; j < DAYS_PER_WEEK; j++)
+            for (int j = 0; j < daysPerWeek; j++)
             {
                 availableTeacherLessons[j*lessonsPerDay+i] = allAvailableTeacherLessonsHorizontal[i];
             }
@@ -128,7 +130,8 @@ void ShowEditTeacher(bool* isOpen)
         pushID++;
     }
     ImGui::NextColumn();
-    for (int i = 0; i < DAYS_PER_WEEK; i++)
+    allAvailableTeacherLessonsVertical.resize(daysPerWeek, 1);
+    for (int i = 0; i < daysPerWeek; i++)
     {
         int weekDay = i;
         while (weekDay >= 7) weekDay -= 7;
@@ -159,7 +162,8 @@ void ShowEditTeacher(bool* isOpen)
             if (teacherLessons[lesson.first])
                 tmpTmpTimetable.teachers[currentTeacherID].lessonIDs.push_back(lesson.first);
         }
-        for (int i = 0; i < DAYS_PER_WEEK; i++)
+        tmpTmpTimetable.teachers[currentTeacherID].workDays.resize(daysPerWeek);
+        for (int i = 0; i < daysPerWeek; i++)
         {
             tmpTmpTimetable.teachers[currentTeacherID].workDays[i].lessonIDs.clear();
             for (int j = 0; j < lessonsPerDay; j++)

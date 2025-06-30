@@ -72,7 +72,8 @@ void SaveTimetable(std::string path, Timetable* timetable)
         // Work days
         jsonObject.objectPairs["teachers"].objectPairs[std::to_string(teacher.first)].objectPairs["workDays"] = JSONObject();
         jsonObject.objectPairs["teachers"].objectPairs[std::to_string(teacher.first)].objectPairs["workDays"].type = JSON_LIST;
-        for (int i = 0; i < DAYS_PER_WEEK; i++)
+        teacher.second.workDays.resize(daysPerWeek);
+        for (int i = 0; i < daysPerWeek; i++)
         {
             jsonObject.objectPairs["teachers"].objectPairs[std::to_string(teacher.first)].objectPairs["workDays"].objects.push_back(JSONObject());
             jsonObject.objectPairs["teachers"].objectPairs[std::to_string(teacher.first)].objectPairs["workDays"].objects[i].type = JSON_LIST;
@@ -135,8 +136,10 @@ void SaveTimetable(std::string path, Timetable* timetable)
         jsonObject.objectPairs["classes"].objectPairs[std::to_string(classPair.first)].objectPairs["days"] = JSONObject();
         jsonObject.objectPairs["classes"].objectPairs[std::to_string(classPair.first)].objectPairs["days"].type = JSON_LIST;
 
-        for (int i = 0; i < DAYS_PER_WEEK; i++)
+        classPair.second.days.resize(daysPerWeek);
+        for (int i = 0; i < daysPerWeek; i++)
         {
+            classPair.second.days[i].lessons.resize(lessonsPerDay);
             // Lesson numbers
             jsonObject.objectPairs["classes"].objectPairs[std::to_string(classPair.first)].objectPairs["lessonNumbers"].objects.push_back(JSONObject());
             jsonObject.objectPairs["classes"].objectPairs[std::to_string(classPair.first)].objectPairs["lessonNumbers"].objects[i].type = JSON_LIST;
@@ -170,13 +173,6 @@ void SaveTimetable(std::string path, Timetable* timetable)
     }
 
     SaveJSON(path, &jsonObject);
-}
-
-std::string TrimJunk(const std::string& input)
-{
-    auto first = input.find_first_not_of("\t\n\r\f\v");
-    auto last  = input.find_last_not_of ("\t\n\r\f\v");
-    return (first == input.npos) ? "" : input.substr(first, last-first+1);
 }
 
 void LoadTimetable(std::string path, Timetable* timetable)
@@ -225,6 +221,7 @@ void LoadTimetable(std::string path, Timetable* timetable)
         timetable->teachers[teacherID].name = teacher.second.stringPairs["name"];
         for (int i = 0; i < teacher.second.objectPairs["lessonIDs"].ints.size(); i++)
             timetable->teachers[teacherID].lessonIDs.push_back(teacher.second.objectPairs["lessonIDs"].ints[i]);
+        timetable->teachers[teacherID].workDays.resize(teacher.second.objectPairs["workDays"].objects.size());
         for (int i = 0; i < teacher.second.objectPairs["workDays"].objects.size(); i++)
         {
             for (int j = 0; j < teacher.second.objectPairs["workDays"].objects[i].ints.size(); j++)
@@ -261,6 +258,7 @@ void LoadTimetable(std::string path, Timetable* timetable)
                     lesson.second.objects[i].intPairs["teacherID"];
             }
         }
+        timetable->classes[classID].days.resize(classPair.second.objectPairs["lessonNumbers"].objects.size());
         for (int i = 0; i < classPair.second.objectPairs["lessonNumbers"].objects.size(); i++)
         {
             for (int j = 0; j < classPair.second.objectPairs["lessonNumbers"].objects[i].bools.size(); j++)
@@ -317,7 +315,7 @@ void GenerateRandomTimetable(Timetable* timetable)
     for (int i = 0; i < 15; i++)
     {
         timetable->lessons[i] = Lesson();
-        for (int j = 0; j < DAYS_PER_WEEK; j++)
+        for (int j = 0; j < 7; j++)
             timetable->lessons[i].name += 'a' + rand() % 26;
         for (int j = 0; j < 4; j++)
         {
@@ -329,7 +327,7 @@ void GenerateRandomTimetable(Timetable* timetable)
     for (int i = 0; i < 5; i++)
     {
         timetable->teachers[i] = Teacher();
-        for (int j = 0; j < DAYS_PER_WEEK; j++)
+        for (int j = 0; j < 7; j++)
             timetable->teachers[i].name += 'a' + rand() % 26;
         for (int j = 0; j < 3; j++)
         {
@@ -337,10 +335,10 @@ void GenerateRandomTimetable(Timetable* timetable)
             std::advance(it, rand() % timetable->lessons.size());
             timetable->teachers[i].lessonIDs.push_back(it->first);
         }
-        for (int j = 0; j < DAYS_PER_WEEK; j++)
+        timetable->teachers[i].workDays.resize(daysPerWeek);
+        for (int j = 0; j < daysPerWeek; j++)
         {
-            for (int k = 0; k < lessonsPerDay; k++)
-                timetable->teachers[i].workDays[j].lessonIDs.push_back(rand() % timetable->lessons.size());
+            timetable->teachers[i].workDays[j].lessonIDs.resize(lessonsPerDay, rand() % timetable->lessons.size());
         }
     }
     int classLettersPerClassNumber = 3;
@@ -372,8 +370,10 @@ void GenerateRandomTimetable(Timetable* timetable)
                     timetable->classes[classID].timetableLessons[k].lessonTeacherPairs[0].teacherID = it->first;
                 }
             }
-            for (int k = 0; k < DAYS_PER_WEEK; k++)
+            timetable->classes[classID].days.resize(daysPerWeek);
+            for (int k = 0; k < daysPerWeek; k++)
             {
+                timetable->classes[classID].days[k].lessons.resize(lessonsPerDay);
                 for (int m = 0; m < lessonsPerDay; m++)
                 {
                     timetable->classes[classID].days[k].lessons.push_back(rand() % 2 == 0);

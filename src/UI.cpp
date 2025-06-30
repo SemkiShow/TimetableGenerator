@@ -52,8 +52,9 @@ void ShowSettings(bool* isOpen)
         ImGui::End();
         return;
     }
+    ImGui::InputInt("days-per-week", &daysPerWeek);
     ImGui::InputInt("lessons-per-day", &lessonsPerDay);
-    if (lessonsPerDay < 0) lessonsPerDay = 0;
+    if (lessonsPerDay < 1) lessonsPerDay = 1;
     if (ImGui::TreeNode("Developer options"))
     {
         ImGui::Checkbox("vsync", &vsync);
@@ -64,6 +65,8 @@ void ShowSettings(bool* isOpen)
         ImGui::InputInt("max-mutations", &maxMutations);
         if (maxMutations < 1) maxMutations = 1;
         ImGui::SliderFloat("error-bonus-ratio", &errorBonusRatio, 0.1f, 100.0f);
+        ImGui::SliderInt("timetables-per-generation", &timetablesPerGeneration, 10, 1000);
+        ImGui::SliderInt("max-iterations", &maxIterations, -1, 10000);
         ImGui::TreePop();
     }
     ImGui::End();
@@ -122,11 +125,12 @@ void ShowNewTimetable(bool* isOpen)
         return;
     }
     ImGui::Text("Enter the timetable name\n(for example, the name of the school)");
-    ImGui::InputText("", &timetableName);
+    ImGui::InputText("##", &timetableName);
     if (ImGui::Button("Ok"))
     {
         if (newTimetable) currentTimetable = Timetable();
         SaveTimetable("templates/" + timetableName + ".json", &currentTimetable);
+        currentTimetable = Timetable();
         LoadTimetable("templates/" + timetableName + ".json", &currentTimetable);
         SaveTimetable("templates/" + timetableName + ".json", &currentTimetable);
         *isOpen = false;
@@ -149,6 +153,7 @@ void ShowOpenTimetable(bool* isOpen)
     {
         if (ImGui::Button(timetableFiles[i].c_str()))
         {
+            currentTimetable = Timetable();
             LoadTimetable("templates/" + timetableFiles[i] + ".json", &currentTimetable);
             *isOpen = false;
         }

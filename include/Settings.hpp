@@ -15,6 +15,8 @@ extern int maxFreePeriods;
 extern int timetablesPerGeneration;
 extern int maxMutations;
 extern float errorBonusRatio;
+extern int daysPerWeek;
+extern int maxIterations;
 
 extern std::string version;
 
@@ -23,5 +25,6 @@ extern std::vector<std::string> templates;
 
 std::vector<std::string> Split(std::string input, char delimiter = ' ');
 void ListFiles(const std::string& path, std::vector<std::string>* files);
+std::string TrimJunk(const std::string& input);
 void Save(std::string fileName);
 void Load(std::string fileName);

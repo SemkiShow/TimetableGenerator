@@ -13,18 +13,18 @@ std::unordered_map<std::string, bool> classLessons;
 std::unordered_map<int, int> classLessonAmounts;
 std::unordered_map<int, bool> allClassLessonTeachers;
 std::unordered_map<std::string, bool> classLessonTeachers;
-bool allAvailableClassLessonsVertical[DAYS_PER_WEEK];
+std::vector<bool> allAvailableClassLessonsVertical;
 std::vector<bool> allAvailableClassLessonsHorizontal;
 
 static void ResetVariables()
 {
-    for (int i = 0; i < DAYS_PER_WEEK; i++)
-        allAvailableClassLessonsVertical[i] = true;
+    allAvailableClassLessonsVertical.clear();
+    allAvailableClassLessonsVertical.resize(daysPerWeek, true);
     allAvailableClassLessonsHorizontal.clear();
-    for (int i = 0; i < lessonsPerDay; i++)
-        allAvailableClassLessonsHorizontal.push_back(true);
+    allAvailableClassLessonsHorizontal.resize(lessonsPerDay, true);
 
-    for (int i = 0; i < DAYS_PER_WEEK; i++)
+    tmpTmpTimetable.classes[currentClassID].days.resize(daysPerWeek);
+    for (int i = 0; i < daysPerWeek; i++)
     {
         if (tmpTmpTimetable.classes[currentClassID].days[i].lessons.size() < lessonsPerDay)
         {
@@ -193,10 +193,12 @@ void ShowEditClass(bool* isOpen)
     ImGui::Separator();
     ImGui::Text("available-lessons");
     ImGui::Separator();
-    ImGui::Columns(DAYS_PER_WEEK + 1);
+    ImGui::Columns(daysPerWeek + 1);
     ImGui::LabelText("##1", "%s", "");
     ImGui::LabelText("##2", "%s", "");
     int pushID = 3;
+    allAvailableClassLessonsHorizontal.resize(lessonsPerDay, true);
+    tmpTmpTimetable.classes[currentClassID].days.resize(daysPerWeek);
     for (int i = 0; i < lessonsPerDay; i++)
     {
         ImGui::PushID(pushID);
@@ -204,21 +206,29 @@ void ShowEditClass(bool* isOpen)
         if (ImGui::Checkbox(std::to_string(i).c_str(), &availableClassLessonsHorizontal))
         {
             allAvailableClassLessonsHorizontal[i] = availableClassLessonsHorizontal;
-            for (int j = 0; j < DAYS_PER_WEEK; j++)
+            for (int j = 0; j < daysPerWeek; j++)
+            {
+                tmpTmpTimetable.classes[currentClassID].days[j].lessons.resize(lessonsPerDay);
                 tmpTmpTimetable.classes[currentClassID].days[j].lessons[i] = allAvailableClassLessonsHorizontal[i];
+            }
         }
         ImGui::PopID();
         pushID++;
     }
     ImGui::NextColumn();
-    for (int i = 0; i < DAYS_PER_WEEK; i++)
+    allAvailableClassLessonsVertical.resize(daysPerWeek, false);
+    tmpTmpTimetable.classes[currentClassID].days.resize(daysPerWeek);
+    for (int i = 0; i < daysPerWeek; i++)
     {
+        tmpTmpTimetable.classes[currentClassID].days[i].lessons.resize(lessonsPerDay);
         int weekDay = i;
         while (weekDay >= 7) weekDay -= 7;
         ImGui::Text("%s", weekDays[weekDay]);
         ImGui::PushID(pushID);
-        if (ImGui::Checkbox((allAvailableClassLessonsVertical[i] ? "Deselect all" : "Select all"), &allAvailableClassLessonsVertical[i]))
+        bool availableClassLessonsVertical = allAvailableClassLessonsVertical[i];
+        if (ImGui::Checkbox((allAvailableClassLessonsVertical[i] ? "Deselect all" : "Select all"), &availableClassLessonsVertical))
         {
+            allAvailableClassLessonsVertical[i] = availableClassLessonsVertical;
             for (int j = 0; j < lessonsPerDay; j++)
                 tmpTmpTimetable.classes[currentClassID].days[i].lessons[j] = allAvailableClassLessonsVertical[i];
         }

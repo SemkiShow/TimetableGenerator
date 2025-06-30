@@ -1,21 +1,23 @@
 #include "Searching.hpp"
 #include "Settings.hpp"
 
-std::unordered_map<int, WorkDay[DAYS_PER_WEEK]> GetTeacherLessons(Timetable* timetable)
+std::unordered_map<int, std::vector<WorkDay>> GetTeacherLessons(Timetable* timetable)
 {
-    std::unordered_map<int, WorkDay[DAYS_PER_WEEK]> teacherLessons;
+    std::unordered_map<int, std::vector<WorkDay>> teacherLessons;
     for (auto& teacher: timetable->teachers)
     {
-        for (int i = 0; i < DAYS_PER_WEEK; i++)
+        teacherLessons[teacher.first].resize(daysPerWeek);
+        for (int i = 0; i < daysPerWeek; i++)
         {
-            for (int j = 0; j < lessonsPerDay; j++)
-                teacherLessons[teacher.first][i].lessonIDs.push_back(-3);
+            teacherLessons[teacher.first][i].lessonIDs.resize(lessonsPerDay, -3);
         }
     }
     for (auto& classPair: timetable->classes)
     {
-        for (int i = 0; i < DAYS_PER_WEEK; i++)
+        classPair.second.days.resize(daysPerWeek);
+        for (int i = 0; i < daysPerWeek; i++)
         {
+            classPair.second.days[i].classroomLessonPairs.resize(lessonsPerDay);
             for (int j = 0; j < lessonsPerDay; j++)
             {
                 int timetableLessonID = classPair.second.days[i].classroomLessonPairs[j].timetableLessonID;
@@ -32,21 +34,23 @@ std::unordered_map<int, WorkDay[DAYS_PER_WEEK]> GetTeacherLessons(Timetable* tim
 }
 
 // I use lessonIDs here in place of non-existent classroomIDs
-std::unordered_map<int, WorkDay[DAYS_PER_WEEK]> GetTeacherClassrooms(Timetable* timetable)
+std::unordered_map<int, std::vector<WorkDay>> GetTeacherClassrooms(Timetable* timetable)
 {
-    std::unordered_map<int, WorkDay[DAYS_PER_WEEK]> teacherClassrooms;
+    std::unordered_map<int, std::vector<WorkDay>> teacherClassrooms;
     for (auto& teacher: timetable->teachers)
     {
-        for (int i = 0; i < DAYS_PER_WEEK; i++)
+        teacherClassrooms[teacher.first].resize(daysPerWeek);
+        for (int i = 0; i < daysPerWeek; i++)
         {
-            for (int j = 0; j < lessonsPerDay; j++)
-                teacherClassrooms[teacher.first][i].lessonIDs.push_back(-3);
+            teacherClassrooms[teacher.first][i].lessonIDs.resize(lessonsPerDay, -3);
         }
     }
     for (auto& classPair: timetable->classes)
     {
-        for (int i = 0; i < DAYS_PER_WEEK; i++)
+        classPair.second.days.resize(daysPerWeek);
+        for (int i = 0; i < daysPerWeek; i++)
         {
+            classPair.second.days[i].classroomLessonPairs.resize(lessonsPerDay);
             for (int j = 0; j < lessonsPerDay; j++)
             {
                 int timetableLessonID = classPair.second.days[i].classroomLessonPairs[j].timetableLessonID;
@@ -63,52 +67,23 @@ std::unordered_map<int, WorkDay[DAYS_PER_WEEK]> GetTeacherClassrooms(Timetable* 
     return teacherClassrooms;
 }
 
-std::unordered_map<int, WorkDay[DAYS_PER_WEEK]> GetClassroomLessons(Timetable* timetable)
-{
-    std::unordered_map<int, WorkDay[DAYS_PER_WEEK]> classroomLessons;
-    for (auto& teacher: timetable->teachers)
-    {
-        for (int i = 0; i < DAYS_PER_WEEK; i++)
-        {
-            for (int j = 0; j < lessonsPerDay; j++)
-            classroomLessons[teacher.first][i].lessonIDs.push_back(-3);
-        }
-    }
-    for (auto& classPair: timetable->classes)
-    {
-        for (int i = 0; i < DAYS_PER_WEEK; i++)
-        {
-            for (int j = 0; j < lessonsPerDay; j++)
-            {
-                int timetableLessonID = classPair.second.days[i].classroomLessonPairs[j].timetableLessonID;
-                if (timetableLessonID < 0) continue;
-                for (int k = 0; k < classPair.second.timetableLessons[timetableLessonID].lessonTeacherPairs.size(); k++)
-                {
-                    LessonTeacherPair& lessonTeacherPair = classPair.second.timetableLessons[timetableLessonID].lessonTeacherPairs[k];
-                    int classroomID = classPair.second.days[i].classroomLessonPairs[j].classroomIDs[k];
-                    classroomLessons[lessonTeacherPair.teacherID][i].lessonIDs[j] = classroomID;
-                }
-            }
-        }
-    }
-    return classroomLessons;
-}
-
 void GetTeacherCollisionErrors(Timetable* timetable)
 {
-    std::unordered_map<int, Day[DAYS_PER_WEEK]> teacherLessons;
+    std::unordered_map<int, std::vector<Day>> teacherLessons;
     for (auto& teacher: timetable->teachers)
     {
-        for (int i = 0; i < DAYS_PER_WEEK; i++)
+        teacherLessons[teacher.first].resize(daysPerWeek);
+        for (int i = 0; i < daysPerWeek; i++)
         {
-            for (int j = 0; j < lessonsPerDay; j++)
-                teacherLessons[teacher.first][i].lessons.push_back(false);
+            teacherLessons[teacher.first][i].lessons.resize(lessonsPerDay, false);
         }
     }
     for (auto& classPair: timetable->classes)
     {
-        for (int i = 0; i < DAYS_PER_WEEK; i++)
+        classPair.second.days.resize(daysPerWeek);
+        for (int i = 0; i < daysPerWeek; i++)
         {
+            classPair.second.days[i].classroomLessonPairs.resize(lessonsPerDay);
             for (int j = 0; j < lessonsPerDay; j++)
             {
                 int timetableLessonID = classPair.second.days[i].classroomLessonPairs[j].timetableLessonID;
@@ -133,19 +108,21 @@ void GetTeacherCollisionErrors(Timetable* timetable)
 
 void GetClassroomCollisionErrors(Timetable* timetable)
 {
-    std::unordered_map<int, Day[DAYS_PER_WEEK]> classroomLessons;
+    std::unordered_map<int, std::vector<Day>> classroomLessons;
     for (auto& classroom: timetable->classrooms)
     {
-        for (int i = 0; i < DAYS_PER_WEEK; i++)
+        classroomLessons[classroom.first].resize(daysPerWeek);
+        for (int i = 0; i < daysPerWeek; i++)
         {
-            for (int j = 0; j < lessonsPerDay; j++)
-                classroomLessons[classroom.first][i].lessons.push_back(false);
+            classroomLessons[classroom.first][i].lessons.resize(lessonsPerDay, false);
         }
     }
     for (auto& classPair: timetable->classes)
     {
-        for (int i = 0; i < DAYS_PER_WEEK; i++)
+        classPair.second.days.resize(daysPerWeek);
+        for (int i = 0; i < daysPerWeek; i++)
         {
+            classPair.second.days[i].classroomLessonPairs.resize(lessonsPerDay);
             for (int j = 0; j < lessonsPerDay; j++)
             {
                 int timetableLessonID = classPair.second.days[i].classroomLessonPairs[j].timetableLessonID;
@@ -175,13 +152,14 @@ void GetLessonCollisionErrors(Timetable* timetable)
         std::unordered_map<int, int> totalLessonIntersections;
         for (auto& lesson: classPair.second.timetableLessons)
             totalLessonIntersections[lesson.first] = 0;
-        int classDays = DAYS_PER_WEEK;
-        for (int i = 0; i < DAYS_PER_WEEK; i++)
+        int classDays = daysPerWeek;
+        for (int i = 0; i < daysPerWeek; i++)
         {
             std::unordered_map<int, int> lessonIntersections;
             for (auto& lesson: classPair.second.timetableLessons)
                 lessonIntersections[lesson.first] = 0;
             bool foundAvailableLesson = false;
+            classPair.second.days.resize(daysPerWeek);
             for (int j = 0; j < lessonsPerDay; j++)
             {
                 if (classPair.second.days[i].lessons[j]) foundAvailableLesson = true;
@@ -205,12 +183,14 @@ void GetLessonCollisionErrors(Timetable* timetable)
     }
 }
 
-void GetTemplateMatchErrors(Timetable* timetable, std::unordered_map<int, WorkDay[DAYS_PER_WEEK]> teacherLessons)
+void GetTemplateMatchErrors(Timetable* timetable, std::unordered_map<int, std::vector<WorkDay>> teacherLessons)
 {
     for (auto& teacher: timetable->teachers)
     {
-        for (int i = 0; i < DAYS_PER_WEEK; i++)
+        teacher.second.workDays.resize(daysPerWeek);
+        for (int i = 0; i < daysPerWeek; i++)
         {
+            teacher.second.workDays[i].lessonIDs.resize(lessonsPerDay);
             for (int j = 0; j < lessonsPerDay; j++)
             {
                 int teacherLesson = teacher.second.workDays[i].lessonIDs[j];
@@ -235,15 +215,17 @@ void GetTemplateMatchErrors(Timetable* timetable, std::unordered_map<int, WorkDa
     }
 }
 
-void GetFreePeriodErrors(Timetable* timetable, std::unordered_map<int, WorkDay[DAYS_PER_WEEK]> teacherLessons)
+void GetFreePeriodErrors(Timetable* timetable, std::unordered_map<int, std::vector<WorkDay>> teacherLessons)
 {
     std::unordered_map<int, int> teacherFreePeriods;
     for (auto& teacher: timetable->teachers)
         teacherFreePeriods[teacher.first] = 0;
     for (auto& teacher: timetable->teachers)
     {
-        for (int i = 0; i < DAYS_PER_WEEK; i++)
+        teacherLessons[teacher.first].resize(daysPerWeek);
+        for (int i = 0; i < daysPerWeek; i++)
         {
+            teacherLessons[teacher.first][i].lessonIDs.resize(lessonsPerDay);
             int firstLessonIndex = -1;
             int lastLessonIndex = -1;
             for (int j = 0; j < lessonsPerDay; j++)
@@ -293,8 +275,10 @@ void GetLessonGapErrors(Timetable* timetable)
 {
     for (auto& classPair: timetable->classes)
     {
-        for (int i = 0; i < DAYS_PER_WEEK; i++)
+        classPair.second.days.resize(daysPerWeek);
+        for (int i = 0; i < daysPerWeek; i++)
         {
+            classPair.second.days[i].classroomLessonPairs.resize(lessonsPerDay);
             int firstLessonIndex = -1;
             int lastLessonIndex = -1;
             for (int j = 0; j < lessonsPerDay; j++)
@@ -323,7 +307,7 @@ void GetLessonGapErrors(Timetable* timetable)
     }
 }
 
-void GetTimetableErrors(Timetable* timetable, std::unordered_map<int, WorkDay[DAYS_PER_WEEK]> teacherLessons)
+void GetTimetableErrors(Timetable* timetable, std::unordered_map<int, std::vector<WorkDay>> teacherLessons)
 {
     // Reset timetable errors
     timetable->errors = 0;
@@ -349,11 +333,13 @@ void GetTimetableErrors(Timetable* timetable, std::unordered_map<int, WorkDay[DA
 
 void GetTeacherMovementBonusPoints(Timetable* timetable)
 {
-    std::unordered_map<int, WorkDay[DAYS_PER_WEEK]> teacherClassrooms = GetTeacherClassrooms(timetable);
+    std::unordered_map<int, std::vector<WorkDay>> teacherClassrooms = GetTeacherClassrooms(timetable);
     for (auto& teacher: timetable->teachers)
     {
-        for (int i = 0; i < DAYS_PER_WEEK; i++)
+        teacherClassrooms[teacher.first].resize(daysPerWeek);
+        for (int i = 0; i < daysPerWeek; i++)
         {
+            teacherClassrooms[teacher.first][i].lessonIDs.resize(lessonsPerDay);
             int lastClassroom = timetable->maxLessonID+1;
             int firstClassroomIndex = -1;
             int lastClassroomIndex = -1;
@@ -388,8 +374,9 @@ void GetStudentMovementBonusPoints(Timetable* timetable)
 {
     for (auto& classPair: timetable->classes)
     {
-        for (int i = 0; i < DAYS_PER_WEEK; i++)
+        for (int i = 0; i < daysPerWeek; i++)
         {
+            classPair.second.days[i].classroomLessonPairs.resize(lessonsPerDay);
             int lastClassroom = timetable->maxClassroomID+1;
             for (int j = 0; j < lessonsPerDay; j++)
             {
@@ -421,7 +408,7 @@ void GetTimetableBonusPoints(Timetable* timetable)
 void ScoreTimetable(Timetable* timetable)
 {
     // Pre-calculate teacher lessons
-    std::unordered_map<int, WorkDay[DAYS_PER_WEEK]> teacherLessons = GetTeacherLessons(timetable);
+    std::unordered_map<int, std::vector<WorkDay>> teacherLessons = GetTeacherLessons(timetable);
 
     GetTimetableErrors(timetable, teacherLessons);
     GetTimetableBonusPoints(timetable);

@@ -15,8 +15,8 @@ void WriteXlsxTemplate(lxw_workbook* workbook, lxw_worksheet* worksheet, int cel
     format_set_align(lessonNumberFormat, LXW_ALIGN_VERTICAL_CENTER);
 
     // Write week days
-    worksheet_set_column(worksheet, 1, DAYS_PER_WEEK * cellWidth + 1, 15, NULL);
-    for (int i = 0; i < DAYS_PER_WEEK; i++)
+    worksheet_set_column(worksheet, 1, daysPerWeek * cellWidth, 15, NULL);
+    for (int i = 0; i < daysPerWeek; i++)
     {
         int weekDay = i;
         while (weekDay >= 7) weekDay -= 7;
@@ -43,7 +43,7 @@ void PrintError(lxw_workbook* workbook, lxw_worksheet* worksheet, int cellWidth 
     format_set_font_color(errorFormat, LXW_COLOR_RED);
     format_set_text_wrap(errorFormat);
 
-    worksheet_merge_range(worksheet, 2, 1, lessonsPerDay + 1, DAYS_PER_WEEK * cellWidth,
+    worksheet_merge_range(worksheet, 2, 1, lessonsPerDay + 1, daysPerWeek * cellWidth,
         "Press the Generate timetable button\nbefore exporting the timetable!", errorFormat);
 }
 
@@ -77,7 +77,7 @@ void ExportClassesAsXlsx(Timetable* timetable)
         lxw_worksheet* worksheet = workbook_add_worksheet(workbook, (classPair.second.number + classPair.second.letter).c_str());
 
         // Write class name
-        worksheet_merge_range(worksheet, 0, 1, 0, longestCombinedLesson * DAYS_PER_WEEK,
+        worksheet_merge_range(worksheet, 0, 1, 0, longestCombinedLesson * daysPerWeek,
             (classPair.second.number + classPair.second.letter).c_str(), headingFormat);
 
         // Write class teacher name
@@ -89,11 +89,12 @@ void ExportClassesAsXlsx(Timetable* timetable)
         WriteXlsxTemplate(workbook, worksheet, longestCombinedLesson);
 
         // Write class timetable lessons
-        for (int i = 0; i < DAYS_PER_WEEK; i++)
+        classPair.second.days.resize(daysPerWeek);
+        for (int i = 0; i < daysPerWeek; i++)
         {
+            classPair.second.days[i].classroomLessonPairs.resize(lessonsPerDay);
             for (int j = 0; j < lessonsPerDay; j++)
             {
-                if (j >= classPair.second.days[i].classroomLessonPairs.size()) continue;
                 int timetableLessonID = classPair.second.days[i].classroomLessonPairs[j].timetableLessonID;
                 if (timetableLessonID < 0)
                 {
@@ -138,43 +139,41 @@ struct TeacherData
     int classroomID = -1;
 };
 
-std::unordered_map<int, std::vector<TeacherData>[DAYS_PER_WEEK]> GetTeacherData(Timetable* timetable)
+std::unordered_map<int, std::vector<TeacherData>> GetTeacherData(Timetable* timetable)
 {
-    std::unordered_map<int, std::vector<TeacherData>[DAYS_PER_WEEK]> teacherData;
+    std::unordered_map<int, std::vector<TeacherData>> teacherData;
     for (auto& teacher: timetable->teachers)
     {
-        for (int i = 0; i < DAYS_PER_WEEK; i++)
-        {
-            teacherData[teacher.first][i].resize(lessonsPerDay);
-        }
+        teacherData[teacher.first].resize(daysPerWeek * lessonsPerDay);
     }
     for (auto& classPair: timetable->classes)
     {
-        for (int i = 0; i < DAYS_PER_WEEK; i++)
+        classPair.second.days.resize(daysPerWeek);
+        for (int i = 0; i < daysPerWeek; i++)
         {
+            classPair.second.days[i].classroomLessonPairs.resize(lessonsPerDay);
             for (int j = 0; j < lessonsPerDay; j++)
             {
-                if (j >= classPair.second.days[i].classroomLessonPairs.size()) continue;
                 int timetableLessonID = classPair.second.days[i].classroomLessonPairs[j].timetableLessonID;
                 if (timetableLessonID < 0) continue;
                 for (int k = 0; k < classPair.second.timetableLessons[timetableLessonID].lessonTeacherPairs.size(); k++)
                 {
                     LessonTeacherPair& lessonTeacherPair = classPair.second.timetableLessons[timetableLessonID].lessonTeacherPairs[k];
                     int teacherID = lessonTeacherPair.teacherID;
-                    if (teacherData[teacherID][i][j].lessonID > 0)
+                    if (teacherData[teacherID][i * lessonsPerDay + j].lessonID > 0)
                     {
                         int weekDay = i;
                         while (weekDay >= 7) weekDay -= 7;
                         std::cout << "Error: teacher " << timetable->teachers[teacherID].name << " already has lesson " <<
-                        timetable->lessons[teacherData[teacherID][i][j].lessonID].name << " with class " <<
-                        timetable->classes[teacherData[teacherID][i][j].classID].number <<
-                        timetable->classes[teacherData[teacherID][i][j].classID].letter << " in classroom " <<
-                        timetable->classrooms[teacherData[teacherID][i][j].lessonID].name << " on " <<
+                        timetable->lessons[teacherData[teacherID][i * lessonsPerDay + j].lessonID].name << " with class " <<
+                        timetable->classes[teacherData[teacherID][i * lessonsPerDay + j].classID].number <<
+                        timetable->classes[teacherData[teacherID][i * lessonsPerDay + j].classID].letter << " in classroom " <<
+                        timetable->classrooms[teacherData[teacherID][i * lessonsPerDay + j].lessonID].name << " on " <<
                         weekDays[weekDay] << " at lesson number " << j << "!\n";
                     }
-                    teacherData[teacherID][i][j].lessonID = lessonTeacherPair.lessonID;
-                    teacherData[teacherID][i][j].classID = classPair.first;
-                    teacherData[teacherID][i][j].classroomID = classPair.second.days[i].classroomLessonPairs[j].classroomIDs[k];
+                    teacherData[teacherID][i * lessonsPerDay + j].lessonID = lessonTeacherPair.lessonID;
+                    teacherData[teacherID][i * lessonsPerDay + j].classID = classPair.first;
+                    teacherData[teacherID][i * lessonsPerDay + j].classroomID = classPair.second.days[i].classroomLessonPairs[j].classroomIDs[k];
                 }
             }
         }
@@ -204,21 +203,21 @@ void ExportTeachersAsXlsx(Timetable* timetable)
         lxw_worksheet* worksheet = workbook_add_worksheet(workbook, teacher.second.name.c_str());
 
         // Write teacher name
-        worksheet_merge_range(worksheet, 0, 0, 0, DAYS_PER_WEEK, teacher.second.name.c_str(), headingFormat);
+        worksheet_merge_range(worksheet, 0, 0, 0, daysPerWeek, teacher.second.name.c_str(), headingFormat);
 
         // Write the template
         WriteXlsxTemplate(workbook, worksheet);
 
         // Write teacher lessons
         auto teacherData = GetTeacherData(timetable);
-        for (int i = 0; i < DAYS_PER_WEEK; i++)
+        for (int i = 0; i < daysPerWeek; i++)
         {
             for (int j = 0; j < lessonsPerDay; j++)
             {
-                int lessonID = teacherData[teacher.first][i][j].lessonID;
+                int lessonID = teacherData[teacher.first][i * lessonsPerDay + j].lessonID;
                 if (lessonID < 0) continue;
-                int classID = teacherData[teacher.first][i][j].classID;
-                int classroomID = teacherData[teacher.first][i][j].classroomID;
+                int classID = teacherData[teacher.first][i * lessonsPerDay + j].classID;
+                int classroomID = teacherData[teacher.first][i * lessonsPerDay + j].classroomID;
                 std::string& lessonName = timetable->lessons[lessonID].name;
                 std::string className = timetable->classes[classID].number + timetable->classes[classID].letter;
                 std::string& classroomName = timetable->classrooms[classroomID].name;
@@ -240,23 +239,21 @@ struct ClassroomData
     int teacherID = -1;
 };
 
-std::unordered_map<int, std::vector<ClassroomData>[DAYS_PER_WEEK]> GetClassroomData(Timetable* timetable)
+std::unordered_map<int, std::vector<ClassroomData>> GetClassroomData(Timetable* timetable)
 {
-    std::unordered_map<int, std::vector<ClassroomData>[DAYS_PER_WEEK]> classroomData;
+    std::unordered_map<int, std::vector<ClassroomData>> classroomData;
     for (auto& classroom: timetable->classrooms)
     {
-        for (int i = 0; i < DAYS_PER_WEEK; i++)
-        {
-            classroomData[classroom.first][i].resize(lessonsPerDay);
-        }
+        classroomData[classroom.first].resize(daysPerWeek * lessonsPerDay);
     }
     for (auto& classPair: timetable->classes)
     {
-        for (int i = 0; i < DAYS_PER_WEEK; i++)
+        classPair.second.days.resize(daysPerWeek);
+        for (int i = 0; i < daysPerWeek; i++)
         {
+            classPair.second.days[i].classroomLessonPairs.resize(lessonsPerDay);
             for (int j = 0; j < lessonsPerDay; j++)
             {
-                if (j >= classPair.second.days[i].classroomLessonPairs.size()) continue;
                 int timetableLessonID = classPair.second.days[i].classroomLessonPairs[j].timetableLessonID;
                 if (timetableLessonID < 0) continue;
                 for (int k = 0; k < classPair.second.timetableLessons[timetableLessonID].lessonTeacherPairs.size(); k++)
@@ -264,20 +261,20 @@ std::unordered_map<int, std::vector<ClassroomData>[DAYS_PER_WEEK]> GetClassroomD
                     LessonTeacherPair& lessonTeacherPair = classPair.second.timetableLessons[timetableLessonID].lessonTeacherPairs[k];
                     if (lessonTeacherPair.lessonID < 0) continue;
                     int classroomID = classPair.second.days[i].classroomLessonPairs[j].classroomIDs[k];
-                    if (classroomData[classroomID][i][j].lessonID > 0)
+                    if (classroomData[classroomID][i * lessonsPerDay + j].lessonID > 0)
                     {
                         int weekDay = i;
                         while (weekDay >= 7) weekDay -= 7;
                         std::cout << "Error: teacher " << timetable->classrooms[classroomID].name << " already has lesson " <<
-                        timetable->lessons[classroomData[classroomID][i][j].lessonID].name << " by teacher " <<
-                        timetable->teachers[classroomData[classroomID][i][j].teacherID].name << " with class " <<
-                        timetable->classes[classroomData[classroomID][i][j].classID].number <<
-                        timetable->classes[classroomData[classroomID][i][j].classID].letter << " on " <<
+                        timetable->lessons[classroomData[classroomID][i * lessonsPerDay + j].lessonID].name << " by teacher " <<
+                        timetable->teachers[classroomData[classroomID][i * lessonsPerDay + j].teacherID].name << " with class " <<
+                        timetable->classes[classroomData[classroomID][i * lessonsPerDay + j].classID].number <<
+                        timetable->classes[classroomData[classroomID][i * lessonsPerDay + j].classID].letter << " on " <<
                         weekDays[weekDay] << " at lesson number " << j << "!\n";
                     }
-                    classroomData[classroomID][i][j].lessonID = lessonTeacherPair.lessonID;
-                    classroomData[classroomID][i][j].classID = classPair.first;
-                    classroomData[classroomID][i][j].teacherID = lessonTeacherPair.teacherID;
+                    classroomData[classroomID][i * lessonsPerDay + j].lessonID = lessonTeacherPair.lessonID;
+                    classroomData[classroomID][i * lessonsPerDay + j].classID = classPair.first;
+                    classroomData[classroomID][i * lessonsPerDay + j].teacherID = lessonTeacherPair.teacherID;
                 }
             }
         }
@@ -307,24 +304,24 @@ void ExportClassroomsAsXlsx(Timetable* timetable)
         lxw_worksheet* worksheet = workbook_add_worksheet(workbook, classroom.second.name.c_str());
 
         // Write classroom name
-        worksheet_merge_range(worksheet, 0, 0, 0, DAYS_PER_WEEK, classroom.second.name.c_str(), headingFormat);
+        worksheet_merge_range(worksheet, 0, 0, 0, daysPerWeek, classroom.second.name.c_str(), headingFormat);
 
         // Write the template
         WriteXlsxTemplate(workbook, worksheet);
 
         // Write teacher lessons
         auto classroomData = GetClassroomData(timetable);
-        for (int i = 0; i < DAYS_PER_WEEK; i++)
+        for (int i = 0; i < daysPerWeek; i++)
         {
             for (int j = 0; j < lessonsPerDay; j++)
             {
-                int lessonID = classroomData[classroom.first][i][j].lessonID;
+                int lessonID = classroomData[classroom.first][i * lessonsPerDay + j].lessonID;
                 if (lessonID < 0) continue;
-                int classID = classroomData[classroom.first][i][j].classID;
-                int teacherID = classroomData[classroom.first][i][j].teacherID;
+                int classID = classroomData[classroom.first][i * lessonsPerDay + j].classID;
+                int teacherID = classroomData[classroom.first][i * lessonsPerDay + j].teacherID;
                 std::string& lessonName = timetable->lessons[lessonID].name;
                 std::string className = timetable->classes[classID].number + timetable->classes[classID].letter;
-                std::string& teacherName = timetable->classrooms[teacherID].name;
+                std::string& teacherName = timetable->teachers[teacherID].name;
                 std::string lessonText = lessonName + "\n" + className + "\n" + teacherName;
                 worksheet_write_string(worksheet, j + 2, i + 1, lessonText.c_str(), lessonFormat);
             }

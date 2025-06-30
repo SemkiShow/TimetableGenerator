@@ -11,8 +11,6 @@
 #include <cmath>
 #include <filesystem> // IWYU pragma: keep
 
-#define DAYS_PER_WEEK 7
-
 struct WorkDay
 {
     std::vector<int> lessonIDs;
@@ -34,7 +32,7 @@ struct Teacher
 {
     std::string name = "";
     std::vector<int> lessonIDs;
-    WorkDay workDays[DAYS_PER_WEEK];
+    std::vector<WorkDay> workDays;
 };
 
 struct LessonTeacherPair
@@ -72,7 +70,7 @@ struct Class
     int teacherID = -1;
     int maxTimetableLessonID = -1;
     std::map<int, TimetableLesson> timetableLessons;
-    Day days[DAYS_PER_WEEK];
+    std::vector<Day> days;
 };
 
 struct Timetable

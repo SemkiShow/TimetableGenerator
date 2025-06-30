@@ -11,6 +11,8 @@ int maxFreePeriods = 0;
 int timetablesPerGeneration = 500;
 int maxMutations = 100;
 float errorBonusRatio = 10.0f;
+int daysPerWeek = 5;
+int maxIterations = -1;
 
 std::string version = "";
 
@@ -44,22 +46,32 @@ void ListFiles(const std::string& path, std::vector<std::string>* files)
     }
 }
 
+std::string TrimJunk(const std::string& input)
+{
+    auto first = input.find_first_not_of("\t\n\r\f\v");
+    auto last  = input.find_last_not_of ("\t\n\r\f\v");
+    return (first == input.npos) ? "" : input.substr(first, last-first+1);
+}
+
 void Save(std::string fileName)
 {
     // Read the file
     std::fstream settingsFile;
     settingsFile.open(fileName, std::ios::out);
-    settingsFile << "vsync=" << (vsync ? "true" : "false") << '\n';
-    settingsFile << "last-timetable=" << currentTimetable.name << '\n';
-    settingsFile << "merged-font=" << (mergedFont ? "true" : "false") << '\n';
-    settingsFile << "timetable-autosave-interval=" << timetableAutosaveInterval << '\n';
+    settingsFile << "days-per-week=" << daysPerWeek << '\n';
     settingsFile << "lessons-per-day=" << lessonsPerDay << '\n';
-    settingsFile << "font-size=" << fontSize << '\n';
     settingsFile << "min-free-periods=" << minFreePeriods << '\n';
     settingsFile << "max-free-periods=" << maxFreePeriods << '\n';
-    settingsFile << "timetables-per-generation=" << timetablesPerGeneration << '\n';
+    settingsFile << "vsync=" << (vsync ? "true" : "false") << '\n';
+    settingsFile << "merged-font=" << (mergedFont ? "true" : "false") << '\n';
+    settingsFile << "timetable-autosave-interval=" << timetableAutosaveInterval << '\n';
+    settingsFile << "font-size=" << fontSize << '\n';
     settingsFile << "max-mutations=" << maxMutations << '\n';
     settingsFile << "error-bonus-ratio=" << errorBonusRatio << '\n';
+    settingsFile << "timetables-per-generation=" << timetablesPerGeneration << '\n';
+    settingsFile << "max-iterations=" << maxIterations << '\n';
+    // !IMPORTANT: last-timetable must ALWAYS be last because of the quirks of the timetable loading
+    settingsFile << "last-timetable=" << currentTimetable.name << '\n';
     settingsFile.close();
 
     // Save timetable
@@ -74,8 +86,13 @@ void Load(std::string fileName)
     std::string buf, label, value;
     while (std::getline(settingsFile, buf))
     {
-        label = Split(buf, '=')[0];
-        value = Split(buf, '=')[1];
+        if (Split(buf, '=').size() < 2)
+        {
+            std::cout << "Error: invalid setings.txt!\n";
+            continue;
+        }
+        label = TrimJunk(Split(buf, '=')[0]);
+        value = TrimJunk(Split(buf, '=')[1]);
 
         if (label == "vsync") vsync = value == "true";
         if (label == "last-timetable" && value != "")
@@ -92,6 +109,8 @@ void Load(std::string fileName)
         if (label == "timetables-per-generation") timetablesPerGeneration = stoi(value);
         if (label == "max-mutations") maxMutations = stoi(value);
         if (label == "error-bonus-ratio") errorBonusRatio = stof(value);
+        if (label == "days-per-week") daysPerWeek = stoi(value);
+        if (label == "max-iterations") maxIterations = stoi(value);
     }
     settingsFile.close();
 

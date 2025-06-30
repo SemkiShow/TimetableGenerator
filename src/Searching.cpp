@@ -14,10 +14,10 @@ int GetLessonsAmount(const std::map<int, TimetableLesson> timetableLessons)
     return output;
 }
 
-int GetLessonPlacesAmount(const Day days[DAYS_PER_WEEK])
+int GetLessonPlacesAmount(const std::vector<Day> days)
 {
     int output = 0;
-    for (int i = 0; i < DAYS_PER_WEEK; i++)
+    for (int i = 0; i < daysPerWeek; i++)
     {
         for (int j = 0; j < days[i].lessons.size(); j++)
         {
@@ -55,7 +55,8 @@ void RandomizeTimetable(Timetable* timetable)
         }
         std::shuffle(timetableLessonIDs.begin(), timetableLessonIDs.end(), rng);
         int counter = 0;
-        for (int i = 0; i < DAYS_PER_WEEK; i++)
+        classPair.second.days.resize(daysPerWeek);
+        for (int i = 0; i < daysPerWeek; i++)
         {
             classPair.second.days[i].classroomLessonPairs.clear();
             for (int j = 0; j < classPair.second.days[i].lessons.size(); j++)
@@ -82,7 +83,7 @@ void RandomizeTimetable(Timetable* timetable)
     }
 }
 
-std::uniform_int_distribution<int> dayDistribution(0, DAYS_PER_WEEK - 1);
+std::uniform_int_distribution<int> dayDistribution(0, daysPerWeek - 1);
 void SwapRandomTimetableLessons(Timetable* timetable)
 {
     std::uniform_int_distribution<int> classDistribution(0, timetable->orderedClasses.size() - 1);
@@ -325,8 +326,7 @@ void BeginSearching(const Timetable* timetable)
 
 void RunASearchIteration()
 {
-    // if (iterationData.timetables[iterationData.bestTimetableIndex].errors <= 0)
-    if (iterationData.iteration >= 100)
+    if (iterationData.timetables[iterationData.bestTimetableIndex].errors <= 0 || (maxIterations != -1 && iterationData.iteration >= maxIterations))
     {
         iterationData.isDone = true;
         SaveTimetable("timetables/" + iterationData.timetables[0].name + ".json", &iterationData.timetables[0]);
