@@ -289,6 +289,40 @@ void GetFreePeriodErrors(Timetable* timetable, std::unordered_map<int, WorkDay[D
     }
 }
 
+void GetLessonGapErrors(Timetable* timetable)
+{
+    for (auto& classPair: timetable->classes)
+    {
+        for (int i = 0; i < DAYS_PER_WEEK; i++)
+        {
+            int firstLessonIndex = -1;
+            int lastLessonIndex = -1;
+            for (int j = 0; j < lessonsPerDay; j++)
+            {
+                if (classPair.second.days[i].classroomLessonPairs[j].timetableLessonID >= 0)
+                {
+                    firstLessonIndex = j;
+                    break;
+                }
+            }
+            for (int j = lessonsPerDay-1; j >= 0; j--)
+            {
+                if (classPair.second.days[i].classroomLessonPairs[j].timetableLessonID >= 0)
+                {
+                    lastLessonIndex = j;
+                    break;
+                }
+            }
+            if (firstLessonIndex == -1 || lastLessonIndex == -1) continue;
+            for (int j = firstLessonIndex; j <= lastLessonIndex; j++)
+            {
+                int& timetableLessonID = classPair.second.days[i].classroomLessonPairs[j].timetableLessonID;
+                if (timetableLessonID < 0) timetable->errors++;
+            }
+        }
+    }
+}
+
 void GetTimetableErrors(Timetable* timetable, std::unordered_map<int, WorkDay[DAYS_PER_WEEK]> teacherLessons)
 {
     // Reset timetable errors
@@ -308,6 +342,9 @@ void GetTimetableErrors(Timetable* timetable, std::unordered_map<int, WorkDay[DA
 
     // Get free period out of bounds errors
     GetFreePeriodErrors(timetable, teacherLessons);
+
+    // Get gaps in the timetable errors
+    GetLessonGapErrors(timetable);
 }
 
 void GetTeacherMovementBonusPoints(Timetable* timetable)
