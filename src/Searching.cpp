@@ -114,28 +114,6 @@ void SwapRandomTimetableLessons(Timetable* timetable)
     timetable->classes[classID].days[lesson1Day].classroomLessonPairs[lesson1Index] = buf;
 }
 
-void SimulatedAnnealing(int threadID, Timetable* timetables, double temperature)
-{
-    for (int i = threadID * timetablesPerGeneration / threadsNumber; i < (threadID + 1) * timetablesPerGeneration / threadsNumber; i++)
-    {
-        // Mutate timetable
-        if (i != 0)
-        {
-            timetables[i] = timetables[0];
-            int changesAmont = std::max(1, (int)(maxMutations * temperature / maxTemperature));
-            for (int j = 0; j < changesAmont; j++)
-            {
-                SwapRandomTimetableLessons(&timetables[i]);
-            }
-        }
-
-        // Score timetable
-        ScoreTimetable(&timetables[i]);
-        int timetableScore = timetables[i].bonusPoints - timetables[i].errors;
-        // std::cout << "Calculated timetable " << i << '\n';
-    }
-}
-
 double EvaluateFitness(const Timetable& timetable)
 {
     // return timetable.bonusPoints / (1 + timetable.errors * 3.0);
@@ -310,12 +288,7 @@ int GetBestTimetableIndex(const Timetable* timetables, int* minErrors)
     double timetableScore = INT_MIN;
     for (int i = 0; i < timetablesPerGeneration; i++)
     {
-    #ifdef GENETIC_ALGORITHM
         timetableScore = EvaluateFitness(timetables[i]);
-    #endif
-    #ifdef SIMULATED_ANNEALING
-        timetableScore = timetables[i].bonusPoints - timetables[i].errors;
-    #endif
         if (timetables[i].errors < *minErrors) *minErrors = timetables[i].errors;
         if (timetableScore > bestTimetableScore && timetables[i].errors <= *minErrors)
         {
@@ -331,25 +304,20 @@ void BeginSearching(const Timetable* timetable)
     std::cout << "Initializing timetables...\n";
     iterationData = IterationData();
     iterationData.timetables = new Timetable[timetablesPerGeneration];
-#ifdef GENETIC_ALGORITHM
     iterationData.population = new Timetable[timetablesPerGeneration];
     iterationData.newPopulation = new Timetable[timetablesPerGeneration];
-#endif
     for (int i = 0; i < timetablesPerGeneration; i++)
     {
         iterationData.timetables[i] = *timetable;
         RandomizeTimetable(&iterationData.timetables[i]);
         ScoreTimetable(&iterationData.timetables[i]);
-    #ifdef GENETIC_ALGORITHM
         iterationData.population[i] = iterationData.timetables[i];
         iterationData.newPopulation[i] = iterationData.timetables[i];
-    #endif
     }
 
     iterationData.bestTimetableIndex = GetBestTimetableIndex(iterationData.timetables, &iterationData.minErrors);
     iterationData.bestScore = EvaluateFitness(iterationData.timetables[iterationData.bestTimetableIndex]);
     iterationData.allTimeBestScore = iterationData.bestScore;
-    iterationData.temperature = maxTemperature;
     iterationData.isDone = false;
     isGenerateTimetable = true;
     threadsNumber = 1;
@@ -371,52 +339,24 @@ void RunASearchIteration()
     std::cout << "The best score is " << iterationData.allTimeBestScore << ". ";
     std::cout << "The best timetable has " << iterationData.timetables[iterationData.bestTimetableIndex].errors << " errors. ";
     std::cout << "The best timetable index is " << iterationData.bestTimetableIndex << ". ";
-#ifdef SIMULATED_ANNEALING
-    std::cout << "The temperature is " << temperature << ". ";
-#endif
     std::cout << iterationData.iterationsPerChange << " iterations have passed since last score improvement. ";
-#ifdef GENETIC_ALGORITHM
+
     for (int i = 0; i < threadsNumber; i++)
         threads[i] = std::thread(GeneticAlgorithm, i, iterationData.timetables, iterationData.newPopulation);
     for (int i = 0; i < threadsNumber; i++)
         threads[i].join();
-#else
-#ifdef SIMULATED_ANNEALING
-    for (int i = 0; i < threadsNumber; i++)
-        threads[i] = std::thread(SimulatedAnnealing, i, iterationData.timetables, iterationData.temperature);
-    for (int i = 0; i < threadsNumber; i++)
-        threads[i].join();
-#endif
-#endif
+
     iterationData.bestTimetableIndex = GetBestTimetableIndex(iterationData.timetables, &iterationData.minErrors);
     iterationData.bestScore = EvaluateFitness(iterationData.timetables[iterationData.bestTimetableIndex]);
-#ifdef SIMULATED_ANNEALING
-    int delta = bestScore - lastBestScore;
-    if (delta > 0 || std::exp((double)delta / temperature) > (double)rand() / RAND_MAX)
-    {
-        Timetable bufTimetable = iterationData.timetables[0];
-        iterationData.timetables[0] = iterationData.timetables[bestTimetableIndex];
-        iterationData.timetables[iterationData.bestTimetableIndex] = bufTimetable;
-        std::cout << "Choosing the best timetable";
-    }
-    else
-    {
-        int randomTimetableIndex = rand() % timetablesPerGeneration;
-        Timetable bufTimetable = timetables[0];
-        timetables[0] = timetables[randomTimetableIndex];
-        timetables[randomTimetableIndex] = bufTimetable;
-        std::cout << "Choosing a random timetable";
-    }
-    temperature = maxTemperature * std::pow(coolingRate, iteration);
-#endif
-#ifdef GENETIC_ALGORITHM
+
     Timetable bufTimetable = iterationData.timetables[0];
     iterationData.timetables[0] = iterationData.timetables[iterationData.bestTimetableIndex];
     iterationData.timetables[iterationData.bestTimetableIndex] = bufTimetable;
+
     for (int i = 0; i < timetablesPerGeneration; i++)
         iterationData.population[i] = iterationData.timetables[i];
     GetBestSpecies(iterationData.timetables, iterationData.population, iterationData.newPopulation, &iterationData.minErrors);
-#endif
+
     std::cout << '\n';
     if (iterationData.bestScore > iterationData.allTimeBestScore) iterationData.allTimeBestScore = iterationData.bestScore;
     if (iterationData.lastAllTimeBestScore == iterationData.allTimeBestScore) iterationData.iterationsPerChange++;

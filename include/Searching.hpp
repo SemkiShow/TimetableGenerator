@@ -11,10 +11,6 @@
 #include <assert.h>
 #include "Timetable.hpp"
 
-// Search algorithm type
-// #define SIMULATED_ANNEALING
-#define GENETIC_ALGORITHM
-
 // Logging config (verbose logging is slow)
 #define VERBOSE_LOGGING
 
@@ -31,10 +27,8 @@ struct IterationData
     double temperature = 0;
     bool isDone = true;
     Timetable* timetables;
-#ifdef GENETIC_ALGORITHM
     Timetable* population;
     Timetable* newPopulation;
-#endif
 };
 
 extern IterationData iterationData;

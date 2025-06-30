@@ -60,11 +60,8 @@ void ShowSettings(bool* isOpen)
         ImGui::DragInt("timetable-autosave-interval", &timetableAutosaveInterval, 1.0f, 0, 600);
         ImGui::InputInt("font-size", &fontSize);
         if (fontSize < 5) fontSize = 5;
-        ImGui::InputInt("max-temperature", &maxTemperature);
-        if (maxTemperature < 1) maxTemperature = 1;
         ImGui::InputInt("max-mutations", &maxMutations);
         if (maxMutations < 1) maxMutations = 1;
-        ImGui::SliderFloat("cooling-rate", &coolingRate, 0.75f, 1.0f);
         ImGui::SliderFloat("error-bonus-ratio", &errorBonusRatio, 0.1f, 100.0f);
         ImGui::TreePop();
     }
@@ -181,9 +178,6 @@ void ShowGenerateTimetable(bool* isOpen)
     ImGui::Text("The best score is %d", iterationData.allTimeBestScore);
     ImGui::Text("The best timetable has %d errors", iterationData.timetables[iterationData.bestTimetableIndex].errors);
     ImGui::Text("The best timetable index is %d", iterationData.bestTimetableIndex);
-#ifdef SIMULATED_ANNEALING
-    ImGui::Text("The temperature is %f", temperature);
-#endif
     ImGui::Text("%d iterations have passed since last score improvement. ", iterationData.iterationsPerChange);
     ImGui::End();
 }

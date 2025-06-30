@@ -12,10 +12,8 @@ extern int lessonsPerDay;
 extern int fontSize;
 extern int minFreePeriods;
 extern int maxFreePeriods;
-extern int maxTemperature;
 extern int timetablesPerGeneration;
 extern int maxMutations;
-extern float coolingRate;
 extern float errorBonusRatio;
 
 extern std::string version;
