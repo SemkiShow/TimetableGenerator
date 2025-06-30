@@ -20,20 +20,11 @@ int main()
     Load("settings.txt");
     CheckForUpdates(false);
 
-    Timetable testTimetable = currentTimetable;
-    RandomizeTimetable(&testTimetable);
-    ScoreTimetable(&testTimetable);
-    // std::cout << "The current timetable bonus points count is " << testTimetable.bonusPoints << '\n';
-    // std::cout << "The current timetable errors count is " << testTimetable.errors << '\n';
-    std::cout << "The current timetable score is " << testTimetable.bonusPoints - testTimetable.errors << '\n';
-
-    #if !defined(PLATFORM_WEB)
     int flags = 0;
     if (vsync) flags |= FLAG_VSYNC_HINT;
     flags |= FLAG_WINDOW_HIGHDPI;
     flags |= FLAG_WINDOW_RESIZABLE;
     SetConfigFlags(flags);
-	#endif
 
     InitWindow(windowSize[0], windowSize[1], ("Timetable Generator " + version).c_str());
     SetExitKey(-1);

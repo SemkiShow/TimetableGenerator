@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.14)
 project(TimetableGenerator)
 
 if (UNIX)
@@ -6,8 +6,8 @@ if (UNIX)
     set(GLFW_BUILD_X11 ON CACHE BOOL "Build GLFW X11 support")
 endif()
 
-if(POLICY CMP0144)
-    cmake_policy(SET CMP0144 NEW)
+if(POLICY CMP0135)
+    cmake_policy(SET CMP0135 NEW)
 endif()
 
 include(FetchContent)

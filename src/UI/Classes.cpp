@@ -194,8 +194,8 @@ void ShowEditClass(bool* isOpen)
     ImGui::Text("available-lessons");
     ImGui::Separator();
     ImGui::Columns(8);
-    ImGui::LabelText("##1", "");
-    ImGui::LabelText("##2", "");
+    ImGui::LabelText("##1", "%s", "");
+    ImGui::LabelText("##2", "%s", "");
     int pushID = 3;
     for (int i = 0; i < lessonsPerDay; i++)
     {
@@ -311,7 +311,7 @@ void ShowEditClass(bool* isOpen)
     }
     ImGui::Separator();
     ImGui::Columns(2);
-    ImGui::LabelText("##3", "");
+    ImGui::LabelText("##3", "%s", "");
     for (auto& lesson: currentTimetable.lessons)
     {
         if (!classLessons[std::to_string(lesson.first) + "0"]) continue;
@@ -528,7 +528,7 @@ void ShowClasses(bool* isOpen)
             }
             ImGui::Unindent();
             ImGui::NextColumn();
-            ImGui::LabelText("", "");
+            ImGui::LabelText("", "%s", "");
             ImGui::NextColumn();
             ImGui::PopID();
             buttonID++;

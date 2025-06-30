@@ -5,9 +5,9 @@
 #define NODRAWTEXT
 #define NOUSER
 
-#include <iostream>
+#include <iostream> // IWYU pragma: keep
 #include <string>
-#include <thread>
+#include <thread> // IWYU pragma: keep
 #include <vector>
 #define CURL_STATICLIB
 #include <curl/curl.h>

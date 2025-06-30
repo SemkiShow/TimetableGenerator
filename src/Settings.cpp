@@ -8,6 +8,11 @@ int lessonsPerDay = 8;
 int fontSize = 16;
 int minFreePeriods = 0;
 int maxFreePeriods = 0;
+int maxTemperature = 5000;
+int timetablesPerGeneration = 500;
+int maxMutations = 100;
+float coolingRate = 0.95f;
+float errorBonusRatio = 10.0f;
 
 std::string version = "";
 
@@ -54,6 +59,11 @@ void Save(std::string fileName)
     settingsFile << "font-size=" << fontSize << '\n';
     settingsFile << "min-free-periods=" << minFreePeriods << '\n';
     settingsFile << "max-free-periods=" << maxFreePeriods << '\n';
+    settingsFile << "max-temperature=" << maxTemperature << '\n';
+    settingsFile << "timetables-per-generation=" << timetablesPerGeneration << '\n';
+    settingsFile << "max-mutations=" << maxMutations << '\n';
+    settingsFile << "cooling-rate=" << coolingRate << '\n';
+    settingsFile << "error-bonus-ratio=" << errorBonusRatio << '\n';
     settingsFile.close();
 
     // Save timetable
@@ -83,6 +93,11 @@ void Load(std::string fileName)
         if (label == "font-size") fontSize = stoi(value);
         if (label == "min-free-periods") minFreePeriods = stoi(value);
         if (label == "max-free-periods") maxFreePeriods = stoi(value);
+        if (label == "max-temperature") maxTemperature = stoi(value);
+        if (label == "timetables-per-generation") timetablesPerGeneration = stoi(value);
+        if (label == "max-mutations") maxMutations = stoi(value);
+        if (label == "cooling-rate") coolingRate = stof(value);
+        if (label == "error-bonus-ratio") errorBonusRatio = stof(value);
     }
     settingsFile.close();
 

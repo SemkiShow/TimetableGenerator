@@ -1,11 +1,11 @@
 #pragma once
 
-#include <raylib.h>
-#include <imgui.h>
-#include <misc/cpp/imgui_stdlib.h>
-#include <rlImGui.h>
+#include <raylib.h> // IWYU pragma: keep
+#include <imgui.h> // IWYU pragma: keep
+#include <misc/cpp/imgui_stdlib.h> // IWYU pragma: keep
+#include <rlImGui.h> // IWYU pragma: keep
 #include <unordered_map>
-#include <algorithm>
+#include <algorithm> // IWYU pragma: keep
 
 extern int menuOffset;
 extern int windowSize[2];
@@ -25,6 +25,7 @@ extern bool isClasses;
 extern bool isAbout;
 extern bool isWizard;
 extern bool isNewVersion;
+extern bool isGenerateTimetable;
 
 void OpenClassrooms();
 void OpenLessons();

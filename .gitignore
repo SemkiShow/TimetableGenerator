@@ -6,3 +6,5 @@ timetables
 templates
 version.txt
 .cache
+gmon.out
+profile.txt

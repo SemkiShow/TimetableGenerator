@@ -1,3 +1,5 @@
+#include "Searching.hpp"
+#include "Timetable.hpp"
 #include "UI.hpp"
 
 #define WIZARD_STEPS 6
@@ -10,7 +12,7 @@ const char* wizardTexts[WIZARD_STEPS] = {
     "The next step is to add lessons.\nAfter you are done, press Ok and continue to the next step.",
     "The next step is to add teachers.\nAfter you are done, press Ok and continue to the next step.",
     "The next step is to assign lessons to classes.\nAfter you are done, press Ok and continue to the next step.",
-    "You are done! Now press the Generate timetable button to begin the timetable finding process!"
+    "You are done! Now press the Generate timetable\nbutton to begin the timetable finding process!"
 };
 void (*wizardMenus[])() = {OpenClassrooms, OpenClasses, OpenLessons, OpenTeachers, OpenClasses};
 bool* wizardToggles[] = {&isClassrooms, &isClasses, &isLessons, &isTeachers, &isClasses};
@@ -30,20 +32,31 @@ void ShowWizard(bool* isOpen)
         return;
     }
     ImGui::ProgressBar(wizardStep * 1.0 / (WIZARD_STEPS-1));
-    ImGui::Text("%s", ("Step " + std::to_string(wizardStep + 1)).c_str());
+    ImGui::Text("Step %d", wizardStep + 1);
     ImGui::Text("%s", wizardTexts[wizardStep]);
     if (wizardStep > 0 && ImGui::Button("Back")) wizardStep--;
     if (wizardStep > 0) ImGui::SameLine();
-    if (ImGui::Button("Next"))
+    if (wizardStep == WIZARD_STEPS - 1)
     {
-        if (wizardStep < WIZARD_STEPS-1)
+        if (ImGui::Button("Generate timetable"))
         {
-            wizardMenus[wizardStep]();
-            openWizard = true;
             *isOpen = false;
+            BeginSearching(&currentTimetable);
         }
-        wizardStep++;
-        if (wizardStep >= WIZARD_STEPS) *isOpen = false;
+    }
+    else
+    {
+        if (ImGui::Button("Next"))
+        {
+            if (wizardStep < WIZARD_STEPS-1)
+            {
+                wizardMenus[wizardStep]();
+                openWizard = true;
+                *isOpen = false;
+            }
+            wizardStep++;
+            if (wizardStep >= WIZARD_STEPS) *isOpen = false;
+        }
     }
     ImGui::End();
 }

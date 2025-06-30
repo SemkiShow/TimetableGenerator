@@ -2,8 +2,8 @@
 
 #include <string>
 #include <vector>
-#include <fstream>
-#include <filesystem>
+#include <fstream> // IWYU pragma: keep
+#include <filesystem> // IWYU pragma: keep
 
 extern bool vsync;
 extern bool mergedFont;
@@ -12,6 +12,11 @@ extern int lessonsPerDay;
 extern int fontSize;
 extern int minFreePeriods;
 extern int maxFreePeriods;
+extern int maxTemperature;
+extern int timetablesPerGeneration;
+extern int maxMutations;
+extern float coolingRate;
+extern float errorBonusRatio;
 
 extern std::string version;
 

@@ -2,9 +2,9 @@
 
 #include <string>
 #include <vector>
-#include <fstream>
-#include <iostream>
-#include <random>
+#include <fstream> // IWYU pragma: keep
+#include <iostream> // IWYU pragma: keep
+#include <random> // IWYU pragma: keep
 #include <ctime>
 #include <map>
 
@@ -38,7 +38,6 @@ struct LessonTeacherPair
 {
     int lessonID = -1;
     int teacherID = -1;
-    int classroomID = -1;
 };
 
 struct TimetableLesson
@@ -47,10 +46,20 @@ struct TimetableLesson
     std::vector<LessonTeacherPair> lessonTeacherPairs;
 };
 
+struct ClassroomLessonPair
+{
+    // timetableLessonID >= 0 -> some valid TimetableLesson
+    // timetableLessonID == -1 -> invalid TimetableLesson
+    // timetableLessonID == -2 -> any TimetableLesson
+    // timetableLessonID == -3 -> no TimetableLesson
+    int timetableLessonID = -1;
+    std::vector<int> classroomIDs;
+};
+
 struct Day
 {
     std::vector<bool> lessons;
-    std::vector<int> timetableLessonIDs;
+    std::vector<ClassroomLessonPair> classroomLessonPairs;
 };
 
 struct Class
@@ -84,6 +93,5 @@ extern Timetable tmpTimetable;
 extern Timetable tmpTmpTimetable;
 
 void SaveTimetable(std::string path, Timetable* timetable);
-std::string ExtractNumberFromBeginning(std::string input);
 void LoadTimetable(std::string path, Timetable* timetable);
 void GenerateRandomTimetable(Timetable* timetable);

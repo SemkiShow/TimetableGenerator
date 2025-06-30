@@ -2,6 +2,7 @@
 #include "Settings.hpp"
 #include "Timetable.hpp"
 #include "Updates.hpp"
+#include "Searching.hpp"
 
 int menuOffset = 20;
 int windowSize[2] = {16*50*2, 9*50*2};
@@ -58,6 +59,13 @@ void ShowSettings(bool* isOpen)
         ImGui::Checkbox("merged-font", &mergedFont);
         ImGui::DragInt("timetable-autosave-interval", &timetableAutosaveInterval, 1.0f, 0, 600);
         ImGui::InputInt("font-size", &fontSize);
+        if (fontSize < 5) fontSize = 5;
+        ImGui::InputInt("max-temperature", &maxTemperature);
+        if (maxTemperature < 1) maxTemperature = 1;
+        ImGui::InputInt("max-mutations", &maxMutations);
+        if (maxMutations < 1) maxMutations = 1;
+        ImGui::SliderFloat("cooling-rate", &coolingRate, 0.75f, 1.0f);
+        ImGui::SliderFloat("error-bonus-ratio", &errorBonusRatio, 0.1f, 100.0f);
         ImGui::TreePop();
     }
     ImGui::End();
@@ -89,7 +97,7 @@ void ShowNewVersion(bool* isOpen)
     ImGui::Text("%s", ("The latest version is " + latestVersion).c_str());
     ImGui::Text("%s", ("Your version is " + version).c_str());
     if (version == latestVersion) ImGui::Text("There are no new versions available");
-    else if (latestVersion[0] != '\n')
+    else if (latestVersion != "loading...")
     {
         ImGui::Text("A new version is available!");
         ImGui::Text("Download it using");
@@ -98,7 +106,7 @@ void ShowNewVersion(bool* isOpen)
         if (ImGui::TreeNode("Release notes"))
         {
             for (int i = 0; i < releaseNotes.size()-1; i++)
-                ImGui::Text(releaseNotes[i].c_str());
+                ImGui::Text("%s", releaseNotes[i].c_str());
             ImGui::TreePop();
         }
     }
@@ -147,6 +155,36 @@ void ShowOpenTimetable(bool* isOpen)
             *isOpen = false;
         }
     }
+    ImGui::End();
+}
+
+bool isGenerateTimetable = false;
+void ShowGenerateTimetable(bool* isOpen)
+{
+    if (!ImGui::Begin("Generate timetable", isOpen))
+    {
+        ImGui::End();
+        return;
+    }
+    if (iterationData.isDone)
+    {
+        ImGui::TextColored(ImVec4(0, 255, 0, 255), "Timetable generating done!");
+        // ImGui::End();
+        // return;
+    }
+    else
+    {
+        ImGui::Text("Generating a timetable that matches the requirements...");
+    }
+    ImGui::Text("Iteration: %d", iterationData.iteration);
+    ImGui::Text("The current best score is %d", iterationData.bestScore);
+    ImGui::Text("The best score is %d", iterationData.allTimeBestScore);
+    ImGui::Text("The best timetable has %d errors", iterationData.timetables[iterationData.bestTimetableIndex].errors);
+    ImGui::Text("The best timetable index is %d", iterationData.bestTimetableIndex);
+#ifdef SIMULATED_ANNEALING
+    ImGui::Text("The temperature is %f", temperature);
+#endif
+    ImGui::Text("%d iterations have passed since last score improvement. ", iterationData.iterationsPerChange);
     ImGui::End();
 }
 
@@ -234,10 +272,11 @@ void ShowMenuBar()
         if (currentTimetable.name != "" && ImGui::BeginMenu(currentTimetable.name.c_str()))
         {
             if (ImGui::MenuItem("Setup wizard")) isWizard = true;
-            if (ImGui::MenuItem("Classrooms")) OpenClasses();
+            if (ImGui::MenuItem("Classrooms")) OpenClassrooms();
             if (ImGui::MenuItem("Lessons")) OpenLessons();
             if (ImGui::MenuItem("Teachers")) OpenTeachers();
             if (ImGui::MenuItem("Classes")) OpenClasses();
+            if (ImGui::MenuItem("Generate timetable")) BeginSearching(&currentTimetable);
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Help"))
@@ -284,6 +323,10 @@ void DrawFrame()
     if (isNewVersion) ShowNewVersion(&isNewVersion);
     if (isNewTimetable) ShowNewTimetable(&isNewTimetable);
     if (isOpenTimetable) ShowOpenTimetable(&isOpenTimetable);
+    if (isGenerateTimetable) ShowGenerateTimetable(&isGenerateTimetable);
+
+    if (!isGenerateTimetable) iterationData.isDone = true;
+    if (!iterationData.isDone) RunASearchIteration();
 
     if (GetTime() - timetableSaveTimer > timetableAutosaveInterval)
     {
