@@ -12,7 +12,7 @@
 #include "Timetable.hpp"
 
 // Logging config (verbose logging is slow)
-#define VERBOSE_LOGGING
+// #define VERBOSE_LOGGING
 
 struct IterationData
 {

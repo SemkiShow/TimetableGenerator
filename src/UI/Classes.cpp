@@ -193,7 +193,7 @@ void ShowEditClass(bool* isOpen)
     ImGui::Separator();
     ImGui::Text("available-lessons");
     ImGui::Separator();
-    ImGui::Columns(8);
+    ImGui::Columns(DAYS_PER_WEEK + 1);
     ImGui::LabelText("##1", "%s", "");
     ImGui::LabelText("##2", "%s", "");
     int pushID = 3;
@@ -213,7 +213,9 @@ void ShowEditClass(bool* isOpen)
     ImGui::NextColumn();
     for (int i = 0; i < DAYS_PER_WEEK; i++)
     {
-        ImGui::Text("%s", weekDays[i].c_str());
+        int weekDay = i;
+        while (weekDay >= 7) weekDay -= 7;
+        ImGui::Text("%s", weekDays[weekDay]);
         ImGui::PushID(pushID);
         if (ImGui::Checkbox((allAvailableClassLessonsVertical[i] ? "Deselect all" : "Select all"), &allAvailableClassLessonsVertical[i]))
         {

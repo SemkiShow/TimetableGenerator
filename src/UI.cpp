@@ -3,17 +3,18 @@
 #include "Timetable.hpp"
 #include "Updates.hpp"
 #include "Searching.hpp"
+#include "System.hpp"
 
 int menuOffset = 20;
 int windowSize[2] = {16*50*2, 9*50*2};
-std::unordered_map<int, std::string> weekDays{
-    {0, "Monday"},
-    {1, "Tuesday"},
-    {2, "Wednesday"},
-    {3, "Thursday"},
-    {4, "Friday"},
-    {5, "Saturday"},
-    {6, "Sunday"}
+const char* weekDays[7] = {
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday"
 };
 std::vector<std::string> timetableFiles;
 
@@ -259,6 +260,15 @@ void ShowMenuBar()
                 newTimetable = false;
                 timetableName = currentTimetable.name;
                 isNewTimetable = true;
+            }
+            if (currentTimetable.name != "" && ImGui::BeginMenu("Export"))
+            {
+                if (ImGui::MenuItem("Excel"))
+                {
+                    ExportTimetableAsXlsx(&currentTimetable);
+                    OpenInFileManager("timetables/");
+                }
+                ImGui::EndMenu();
             }
             if (ImGui::MenuItem("Settings")) isSettings = true;
             ImGui::EndMenu();

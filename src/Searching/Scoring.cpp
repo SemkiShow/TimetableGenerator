@@ -31,7 +31,7 @@ std::unordered_map<int, WorkDay[DAYS_PER_WEEK]> GetTeacherLessons(Timetable* tim
     return teacherLessons;
 }
 
-// I use lessonIDs here in place of non-existant classroomIDs
+// I use lessonIDs here in place of non-existent classroomIDs
 std::unordered_map<int, WorkDay[DAYS_PER_WEEK]> GetTeacherClassrooms(Timetable* timetable)
 {
     std::unordered_map<int, WorkDay[DAYS_PER_WEEK]> teacherClassrooms;
@@ -279,7 +279,7 @@ void GetFreePeriodErrors(Timetable* timetable, std::unordered_map<int, WorkDay[D
             std::cout << "Too little teacher free periods error. ";
         #endif
         }
-        if (teacherFreePeriods[teacher.first] > minFreePeriods)
+        if (teacherFreePeriods[teacher.first] > maxFreePeriods)
         {
             timetable->errors += teacherFreePeriods[teacher.first] - maxFreePeriods;
         #ifdef VERBOSE_LOGGING

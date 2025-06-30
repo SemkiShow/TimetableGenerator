@@ -7,6 +7,9 @@
 #include <random> // IWYU pragma: keep
 #include <ctime>
 #include <map>
+#include <xlsxwriter.h>
+#include <cmath>
+#include <filesystem> // IWYU pragma: keep
 
 #define DAYS_PER_WEEK 7
 
@@ -95,3 +98,4 @@ extern Timetable tmpTmpTimetable;
 void SaveTimetable(std::string path, Timetable* timetable);
 void LoadTimetable(std::string path, Timetable* timetable);
 void GenerateRandomTimetable(Timetable* timetable);
+void ExportTimetableAsXlsx(Timetable* timetable);

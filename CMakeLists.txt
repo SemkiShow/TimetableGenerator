@@ -19,9 +19,12 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Dependencies
 set(RAYLIB_VERSION 5.5)
 set(IMGUI_VERSION 1.91.9b)
+set(LIBXLSXWRITER_VERSION 1.2.2)
+set(ZLIB_VERSION 1.3.1)
 
 message(STATUS "Downloading required libraries...")
 
+# raylib
 FetchContent_Declare(
     raylib
     DOWNLOAD_EXTRACT_TIMESTAMP OFF
@@ -62,10 +65,10 @@ if (NOT TARGET CURL::libcurl)
     set(MBEDTLS_VERSION 3.6.3.1)
 
     # MbedTLS
-    set(MBEDTLS_INSTALL_DIR ${CMAKE_BINARY_DIR}/mbedtls-install)
+    set(MBEDTLS_INSTALL_DIR ${CMAKE_BINARY_DIR}/_deps/mbedtls-install)
     ExternalProject_Add(
         mbedtls
-        URL https://github.com/Mbed-TLS/mbedtls/archive/refs/tags/v${MBEDTLS_VERSION}.tar.gz
+        URL https://github.com/Mbed-TLS/mbedtls/archive/refs/tags/v${MBEDTLS_VERSION}.zip
         PREFIX ${CMAKE_BINARY_DIR}/_deps/mbedtls
         CMAKE_ARGS
             -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
@@ -75,8 +78,8 @@ if (NOT TARGET CURL::libcurl)
             -DMBEDTLS_CONFIG_FILE=${CMAKE_SOURCE_DIR}/include/my_mbedtls_config.h
     )
 
-    # Libpsl
-    set(LIBPSL_INSTALL_DIR ${CMAKE_BINARY_DIR}/libpsl-install)
+    # libpsl
+    set(LIBPSL_INSTALL_DIR ${CMAKE_BINARY_DIR}/_deps/libpsl-install)
     if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
         ExternalProject_Add(
             libpsl
@@ -99,9 +102,10 @@ if (NOT TARGET CURL::libcurl)
         )
     endif()
 
-    set(LIBCURL_INSTALL_DIR ${CMAKE_BINARY_DIR}/libcurl-install)
-    ExternalProject_Add(libcurl
-        URL https://github.com/curl/curl/archive/curl-${LIBCURL_VERSION}.tar.gz
+    set(LIBCURL_INSTALL_DIR ${CMAKE_BINARY_DIR}/_deps/libcurl-install)
+    ExternalProject_Add(
+        libcurl
+        URL https://github.com/curl/curl/archive/curl-${LIBCURL_VERSION}.zip
         PREFIX ${CMAKE_BINARY_DIR}/_deps/libcurl
         CMAKE_ARGS
             -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
@@ -121,24 +125,64 @@ if (NOT TARGET CURL::libcurl)
     )
 endif()
 
+# zlib
+set(ZLIB_INSTALL_DIR ${CMAKE_BINARY_DIR}/_deps/zlib-install)
+ExternalProject_Add(
+    zlib
+    URL https://github.com/madler/zlib/archive/v${ZLIB_VERSION}.zip
+    PREFIX ${CMAKE_BINARY_DIR}/_deps/zlib
+    CMAKE_ARGS
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DCMAKE_INSTALL_PREFIX=${ZLIB_INSTALL_DIR}
+        -DBUILD_SHARED_LIBS=OFF
+)
+
+# libxlsxwriter
+set(XLSXWRITER_INSTALL_DIR ${CMAKE_BINARY_DIR}/_deps/xlsxwriter-install)
+ExternalProject_Add(
+    xlsxwriter
+    URL https://github.com/jmcnamara/libxlsxwriter/archive/v${LIBXLSXWRITER_VERSION}.zip
+    PREFIX ${CMAKE_BINARY_DIR}/_deps/zlib
+    CMAKE_ARGS
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DCMAKE_INSTALL_PREFIX=${XLSXWRITER_INSTALL_DIR}
+        -DZLIB_INCLUDE_DIR=${ZLIB_INSTALL_DIR}/include
+        -DZLIB_LIBRARY=${ZLIB_INSTALL_DIR}/lib/libzlibstatic.a
+        -DBUILD_SHARED_LIBS=OFF
+    DEPENDS zlib
+)
+
 file(GLOB_RECURSE SOURCES src/*.cpp)
 add_executable(main ${SOURCES})
-target_include_directories(main PRIVATE include/ ${httplib_SOURCE_DIR})
+target_include_directories(main PRIVATE include/)
 target_compile_features(main PRIVATE cxx_std_17)
 set_target_properties(main PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 target_link_libraries(main PRIVATE raylib imgui rlimgui)
+add_dependencies(main zlib xlsxwriter)
+target_include_directories(main PRIVATE
+    ${XLSXWRITER_INSTALL_DIR}/include
+    ${ZLIB_INSTALL_DIR}/include
+)
+target_link_libraries(main PRIVATE ${XLSXWRITER_INSTALL_DIR}/lib/libxlsxwriter.a)
+if (UNIX)
+    target_link_libraries(main PRIVATE ${ZLIB_INSTALL_DIR}/lib/libz.a)
+elseif (WIN32)
+    target_link_libraries(main PRIVATE ${ZLIB_INSTALL_DIR}/lib/libzlibstatic.a)
+endif()
 if (NOT TARGET CURL::libcurl)
-    add_dependencies(main libcurl)
+    add_dependencies(main mbedtls libpsl libcurl)
     target_include_directories(main PRIVATE
         ${LIBCURL_INSTALL_DIR}/include
         ${MBEDTLS_INSTALL_DIR}/include
-        ${LIBPSL_INSTALL_DIR}/include)
+        ${LIBPSL_INSTALL_DIR}/include
+    )
     target_link_libraries(main PUBLIC
         ${LIBCURL_INSTALL_DIR}/lib/libcurl.a
         ${MBEDTLS_INSTALL_DIR}/lib/libmbedtls.a
         ${MBEDTLS_INSTALL_DIR}/lib/libmbedcrypto.a
         ${MBEDTLS_INSTALL_DIR}/lib/libmbedx509.a
-        ${LIBPSL_INSTALL_DIR}/lib/libpsl.a)
+        ${LIBPSL_INSTALL_DIR}/lib/libpsl.a
+    )
 else()
     target_link_libraries(main PRIVATE CURL::libcurl)
 endif()

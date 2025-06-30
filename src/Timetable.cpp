@@ -172,6 +172,13 @@ void SaveTimetable(std::string path, Timetable* timetable)
     SaveJSON(path, &jsonObject);
 }
 
+std::string TrimJunk(const std::string& input)
+{
+    auto first = input.find_first_not_of("\t\n\r\f\v");
+    auto last  = input.find_last_not_of ("\t\n\r\f\v");
+    return (first == input.npos) ? "" : input.substr(first, last-first+1);
+}
+
 void LoadTimetable(std::string path, Timetable* timetable)
 {
     JSONObject jsonObject;
@@ -179,6 +186,7 @@ void LoadTimetable(std::string path, Timetable* timetable)
 
     *timetable = Timetable();
     timetable->name = std::filesystem::path(path).stem().string();
+    timetable->name = TrimJunk(timetable->name);
 
     // Classrooms
     for (auto& classroom: jsonObject.objectPairs["classrooms"].stringPairs)
@@ -369,7 +377,7 @@ void GenerateRandomTimetable(Timetable* timetable)
                 for (int m = 0; m < lessonsPerDay; m++)
                 {
                     timetable->classes[classID].days[k].lessons.push_back(rand() % 2 == 0);
-                    
+
                     auto it = timetable->classes[classID].timetableLessons.begin();
                     std::advance(it, rand() % timetable->classes[classID].timetableLessons.size());
                     timetable->classes[classID].days[k].classroomLessonPairs.push_back(ClassroomLessonPair());

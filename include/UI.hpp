@@ -4,12 +4,12 @@
 #include <imgui.h> // IWYU pragma: keep
 #include <misc/cpp/imgui_stdlib.h> // IWYU pragma: keep
 #include <rlImGui.h> // IWYU pragma: keep
-#include <unordered_map>
+#include <unordered_map> // IWYU pragma: keep
 #include <algorithm> // IWYU pragma: keep
 
 extern int menuOffset;
 extern int windowSize[2];
-extern std::unordered_map<int, std::string> weekDays;
+extern const char* weekDays[7];
 
 extern std::string teacherLessonValues;
 extern std::string classTeacherValues;
