@@ -11,9 +11,6 @@
 #include <assert.h>
 #include "Timetable.hpp"
 
-// Logging config (verbose logging is slow)
-#define VERBOSE_LOGGING
-
 struct IterationData
 {
     int iteration = 0;

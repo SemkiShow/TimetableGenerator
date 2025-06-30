@@ -13,6 +13,7 @@ int maxMutations = 100;
 float errorBonusRatio = 10.0f;
 int daysPerWeek = 5;
 int maxIterations = -1;
+bool verboseLogging = false;
 
 std::string version = "";
 
@@ -70,6 +71,7 @@ void Save(std::string fileName)
     settingsFile << "error-bonus-ratio=" << errorBonusRatio << '\n';
     settingsFile << "timetables-per-generation=" << timetablesPerGeneration << '\n';
     settingsFile << "max-iterations=" << maxIterations << '\n';
+    settingsFile << "verbose-logging=" << (verboseLogging ? "true" : "false") << '\n';
     // !IMPORTANT: last-timetable must ALWAYS be last because of the quirks of the timetable loading
     settingsFile << "last-timetable=" << currentTimetable.name << '\n';
     settingsFile.close();
@@ -111,6 +113,7 @@ void Load(std::string fileName)
         if (label == "error-bonus-ratio") errorBonusRatio = stof(value);
         if (label == "days-per-week") daysPerWeek = stoi(value);
         if (label == "max-iterations") maxIterations = stoi(value);
+        if (label == "verbose-logging") verboseLogging = value == "true";
     }
     settingsFile.close();
 

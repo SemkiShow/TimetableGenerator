@@ -216,9 +216,10 @@ void GeneticAlgorithm(int threadID, Timetable* population, Timetable* newPopulat
 
         Timetable child = Crossover(parent1, parent2);
         MutateTimetable(&child);
-    #ifdef VERBOSE_LOGGING
-        std::cout << "\x1b[32mScoring timetable " << i << "\x1b[0m. ";
-    #endif
+        if (verboseLogging)
+        {
+            std::cout << "\x1b[32mScoring timetable " << i << "\x1b[0m. ";
+        }
         ScoreTimetable(&child);
         newPopulation[i] = child;
     }

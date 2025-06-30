@@ -17,6 +17,7 @@ extern int maxMutations;
 extern float errorBonusRatio;
 extern int daysPerWeek;
 extern int maxIterations;
+extern bool verboseLogging;
 
 extern std::string version;
 

@@ -67,6 +67,7 @@ void ShowSettings(bool* isOpen)
         ImGui::SliderFloat("error-bonus-ratio", &errorBonusRatio, 0.1f, 100.0f);
         ImGui::SliderInt("timetables-per-generation", &timetablesPerGeneration, 10, 1000);
         ImGui::SliderInt("max-iterations", &maxIterations, -1, 10000);
+        ImGui::Checkbox("verbose-logging", &verboseLogging);
         ImGui::TreePop();
     }
     ImGui::End();

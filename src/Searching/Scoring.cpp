@@ -96,9 +96,10 @@ void GetTeacherCollisionErrors(Timetable* timetable)
                     else
                     {
                         timetable->errors++;
-                    #ifdef VERBOSE_LOGGING
-                        std::cout << "Teacher collision error. ";
-                    #endif
+                        if (verboseLogging)
+                        {
+                            std::cout << "Teacher collision error. ";
+                        }
                     }
                 }
             }
@@ -135,9 +136,10 @@ void GetClassroomCollisionErrors(Timetable* timetable)
                     else
                     {
                         timetable->errors++;
-                    #ifdef VERBOSE_LOGGING
-                        std::cout << "Classroom collision error. ";
-                    #endif
+                        if (verboseLogging)
+                        {
+                            std::cout << "Classroom collision error. ";
+                        }
                     }
                 }
             }
@@ -175,9 +177,10 @@ void GetLessonCollisionErrors(Timetable* timetable)
             if (totalLessonIntersections[lesson.first] > lesson.second.amount - classDays)
             {
                 timetable->errors += totalLessonIntersections[lesson.first] - (lesson.second.amount - classDays);
-            #ifdef VERBOSE_LOGGING
-                std::cout << "Lesson collision error. ";
-            #endif
+                if (verboseLogging)
+                {
+                    std::cout << "Lesson collision error. ";
+                }
             }
         }
     }
@@ -199,16 +202,18 @@ void GetTemplateMatchErrors(Timetable* timetable, std::unordered_map<int, std::v
                 else if (teacherLesson == -3 && (classLesson != -3 && classLesson != -2))
                 {
                     timetable->errors++;
-                #ifdef VERBOSE_LOGGING
-                    std::cout << "Template match error. ";
-                #endif
+                    if (verboseLogging)
+                    {
+                        std::cout << "Template match error. ";
+                    }
                 }
                 else if (teacherLesson != classLesson)
                 {
                     timetable->errors++;
-                #ifdef VERBOSE_LOGGING
-                    std::cout << "Template match error. ";
-                #endif
+                    if (verboseLogging)
+                    {
+                        std::cout << "Template match error. ";
+                    }
                 }
             }
         }
@@ -257,16 +262,18 @@ void GetFreePeriodErrors(Timetable* timetable, std::unordered_map<int, std::vect
         if (teacherFreePeriods[teacher.first] < minFreePeriods)
         {
             timetable->errors += minFreePeriods - teacherFreePeriods[teacher.first];
-        #ifdef VERBOSE_LOGGING
-            std::cout << "Too little teacher free periods error. ";
-        #endif
+            if (verboseLogging)
+            {
+                std::cout << "Too little teacher free periods error. ";
+            }
         }
         if (teacherFreePeriods[teacher.first] > maxFreePeriods)
         {
             timetable->errors += teacherFreePeriods[teacher.first] - maxFreePeriods;
-        #ifdef VERBOSE_LOGGING
-            std::cout << "Too many teacher free periods error. ";
-        #endif
+            if (verboseLogging)
+            {
+                std::cout << "Too many teacher free periods error. ";
+            }
         }
     }
 }
