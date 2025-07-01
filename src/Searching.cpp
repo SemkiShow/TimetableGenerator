@@ -117,7 +117,6 @@ void SwapRandomTimetableLessons(Timetable* timetable)
 
 double EvaluateFitness(const Timetable& timetable)
 {
-    // return timetable.bonusPoints / (1 + timetable.errors * 3.0);
     return timetable.bonusPoints - (timetable.errors * errorBonusRatio);
 }
 

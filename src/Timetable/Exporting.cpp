@@ -34,7 +34,7 @@ void WriteXlsxTemplate(lxw_workbook* workbook, lxw_worksheet* worksheet, int cel
     }
 }
 
-void PrintError(lxw_workbook* workbook, lxw_worksheet* worksheet, int cellWidth = 1)
+void PrintXlsxError(lxw_workbook* workbook, lxw_worksheet* worksheet, int cellWidth = 1)
 {
     lxw_format* errorFormat = workbook_add_format(workbook);
     format_set_font_size(errorFormat, 32);
@@ -126,7 +126,7 @@ void ExportClassesAsXlsx(Timetable* timetable)
             }
         }
 
-        if (printError) PrintError(workbook, worksheet, longestCombinedLesson);
+        if (printError) PrintXlsxError(workbook, worksheet, longestCombinedLesson);
     }
 
     workbook_close(workbook);
@@ -226,7 +226,7 @@ void ExportTeachersAsXlsx(Timetable* timetable)
             }
         }
 
-        if (printError) PrintError(workbook, worksheet);
+        if (printError) PrintXlsxError(workbook, worksheet);
     }
 
     workbook_close(workbook);
@@ -327,7 +327,7 @@ void ExportClassroomsAsXlsx(Timetable* timetable)
             }
         }
 
-        if (printError) PrintError(workbook, worksheet);
+        if (printError) PrintXlsxError(workbook, worksheet);
     }
 
     workbook_close(workbook);

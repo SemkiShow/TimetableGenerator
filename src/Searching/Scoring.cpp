@@ -370,7 +370,7 @@ void GetTeacherMovementBonusPoints(Timetable* timetable)
             for (int j = firstClassroomIndex; j <= lastClassroomIndex; j++)
             {
                 int& teacherClassroom = teacherClassrooms[teacher.first][i].lessonIDs[j];
-                if (teacherClassroom == lastClassroom) timetable->bonusPoints++;
+                if (teacherClassroom == lastClassroom) timetable->bonusPoints += 2;
                 lastClassroom = teacherClassroom;
             }
         }

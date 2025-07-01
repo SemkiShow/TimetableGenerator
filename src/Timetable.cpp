@@ -373,7 +373,7 @@ void GenerateRandomTimetable(Timetable* timetable)
             timetable->classes[classID].days.resize(daysPerWeek);
             for (int k = 0; k < daysPerWeek; k++)
             {
-                timetable->classes[classID].days[k].lessons.resize(lessonsPerDay);
+                timetable->classes[classID].days[k].lessons.reserve(lessonsPerDay);
                 for (int m = 0; m < lessonsPerDay; m++)
                 {
                     timetable->classes[classID].days[k].lessons.push_back(rand() % 2 == 0);

@@ -59,6 +59,7 @@ void Save(std::string fileName)
     // Read the file
     std::fstream settingsFile;
     settingsFile.open(fileName, std::ios::out);
+    settingsFile << "last-timetable=" << currentTimetable.name << '\n';
     settingsFile << "days-per-week=" << daysPerWeek << '\n';
     settingsFile << "lessons-per-day=" << lessonsPerDay << '\n';
     settingsFile << "min-free-periods=" << minFreePeriods << '\n';
@@ -72,8 +73,6 @@ void Save(std::string fileName)
     settingsFile << "timetables-per-generation=" << timetablesPerGeneration << '\n';
     settingsFile << "max-iterations=" << maxIterations << '\n';
     settingsFile << "verbose-logging=" << (verboseLogging ? "true" : "false") << '\n';
-    // !IMPORTANT: last-timetable must ALWAYS be last because of the quirks of the timetable loading
-    settingsFile << "last-timetable=" << currentTimetable.name << '\n';
     settingsFile.close();
 
     // Save timetable
@@ -96,26 +95,28 @@ void Load(std::string fileName)
         label = TrimJunk(Split(buf, '=')[0]);
         value = TrimJunk(Split(buf, '=')[1]);
 
-        if (label == "vsync") vsync = value == "true";
         if (label == "last-timetable" && value != "")
         {
             currentTimetable = Timetable();
-            LoadTimetable("templates/" + value + ".json", &currentTimetable);
+            currentTimetable.name = value;
         }
-        if (label == "merged-font") mergedFont = value == "true";
-        if (label == "timetable-autosave-interval") timetableAutosaveInterval = stoi(value);
+        if (label == "days-per-week") daysPerWeek = stoi(value);
         if (label == "lessons-per-day") lessonsPerDay = stoi(value);
-        if (label == "font-size") fontSize = stoi(value);
         if (label == "min-free-periods") minFreePeriods = stoi(value);
         if (label == "max-free-periods") maxFreePeriods = stoi(value);
+        if (label == "vsync") vsync = value == "true";
+        if (label == "merged-font") mergedFont = value == "true";
+        if (label == "timetable-autosave-interval") timetableAutosaveInterval = stoi(value);
+        if (label == "font-size") fontSize = stoi(value);
         if (label == "timetables-per-generation") timetablesPerGeneration = stoi(value);
         if (label == "max-mutations") maxMutations = stoi(value);
         if (label == "error-bonus-ratio") errorBonusRatio = stof(value);
-        if (label == "days-per-week") daysPerWeek = stoi(value);
         if (label == "max-iterations") maxIterations = stoi(value);
         if (label == "verbose-logging") verboseLogging = value == "true";
     }
     settingsFile.close();
+
+    LoadTimetable("templates/" + currentTimetable.name + ".json", &currentTimetable);
 
     std::ifstream versionFile("version.txt");
     std::getline(versionFile, version);
