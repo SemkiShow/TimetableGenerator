@@ -39,4 +39,5 @@ void ShowClasses(bool* isOpen);
 void ShowWizard(bool* isOpen);
 
 void LoadFonts();
+void LoadStyle();
 void DrawFrame();
