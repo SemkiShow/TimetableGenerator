@@ -80,9 +80,9 @@ void RandomizeTimetable(Timetable* timetable)
                         }
                         counter++;
                     }
-                    else classPair.second.days[i].classroomLessonPairs[j].timetableLessonID = -2;
+                    else classPair.second.days[i].classroomLessonPairs[j].timetableLessonID = ANY_LESSON;
                 }
-                else classPair.second.days[i].classroomLessonPairs[j].timetableLessonID = -3;
+                else classPair.second.days[i].classroomLessonPairs[j].timetableLessonID = NO_LESSON;
             }
         }
     }
@@ -112,8 +112,8 @@ void SwapRandomTimetableLessons(Timetable* timetable)
         lesson1Index = lesson1Distribution(rng);
         lesson2Index = lesson2Distribution(rng);
 
-        if (timetable->classes[classID].days[lesson1Day].classroomLessonPairs[lesson1Index].timetableLessonID >= -2 &&
-        timetable->classes[classID].days[lesson2Day].classroomLessonPairs[lesson2Index].timetableLessonID >= -2) break;
+        if (timetable->classes[classID].days[lesson1Day].classroomLessonPairs[lesson1Index].timetableLessonID >= ANY_LESSON &&
+        timetable->classes[classID].days[lesson2Day].classroomLessonPairs[lesson2Index].timetableLessonID >= ANY_LESSON) break;
     }
     ClassroomLessonPair buf = timetable->classes[classID].days[lesson2Day].classroomLessonPairs[lesson2Index];
     timetable->classes[classID].days[lesson2Day].classroomLessonPairs[lesson2Index] = timetable->classes[classID].days[lesson1Day].classroomLessonPairs[lesson1Index];

@@ -4,6 +4,9 @@
 #include <vector>
 #include <map>
 
+#define ANY_LESSON -2
+#define NO_LESSON -3
+
 struct WorkDay
 {
     std::vector<int> lessonIDs;
@@ -42,10 +45,6 @@ struct TimetableLesson
 
 struct ClassroomLessonPair
 {
-    // timetableLessonID >= 0 -> some valid TimetableLesson
-    // timetableLessonID == -1 -> invalid TimetableLesson
-    // timetableLessonID == -2 -> any TimetableLesson
-    // timetableLessonID == -3 -> no TimetableLesson
     int timetableLessonID = -1;
     std::vector<int> classroomIDs;
 };

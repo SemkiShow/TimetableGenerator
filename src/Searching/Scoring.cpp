@@ -11,7 +11,7 @@ std::unordered_map<int, std::vector<WorkDay>> GetTeacherLessons(Timetable* timet
         teacherLessons[teacher.first].resize(daysPerWeek);
         for (int i = 0; i < daysPerWeek; i++)
         {
-            teacherLessons[teacher.first][i].lessonIDs.resize(lessonsPerDay, -3);
+            teacherLessons[teacher.first][i].lessonIDs.resize(lessonsPerDay, NO_LESSON);
         }
     }
     for (auto& classPair: timetable->classes)
@@ -44,7 +44,7 @@ std::unordered_map<int, std::vector<WorkDay>> GetTeacherClassrooms(Timetable* ti
         teacherClassrooms[teacher.first].resize(daysPerWeek);
         for (int i = 0; i < daysPerWeek; i++)
         {
-            teacherClassrooms[teacher.first][i].lessonIDs.resize(lessonsPerDay, -3);
+            teacherClassrooms[teacher.first][i].lessonIDs.resize(lessonsPerDay, NO_LESSON);
         }
     }
     for (auto& classPair: timetable->classes)
@@ -200,7 +200,7 @@ void GetTemplateMatchErrors(Timetable* timetable, std::unordered_map<int, std::v
             {
                 int teacherLesson = teacher.second.workDays[i].lessonIDs[j];
                 int classLesson = teacherLessons[teacher.first][i].lessonIDs[j];
-                if (teacherLesson == -2 || teacherLesson == -1 || classLesson == -2 || classLesson == -1) continue;
+                if (teacherLesson == ANY_LESSON || teacherLesson == -1 || classLesson == ANY_LESSON || classLesson == -1) continue;
                 else if (teacherLesson != classLesson)
                 {
                     timetable->errors++;
@@ -349,7 +349,7 @@ void GetTeacherMovementBonusPoints(Timetable* timetable)
             int lastClassroomIndex = -1;
             for (int j = 0; j < lessonsPerDay; j++)
             {
-                if (teacherClassrooms[teacher.first][i].lessonIDs[j] != -3)
+                if (teacherClassrooms[teacher.first][i].lessonIDs[j] != NO_LESSON)
                 {
                     firstClassroomIndex = j;
                     break;
@@ -357,7 +357,7 @@ void GetTeacherMovementBonusPoints(Timetable* timetable)
             }
             for (int j = lessonsPerDay-1; j >= 0; j--)
             {
-                if (teacherClassrooms[teacher.first][i].lessonIDs[j] != -3)
+                if (teacherClassrooms[teacher.first][i].lessonIDs[j] != NO_LESSON)
                 {
                     lastClassroomIndex = j;
                     break;

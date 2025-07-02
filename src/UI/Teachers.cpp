@@ -38,7 +38,7 @@ static void ResetVariables()
         for (int j = 0; j < tmpTmpTimetable.teachers[currentTeacherID].workDays[i].lessonIDs.size(); j++)
         {
             int lessonID = tmpTmpTimetable.teachers[currentTeacherID].workDays[i].lessonIDs[j];
-            if (lessonID == -2 || lessonID == -3)
+            if (lessonID == ANY_LESSON || lessonID == NO_LESSON)
                 availableTeacherLessons[i*lessonsPerDay+j] = lessonID + 3;
             else
             {
