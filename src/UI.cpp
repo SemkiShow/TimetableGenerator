@@ -4,6 +4,7 @@
 #include "Updates.hpp"
 #include "Searching.hpp"
 #include "System.hpp"
+#include <cmath>
 #include <filesystem>
 #include <thread>
 #include <raylib.h>
@@ -71,7 +72,7 @@ void ShowSettings(bool* isOpen)
         ImGui::InputInt("max-mutations", &maxMutations);
         if (maxMutations < 1) maxMutations = 1;
         ImGui::SliderFloat("error-bonus-ratio", &errorBonusRatio, 0.1f, 100.0f);
-        ImGui::SliderInt("timetables-per-generation", &timetablesPerGeneration, 10, 1000);
+        ImGui::SliderInt("timetables-per-generation", &timetablesPerGeneration, 10, 10000);
         ImGui::SliderInt("max-iterations", &maxIterations, -1, 10000);
         if (ImGui::Checkbox("verbose-logging", &verboseLogging))
         {
@@ -194,6 +195,8 @@ void ShowGenerateTimetable(bool* isOpen)
     ImGui::Text("The best timetable has %d errors", iterationData.timetables[iterationData.bestTimetableIndex].errors);
     ImGui::Text("The best timetable has %d bonus points", iterationData.timetables[iterationData.bestTimetableIndex].bonusPoints);
     ImGui::Text("%d iterations have passed since last score improvement. ", iterationData.iterationsPerChange);
+    float progressPercentage = (-(iterationData.maxErrors * 1.0f / 100) * iterationData.minErrors + 100) / 100;
+    ImGui::ProgressBar(pow(progressPercentage, 2));
     ImGui::End();
 }
 

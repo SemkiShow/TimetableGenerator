@@ -10,6 +10,7 @@ struct IterationData
     int lastAllTimeBestScore = 0;
     int lastBestScore = 0;
     int minErrors = INT_MAX;
+    int maxErrors = INT_MIN;
     int bestTimetableIndex = 0;
     int bestScore = INT_MIN;
     int allTimeBestScore = bestScore;

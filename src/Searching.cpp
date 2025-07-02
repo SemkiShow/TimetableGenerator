@@ -363,6 +363,10 @@ void BeginSearching(const Timetable* timetable)
 
     iterationData.bestTimetableIndex = GetBestTimetableIndex(iterationData.timetables, &iterationData.minErrors);
     iterationData.bestScore = EvaluateFitness(iterationData.timetables[iterationData.bestTimetableIndex]);
+    if (iterationData.timetables[iterationData.bestTimetableIndex].errors > iterationData.maxErrors)
+    {
+        iterationData.maxErrors = iterationData.timetables[iterationData.bestTimetableIndex].errors;
+    }
     iterationData.allTimeBestScore = iterationData.bestScore;
     iterationData.isDone = false;
     isGenerateTimetable = true;
