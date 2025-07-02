@@ -272,6 +272,7 @@ void UpdateToLatestVersion()
         std::cerr << "Failed to get archive URL\n";
         return;
     }
+
     downloadStatus = "Downloading the latest version...";
     if (!std::filesystem::exists("tmp"))
     {
@@ -283,6 +284,7 @@ void UpdateToLatestVersion()
         std::cerr << "Failed to download the release!\n";
         return;
     }
+
     downloadStatus = "Unzipping the file...";
     if (!std::filesystem::exists("tmp"))
     {
@@ -297,5 +299,6 @@ void UpdateToLatestVersion()
     std::filesystem::copy_file("settings.txt", "tmp/settings.txt", std::filesystem::copy_options::overwrite_existing);
     CopyFiles("tmp/release", ".");
     std::filesystem::copy_file("tmp/settings.txt", "settings.txt", std::filesystem::copy_options::overwrite_existing);
-    downloadStatus = "Successfully updated to " + latestVersion + "!";
+    
+    downloadStatus = "Successfully updated to " + latestVersion + "!\nRestart the application to see the new features";
 }

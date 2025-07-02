@@ -8,7 +8,7 @@ if [ "$1" == "" ]; then
     ./reset_save_files.sh --soft
     cmake -B build -DCMAKE_BUILD_TYPE=Release
     cmake --build build -j32
-    ./build/bin/main
+    ./build/bin/TimetableGenerator
 fi
 
 # Debug build
@@ -17,7 +17,7 @@ if [ "$1" == "-d" ] || [ "$1" == "--debug" ]; then
     ./reset_save_files.sh --soft
     cmake -B build_debug -DCMAKE_BUILD_TYPE=Debug
     cmake --build build_debug -j32
-    gdb -ex run ./build_debug/bin/main
+    gdb -ex run ./build_debug/bin/TimetableGenerator
 fi
 
 # Windows build
@@ -26,7 +26,7 @@ if [ "$1" == "-w" ] || [ "$1" == "--windows" ]; then
     ./reset_save_files.sh --soft
     cmake -B build_win -DCMAKE_TOOLCHAIN_FILE="$(pwd)/mingw-w64-x86_64.cmake" -DCMAKE_BUILD_TYPE=Release
     cmake --build build_win -j32
-    wine ./build_win/bin/main.exe
+    wine ./build_win/bin/TimetableGenerator.exe
 fi
 
 # Profile build
@@ -35,8 +35,8 @@ if [ "$1" == "-p" ] || [ "$1" == "--profile" ]; then
     ./reset_save_files.sh --soft
     cmake -B build_profile -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-pg
     cmake --build build_profile -j
-    ./build_profile/bin/main
-    gprof ./build_profile/bin/main > profile.txt
+    ./build_profile/bin/TimetableGenerator
+    gprof ./build_profile/bin/TimetableGenerator > profile.txt
 fi
 
 # Help info

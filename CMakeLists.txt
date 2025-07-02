@@ -154,34 +154,34 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(libzip)
 
 file(GLOB_RECURSE SOURCES src/*.cpp)
-add_executable(main ${SOURCES})
-target_include_directories(main PRIVATE include/)
-target_compile_features(main PRIVATE cxx_std_17)
-set_target_properties(main PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-target_link_libraries(main PRIVATE raylib imgui rlimgui zlib xlsxwriter zip)
+add_executable(${PROJECT_NAME} ${SOURCES})
+target_include_directories(${PROJECT_NAME} PRIVATE include/)
+target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
+set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+target_link_libraries(${PROJECT_NAME} PRIVATE raylib imgui rlimgui zlib xlsxwriter zip)
 if (NOT TARGET CURL::libcurl)
-    add_dependencies(main libpsl libcurl)
-    target_include_directories(main PRIVATE
+    add_dependencies(${PROJECT_NAME} libpsl libcurl)
+    target_include_directories(${PROJECT_NAME} PRIVATE
         ${LIBCURL_INSTALL_DIR}/include
         ${LIBPSL_INSTALL_DIR}/include
     )
-    target_link_libraries(main PUBLIC
+    target_link_libraries(${PROJECT_NAME} PUBLIC
         ${LIBCURL_INSTALL_DIR}/lib/libcurl.a
         mbedtls
         ${LIBPSL_INSTALL_DIR}/lib/libpsl.a
     )
 else()
-    target_link_libraries(main PRIVATE CURL::libcurl)
+    target_link_libraries(${PROJECT_NAME} PRIVATE CURL::libcurl)
 endif()
 if (WIN32)
-    target_link_libraries(main PRIVATE ws2_32 crypt32 secur32 user32 advapi32 wldap32 bcrypt)
+    target_link_libraries(${PROJECT_NAME} PRIVATE ws2_32 crypt32 secur32 user32 advapi32 wldap32 bcrypt)
 else()
-    target_link_libraries(main PRIVATE pthread dl)
+    target_link_libraries(${PROJECT_NAME} PRIVATE pthread dl)
 endif()
 
 # Checks if OSX and links appropriate frameworks (Only required on MacOS)
 if (APPLE)
-    target_link_libraries(main "-framework IOKit")
-    target_link_libraries(main "-framework Cocoa")
-    target_link_libraries(main "-framework OpenGL")
+    target_link_libraries(${PROJECT_NAME} "-framework IOKit")
+    target_link_libraries(${PROJECT_NAME} "-framework Cocoa")
+    target_link_libraries(${PROJECT_NAME} "-framework OpenGL")
 endif()

@@ -6,7 +6,7 @@ A tool for creating timetables easily
 
 - Download the latest release
 - Unzip it
-- Run main or main.exe depending on your system
+- Run TimetableGenerator or TimetableGenerator.exe depending on your system
 
 ## How to build
 
