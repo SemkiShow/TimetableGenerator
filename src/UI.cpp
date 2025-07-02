@@ -347,7 +347,6 @@ void DrawFrame()
     if (isGenerateTimetable) ShowGenerateTimetable(&isGenerateTimetable);
 
     if (!isGenerateTimetable) iterationData.isDone = true;
-    if (!iterationData.isDone) RunASearchIteration();
 
     if (GetTime() - timetableSaveTimer > timetableAutosaveInterval)
     {

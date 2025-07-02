@@ -345,6 +345,11 @@ void RunASearchIteration()
     iterationData.lastBestScore = iterationData.bestScore;
 }
 
+void Iterate()
+{
+    while (!iterationData.isDone) RunASearchIteration();
+}
+
 void BeginSearching(const Timetable* timetable)
 {
     std::cout << "Initializing timetables...\n";
@@ -370,4 +375,7 @@ void BeginSearching(const Timetable* timetable)
     iterationData.allTimeBestScore = iterationData.bestScore;
     iterationData.isDone = false;
     isGenerateTimetable = true;
+
+    std::thread iterationThread(Iterate);
+    iterationThread.detach();
 }
