@@ -21,8 +21,9 @@ set(RAYLIB_VERSION 5.5)
 set(IMGUI_VERSION 1.91.9b)
 set(LIBXLSXWRITER_VERSION 1.2.2)
 set(ZLIB_VERSION 1.3.1)
+set(LIBZIP_VERSION 1.11.4)
 
-message(STATUS "Downloading required libraries...")
+message(STATUS "Downloading required libraries")
 
 # raylib
 FetchContent_Declare(
@@ -65,18 +66,18 @@ if (NOT TARGET CURL::libcurl)
     set(MBEDTLS_VERSION 3.6.3.1)
 
     # MbedTLS
-    set(MBEDTLS_INSTALL_DIR ${CMAKE_BINARY_DIR}/_deps/mbedtls-install)
-    ExternalProject_Add(
+    set(ENABLE_TESTING OFF CACHE BOOL "" FORCE)
+    set(ENABLE_PROGRAMS OFF CACHE BOOL "" FORCE)
+    set(MBEDTLS_CONFIG_FILE ${CMAKE_SOURCE_DIR}/include/my_mbedtls_config.h CACHE FILEPATH "" FORCE)
+    FetchContent_Declare(
         mbedtls
         URL https://github.com/Mbed-TLS/mbedtls/archive/refs/tags/v${MBEDTLS_VERSION}.zip
-        PREFIX ${CMAKE_BINARY_DIR}/_deps/mbedtls
-        CMAKE_ARGS
-            -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-            -DCMAKE_INSTALL_PREFIX=${MBEDTLS_INSTALL_DIR}
-            -DENABLE_TESTING=OFF
-            -DENABLE_PROGRAMS=OFF
-            -DMBEDTLS_CONFIG_FILE=${CMAKE_SOURCE_DIR}/include/my_mbedtls_config.h
     )
+    FetchContent_MakeAvailable(mbedtls)
+    set(MBEDTLS_INCLUDE_DIR ${mbedtls_SOURCE_DIR}/include CACHE PATH "" FORCE)
+    set(MBEDTLS_LIBRARY ${mbedtls_BINARY_DIR}/library/libmbedtls.a CACHE FILEPATH "" FORCE)
+    set(MBEDX509_LIBRARY ${mbedtls_BINARY_DIR}/library/libmbedx509.a CACHE FILEPATH "" FORCE)
+    set(MBEDCRYPTO_LIBRARY ${mbedtls_BINARY_DIR}/library/libmbedcrypto.a CACHE FILEPATH "" FORCE)
 
     # libpsl
     set(LIBPSL_INSTALL_DIR ${CMAKE_BINARY_DIR}/_deps/libpsl-install)
@@ -90,7 +91,7 @@ if (NOT TARGET CURL::libcurl)
             INSTALL_COMMAND make install
             BUILD_IN_SOURCE 1
         )
-    elseif (UNIX)
+    else()
         ExternalProject_Add(
             libpsl
             URL https://github.com/rockdaboot/libpsl/archive/${LIBPSL_VERSION}.zip
@@ -111,10 +112,10 @@ if (NOT TARGET CURL::libcurl)
             -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
             -DCMAKE_INSTALL_PREFIX=${LIBCURL_INSTALL_DIR}
             -DCURL_USE_MBEDTLS=ON
-            -DMBEDTLS_INCLUDE_DIR=${MBEDTLS_INSTALL_DIR}/include
-            -DMBEDTLS_LIBRARY=${MBEDTLS_INSTALL_DIR}/lib/libmbedtls.a
-            -DMBEDX509_LIBRARY=${MBEDTLS_INSTALL_DIR}/lib/libmbedx509.a
-            -DMBEDCRYPTO_LIBRARY=${MBEDTLS_INSTALL_DIR}/lib/libmbedcrypto.a
+            -DMBEDTLS_INCLUDE_DIR=${mbedtls_SOURCE_DIR}/include
+            -DMBEDTLS_LIBRARY=${mbedtls_BINARY_DIR}/library/libmbedtls.a
+            -DMBEDX509_LIBRARY=${mbedtls_BINARY_DIR}/library/libmbedx509.a
+            -DMBEDCRYPTO_LIBRARY=${mbedtls_BINARY_DIR}/library/libmbedcrypto.a
             -DCURL_USE_LIBPSL=ON
             -DLIBPSL_INCLUDE_DIR=${LIBPSL_INSTALL_DIR}/include
             -DLIBPSL_LIBRARY=${LIBPSL_INSTALL_DIR}/lib/libpsl.a
@@ -126,71 +127,56 @@ if (NOT TARGET CURL::libcurl)
 endif()
 
 # zlib
-set(ZLIB_INSTALL_DIR ${CMAKE_BINARY_DIR}/_deps/zlib-install)
-ExternalProject_Add(
+FetchContent_Declare(
     zlib
     URL https://github.com/madler/zlib/archive/v${ZLIB_VERSION}.zip
-    PREFIX ${CMAKE_BINARY_DIR}/_deps/zlib
-    CMAKE_ARGS
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DCMAKE_INSTALL_PREFIX=${ZLIB_INSTALL_DIR}
-        -DBUILD_SHARED_LIBS=OFF
 )
+FetchContent_MakeAvailable(zlib)
+set(ZLIB_INCLUDE_DIR "${zlib_SOURCE_DIR};${zlib_BINARY_DIR}" CACHE PATH "" FORCE)
+if (WIN32)
+    set(ZLIB_LIBRARY ${zlib_BINARY_DIR}/libzlibstatic.a CACHE FILEPATH "" FORCE)
+else()
+    set(ZLIB_LIBRARY ${zlib_BINARY_DIR}/libz.a CACHE FILEPATH "" FORCE)
+endif()
 
 # libxlsxwriter
-set(XLSXWRITER_INSTALL_DIR ${CMAKE_BINARY_DIR}/_deps/xlsxwriter-install)
-ExternalProject_Add(
+FetchContent_Declare(
     xlsxwriter
     URL https://github.com/jmcnamara/libxlsxwriter/archive/v${LIBXLSXWRITER_VERSION}.zip
-    PREFIX ${CMAKE_BINARY_DIR}/_deps/zlib
-    CMAKE_ARGS
-        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-        -DCMAKE_INSTALL_PREFIX=${XLSXWRITER_INSTALL_DIR}
-        -DZLIB_INCLUDE_DIR=${ZLIB_INSTALL_DIR}/include
-        -DZLIB_LIBRARY=${ZLIB_INSTALL_DIR}/lib/libzlibstatic.a
-        -DBUILD_SHARED_LIBS=OFF
-    DEPENDS zlib
 )
+FetchContent_MakeAvailable(xlsxwriter)
+
+# libzip
+FetchContent_Declare(
+    libzip
+    URL https://github.com/nih-at/libzip/archive/v${LIBZIP_VERSION}.zip
+)
+FetchContent_MakeAvailable(libzip)
 
 file(GLOB_RECURSE SOURCES src/*.cpp)
 add_executable(main ${SOURCES})
 target_include_directories(main PRIVATE include/)
 target_compile_features(main PRIVATE cxx_std_17)
 set_target_properties(main PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-target_link_libraries(main PRIVATE raylib imgui rlimgui)
-add_dependencies(main zlib xlsxwriter)
-target_include_directories(main PRIVATE
-    ${XLSXWRITER_INSTALL_DIR}/include
-    ${ZLIB_INSTALL_DIR}/include
-)
-target_link_libraries(main PRIVATE ${XLSXWRITER_INSTALL_DIR}/lib/libxlsxwriter.a)
-if (UNIX)
-    target_link_libraries(main PRIVATE ${ZLIB_INSTALL_DIR}/lib/libz.a)
-elseif (WIN32)
-    target_link_libraries(main PRIVATE ${ZLIB_INSTALL_DIR}/lib/libzlibstatic.a)
-endif()
+target_link_libraries(main PRIVATE raylib imgui rlimgui zlib xlsxwriter zip)
 if (NOT TARGET CURL::libcurl)
-    add_dependencies(main mbedtls libpsl libcurl)
+    add_dependencies(main libpsl libcurl)
     target_include_directories(main PRIVATE
         ${LIBCURL_INSTALL_DIR}/include
-        ${MBEDTLS_INSTALL_DIR}/include
         ${LIBPSL_INSTALL_DIR}/include
     )
     target_link_libraries(main PUBLIC
         ${LIBCURL_INSTALL_DIR}/lib/libcurl.a
-        ${MBEDTLS_INSTALL_DIR}/lib/libmbedtls.a
-        ${MBEDTLS_INSTALL_DIR}/lib/libmbedcrypto.a
-        ${MBEDTLS_INSTALL_DIR}/lib/libmbedx509.a
+        mbedtls
         ${LIBPSL_INSTALL_DIR}/lib/libpsl.a
     )
 else()
     target_link_libraries(main PRIVATE CURL::libcurl)
 endif()
-if (UNIX)
-    target_link_libraries(main PRIVATE pthread dl)
-endif()
-if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+if (WIN32)
     target_link_libraries(main PRIVATE ws2_32 crypt32 secur32 user32 advapi32 wldap32 bcrypt)
+else()
+    target_link_libraries(main PRIVATE pthread dl)
 endif()
 
 # Checks if OSX and links appropriate frameworks (Only required on MacOS)

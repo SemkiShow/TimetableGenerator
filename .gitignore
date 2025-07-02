@@ -1,10 +1,11 @@
 build*/
-.vscode
+.vscode/
 imgui.ini
 settings.txt
-timetables
-templates
+timetables/
+templates/
 version.txt
-.cache
+.cache/
 gmon.out
 profile.txt
+tmp/

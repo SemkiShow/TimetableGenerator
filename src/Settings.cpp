@@ -18,6 +18,7 @@ int daysPerWeek = 5;
 int maxIterations = -1;
 bool verboseLogging = false;
 int style = STYLE_DARK;
+bool usePrereleases = false;
 
 std::string version = "";
 
@@ -78,6 +79,7 @@ void Save(std::string fileName)
     settingsFile << "timetables-per-generation=" << timetablesPerGeneration << '\n';
     settingsFile << "max-iterations=" << maxIterations << '\n';
     settingsFile << "verbose-logging=" << (verboseLogging ? "true" : "false") << '\n';
+    settingsFile << "use-prereleases=" << (usePrereleases ? "true" : "false") << '\n';
     settingsFile.close();
 
     // Save timetable
@@ -119,6 +121,7 @@ void Load(std::string fileName)
         if (label == "error-bonus-ratio") errorBonusRatio = stof(value);
         if (label == "max-iterations") maxIterations = stoi(value);
         if (label == "verbose-logging") verboseLogging = value == "true";
+        if (label == "use-prereleases") usePrereleases = value == "true";
     }
     settingsFile.close();
 

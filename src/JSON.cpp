@@ -141,7 +141,7 @@ std::vector<std::string> Split(std::string input, char delimiter = ' ', int limi
     int index = 0;
     for (int i = 0; i < input.size(); i++)
     {
-        if (input[i] == delimiter && (index < limit && limit != -1))
+        if (input[i] == delimiter && (index < (limit - 1) && limit != -1))
         {
             index++;
             output.push_back("");

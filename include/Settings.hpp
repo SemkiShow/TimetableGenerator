@@ -21,6 +21,7 @@ extern int daysPerWeek;
 extern int maxIterations;
 extern bool verboseLogging;
 extern int style;
+extern bool usePrereleases;
 
 extern std::string version;
 

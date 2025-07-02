@@ -89,6 +89,7 @@ void ShowSettings(bool* isOpen)
         {
             threadsNumber = (verboseLogging ? 1 : std::max(std::thread::hardware_concurrency(), (unsigned int)1));
         }
+        ImGui::Checkbox("use-prereleases", &usePrereleases);
         ImGui::TreePop();
     }
     ImGui::End();
@@ -123,14 +124,17 @@ void ShowNewVersion(bool* isOpen)
     else if (latestVersion != "loading...")
     {
         ImGui::Text("A new version is available!");
-        ImGui::Text("Download it using");
-        ImGui::SameLine();
-        ImGui::TextLinkOpenURL("this link", ("https://github.com/SemkiShow/TimetableGenerator/releases/tag/" + latestVersion).c_str());
         if (ImGui::TreeNode("Release notes"))
         {
-            for (int i = 0; i < releaseNotes.size()-1; i++)
+            for (int i = 0; i < releaseNotes.size()-2; i++)
                 ImGui::Text("%s", releaseNotes[i].c_str());
             ImGui::TreePop();
+        }
+        if (downloadStatus != "") ImGui::Text("%s", downloadStatus.c_str());
+        if (ImGui::Button("Update"))
+        {
+            std::thread updateThread(UpdateToLatestVersion);
+            updateThread.detach();
         }
     }
     ImGui::End();
@@ -194,8 +198,6 @@ void ShowGenerateTimetable(bool* isOpen)
     if (iterationData.isDone)
     {
         ImGui::TextColored(ImVec4(0, 255, 0, 255), "Timetable generating done!");
-        // ImGui::End();
-        // return;
     }
     else
     {

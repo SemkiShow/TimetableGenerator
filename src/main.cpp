@@ -34,12 +34,11 @@ int main()
     SetExitKey(-1);
 
     rlImGuiSetup(true);
+    LoadFonts();
     LoadStyle();
     #ifdef IMGUI_HAS_DOCK
     ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     #endif
-
-    LoadFonts();
 
     while (!WindowShouldClose())
     {
