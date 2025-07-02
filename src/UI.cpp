@@ -51,6 +51,13 @@ void LoadFonts()
     rlImGuiReloadFonts();
 }
 
+void LoadStyle()
+{
+    if (style == STYLE_DARK) ImGui::StyleColorsDark();
+    if (style == STYLE_LIGHT) ImGui::StyleColorsLight();
+    if (style == STYLE_CLASSIC) ImGui::StyleColorsClassic();
+}
+
 bool isSettings = false;
 void ShowSettings(bool* isOpen)
 {
@@ -61,6 +68,10 @@ void ShowSettings(bool* isOpen)
     }
     ImGui::InputInt("days-per-week", &daysPerWeek);
     ImGui::InputInt("lessons-per-day", &lessonsPerDay);
+    if (ImGui::Combo("style", &style, "dark\0light\0classic\0\0"))
+    {
+        LoadStyle();
+    }
     if (lessonsPerDay < 1) lessonsPerDay = 1;
     if (ImGui::TreeNode("Developer options"))
     {
@@ -326,7 +337,14 @@ void DrawFrame()
     ImGuiIO& io = ImGui::GetIO();
     ImGui::PushFont(io.Fonts->Fonts.back());
 
-    ClearBackground(BLACK);
+    if (style == STYLE_DARK || style == STYLE_CLASSIC)
+    {
+        ClearBackground(BLACK);
+    }
+    if (style == STYLE_LIGHT)
+    {
+        ClearBackground(WHITE);
+    }
 
     ShowMenuBar();
     if (isSettings) ShowSettings(&isSettings);

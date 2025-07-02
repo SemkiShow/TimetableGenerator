@@ -17,6 +17,7 @@ float errorBonusRatio = 10.0f;
 int daysPerWeek = 5;
 int maxIterations = -1;
 bool verboseLogging = false;
+int style = STYLE_DARK;
 
 std::string version = "";
 
@@ -65,6 +66,7 @@ void Save(std::string fileName)
     settingsFile << "last-timetable=" << currentTimetable.name << '\n';
     settingsFile << "days-per-week=" << daysPerWeek << '\n';
     settingsFile << "lessons-per-day=" << lessonsPerDay << '\n';
+    settingsFile << "style=" << style << '\n';
     settingsFile << "min-free-periods=" << minFreePeriods << '\n';
     settingsFile << "max-free-periods=" << maxFreePeriods << '\n';
     settingsFile << "vsync=" << (vsync ? "true" : "false") << '\n';
@@ -105,6 +107,7 @@ void Load(std::string fileName)
         }
         if (label == "days-per-week") daysPerWeek = stoi(value);
         if (label == "lessons-per-day") lessonsPerDay = stoi(value);
+        if (label == "style") style = stoi(value);
         if (label == "min-free-periods") minFreePeriods = stoi(value);
         if (label == "max-free-periods") maxFreePeriods = stoi(value);
         if (label == "vsync") vsync = value == "true";

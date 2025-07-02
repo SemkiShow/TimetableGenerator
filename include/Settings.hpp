@@ -3,6 +3,10 @@
 #include <string>
 #include <vector>
 
+#define STYLE_DARK 0
+#define STYLE_LIGHT 1
+#define STYLE_CLASSIC 2
+
 extern bool vsync;
 extern bool mergedFont;
 extern int timetableAutosaveInterval;
@@ -16,11 +20,9 @@ extern float errorBonusRatio;
 extern int daysPerWeek;
 extern int maxIterations;
 extern bool verboseLogging;
+extern int style;
 
 extern std::string version;
-
-extern std::vector<std::string> timetables;
-extern std::vector<std::string> templates;
 
 std::vector<std::string> Split(std::string input, char delimiter = ' ');
 void ListFiles(const std::string& path, std::vector<std::string>* files);
