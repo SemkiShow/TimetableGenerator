@@ -4,6 +4,12 @@
 #include "Updates.hpp"
 #include "Searching.hpp"
 #include "System.hpp"
+#include <filesystem>
+#include <thread>
+#include <raylib.h>
+#include <imgui.h>
+#include <misc/cpp/imgui_stdlib.h>
+#include <rlImGui.h>
 
 int menuOffset = 20;
 int windowSize[2] = {16*50*2, 9*50*2};
@@ -59,7 +65,7 @@ void ShowSettings(bool* isOpen)
     {
         ImGui::Checkbox("vsync", &vsync);
         ImGui::Checkbox("merged-font", &mergedFont);
-        ImGui::DragInt("timetable-autosave-interval", &timetableAutosaveInterval, 1.0f, 0, 600);
+        ImGui::SliderInt("timetable-autosave-interval", &timetableAutosaveInterval, 0, 600);
         ImGui::InputInt("font-size", &fontSize);
         if (fontSize < 5) fontSize = 5;
         ImGui::InputInt("max-mutations", &maxMutations);
@@ -67,7 +73,10 @@ void ShowSettings(bool* isOpen)
         ImGui::SliderFloat("error-bonus-ratio", &errorBonusRatio, 0.1f, 100.0f);
         ImGui::SliderInt("timetables-per-generation", &timetablesPerGeneration, 10, 1000);
         ImGui::SliderInt("max-iterations", &maxIterations, -1, 10000);
-        ImGui::Checkbox("verbose-logging", &verboseLogging);
+        if (ImGui::Checkbox("verbose-logging", &verboseLogging))
+        {
+            threadsNumber = (verboseLogging ? 1 : std::max(std::thread::hardware_concurrency(), (unsigned int)1));
+        }
         ImGui::TreePop();
     }
     ImGui::End();
@@ -181,10 +190,9 @@ void ShowGenerateTimetable(bool* isOpen)
         ImGui::Text("Generating a timetable that matches the requirements...");
     }
     ImGui::Text("Iteration: %d", iterationData.iteration);
-    ImGui::Text("The current best score is %d", iterationData.bestScore);
     ImGui::Text("The best score is %d", iterationData.allTimeBestScore);
     ImGui::Text("The best timetable has %d errors", iterationData.timetables[iterationData.bestTimetableIndex].errors);
-    ImGui::Text("The best timetable index is %d", iterationData.bestTimetableIndex);
+    ImGui::Text("The best timetable has %d bonus points", iterationData.timetables[iterationData.bestTimetableIndex].bonusPoints);
     ImGui::Text("%d iterations have passed since last score improvement. ", iterationData.iterationsPerChange);
     ImGui::End();
 }
@@ -267,7 +275,7 @@ void ShowMenuBar()
                 timetableName = currentTimetable.name;
                 isNewTimetable = true;
             }
-            if (currentTimetable.name != "" && ImGui::BeginMenu("Export"))
+            if (currentTimetable.name != "" && ImGui::BeginMenu("Export As"))
             {
                 if (ImGui::MenuItem("Excel"))
                 {

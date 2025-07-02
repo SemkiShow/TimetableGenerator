@@ -1,6 +1,7 @@
 #include "Searching.hpp"
 #include "Timetable.hpp"
 #include "UI.hpp"
+#include <imgui.h>
 
 #define WIZARD_STEPS 6
 

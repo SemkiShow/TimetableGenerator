@@ -1,5 +1,7 @@
 #include "Searching.hpp"
 #include "Settings.hpp"
+#include <iostream>
+#include <unordered_map>
 
 std::unordered_map<int, std::vector<WorkDay>> GetTeacherLessons(Timetable* timetable)
 {
@@ -198,15 +200,7 @@ void GetTemplateMatchErrors(Timetable* timetable, std::unordered_map<int, std::v
             {
                 int teacherLesson = teacher.second.workDays[i].lessonIDs[j];
                 int classLesson = teacherLessons[teacher.first][i].lessonIDs[j];
-                if (teacherLesson == -2) continue;
-                else if (teacherLesson == -3 && (classLesson != -3 && classLesson != -2))
-                {
-                    timetable->errors++;
-                    if (verboseLogging)
-                    {
-                        std::cout << "Template match error. ";
-                    }
-                }
+                if (teacherLesson == -2 || teacherLesson == -1 || classLesson == -2 || classLesson == -1) continue;
                 else if (teacherLesson != classLesson)
                 {
                     timetable->errors++;
@@ -224,13 +218,10 @@ void GetFreePeriodErrors(Timetable* timetable, std::unordered_map<int, std::vect
 {
     std::unordered_map<int, int> teacherFreePeriods;
     for (auto& teacher: timetable->teachers)
-        teacherFreePeriods[teacher.first] = 0;
-    for (auto& teacher: timetable->teachers)
     {
-        teacherLessons[teacher.first].resize(daysPerWeek);
+        teacherFreePeriods[teacher.first] = 0;
         for (int i = 0; i < daysPerWeek; i++)
         {
-            teacherLessons[teacher.first][i].lessonIDs.resize(lessonsPerDay);
             int firstLessonIndex = -1;
             int lastLessonIndex = -1;
             for (int j = 0; j < lessonsPerDay; j++)
@@ -256,14 +247,12 @@ void GetFreePeriodErrors(Timetable* timetable, std::unordered_map<int, std::vect
                 if (teacherLesson < 0) teacherFreePeriods[teacher.first]++;
             }
         }
-    }
-    for (auto& teacher: timetable->teachers)
-    {
         if (teacherFreePeriods[teacher.first] < minFreePeriods)
         {
             timetable->errors += minFreePeriods - teacherFreePeriods[teacher.first];
             if (verboseLogging)
             {
+                std::cout << teacher.second.name << ". " << teacherFreePeriods[teacher.first] << ". ";
                 std::cout << "Too little teacher free periods error. ";
             }
         }
@@ -272,6 +261,7 @@ void GetFreePeriodErrors(Timetable* timetable, std::unordered_map<int, std::vect
             timetable->errors += teacherFreePeriods[teacher.first] - maxFreePeriods;
             if (verboseLogging)
             {
+                std::cout << teacher.second.name << ". " << teacherFreePeriods[teacher.first] << ". ";
                 std::cout << "Too many teacher free periods error. ";
             }
         }
@@ -308,7 +298,14 @@ void GetLessonGapErrors(Timetable* timetable)
             for (int j = firstLessonIndex; j <= lastLessonIndex; j++)
             {
                 int& timetableLessonID = classPair.second.days[i].classroomLessonPairs[j].timetableLessonID;
-                if (timetableLessonID < 0) timetable->errors++;
+                if (timetableLessonID < 0)
+                {
+                    timetable->errors++;
+                    if (verboseLogging)
+                    {
+                        std::cout << "Lesson gap error. ";
+                    }
+                }
             }
         }
     }

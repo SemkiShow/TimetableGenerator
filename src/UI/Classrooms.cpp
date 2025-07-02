@@ -1,6 +1,7 @@
 #include "UI.hpp"
-#include "Settings.hpp" // IWYU pragma: keep
 #include "Timetable.hpp"
+#include <imgui.h>
+#include <misc/cpp/imgui_stdlib.h>
 
 bool newClassroom = false;
 int currentClassroomID = 0;

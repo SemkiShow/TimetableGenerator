@@ -1,15 +1,7 @@
 #pragma once
 
-#include <algorithm> // IWYU pragma: keep
-#include <random> // IWYU pragma: keep
-#include <ctime>
-#include <unordered_map> // IWYU pragma: keep
-#include <limits.h>
-#include <iostream> // IWYU pragma: keep
-#include <thread> // IWYU pragma: keep
-#include <mutex> // IWYU pragma: keep
-#include <assert.h>
 #include "Timetable.hpp"
+#include <limits.h>
 
 struct IterationData
 {
@@ -29,6 +21,7 @@ struct IterationData
 };
 
 extern IterationData iterationData;
+extern unsigned int threadsNumber;
 
 void ScoreTimetable(Timetable* timetable);
 void BeginSearching(const Timetable* timetable);

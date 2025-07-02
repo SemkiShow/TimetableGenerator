@@ -1,4 +1,6 @@
 #include "JSON.hpp"
+#include <fstream>
+#include <iostream>
 
 int indentationLevel = 0;
 #define INDENTATION std::string(indentationLevel, '\t')

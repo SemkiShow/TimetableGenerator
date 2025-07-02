@@ -1,5 +1,8 @@
 #include "Settings.hpp"
 #include "Timetable.hpp"
+#include <fstream>
+#include <filesystem>
+#include <iostream>
 
 bool vsync = true;
 bool mergedFont = false;
@@ -116,7 +119,10 @@ void Load(std::string fileName)
     }
     settingsFile.close();
 
-    LoadTimetable("templates/" + currentTimetable.name + ".json", &currentTimetable);
+    if (currentTimetable.name != "")
+    {
+        LoadTimetable("templates/" + currentTimetable.name + ".json", &currentTimetable);
+    }
 
     std::ifstream versionFile("version.txt");
     std::getline(versionFile, version);

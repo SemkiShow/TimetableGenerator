@@ -2,6 +2,11 @@
 #include "UI.hpp"
 #include "Timetable.hpp"
 #include "Updates.hpp"
+#include <ctime>
+#include <imgui.h>
+#include <raylib.h>
+#include <imgui.h>
+#include <rlImGui.h>
 
 int main()
 {
@@ -15,16 +20,6 @@ int main()
     Timetable timetableLoad;
     LoadTimetable("timetables/save.json", &timetableLoad);
     SaveTimetable("timetables/load.json", &timetableLoad);
-
-    for (auto& classPair: timetableLoad.classes)
-    {
-        classPair.second.days.resize(daysPerWeek);
-        for (int i = 0; i < daysPerWeek; i++)
-        {
-            classPair.second.days[i].classroomLessonPairs.clear();
-        }
-    }
-    SaveTimetable("templates/autotest.json", &timetableLoad);
 
     Load("settings.txt");
     CheckForUpdates(false);

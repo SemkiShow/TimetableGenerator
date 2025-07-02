@@ -1,11 +1,6 @@
 #pragma once
 
-#include <raylib.h> // IWYU pragma: keep
-#include <imgui.h> // IWYU pragma: keep
-#include <misc/cpp/imgui_stdlib.h> // IWYU pragma: keep
-#include <rlImGui.h> // IWYU pragma: keep
-#include <unordered_map> // IWYU pragma: keep
-#include <algorithm> // IWYU pragma: keep
+#include <string>
 
 extern int menuOffset;
 extern int windowSize[2];

@@ -1,6 +1,8 @@
 #include "Timetable.hpp"
 #include "JSON.hpp"
 #include "Settings.hpp"
+#include <filesystem>
+#include <iostream>
 
 Timetable currentTimetable;
 Timetable tmpTimetable;

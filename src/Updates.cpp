@@ -2,6 +2,10 @@
 #include "UI.hpp"
 #include "JSON.hpp"
 #include "Settings.hpp"
+#include <iostream>
+#include <thread>
+#define CURL_STATICLIB
+#include <curl/curl.h>
 
 std::string latestVersion = "";
 std::vector<std::string> releaseNotes;

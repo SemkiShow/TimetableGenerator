@@ -1,6 +1,11 @@
 #include "Timetable.hpp"
 #include "Settings.hpp"
 #include "UI.hpp"
+#include <cmath>
+#include <filesystem>
+#include <iostream>
+#include <unordered_map>
+#include <xlsxwriter.h>
 
 bool printError = false;
 
@@ -82,8 +87,11 @@ void ExportClassesAsXlsx(Timetable* timetable)
 
         // Write class teacher name
         worksheet_set_column(worksheet, 0, 0, 20, NULL);
-        worksheet_write_string(worksheet, 0, 0,
-            ("Class teacher:\n" + timetable->teachers[classPair.second.teacherID].name).c_str(), NULL);
+        if (classPair.second.teacherID >= 0)
+        {
+            worksheet_write_string(worksheet, 0, 0,
+                ("Class teacher:\n" + timetable->teachers[classPair.second.teacherID].name).c_str(), NULL);
+        }
 
         // Write the template
         WriteXlsxTemplate(workbook, worksheet, longestCombinedLesson);
@@ -183,7 +191,8 @@ std::unordered_map<int, std::vector<TeacherData>> GetTeacherData(Timetable* time
 
 void ExportTeachersAsXlsx(Timetable* timetable)
 {
-    lxw_workbook* workbook = workbook_new(("timetables/teachers_" + timetable->name + ".xlsx").c_str());
+    std::string fileName = "timetables/teachers_" + timetable->name + ".xlsx";
+    lxw_workbook* workbook = workbook_new(fileName.c_str());
 
     lxw_format* headingFormat = workbook_add_format(workbook);
     format_set_bold(headingFormat);
@@ -200,6 +209,7 @@ void ExportTeachersAsXlsx(Timetable* timetable)
 
     for (auto& teacher: timetable->teachers)
     {
+        std::cout << teacher.second.name << '\n';
         lxw_worksheet* worksheet = workbook_add_worksheet(workbook, teacher.second.name.c_str());
 
         // Write teacher name
@@ -284,7 +294,8 @@ std::unordered_map<int, std::vector<ClassroomData>> GetClassroomData(Timetable* 
 
 void ExportClassroomsAsXlsx(Timetable* timetable)
 {
-    lxw_workbook* workbook = workbook_new(("timetables/classrooms_" + timetable->name + ".xlsx").c_str());
+    std::string fileName = "timetables/classrooms_" + timetable->name + ".xlsx";
+    lxw_workbook* workbook = workbook_new(fileName.c_str());
 
     lxw_format* headingFormat = workbook_add_format(workbook);
     format_set_bold(headingFormat);

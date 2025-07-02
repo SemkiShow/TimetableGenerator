@@ -1,6 +1,9 @@
 #include "UI.hpp"
 #include "Settings.hpp"
 #include "Timetable.hpp"
+#include <imgui.h>
+#include <misc/cpp/imgui_stdlib.h>
+#include <unordered_map>
 
 int currentTeacherID = 0;
 bool newTeacher = false;
@@ -29,6 +32,7 @@ static void ResetVariables()
         for (int j = 0; j < lessonsPerDay; j++)
             availableTeacherLessons[i*lessonsPerDay+j] = 1;
     }
+    tmpTmpTimetable.teachers[currentTeacherID].workDays.resize(daysPerWeek);
     for (int i = 0; i < daysPerWeek; i++)
     {
         for (int j = 0; j < tmpTmpTimetable.teachers[currentTeacherID].workDays[i].lessonIDs.size(); j++)

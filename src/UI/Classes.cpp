@@ -1,6 +1,11 @@
 #include "UI.hpp"
 #include "Settings.hpp"
 #include "Timetable.hpp"
+#include <imgui.h>
+#include <iostream>
+#include <misc/cpp/imgui_stdlib.h>
+#include <unordered_map>
+#include <algorithm>
 
 int currentClassID = 0;
 bool newClass = false;
@@ -366,8 +371,11 @@ void ShowEditClass(bool* isOpen)
         for (auto& lesson: currentTimetable.lessons)
         {
             if (classLessonAmounts[lesson.first] == 0) continue;
+            if (!classLessons[std::to_string(lesson.first) + "0"]) continue;
+            if (!classLessons[std::to_string(lesson.first) + "1"]) continue;
             for (auto& teacher: currentTimetable.teachers)
             {
+                if (!classLessonTeachers[std::to_string(lesson.first) + teacher.second.name + "0"]) continue;
                 if (!classLessonTeachers[std::to_string(lesson.first) + teacher.second.name + "1"]) continue;
                 tmpTmpTimetable.classes[currentClassID].maxTimetableLessonID++;
                 tmpTmpTimetable.classes[currentClassID].timetableLessons[tmpTmpTimetable.classes[currentClassID].maxTimetableLessonID] =
@@ -410,7 +418,7 @@ void ShowEditClass(bool* isOpen)
             for (int i = 0; i < bulkClassesAmount-1; i++)
             {
                 tmpTmpTimetable.maxClassID++;
-                tmpTmpTimetable.orderedClasses.insert(tmpTmpTimetable.orderedClasses.begin() + orderedClassesID + 1, tmpTmpTimetable.maxClassID);
+                tmpTmpTimetable.orderedClasses.insert(tmpTmpTimetable.orderedClasses.begin() + orderedClassesID + i + 1, tmpTmpTimetable.maxClassID);
                 tmpTmpTimetable.classes[tmpTmpTimetable.maxClassID] = Class();
                 tmpTmpTimetable.classes[tmpTmpTimetable.maxClassID].number = tmpTmpTimetable.classes[currentClassID].number;
             }

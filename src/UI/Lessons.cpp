@@ -1,5 +1,8 @@
 #include "UI.hpp"
 #include "Timetable.hpp"
+#include <imgui.h>
+#include <misc/cpp/imgui_stdlib.h>
+#include <unordered_map>
 
 static int currentLessonID = 0;
 bool newLesson = false;

@@ -2,14 +2,7 @@
 
 #include <string>
 #include <vector>
-#include <fstream> // IWYU pragma: keep
-#include <iostream> // IWYU pragma: keep
-#include <random> // IWYU pragma: keep
-#include <ctime>
 #include <map>
-#include <xlsxwriter.h>
-#include <cmath>
-#include <filesystem> // IWYU pragma: keep
 
 struct WorkDay
 {

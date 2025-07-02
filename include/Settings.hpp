@@ -2,8 +2,6 @@
 
 #include <string>
 #include <vector>
-#include <fstream> // IWYU pragma: keep
-#include <filesystem> // IWYU pragma: keep
 
 extern bool vsync;
 extern bool mergedFont;

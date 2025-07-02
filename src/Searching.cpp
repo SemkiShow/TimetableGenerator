@@ -1,9 +1,14 @@
 #include "Searching.hpp"
 #include "Settings.hpp"
 #include "UI.hpp"
+#include <algorithm>
+#include <random>
+#include <ctime>
+#include <iostream>
+#include <thread>
 
 static thread_local std::mt19937 rng(std::random_device{}());
-int threadsNumber = std::max(std::thread::hardware_concurrency(), (unsigned int)1);
+unsigned int threadsNumber = std::max(std::thread::hardware_concurrency(), (unsigned int)1);
 IterationData iterationData = IterationData();
 
 int GetLessonsAmount(const std::map<int, TimetableLesson> timetableLessons)
@@ -300,30 +305,6 @@ int GetBestTimetableIndex(const Timetable* timetables, int* minErrors)
     return bestTimetableIndex;
 }
 
-void BeginSearching(const Timetable* timetable)
-{
-    std::cout << "Initializing timetables...\n";
-    iterationData = IterationData();
-    iterationData.timetables = new Timetable[timetablesPerGeneration];
-    iterationData.population = new Timetable[timetablesPerGeneration];
-    iterationData.newPopulation = new Timetable[timetablesPerGeneration];
-    for (int i = 0; i < timetablesPerGeneration; i++)
-    {
-        iterationData.timetables[i] = *timetable;
-        RandomizeTimetable(&iterationData.timetables[i]);
-        ScoreTimetable(&iterationData.timetables[i]);
-        iterationData.population[i] = iterationData.timetables[i];
-        iterationData.newPopulation[i] = iterationData.timetables[i];
-    }
-
-    iterationData.bestTimetableIndex = GetBestTimetableIndex(iterationData.timetables, &iterationData.minErrors);
-    iterationData.bestScore = EvaluateFitness(iterationData.timetables[iterationData.bestTimetableIndex]);
-    iterationData.allTimeBestScore = iterationData.bestScore;
-    iterationData.isDone = false;
-    isGenerateTimetable = true;
-    threadsNumber = 1;
-}
-
 void RunASearchIteration()
 {
     if (iterationData.timetables[iterationData.bestTimetableIndex].errors <= 0 || (maxIterations != -1 && iterationData.iteration >= maxIterations))
@@ -335,10 +316,9 @@ void RunASearchIteration()
     std::thread threads[threadsNumber];
 
     std::cout << "\x1b[34mIteration " << iterationData.iteration++ << "\x1b[0m. ";
-    std::cout << "The current best score is " << iterationData.bestScore << ". ";
     std::cout << "The best score is " << iterationData.allTimeBestScore << ". ";
     std::cout << "The best timetable has " << iterationData.timetables[iterationData.bestTimetableIndex].errors << " errors. ";
-    std::cout << "The best timetable index is " << iterationData.bestTimetableIndex << ". ";
+    std::cout << "The best timetable has " << iterationData.timetables[iterationData.bestTimetableIndex].bonusPoints << " bonus points. ";
     std::cout << iterationData.iterationsPerChange << " iterations have passed since last score improvement. ";
 
     for (int i = 0; i < threadsNumber; i++)
@@ -363,4 +343,27 @@ void RunASearchIteration()
     else iterationData.iterationsPerChange = 0;
     iterationData.lastAllTimeBestScore = iterationData.allTimeBestScore;
     iterationData.lastBestScore = iterationData.bestScore;
+}
+
+void BeginSearching(const Timetable* timetable)
+{
+    std::cout << "Initializing timetables...\n";
+    iterationData = IterationData();
+    iterationData.timetables = new Timetable[timetablesPerGeneration];
+    iterationData.population = new Timetable[timetablesPerGeneration];
+    iterationData.newPopulation = new Timetable[timetablesPerGeneration];
+    for (int i = 0; i < timetablesPerGeneration; i++)
+    {
+        iterationData.timetables[i] = *timetable;
+        RandomizeTimetable(&iterationData.timetables[i]);
+        ScoreTimetable(&iterationData.timetables[i]);
+        iterationData.population[i] = iterationData.timetables[i];
+        iterationData.newPopulation[i] = iterationData.timetables[i];
+    }
+
+    iterationData.bestTimetableIndex = GetBestTimetableIndex(iterationData.timetables, &iterationData.minErrors);
+    iterationData.bestScore = EvaluateFitness(iterationData.timetables[iterationData.bestTimetableIndex]);
+    iterationData.allTimeBestScore = iterationData.bestScore;
+    iterationData.isDone = false;
+    isGenerateTimetable = true;
 }
