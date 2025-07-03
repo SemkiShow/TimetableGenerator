@@ -35,7 +35,7 @@ static void ResetVariables()
 bool isEditLesson = false;
 void ShowEditLesson(bool* isOpen)
 {
-    if (!ImGui::Begin((newLesson ? labels["New Lesson"] : labels["Edit Lesson"]).c_str(), isOpen))
+    if (!ImGui::Begin((newLesson ? labels["New lesson"] : labels["Edit lesson"]).c_str(), isOpen))
     {
         ImGui::End();
         return;

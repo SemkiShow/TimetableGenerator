@@ -209,7 +209,6 @@ void ExportTeachersAsXlsx(Timetable* timetable)
 
     for (auto& teacher: timetable->teachers)
     {
-        std::cout << teacher.second.name << '\n';
         lxw_worksheet* worksheet = workbook_add_worksheet(workbook, teacher.second.name.c_str());
 
         // Write teacher name

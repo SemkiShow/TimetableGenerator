@@ -176,7 +176,7 @@ void ShowCombineLessons(bool* isOpen)
 bool isEditClass = false;
 void ShowEditClass(bool* isOpen)
 {
-    if (!ImGui::Begin((newClass ? labels["New Class"] : labels["Edit Class"]).c_str(), isOpen))
+    if (!ImGui::Begin((newClass ? labels["New class"] : labels["Edit class"]).c_str(), isOpen))
     {
         ImGui::End();
         return;

@@ -70,7 +70,7 @@ static void ResetVariables()
 bool isEditTeacher = false;
 void ShowEditTeacher(bool* isOpen)
 {
-    if (!ImGui::Begin((newTeacher ? labels["New Teacher"] : labels["Edit Teacher"]).c_str(), isOpen))
+    if (!ImGui::Begin((newTeacher ? labels["New teacher"] : labels["Edit teacher"]).c_str(), isOpen))
     {
         ImGui::End();
         return;

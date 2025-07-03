@@ -1,34 +1,59 @@
 #include "Settings.hpp"
 #include "UI.hpp"
 #include "Timetable.hpp"
+#include <cctype>
 #include <imgui.h>
 #include <misc/cpp/imgui_stdlib.h>
+#include <string>
 
 bool newClassroom = false;
 int currentClassroomID = 0;
-int classroomsStartNumber, classroomsEndNumber, classroomsAmount;
+int classroomsStartNumber, classroomsEndNumber;
 
 bool isEditClassroom = false;
 void ShowEditClassroom(bool* isOpen)
 {
-    if (!ImGui::Begin((newClassroom ? labels["New Classroom"] : labels["Edit Classroom"]).c_str(), isOpen))
+    if (!ImGui::Begin((newClassroom ? labels["New classroom"] : labels["Edit classroom"]).c_str(), isOpen))
     {
         ImGui::End();
         return;
     }
     if (newClassroom)
     {
-        if (ImGui::InputInt(labels["start number"].c_str(), &classroomsStartNumber))
+        try
         {
-            classroomsEndNumber = classroomsStartNumber + classroomsAmount - 1;
+            bool isNameANumber = true;
+            for (int i = 0; i < tmpTmpTimetable.classrooms[currentClassroomID].name.size(); i++)
+            {
+                if (!std::isdigit(tmpTmpTimetable.classrooms[currentClassroomID].name[i]))
+                {
+                    isNameANumber = false;
+                    break;
+                }
+            }
+            if (isNameANumber)
+            {
+                if (ImGui::InputInt(labels["start number"].c_str(), &classroomsStartNumber))
+                {
+                    tmpTmpTimetable.classrooms[currentClassroomID].name = std::to_string(classroomsStartNumber);
+                }
+                if (classroomsStartNumber < 0) classroomsStartNumber = 0;
+                ImGui::InputInt(labels["end number"].c_str(), &classroomsEndNumber);
+                if (classroomsEndNumber < 0) classroomsEndNumber = 0;
+                if (classroomsEndNumber < classroomsStartNumber) classroomsEndNumber = classroomsStartNumber;
+            }
         }
-        if (ImGui::InputInt(labels["end number"].c_str(), &classroomsEndNumber))
+        catch (const std::exception&) {}
+        if (classroomsStartNumber == classroomsEndNumber)
         {
-            classroomsAmount = classroomsEndNumber - classroomsStartNumber + 1;
-        }
-        if (ImGui::InputInt(labels["amount"].c_str(), &classroomsAmount))
-        {
-            classroomsEndNumber = classroomsStartNumber + classroomsAmount - 1;
+            if (ImGui::InputText(labels["name"].c_str(), &tmpTmpTimetable.classrooms[currentClassroomID].name))
+            {
+                try
+                {
+                    classroomsStartNumber = classroomsEndNumber = stoi(tmpTmpTimetable.classrooms[currentClassroomID].name);
+                }
+                catch (const std::exception&) {}
+            }
         }
     }
     else
@@ -40,11 +65,14 @@ void ShowEditClassroom(bool* isOpen)
     {
         if (newClassroom)
         {
-            for (int i = classroomsStartNumber; i <= classroomsEndNumber; i++)
+            if (classroomsStartNumber != classroomsEndNumber)
             {
-                tmpTimetable.maxClassroomID++;
-                tmpTmpTimetable.classrooms[tmpTimetable.maxClassroomID] = Classroom();
-                tmpTmpTimetable.classrooms[tmpTimetable.maxClassroomID].name = std::to_string(i);
+                for (int i = classroomsStartNumber; i <= classroomsEndNumber; i++)
+                {
+                    tmpTmpTimetable.maxClassroomID++;
+                    tmpTmpTimetable.classrooms[tmpTmpTimetable.maxClassroomID] = Classroom();
+                    tmpTmpTimetable.classrooms[tmpTmpTimetable.maxClassroomID].name = std::to_string(i);
+                }
             }
         }
         tmpTimetable.classrooms = tmpTmpTimetable.classrooms;
@@ -67,15 +95,16 @@ void ShowClassrooms(bool* isOpen)
     if (ImGui::Button(labels["+"].c_str()))
     {
         newClassroom = true;
+        tmpTmpTimetable.classrooms = tmpTimetable.classrooms;
+        tmpTmpTimetable.maxClassroomID = tmpTimetable.maxClassroomID;
         try
         {
-            classroomsStartNumber = classroomsEndNumber = stoi(tmpTimetable.classrooms[tmpTimetable.maxClassroomID].name)+1;
+            classroomsStartNumber = classroomsEndNumber = stoi(tmpTmpTimetable.classrooms[tmpTmpTimetable.maxClassroomID].name)+1;
+            tmpTmpTimetable.classrooms[tmpTmpTimetable.maxClassroomID+1].name =
+                std::to_string(stoi(tmpTimetable.classrooms[tmpTimetable.maxClassroomID].name)+1);
         }
-        catch (const std::exception&)
-        {
-
-        }
-        classroomsAmount = 1;
+        catch (const std::exception&) {}
+        currentClassroomID = tmpTmpTimetable.maxClassroomID+1;
         isEditClassroom = true;
     }
     for (auto it = tmpTimetable.classrooms.begin(); it != tmpTimetable.classrooms.end();)
