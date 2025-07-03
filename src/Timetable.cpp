@@ -1,5 +1,6 @@
 #include "Timetable.hpp"
 #include "JSON.hpp"
+#include "Logging.hpp"
 #include "Settings.hpp"
 #include <filesystem>
 #include <iostream>
@@ -10,6 +11,7 @@ Timetable tmpTmpTimetable;
 
 void SaveTimetable(std::string path, Timetable* timetable)
 {
+    LogInfo("Saving timetable at " + path);
     if (timetable->name == "") return;
 
     JSONObject jsonObject;
@@ -179,6 +181,7 @@ void SaveTimetable(std::string path, Timetable* timetable)
 
 void LoadTimetable(std::string path, Timetable* timetable)
 {
+    LogInfo("Loading timetable at " + path);
     JSONObject jsonObject;
     LoadJSON(path, &jsonObject);
 

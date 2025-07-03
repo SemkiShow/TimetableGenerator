@@ -1,8 +1,10 @@
+#include "Logging.hpp"
 #include "Settings.hpp"
 #include "UI.hpp"
 #include "Timetable.hpp"
 #include <imgui.h>
 #include <misc/cpp/imgui_stdlib.h>
+#include <string>
 #include <unordered_map>
 
 static int currentLessonID = 0;
@@ -15,6 +17,7 @@ std::unordered_map<int, bool> lessonClassrooms;
 
 static void ResetVariables()
 {
+    LogInfo("Resetting lesson variables");
     allLessonClasses = allLessonClassrooms = true;
     lessonClassGroups.clear();
     lessonClasses.clear();
@@ -45,6 +48,7 @@ void ShowEditLesson(bool* isOpen)
     ImGui::Text("%s", labels["classes"].c_str());
     if (ImGui::Checkbox((allLessonClasses ? labels["Deselect all"] + "##1" : labels["Select all"] + "##1").c_str(), &allLessonClasses))
     {
+        LogInfo("Clicked allLessonClasses in a lesson with ID " + std::to_string(currentLessonID));
         for (auto& classPair: currentTimetable.classes)
         {
             lessonClassGroups[classPair.second.number] = allLessonClasses;
@@ -67,6 +71,8 @@ void ShowEditLesson(bool* isOpen)
             lastClassNumber = currentTimetable.classes[classID].number;
             if (ImGui::Checkbox(currentTimetable.classes[classID].number.c_str(), &lessonClassGroups[currentTimetable.classes[classID].number]))
             {
+                LogInfo("Clicked lessonClassGroups in class ID " + std::to_string(classID) +
+                    " in lesson with ID " + std::to_string(currentLessonID));
                 for (auto& classPair: currentTimetable.classes)
                 {
                     if (classPair.second.number == currentTimetable.classes[classID].number)
@@ -87,6 +93,7 @@ void ShowEditLesson(bool* isOpen)
     ImGui::Text("classrooms");
     if (ImGui::Checkbox((allLessonClassrooms ? labels["Deselect all"] + "##2" : labels["Select all"] + "##2").c_str(), &allLessonClassrooms))
     {
+        LogInfo("Clicked allLessonClassrooms in lesson with ID " + std::to_string(currentLessonID));
         for (auto& classroom: currentTimetable.classrooms)
             lessonClassrooms[classroom.first] = allLessonClassrooms;
     }
@@ -107,6 +114,7 @@ void ShowEditLesson(bool* isOpen)
     ImGui::Columns(1);
     if (ImGui::Button(labels["Ok"].c_str()))
     {
+        LogInfo("Clicked Ok while editing a lesson with ID " + std::to_string(currentLessonID));
         tmpTmpTimetable.lessons[currentLessonID].classIDs.clear();
         for (auto& classPair: currentTimetable.classes)
         {
@@ -144,6 +152,7 @@ void ShowLessons(bool* isOpen)
         tmpTmpTimetable.maxLessonID++;
         tmpTmpTimetable.lessons[tmpTmpTimetable.maxLessonID] = Lesson();
         currentLessonID = tmpTmpTimetable.maxLessonID;
+        LogInfo("Adding a new lesson with ID " + std::to_string(currentLessonID));
         ResetVariables();
         isEditLesson = true;
     }
@@ -154,6 +163,7 @@ void ShowLessons(bool* isOpen)
         ImGui::PushID(it->first);
         if (ImGui::Button(labels["-"].c_str()))
         {
+            LogInfo("Removed a lesson with ID " + std::to_string(it->first));
             ImGui::PopID();
             it = tmpTimetable.lessons.erase(it);
             continue;
@@ -165,6 +175,7 @@ void ShowLessons(bool* isOpen)
             tmpTmpTimetable.lessons = tmpTimetable.lessons;
             tmpTmpTimetable.maxLessonID = tmpTimetable.maxLessonID;
             currentLessonID = it->first;
+            LogInfo("Editing a lesson with ID " + std::to_string(currentLessonID));
             ResetVariables();
             isEditLesson = true;
         }
@@ -195,6 +206,7 @@ void ShowLessons(bool* isOpen)
     ImGui::Separator();
     if (ImGui::Button(labels["Ok"].c_str()))
     {
+        LogInfo("Clicked Ok in the lessons menu");
         currentTimetable.lessons = tmpTimetable.lessons;
         currentTimetable.maxLessonID = tmpTimetable.maxLessonID;
         *isOpen = false;

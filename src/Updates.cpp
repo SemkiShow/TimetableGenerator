@@ -1,4 +1,5 @@
 #include "Updates.hpp"
+#include "Logging.hpp"
 #include "UI.hpp"
 #include "JSON.hpp"
 #include "Settings.hpp"
@@ -39,10 +40,12 @@ size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp)
 
 void GetLatestVersionName()
 {
+    LogInfo("Fetching the latest version name");
     CURL* curl = curl_easy_init();
     if (!curl)
     {
         std::cerr << "Failed to initialize CURL" << std::endl;
+        LogError("Failed to initialize CURL");
         latestVersion = labels["Error: CURL init failed!"];
         return;
     }
@@ -58,6 +61,7 @@ void GetLatestVersionName()
     if (res != CURLE_OK)
     {
         std::cerr << "CURL request failed: " << curl_easy_strerror(res) << std::endl;
+        LogError(std::string("CURL request failed: ") + curl_easy_strerror(res));
         latestVersion = labels["Error: network request failed!"];
     }
     else
@@ -73,12 +77,18 @@ void GetLatestVersionName()
                 latestVersion = jsonObject.objects[0].stringPairs["tag_name"];
                 releaseNotes = MultiSplit(jsonObject.objects[0].stringPairs["body"], "\\n");
                 if (latestVersion != version) isNewVersion = true;
+                LogInfo("Fetched the newest version name: " + latestVersion);
             }
-            else std::cerr << "No releases found in JSON response" << std::endl;
+            else
+            {
+                std::cerr << "No releases found in JSON response" << std::endl;
+                LogError("No releases found in JSON response");
+            }
         }
         else
         {
             std::cerr << "HTTP request failed: Status " << responseCode << std::endl;
+            LogError("HTTP request failed: Status " + std::to_string(responseCode));
             latestVersion = labels["Error: bad HTTP status!"];
         }
     }
@@ -116,10 +126,12 @@ std::string ExtractString(const std::string& input, const std::string& prefix, c
 
 std::string GetLatestVersionArchiveURL()
 {
+    LogInfo("Fetching the latest version archive URL");
     CURL* curl = curl_easy_init();
     if (!curl)
     {
         std::cerr << "Failed to initialize CURL" << std::endl;
+        LogError("Failed to initialize CURL");
         return "";
     }
 
@@ -134,6 +146,7 @@ std::string GetLatestVersionArchiveURL()
     if (res != CURLE_OK)
     {
         std::cerr << "CURL request failed: " << curl_easy_strerror(res) << std::endl;
+        LogError(std::string("CURL request failed: ") + curl_easy_strerror(res));
     }
     else
     {
@@ -145,6 +158,7 @@ std::string GetLatestVersionArchiveURL()
             ParseJSON(readBuffer, &jsonObject);
             if (!jsonObject.objects.empty())
             {
+                LogInfo("Successfully fetched releases info");
                 int releaseID = 0;
                 while (jsonObject.objects[releaseID].boolPairs["draft"] ||
                     (jsonObject.objects[releaseID].boolPairs["prerelease"] && !usePrereleases))
@@ -164,6 +178,7 @@ std::string GetLatestVersionArchiveURL()
                 }
                 if (assetID == -1)
                 {
+                    LogError("Current language not found in the response");
                     for (int i = 0; i < jsonObject.objects[releaseID].objectPairs["assets"].objects.size(); i++)
                     {
                         std::string assetLanguage = ExtractString(jsonObject.objects[releaseID].objectPairs["assets"].objects[i].stringPairs["name"], "release_", ".zip");
@@ -174,14 +189,23 @@ std::string GetLatestVersionArchiveURL()
                         }
                     }
                 }
-                if (assetID == -1) assetID = 0;
+                if (assetID == -1)
+                {
+                    assetID = 0;
+                    LogError("English not found in the response");
+                }
                 return jsonObject.objects[releaseID].objectPairs["assets"].objects[assetID].stringPairs["browser_download_url"];
             }
-            else std::cerr << "No releases found in JSON response" << std::endl;
+            else
+            {
+                std::cerr << "No releases found in JSON response" << std::endl;
+                LogError("No releases found in JSON response");
+            }
         }
         else
         {
             std::cerr << "HTTP request failed: Status " << responseCode << std::endl;
+            LogError("HTTP request failed: Status " + std::to_string(responseCode));
         }
     }
 
@@ -196,12 +220,14 @@ size_t WriteFileCallback(void* ptr, size_t size, size_t nmemb, void* stream)
 
 int DownloadFile(const std::string& url, const std::string& outputPath)
 {
+    LogInfo("Downloading the latest release");
     FILE* file = fopen(outputPath.c_str(), "wb");
     if (!file) return 1;
 
     CURL* curl = curl_easy_init();
     if (!curl)
     {
+        LogError("Failed to initialize CURL");
         fclose(file);
         return 1;
     }
@@ -219,11 +245,13 @@ int DownloadFile(const std::string& url, const std::string& outputPath)
 
 int UnzipFile(const std::string& zipPath, const std::string& extractDir)
 {
+    LogInfo("Unzipping the downloaded release");
     int err = 0;
     zip* archive = zip_open(zipPath.c_str(), ZIP_RDONLY, &err);
     if (!archive)
     {
         std::cerr << "Failed to open zip archive: " << zipPath << std::endl;
+        LogError("Failed to open zip archive: " + zipPath);
         return 1;
     }
 
@@ -235,6 +263,7 @@ int UnzipFile(const std::string& zipPath, const std::string& extractDir)
         if (!name)
         {
             std::cerr << "Failed to get entry name for index " << i << std::endl;
+            LogError("Failed to get entry name for index " + std::to_string(i));
             zip_close(archive);
             return 1;
         }
@@ -253,6 +282,7 @@ int UnzipFile(const std::string& zipPath, const std::string& extractDir)
             if (!zfile)
             {
                 std::cerr << "Failed to open file inside zip: " << name << std::endl;
+                LogError(std::string("Failed to open file inside zip: ") + name);
                 zip_close(archive);
                 return 1;
             }
@@ -261,6 +291,7 @@ int UnzipFile(const std::string& zipPath, const std::string& extractDir)
             if (!outfile)
             {
                 std::cerr << "Failed to create output file: " << outPath << std::endl;
+                LogError("Failed to create output file: " + outPath);
                 zip_fclose(zfile);
                 zip_close(archive);
                 return 1;
@@ -272,6 +303,7 @@ int UnzipFile(const std::string& zipPath, const std::string& extractDir)
             {
                 fwrite(buffer, 1, bytesRead, outfile);
             }
+            LogInfo("Successfully extracted " + zipPath + " to " + extractDir);
 
             fclose(outfile);
             zip_fclose(zfile);
@@ -298,6 +330,7 @@ void CopyFiles(const std::filesystem::path& src, const std::filesystem::path& de
             std::filesystem::copy_file(from, to, std::filesystem::copy_options::overwrite_existing);
         }
     }
+    LogInfo("Successfully copied " + src.string() + " to " + dest.string());
 }
 
 void UpdateToLatestVersion()
@@ -308,6 +341,7 @@ void UpdateToLatestVersion()
     {
         downloadStatus = labels["Failed to get archive URL"];
         std::cerr << "Failed to get archive URL\n";
+        LogError("Failed to get archive URL");
         return;
     }
 
@@ -343,10 +377,18 @@ void UpdateToLatestVersion()
 
     downloadStatus = labels["Successfully updated to"] + " " + latestVersion + "!\n" +
         labels["Restart the application to see the new features"];
+    LogInfo("Successfully updated to " + latestVersion);
 }
 
 void UpdateCACertificate()
 {
-    DownloadFile("https://curl.se/ca/cacert.pem", "resources/cacert.pem");
-    std::cout << "Updated the ca certificate\n";
+    if (!std::filesystem::exists("tmp"))
+    {
+        std::filesystem::create_directory("tmp");
+    }
+    DownloadFile("https://curl.se/ca/cacert.pem", "tmp/cacert.pem");
+    std::filesystem::copy_file("tmp/cacert.pem", "resources/cacert.pem", std::filesystem::copy_options::overwrite_existing);
+    std::filesystem::remove("tmp/cacert.pem");
+    std::cout << "Updated the CA certificate\n";
+    LogInfo("Updated the CA certificate");
 }

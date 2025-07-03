@@ -1,4 +1,5 @@
 #include "UI.hpp"
+#include "Logging.hpp"
 #include "Settings.hpp"
 #include "Timetable.hpp"
 #include "Updates.hpp"
@@ -34,6 +35,7 @@ int lastFontSize = fontSize;
 
 void LoadFonts()
 {
+    LogInfo("Loading fonts");
     ImGuiIO& io = ImGui::GetIO();
     io.Fonts->Clear();
     ImFont* defaultFont = io.Fonts->AddFontFromFileTTF("resources/ProggyClean.ttf", (float)fontSize);
@@ -54,6 +56,7 @@ void LoadFonts()
 
 void LoadStyle()
 {
+    LogInfo("Loading style");
     if (style == STYLE_DARK) ImGui::StyleColorsDark();
     if (style == STYLE_LIGHT) ImGui::StyleColorsLight();
     if (style == STYLE_CLASSIC) ImGui::StyleColorsClassic();
@@ -161,6 +164,7 @@ void ShowNewTimetable(bool* isOpen)
     ImGui::InputText("##", &timetableName);
     if (ImGui::Button(labels["Ok"].c_str()))
     {
+        LogInfo("Creating a new timetable at templates/" + timetableName + ".json");
         if (newTimetable) currentTimetable = Timetable();
         SaveTimetable("templates/" + timetableName + ".json", &currentTimetable);
         currentTimetable = Timetable();
@@ -186,6 +190,7 @@ void ShowOpenTimetable(bool* isOpen)
     {
         if (ImGui::Button(timetableFiles[i].c_str()))
         {
+            LogInfo("Opening a timetable at templates/" + timetableFiles[i] + ".json");
             currentTimetable = Timetable();
             LoadTimetable("templates/" + timetableFiles[i] + ".json", &currentTimetable);
             *isOpen = false;
@@ -224,6 +229,7 @@ void ShowGenerateTimetable(bool* isOpen)
 
 void OpenClassrooms()
 {
+    LogInfo("Opening classrooms");
     tmpTimetable.classrooms = currentTimetable.classrooms;
     tmpTimetable.maxClassroomID = currentTimetable.maxClassroomID;
     isClassrooms = true;
@@ -231,6 +237,7 @@ void OpenClassrooms()
 
 void OpenLessons()
 {
+    LogInfo("Opening lessons");
     tmpTimetable.lessons = currentTimetable.lessons;
     tmpTimetable.maxLessonID = currentTimetable.maxLessonID;
     isLessons = true;
@@ -238,6 +245,7 @@ void OpenLessons()
 
 void OpenTeachers()
 {
+    LogInfo("Opening teachers");
     teacherLessonValues = "";
     teacherLessonValues += labels["no lesson"];
     teacherLessonValues += '\0';
@@ -259,6 +267,7 @@ void OpenTeachers()
 
 void OpenClasses()
 {
+    LogInfo("Opening classes");
     classTeacherValues = "";
     for (auto& teacher: currentTimetable.teachers)
     {
@@ -281,21 +290,27 @@ void ShowMenuBar()
         {
             if (ImGui::MenuItem(labels["New"].c_str()))
             {
+                LogInfo("Creating a new timatable");
                 newTimetable = true;
                 timetableName = "";
                 isNewTimetable = true;
             }
             if (ImGui::MenuItem(labels["Open"].c_str()))
             {
+                LogInfo("Opening a timetable");
                 ListFiles("templates/", &timetableFiles);
                 for (int i = 0; i < timetableFiles.size(); i++)
                     timetableFiles[i] = std::filesystem::path(timetableFiles[i]).stem().string();
                 isOpenTimetable = true;
             }
             if (ImGui::MenuItem(labels["Save"].c_str()))
+            {
+                LogInfo("Manually saving a timetable");
                 SaveTimetable("templates/" + currentTimetable.name + ".json", &currentTimetable);
+            }
             if (ImGui::MenuItem(labels["Save As"].c_str()))
             {
+                LogInfo("Saving a timetable as");
                 newTimetable = false;
                 timetableName = currentTimetable.name;
                 isNewTimetable = true;
@@ -304,6 +319,7 @@ void ShowMenuBar()
             {
                 if (ImGui::MenuItem(labels["Excel"].c_str()))
                 {
+                    LogInfo("Exporting a timetable as Excel");
                     ExportTimetableAsXlsx(&currentTimetable);
                     OpenInFileManager("timetables/");
                 }
@@ -314,7 +330,11 @@ void ShowMenuBar()
         }
         if (currentTimetable.name != "" && ImGui::BeginMenu(currentTimetable.name.c_str()))
         {
-            if (ImGui::MenuItem(labels["Setup wizard"].c_str())) isWizard = true;
+            if (ImGui::MenuItem(labels["Setup wizard"].c_str()))
+            {
+                LogInfo("Opening the setup wizard");
+                isWizard = true;
+            }
             if (ImGui::MenuItem(labels["Classrooms"].c_str())) OpenClassrooms();
             if (ImGui::MenuItem(labels["Lessons"].c_str())) OpenLessons();
             if (ImGui::MenuItem(labels["Teachers"].c_str())) OpenTeachers();

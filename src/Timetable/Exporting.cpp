@@ -1,9 +1,11 @@
+#include "Logging.hpp"
 #include "Timetable.hpp"
 #include "Settings.hpp"
 #include "UI.hpp"
 #include <cmath>
 #include <filesystem>
 #include <iostream>
+#include <string>
 #include <unordered_map>
 #include <xlsxwriter.h>
 
@@ -54,6 +56,7 @@ void PrintXlsxError(lxw_workbook* workbook, lxw_worksheet* worksheet, int cellWi
 
 void ExportClassesAsXlsx(Timetable* timetable)
 {
+    LogInfo("Exporting classes of timetables/" + timetable->name + ".json");
     std::string fileName = "timetables/classes_" + timetable->name + ".xlsx";
     lxw_workbook* workbook = workbook_new(fileName.c_str());
 
@@ -72,6 +75,7 @@ void ExportClassesAsXlsx(Timetable* timetable)
 
     for (auto& classPair: timetable->classes)
     {
+        LogInfo("Exporting class with ID " + std::to_string(classPair.first));
         // Find longest combined lesson
         int longestCombinedLesson = 1;
         for (auto& lesson: classPair.second.timetableLessons)
@@ -191,6 +195,7 @@ std::unordered_map<int, std::vector<TeacherData>> GetTeacherData(Timetable* time
 
 void ExportTeachersAsXlsx(Timetable* timetable)
 {
+    LogInfo("Exporting teachers of timetables/" + timetable->name + ".json");
     std::string fileName = "timetables/teachers_" + timetable->name + ".xlsx";
     lxw_workbook* workbook = workbook_new(fileName.c_str());
 
@@ -209,6 +214,7 @@ void ExportTeachersAsXlsx(Timetable* timetable)
 
     for (auto& teacher: timetable->teachers)
     {
+        LogInfo("Exporting teacher with ID " + std::to_string(teacher.first));
         lxw_worksheet* worksheet = workbook_add_worksheet(workbook, teacher.second.name.c_str());
 
         // Write teacher name
@@ -293,6 +299,7 @@ std::unordered_map<int, std::vector<ClassroomData>> GetClassroomData(Timetable* 
 
 void ExportClassroomsAsXlsx(Timetable* timetable)
 {
+    LogInfo("Exporting classrooms of timetables/" + timetable->name + ".json");
     std::string fileName = "timetables/classrooms_" + timetable->name + ".xlsx";
     lxw_workbook* workbook = workbook_new(fileName.c_str());
 
@@ -311,6 +318,7 @@ void ExportClassroomsAsXlsx(Timetable* timetable)
 
     for (auto& classroom: timetable->classrooms)
     {
+        LogInfo("Exporting classroom with ID " + std::to_string(classroom.first));
         lxw_worksheet* worksheet = workbook_add_worksheet(workbook, classroom.second.name.c_str());
 
         // Write classroom name
@@ -350,16 +358,19 @@ void ExportTimetableAsXlsx(Timetable* timetable)
     if (std::filesystem::exists("timetables/" + timetable->name + ".json"))
     {
         LoadTimetable("timetables/" + timetable->name + ".json", &exportTimetable);
+        LogInfo("Exporting timetables/" + timetable->name + ".json");
     }
     else
     {
         exportTimetable = *timetable;
         printError = true;
+        LogInfo("Exporting templates/" + timetable->name + ".json");
     }
 
     ExportClassesAsXlsx(&exportTimetable);
     ExportTeachersAsXlsx(&exportTimetable);
     ExportClassroomsAsXlsx(&exportTimetable);
 
-    std::cout << "Exported templates/" << timetable->name << " as timetables/*_" << timetable->name <<".xlsx\n";
+    std::cout << "Exported templates/" << timetable->name << " as timetables/*_" << timetable->name << ".xlsx\n";
+    LogInfo("Exported templates/" + timetable->name + " as timetables/*_" + timetable->name + ".xlsx");
 }

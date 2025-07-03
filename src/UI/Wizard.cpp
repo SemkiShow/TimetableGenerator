@@ -1,8 +1,10 @@
+#include "Logging.hpp"
 #include "Searching.hpp"
 #include "Settings.hpp"
 #include "Timetable.hpp"
 #include "UI.hpp"
 #include <imgui.h>
+#include <string>
 
 bool isWizard = false;
 int wizardStep = 0;
@@ -48,6 +50,7 @@ void ShowWizard(bool* isOpen)
     {
         if (ImGui::Button(labels["Next"].c_str()))
         {
+            LogInfo("Clicked Next in the wizard menu while on step " + std::to_string(wizardStep));
             if (wizardStep < WIZARD_STEPS-1)
             {
                 wizardMenus[wizardStep]();

@@ -1,9 +1,10 @@
+#include "Logging.hpp"
 #include "UI.hpp"
 #include "Settings.hpp"
 #include "Timetable.hpp"
 #include <imgui.h>
-#include <iostream>
 #include <misc/cpp/imgui_stdlib.h>
+#include <string>
 #include <unordered_map>
 #include <algorithm>
 
@@ -23,6 +24,7 @@ std::vector<bool> allAvailableClassLessonsHorizontal;
 
 static void ResetVariables()
 {
+    LogInfo("Resetting class variables");
     allAvailableClassLessonsVertical.clear();
     allAvailableClassLessonsVertical.resize(daysPerWeek, true);
     allAvailableClassLessonsHorizontal.clear();
@@ -146,6 +148,7 @@ void ShowCombineLessons(bool* isOpen)
     ImGui::Columns(1);
     if (ImGui::Button(labels["Ok"].c_str()))
     {
+        LogInfo("Pressed the Ok button in combine lessons of class with ID " + std::to_string(currentClassID));
         tmpTmpTimetable.classes[currentClassID].timetableLessons[currentLessonID].lessonTeacherPairs.clear();
         int counter = 0;
         for (auto& lesson: currentTimetable.lessons)
@@ -215,6 +218,7 @@ void ShowEditClass(bool* isOpen)
         bool availableClassLessonsHorizontal = allAvailableClassLessonsHorizontal[i];
         if (ImGui::Checkbox(std::to_string(i).c_str(), &availableClassLessonsHorizontal))
         {
+            LogInfo("Clicked allAvailableClassLessonsHorizontal number  " + std::to_string(i) + " in class with ID " + std::to_string(currentClassID));
             allAvailableClassLessonsHorizontal[i] = availableClassLessonsHorizontal;
             for (int j = 0; j < daysPerWeek; j++)
             {
@@ -238,6 +242,7 @@ void ShowEditClass(bool* isOpen)
         bool availableClassLessonsVertical = allAvailableClassLessonsVertical[i];
         if (ImGui::Checkbox((allAvailableClassLessonsVertical[i] ? labels["Deselect all"] : labels["Select all"]).c_str(), &availableClassLessonsVertical))
         {
+            LogInfo("Clicked allAvailableClassLessonsVertical number  " + std::to_string(i) + " in class with ID " + std::to_string(currentClassID));
             allAvailableClassLessonsVertical[i] = availableClassLessonsVertical;
             for (int j = 0; j < lessonsPerDay; j++)
                 tmpTmpTimetable.classes[currentClassID].days[i].lessons[j] = allAvailableClassLessonsVertical[i];
@@ -249,7 +254,11 @@ void ShowEditClass(bool* isOpen)
             ImGui::PushID(pushID);
             bool isLessonAvailable = tmpTmpTimetable.classes[currentClassID].days[i].lessons[j];
             if (ImGui::Checkbox("", &isLessonAvailable))
+            {
                 tmpTmpTimetable.classes[currentClassID].days[i].lessons[j] = isLessonAvailable;
+                LogInfo("Clicked isLessonAvailable in day " + std::to_string(i) + " in lesson number " + std::to_string(j) +
+                    " in class with ID " + std::to_string(currentClassID));
+            }
             ImGui::PopID();
             pushID++;
         }
@@ -261,6 +270,7 @@ void ShowEditClass(bool* isOpen)
     ImGui::Separator();
     if (ImGui::Button(labels["Combine lessons"].c_str()))
     {
+        LogInfo("Clicked the combine lessons button in class with ID " + std::to_string(currentClassID));
         newCombinedLesson = true;
         for (auto& lesson: currentTimetable.lessons)
         {
@@ -287,6 +297,7 @@ void ShowEditClass(bool* isOpen)
         ImGui::PushID(pushID);
         if (ImGui::Button(labels["-"].c_str()))
         {
+            LogInfo("Removed class with ID " + std::to_string(it->first));
             ImGui::PopID();
             pushID++;
             it = tmpTmpTimetable.classes[currentClassID].timetableLessons.erase(it);
@@ -295,6 +306,7 @@ void ShowEditClass(bool* isOpen)
         ImGui::SameLine();
         if (ImGui::Button(labels["Edit"].c_str()))
         {
+            LogInfo("Editing class with ID " + std::to_string(currentClassID));
             newCombinedLesson = false;
             for (auto& lesson: currentTimetable.lessons)
             {
@@ -343,6 +355,7 @@ void ShowEditClass(bool* isOpen)
         if (ImGui::Checkbox((allClassLessonTeachers[lesson.first] ? labels["Deselect all"] + "##1" : labels["Select all"] + "##1").c_str(),
         &allClassLessonTeachers[lesson.first]))
         {
+            LogInfo("Clicked allClassLessonTeachers in class with ID " + std::to_string(currentClassID));
             for (auto& teacher: currentTimetable.teachers)
                 classLessonTeachers[std::to_string(lesson.first) + teacher.second.name + "1"] =
                 allClassLessonTeachers[lesson.first];
@@ -364,6 +377,7 @@ void ShowEditClass(bool* isOpen)
     ImGui::Columns(1);
     if (ImGui::Button(labels["Ok"].c_str()))
     {
+        LogInfo("Clicked the Ok button while editing lass with ID " + std::to_string(currentClassID));
         for (auto it = tmpTmpTimetable.classes[currentClassID].timetableLessons.begin(); it != tmpTmpTimetable.classes[currentClassID].timetableLessons.end();)
         {
             if (it->second.lessonTeacherPairs.size() <= 1)
@@ -479,6 +493,7 @@ void ShowClasses(bool* isOpen)
         tmpTmpTimetable.orderedClasses = tmpTimetable.orderedClasses;
         tmpTmpTimetable.maxClassID++;
         currentClassID = tmpTmpTimetable.maxClassID;
+        LogInfo("Adding a new class with ID " + std::to_string(currentClassID));
         tmpTmpTimetable.orderedClasses.push_back(currentClassID);
         tmpTmpTimetable.classes[currentClassID] = Class();
         tmpTmpTimetable.classes[currentClassID].number = "0";
@@ -497,6 +512,7 @@ void ShowClasses(bool* isOpen)
             ImGui::PushID(buttonID);
             if (ImGui::Button(labels["-"].c_str()))
             {
+                LogInfo("Removed classes with number " + lastClassNumber);
                 ImGui::PopID();
                 for (auto it = tmpTimetable.classes.begin(); it != tmpTimetable.classes.end();)
                 {
@@ -513,6 +529,7 @@ void ShowClasses(bool* isOpen)
             ImGui::SameLine();
             if (ImGui::Button(labels["Edit"].c_str()))
             {
+                LogInfo("Bulk editing classes with number " + lastClassNumber);
                 bulkClassesAmount = 0;
                 for (auto& classPair: tmpTimetable.classes)
                 {
@@ -532,7 +549,6 @@ void ShowClasses(bool* isOpen)
             ImGui::Indent();
             if (ImGui::Button(labels["+"].c_str()))
             {
-                std::cout << classTeacherValues << "\n";
                 newClass = true;
                 bulkEditClass = false;
                 for (int j = 0; j < tmpTimetable.orderedClasses.size(); j++)
@@ -548,6 +564,7 @@ void ShowClasses(bool* isOpen)
                 tmpTmpTimetable.classes[tmpTmpTimetable.maxClassID] = Class();
                 tmpTmpTimetable.classes[tmpTmpTimetable.maxClassID].number = tmpTmpTimetable.classes[tmpTmpTimetable.orderedClasses[currentClassID-1]].number;
                 currentClassID = tmpTmpTimetable.maxClassID;
+                LogInfo("Adding a new class with number " + lastClassNumber + " and ID " + std::to_string(currentClassID));
                 ResetVariables();
                 isEditClass = true;
             }
@@ -562,6 +579,7 @@ void ShowClasses(bool* isOpen)
         ImGui::PushID(buttonID);
         if (ImGui::Button(labels["-"].c_str()))
         {
+            LogInfo("Removed a class with ID " + std::to_string(tmpTimetable.orderedClasses[i]));
             tmpTimetable.classes.erase(tmpTimetable.orderedClasses[i]);
             tmpTimetable.orderedClasses.erase(tmpTimetable.orderedClasses.begin() + i);
             i--;
@@ -575,6 +593,7 @@ void ShowClasses(bool* isOpen)
             tmpTmpTimetable.maxClassID = tmpTimetable.maxClassID;
             tmpTmpTimetable.orderedClasses = tmpTimetable.orderedClasses;
             currentClassID = tmpTmpTimetable.orderedClasses[i];
+            LogInfo("Editing class with ID " + std::to_string(currentClassID));
             ResetVariables();
             isEditClass = true;
         }
@@ -593,6 +612,7 @@ void ShowClasses(bool* isOpen)
     ImGui::Separator();
     if (ImGui::Button(labels["Ok"].c_str()))
     {
+        LogInfo("Clicked Ok in the classes menu");
         currentTimetable.classes = tmpTimetable.classes;
         currentTimetable.maxClassID = tmpTimetable.maxClassID;
         currentTimetable.orderedClasses = tmpTimetable.orderedClasses;

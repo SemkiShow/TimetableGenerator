@@ -1,7 +1,9 @@
+#include "Logging.hpp"
 #include "Settings.hpp"
 #include "UI.hpp"
 #include "Timetable.hpp"
 #include "Updates.hpp"
+#include "Logging.hpp"
 #include <ctime>
 #include <imgui.h>
 #include <raylib.h>
@@ -10,6 +12,7 @@
 
 int main()
 {
+    BeginLogging();
     srand(time(0));
 
     Timetable timetableSave;
@@ -46,6 +49,7 @@ int main()
     }
 
     Save("settings.txt");
+    EndLogging();
     rlImGuiShutdown();
 	CloseWindow();
 

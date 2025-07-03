@@ -9,3 +9,4 @@ version.txt
 gmon.out
 profile.txt
 tmp/
+logs/

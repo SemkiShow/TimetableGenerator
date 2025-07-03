@@ -1,10 +1,12 @@
 #include "Searching.hpp"
+#include "Logging.hpp"
 #include "Settings.hpp"
 #include "UI.hpp"
 #include <algorithm>
 #include <random>
 #include <ctime>
 #include <iostream>
+#include <string>
 #include <thread>
 
 static thread_local std::mt19937 rng(std::random_device{}());
@@ -309,6 +311,8 @@ void RunASearchIteration()
 {
     if (iterationData.timetables[iterationData.bestTimetableIndex].errors <= 0 || (maxIterations != -1 && iterationData.iteration >= maxIterations))
     {
+        LogInfo("Finished searching. The final timetable has " + std::to_string(iterationData.timetables[iterationData.bestTimetableIndex].errors) +
+            " errors and " + std::to_string(iterationData.timetables[iterationData.bestTimetableIndex].bonusPoints) + " bonus points");
         iterationData.isDone = true;
         SaveTimetable("timetables/" + iterationData.timetables[0].name + ".json", &iterationData.timetables[0]);
         return;
@@ -320,6 +324,17 @@ void RunASearchIteration()
     std::cout << "The best timetable has " << iterationData.timetables[iterationData.bestTimetableIndex].errors << " errors. ";
     std::cout << "The best timetable has " << iterationData.timetables[iterationData.bestTimetableIndex].bonusPoints << " bonus points. ";
     std::cout << iterationData.iterationsPerChange << " iterations have passed since last score improvement. ";
+    if (iterationData.iteration % 10 == 0)
+    {
+        LogInfo("Iteration: " + std::to_string(iterationData.iteration));
+        LogInfo("The best score is " + std::to_string(iterationData.allTimeBestScore));
+        LogInfo("The best timetable has " +
+            std::to_string(iterationData.timetables[iterationData.bestTimetableIndex].errors) + " errors");
+        LogInfo("The best timetable has " +
+                std::to_string(iterationData.timetables[iterationData.bestTimetableIndex].bonusPoints) + " bonus points");
+        LogInfo(std::to_string(iterationData.iterationsPerChange) + " iterations have passed since last score improvement");
+    }
+
 
     for (int i = 0; i < threadsNumber; i++)
         threads[i] = std::thread(GeneticAlgorithm, i, iterationData.timetables, iterationData.newPopulation);
@@ -352,6 +367,7 @@ void Iterate()
 
 void BeginSearching(const Timetable* timetable)
 {
+    LogInfo("Starting to search for the perfect timetable");
     std::cout << "Initializing timetables...\n";
     iterationData = IterationData();
     iterationData.timetables = new Timetable[timetablesPerGeneration];

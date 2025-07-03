@@ -1,4 +1,5 @@
 #include "Settings.hpp"
+#include "Logging.hpp"
 #include "Timetable.hpp"
 #include "UI.hpp"
 #include "Updates.hpp"
@@ -74,6 +75,7 @@ std::string TrimJunk(const std::string& input)
 
 void ReloadLabels()
 {
+    LogInfo("Reloading labels");
     labels.clear();
     std::ifstream languageFile("languages/" + language + ".txt");
     std::ifstream englishFile("languages/en.txt");
@@ -122,6 +124,7 @@ void ReloadLabels()
 void Save(std::string fileName)
 {
     // Read the file
+    LogInfo("Saving settings");
     std::fstream settingsFile;
     settingsFile.open(fileName, std::ios::out);
     settingsFile << "last-timetable=" << currentTimetable.name << '\n';
@@ -151,6 +154,7 @@ void Save(std::string fileName)
 void Load(std::string fileName)
 {
     // Read the file
+    LogInfo("Loading settings");
     std::fstream settingsFile;
     settingsFile.open(fileName, std::ios::in);
     std::string buf, label, value;
