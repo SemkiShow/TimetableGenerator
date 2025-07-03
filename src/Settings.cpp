@@ -1,7 +1,9 @@
 #include "Settings.hpp"
 #include "Timetable.hpp"
 #include "UI.hpp"
+#include "Updates.hpp"
 #include <algorithm>
+#include <ctime>
 #include <fstream>
 #include <filesystem>
 #include <iostream>
@@ -24,6 +26,7 @@ bool verboseLogging = false;
 int style = STYLE_DARK;
 bool usePrereleases = false;
 std::string language = "en";
+std::string lastCAUpdate = "";
 
 std::string version = "";
 std::unordered_map<std::string, std::string> labels;
@@ -138,6 +141,7 @@ void Save(std::string fileName)
     settingsFile << "verbose-logging=" << (verboseLogging ? "true" : "false") << '\n';
     settingsFile << "use-prereleases=" << (usePrereleases ? "true" : "false") << '\n';
     settingsFile << "language=" << language << '\n';
+    settingsFile << "last-ca-update=" << lastCAUpdate << '\n';
     settingsFile.close();
 
     // Save timetable
@@ -154,7 +158,7 @@ void Load(std::string fileName)
     {
         if (Split(buf, '=').size() < 2)
         {
-            std::cout << "Error: invalid setings.txt!\n";
+            std::cout << "Error: invalid settings.txt!\n";
             continue;
         }
         label = TrimJunk(Split(buf, '=')[0]);
@@ -181,6 +185,7 @@ void Load(std::string fileName)
         if (label == "verbose-logging") verboseLogging = value == "true";
         if (label == "use-prereleases") usePrereleases = value == "true";
         if (label == "language") language = value;
+        if (label == "last-ca-update") lastCAUpdate = value;
     }
     settingsFile.close();
 
@@ -206,6 +211,24 @@ void Load(std::string fileName)
     languageValues += '\0';
     if (languageID == -1) languageID = 0;
     ReloadLabels();
+
+    if (lastCAUpdate == "")
+    {
+        time_t now = time(0);
+        lastCAUpdate = asctime(localtime(&now));
+        UpdateCACertificate();
+    }
+    else
+    {
+        struct tm parsedTm;
+        std::istringstream ss(lastCAUpdate);
+        ss >> std::get_time(&parsedTm, "%a %b %d %H:%M:%S %Y");
+        time_t reconstructedTime = mktime(&parsedTm);
+        if (difftime(time(0), reconstructedTime) > 60*60*24*30)
+        {
+            UpdateCACertificate();
+        }
+    }
 
     std::ifstream versionFile("version.txt");
     std::getline(versionFile, version);

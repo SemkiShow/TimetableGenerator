@@ -24,6 +24,7 @@ extern bool verboseLogging;
 extern int style;
 extern bool usePrereleases;
 extern std::string language;
+extern std::string lastCAUpdate;
 
 extern std::string version;
 extern std::unordered_map<std::string, std::string> labels;

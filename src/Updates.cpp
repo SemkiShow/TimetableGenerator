@@ -344,3 +344,9 @@ void UpdateToLatestVersion()
     downloadStatus = labels["Successfully updated to"] + " " + latestVersion + "!\n" +
         labels["Restart the application to see the new features"];
 }
+
+void UpdateCACertificate()
+{
+    DownloadFile("https://curl.se/ca/cacert.pem", "resources/cacert.pem");
+    std::cout << "Updated the ca certificate\n";
+}
