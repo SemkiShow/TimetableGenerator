@@ -75,6 +75,7 @@ std::string TrimJunk(const std::string& input)
 
 void ReloadLabels()
 {
+    // Read the language file
     LogInfo("Reloading labels");
     labels.clear();
     std::ifstream languageFile("languages/" + language + ".txt");
@@ -89,6 +90,7 @@ void ReloadLabels()
     }
     languageFile.close();
 
+    // Assign translated week days
     weekDays[0] = labels["Monday"];
     weekDays[1] = labels["Tuesday"];
     weekDays[2] = labels["Wednesday"];
@@ -97,6 +99,7 @@ void ReloadLabels()
     weekDays[5] = labels["Saturday"];
     weekDays[6] = labels["Sunday"];
 
+    // Assign translated style values
     styleValues = "";
     styleValues += labels["dark"];
     styleValues += '\0';
@@ -106,6 +109,7 @@ void ReloadLabels()
     styleValues += '\0';
     styleValues += '\0';
 
+    // Assign translated wizard texts
     wizardTexts[0] = labels["Welcome to the TimetableGenerator setup wizard!"] + "\n\n" +
         labels["The first step is to setup classrooms."] + "\n" +
         labels["After you are done, press Ok and continue to the next step."];
@@ -193,11 +197,13 @@ void Load(std::string fileName)
     }
     settingsFile.close();
 
+    // Load the current timetable
     if (currentTimetable.name != "")
     {
         LoadTimetable("templates/" + currentTimetable.name + ".json", &currentTimetable);
     }
 
+    // Load the language
     ListFiles("languages", &availableLanguages);
     for (int i = 0; i < availableLanguages.size(); i++)
     {
@@ -216,6 +222,7 @@ void Load(std::string fileName)
     if (languageID == -1) languageID = 0;
     ReloadLabels();
 
+    // Update the CA certificate, if necessary (done monthly)
     if (lastCAUpdate == "")
     {
         time_t now = time(0);
@@ -234,6 +241,7 @@ void Load(std::string fileName)
         }
     }
 
+    // Read the version
     std::ifstream versionFile("version.txt");
     std::getline(versionFile, version);
     versionFile.close();

@@ -15,27 +15,31 @@ int main()
     BeginLogging();
     srand(time(0));
 
+    // Timetable save and load testing
     Timetable timetableSave;
     timetableSave.name = "save";
     GenerateRandomTimetable(&timetableSave);
     SaveTimetable("timetables/save.json", &timetableSave);
-
     Timetable timetableLoad;
     LoadTimetable("timetables/save.json", &timetableLoad);
     SaveTimetable("timetables/load.json", &timetableLoad);
 
+    // Load settings
     Load("settings.txt");
     CheckForUpdates(false);
 
+    // Set raylib config flags
     int flags = 0;
     if (vsync) flags |= FLAG_VSYNC_HINT;
     flags |= FLAG_WINDOW_HIGHDPI;
     flags |= FLAG_WINDOW_RESIZABLE;
     SetConfigFlags(flags);
 
+    // Init raylib
     InitWindow(windowSize[0], windowSize[1], (labels["Timetable Generator"] + " " + version).c_str());
     SetExitKey(-1);
 
+    // Init imgui
     rlImGuiSetup(true);
     LoadFonts();
     LoadStyle();
@@ -43,11 +47,13 @@ int main()
     ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     #endif
 
+    // Main loop
     while (!WindowShouldClose())
     {
         DrawFrame();
     }
 
+    // Save settings and close the program
     Save("settings.txt");
     EndLogging();
     rlImGuiShutdown();

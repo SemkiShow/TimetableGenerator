@@ -19,6 +19,8 @@ void ShowEditClassroom(bool* isOpen)
         ImGui::End();
         return;
     }
+
+    // Classroom data
     if (newClassroom)
     {
         try
@@ -66,6 +68,8 @@ void ShowEditClassroom(bool* isOpen)
         ImGui::InputText(labels["name"].c_str(), &tmpTmpTimetable.classrooms[currentClassroomID].name);
     }
     ImGui::Separator();
+
+    // Ok and Cancel
     if (ImGui::Button(labels["Ok"].c_str()))
     {
         LogInfo("Pressed Ok while editing a classroom with ID " + std::to_string(currentClassroomID));
@@ -98,6 +102,7 @@ void ShowClassrooms(bool* isOpen)
         ImGui::End();
         return;
     }
+
     if (ImGui::Button(labels["+"].c_str()))
     {
         newClassroom = true;
@@ -114,9 +119,11 @@ void ShowClassrooms(bool* isOpen)
         LogInfo("Adding a new classroom with ID " + std::to_string(currentClassroomID));
         isEditClassroom = true;
     }
+
     for (auto it = tmpTimetable.classrooms.begin(); it != tmpTimetable.classrooms.end();)
     {
         ImGui::PushID(it->first);
+
         if (ImGui::Button(labels["-"].c_str()))
         {
             LogInfo("Removed a classroom with ID " + std::to_string(it->first));
@@ -125,6 +132,7 @@ void ShowClassrooms(bool* isOpen)
             continue;
         }
         ImGui::SameLine();
+
         if (ImGui::Button(labels["Edit"].c_str()))
         {
             newClassroom = false;
@@ -133,11 +141,14 @@ void ShowClassrooms(bool* isOpen)
             isEditClassroom = true;
         }
         ImGui::SameLine();
+
         ImGui::LabelText("", "%s", it->second.name.c_str());
         ImGui::PopID();
         ++it;
     }
     ImGui::Separator();
+
+    // Ok and Cancel
     if (ImGui::Button(labels["Ok"].c_str()))
     {
         LogInfo("Pressed Ok in the classrooms menu");

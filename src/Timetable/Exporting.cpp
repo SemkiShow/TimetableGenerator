@@ -327,7 +327,7 @@ void ExportClassroomsAsXlsx(Timetable* timetable)
         // Write the template
         WriteXlsxTemplate(workbook, worksheet);
 
-        // Write teacher lessons
+        // Write classroom lessons
         auto classroomData = GetClassroomData(timetable);
         for (int i = 0; i < daysPerWeek; i++)
         {

@@ -309,6 +309,7 @@ void LoadTimetable(std::string path, Timetable* timetable)
 
 void GenerateRandomTimetable(Timetable* timetable)
 {
+    // Classrooms
     for (int i = 0; i < 10; i++)
     {
         timetable->classrooms[i] = Classroom();
@@ -317,6 +318,8 @@ void GenerateRandomTimetable(Timetable* timetable)
             timetable->classrooms[i].name += '0' + rand() % 10;
         }
     }
+
+    // Lessons
     for (int i = 0; i < 15; i++)
     {
         timetable->lessons[i] = Lesson();
@@ -329,6 +332,8 @@ void GenerateRandomTimetable(Timetable* timetable)
             timetable->lessons[i].classroomIDs.push_back(it->first);
         }
     }
+
+    // Teachers
     for (int i = 0; i < 5; i++)
     {
         timetable->teachers[i] = Teacher();
@@ -346,6 +351,8 @@ void GenerateRandomTimetable(Timetable* timetable)
             timetable->teachers[i].workDays[j].lessonIDs.resize(lessonsPerDay, rand() % timetable->lessons.size());
         }
     }
+
+    // Classes
     int classLettersPerClassNumber = 3;
     for (int i = 1; i < 3; i++)
     {
@@ -397,6 +404,8 @@ void GenerateRandomTimetable(Timetable* timetable)
             }
         }
     }
+
+    // Assigning classes to lessons
     for (int i = 0; i < timetable->lessons.size(); i++)
     {
         for (int j = 0; j < 4; j++)

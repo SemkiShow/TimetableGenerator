@@ -28,11 +28,13 @@ void ShowWizard(bool* isOpen)
         *isOpen = true;
     }
     if (!*isOpen) return;
+
     if (!ImGui::Begin(labels["Setup wizard"].c_str(), isOpen))
     {
         ImGui::End();
         return;
     }
+    
     ImGui::ProgressBar(wizardStep * 1.0 / (WIZARD_STEPS-1));
     ImGui::Text("Step %d", wizardStep + 1);
     ImGui::Text("%s", wizardTexts[wizardStep].c_str());

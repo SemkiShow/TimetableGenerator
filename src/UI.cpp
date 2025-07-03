@@ -272,8 +272,10 @@ void OpenClasses()
     for (auto& teacher: currentTimetable.teachers)
     {
         if (teacher.second.name == "")
-            classTeacherValues += "test\0";
-        classTeacherValues += teacher.second.name + '\0';
+            classTeacherValues += labels["error"];
+        else
+            classTeacherValues += teacher.second.name;
+        classTeacherValues += '\0';
     }
     classTeacherValues += '\0';
     tmpTimetable.classes = currentTimetable.classes;
@@ -357,6 +359,7 @@ void DrawFrame()
 {
     BeginDrawing();
 
+    // Begin imgui drawing
     if (lastMergedFont != mergedFont || lastFontSize != fontSize)
     {
         lastMergedFont = mergedFont;
@@ -368,6 +371,7 @@ void DrawFrame()
     ImGuiIO& io = ImGui::GetIO();
     ImGui::PushFont(io.Fonts->Fonts.back());
 
+    // Change the background color based on the style
     if (style == STYLE_DARK || style == STYLE_CLASSIC)
     {
         ClearBackground(BLACK);
@@ -377,6 +381,7 @@ void DrawFrame()
         ClearBackground(WHITE);
     }
 
+    // Draw GUI
     ShowMenuBar();
     if (isSettings) ShowSettings(&isSettings);
     if (isEditClassroom) ShowEditClassroom(&isEditClassroom);
@@ -395,14 +400,17 @@ void DrawFrame()
     if (isOpenTimetable) ShowOpenTimetable(&isOpenTimetable);
     if (isGenerateTimetable) ShowGenerateTimetable(&isGenerateTimetable);
 
+    // Stop searching for a perfect timetable if the Generate timetable window is closed
     if (!isGenerateTimetable) iterationData.isDone = true;
 
+    // Autosave the timetable
     if (GetTime() - timetableSaveTimer > timetableAutosaveInterval)
     {
         timetableSaveTimer = GetTime();
         SaveTimetable("templates/" + currentTimetable.name + ".json", &currentTimetable);
     }
 
+    // Change vsync state
     if (lastVsync != vsync)
     {
         lastVsync = vsync;
@@ -410,6 +418,7 @@ void DrawFrame()
         else SetWindowState(FLAG_VSYNC_HINT);
     }
 
+    // End imgui drawing
     ImGui::PopFont();
     rlImGuiEnd();
 

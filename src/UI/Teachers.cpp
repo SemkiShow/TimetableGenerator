@@ -78,21 +78,28 @@ void ShowEditTeacher(bool* isOpen)
         ImGui::End();
         return;
     }
+
     ImGui::InputText(labels["name"].c_str(), &tmpTmpTimetable.teachers[currentTeacherID].name);
     ImGui::Separator();
     ImGui::Text("%s", labels["lessons"].c_str());
+
+    // Deselect/select all lessons
     if (ImGui::Checkbox((allTeacherLessons ? labels["Deselect all"] + "##1" : labels["Select all"] + "##1").c_str(), &allTeacherLessons))
     {
         LogInfo("Clicked allTeacherLessons in a teacher with ID " + std::to_string(currentTeacherID));
         for (auto& lesson: currentTimetable.lessons)
             teacherLessons[lesson.first] = allTeacherLessons;
     }
+
+    // No lessons warning
     if (currentTimetable.lessons.size() == 0)
     {
         ImGui::TextColored(ImVec4(255, 0, 0, 255), "%s", labels["You need to add lessons"].c_str());
         ImGui::TextColored(ImVec4(255, 0, 0, 255), "%s", labels["in the Lessons menu"].c_str());
         ImGui::TextColored(ImVec4(255, 0, 0, 255), "%s", labels["to select lessons for this teacher!"].c_str());
     }
+
+    // Lesons
     ImGui::Columns(3);
     int pushID = 0;
     for (auto& lesson: currentTimetable.lessons)
@@ -124,6 +131,8 @@ void ShowEditTeacher(bool* isOpen)
     }
     ImGui::Columns(1);
     ImGui::Separator();
+
+    // Available lessons
     ImGui::Text("%s", labels["available lessons"].c_str());
     ImGui::Columns(daysPerWeek + 1);
     ImGui::LabelText("##1", "%s", "");
@@ -169,6 +178,8 @@ void ShowEditTeacher(bool* isOpen)
         ImGui::NextColumn();
     }
     ImGui::Columns(1);
+
+    // Ok and Cancel
     if (ImGui::Button(labels["Ok"].c_str()))
     {
         LogInfo("Clicked Ok while editing a teacher with ID " + std::to_string(currentTeacherID));
@@ -219,11 +230,13 @@ void ShowTeachers(bool* isOpen)
         ImGui::End();
         return;
     }
+
     ImGui::InputInt(labels["min free periods"].c_str(), &minFreePeriods);
     if (minFreePeriods < 0) minFreePeriods = 0;
     ImGui::InputInt(labels["max free periods"].c_str(), &maxFreePeriods);
     if (maxFreePeriods < 0) maxFreePeriods = 0;
     if (maxFreePeriods < minFreePeriods) maxFreePeriods = minFreePeriods;
+
     if (ImGui::Button(labels["+"].c_str()))
     {
         newTeacher = true;
@@ -237,6 +250,7 @@ void ShowTeachers(bool* isOpen)
         isEditTeacher = true;
     }
     ImGui::Separator();
+
     ImGui::Columns(2);
     for (auto it = tmpTimetable.teachers.begin(); it != tmpTimetable.teachers.end();)
     {
@@ -249,6 +263,7 @@ void ShowTeachers(bool* isOpen)
             continue;
         }
         ImGui::SameLine();
+
         if (ImGui::Button(labels["Edit"].c_str()))
         {
             newTeacher = false;
@@ -260,8 +275,10 @@ void ShowTeachers(bool* isOpen)
             isEditTeacher = true;
         }
         ImGui::SameLine();
+
         ImGui::Text("%s", it->second.name.c_str());
         ImGui::NextColumn();
+
         std::string lessonNames = "";
         for (int j = 0; j < tmpTimetable.teachers[it->first].lessonIDs.size(); j++)
         {
@@ -275,6 +292,8 @@ void ShowTeachers(bool* isOpen)
     }
     ImGui::Columns(1);
     ImGui::Separator();
+
+    // Ok and Cancel
     if (ImGui::Button(labels["Ok"].c_str()))
     {
         LogInfo("Clicked Ok in the teachers menu");
