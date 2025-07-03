@@ -1,8 +1,12 @@
 #include "Settings.hpp"
 #include "Timetable.hpp"
+#include "UI.hpp"
+#include <algorithm>
 #include <fstream>
 #include <filesystem>
 #include <iostream>
+#include <string>
+#include <unordered_map>
 
 bool vsync = true;
 bool mergedFont = false;
@@ -19,8 +23,14 @@ int maxIterations = -1;
 bool verboseLogging = false;
 int style = STYLE_DARK;
 bool usePrereleases = false;
+std::string language = "en";
 
 std::string version = "";
+std::unordered_map<std::string, std::string> labels;
+std::vector<std::string> availableLanguages;
+std::string languageValues;
+int languageID = -1;
+std::string styleValues = "";
 
 std::vector<std::string> Split(std::string input, char delimiter)
 {
@@ -59,6 +69,53 @@ std::string TrimJunk(const std::string& input)
     return (first == input.npos) ? "" : input.substr(first, last-first+1);
 }
 
+void ReloadLabels()
+{
+    labels.clear();
+    std::ifstream languageFile("languages/" + language + ".txt");
+    std::ifstream englishFile("languages/en.txt");
+    std::string languageBuffer;
+    std::string englishBuffer;
+    while (true)
+    {
+        if (!std::getline(languageFile, languageBuffer)) break;
+        if (!std::getline(englishFile, englishBuffer)) break;
+        labels[englishBuffer] = languageBuffer;
+    }
+    languageFile.close();
+
+    weekDays[0] = labels["Monday"];
+    weekDays[1] = labels["Tuesday"];
+    weekDays[2] = labels["Wednesday"];
+    weekDays[3] = labels["Thursday"];
+    weekDays[4] = labels["Friday"];
+    weekDays[5] = labels["Saturday"];
+    weekDays[6] = labels["Sunday"];
+
+    styleValues = "";
+    styleValues += labels["dark"];
+    styleValues += '\0';
+    styleValues += labels["light"];
+    styleValues += '\0';
+    styleValues += labels["classic"];
+    styleValues += '\0';
+    styleValues += '\0';
+
+    wizardTexts[0] = labels["Welcome to the TimetableGenerator setup wizard!"] + "\n\n" +
+        labels["The first step is to setup classrooms."] + "\n" +
+        labels["After you are done, press Ok and continue to the next step."];
+    wizardTexts[1] = labels["The next step is to add classes."] + "\n" +
+        labels["After you are done, press Ok and continue to the next step."];
+    wizardTexts[2] = labels["The next step is to add lessons."] + "\n" +
+        labels["After you are done, press Ok and continue to the next step."];
+    wizardTexts[3] = labels["The next step is to add teachers."] + "\n" +
+        labels["After you are done, press Ok and continue to the next step."];
+    wizardTexts[4] = labels["The next step is to assign lessons to classes."] + "\n" +
+        labels["After you are done, press Ok and continue to the next step."];
+    wizardTexts[5] = labels["You are done! Now press the Generate timetable"] + "\n" +
+        labels["button to begin the timetable finding process!"];
+}
+
 void Save(std::string fileName)
 {
     // Read the file
@@ -80,6 +137,7 @@ void Save(std::string fileName)
     settingsFile << "max-iterations=" << maxIterations << '\n';
     settingsFile << "verbose-logging=" << (verboseLogging ? "true" : "false") << '\n';
     settingsFile << "use-prereleases=" << (usePrereleases ? "true" : "false") << '\n';
+    settingsFile << "language=" << language << '\n';
     settingsFile.close();
 
     // Save timetable
@@ -122,6 +180,7 @@ void Load(std::string fileName)
         if (label == "max-iterations") maxIterations = stoi(value);
         if (label == "verbose-logging") verboseLogging = value == "true";
         if (label == "use-prereleases") usePrereleases = value == "true";
+        if (label == "language") language = value;
     }
     settingsFile.close();
 
@@ -129,6 +188,24 @@ void Load(std::string fileName)
     {
         LoadTimetable("templates/" + currentTimetable.name + ".json", &currentTimetable);
     }
+
+    ListFiles("languages", &availableLanguages);
+    for (int i = 0; i < availableLanguages.size(); i++)
+    {
+        availableLanguages[i] = std::filesystem::path(availableLanguages[i]).stem().string();
+    }
+    std::sort(availableLanguages.begin(), availableLanguages.end());
+    languageValues = "";
+    languageID = -1;
+    for (int i = 0; i < availableLanguages.size(); i++)
+    {
+        languageValues += availableLanguages[i];
+        languageValues += '\0';
+        if (availableLanguages[i] == language) languageID = i;
+    }
+    languageValues += '\0';
+    if (languageID == -1) languageID = 0;
+    ReloadLabels();
 
     std::ifstream versionFile("version.txt");
     std::getline(versionFile, version);

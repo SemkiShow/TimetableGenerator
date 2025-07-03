@@ -1,0 +1,136 @@
+Generator Planów Lekcji
+Poniedziałek
+Wtorek
+Środa
+Czwartek
+Piątek
+Sobota
+Niedziela
+Ustawienia
+dni w tygodniu
+lekcje dziennie
+styl
+ciemny
+jasny
+klasyczny
+język
+Opcje deweloperskie
+vsync
+scalona-czcionka
+interwał-autozapisu-planu
+rozmiar-czcionki
+maks-mutacji
+współczynnik-premii-za-błędy
+plany-na-generację
+maks-iteracji
+szczegółowe-logi
+używaj-wersji-testowych
+O programie
+TimetableGenerator
+Narzędzie do łatwego tworzenia planów lekcji
+Opracowane przez SemkiShow
+Licencjonowane na GPLv3
+Aktualizacje
+Najnowsza wersja to
+Twoja wersja to
+Brak dostępnych nowych wersji
+ładowanie...
+Dostępna jest nowa wersja!
+Informacje o wydaniu
+Aktualizuj
+Nowy plan lekcji
+Zapisz plan jako
+Wpisz nazwę planu lekcji
+(na przykład nazwę szkoły)
+Ok
+Anuluj
+Otwórz plan lekcji
+Wybierz plan lekcji do otwarcia
+Generuj plan lekcji
+Generowanie planu zakończone!
+Generowanie planu zgodnego z wymaganiami...
+Iteracja:
+Najlepszy wynik to
+Najlepszy plan zawiera
+błędów
+punktów bonusowych
+iteracji minęło od ostatniej poprawy wyniku
+brak lekcji
+dowolna lekcja
+błąd
+Plik
+Nowy
+Otwórz
+Zapisz
+Zapisz jako
+Eksportuj jako
+Excel
+Kreator konfiguracji
+Sale lekcyjne
+Lekcje
+Nauczyciele
+Klasy
+Pomoc
+Sprawdź aktualizacje
+Edytuj
+-
++
+Nowa sala
+Edytuj salę
+numer początkowy
+numer końcowy
+ilość
+nazwa
+Nowa lekcja
+Edytuj lekcję
+klasy
+sale lekcyjne
+Odznacz wszystkie
+Zaznacz wszystkie
+Musisz dodać klasy
+w menu Klasy,
+aby wybrać klasy dla tej lekcji!
+Musisz dodać sale lekcyjne
+w menu Sale lekcyjne,
+aby wybrać sale dla tej lekcji!
+Nowy nauczyciel
+Edytuj nauczyciela
+lekcje
+Musisz dodać lekcje
+w menu Lekcje,
+aby wybrać lekcje dla tego nauczyciela!
+dostępne lekcje
+min. ilość okienek
+maks. ilość okienek
+Połącz lekcje
+Nowa klasa
+Edytuj klasę
+Uwaga: edytujesz wiele klas jednocześnie!
+Po naciśnięciu OK WSZYSTKIE klasy z podanym numerem
+ZOSTANĄ NADPISANE wprowadzonymi danymi.
+Jeśli nie chcesz tego zrobić, naciśnij Anuluj.
+numer
+litera
+nauczyciel
+Witamy w kreatorze TimetableGenerator!
+Po zakończeniu kliknij OK, aby przejść do następnego kroku.
+Pierwszy krok to konfiguracja sal lekcyjnych.
+Następny krok to dodanie klas.
+Następny krok to dodanie lekcji.
+Następny krok to dodanie nauczycieli.
+Następny krok to przypisanie lekcji do klas.
+Gotowe! Teraz kliknij przycisk Generuj plan lekcji,
+aby rozpocząć proces tworzenia planu!
+Wstecz
+Dalej
+Błąd: inicjalizacja CURL nie powiodła się!
+Błąd: żądanie sieciowe nie powiodło się!
+Błąd: zły status HTTP!
+Pobieranie adresu najnowszej wersji...
+Nie udało się pobrać adresu archiwum
+Pobieranie najnowszej wersji...
+Nie udało się pobrać wydania!
+Rozpakowywanie wydania...
+Nie udało się rozpakować wydania!
+Zaktualizowano pomyślnie do
+Zrestartuj aplikację, aby zobaczyć nowe funkcje

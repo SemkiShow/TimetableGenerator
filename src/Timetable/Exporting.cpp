@@ -26,10 +26,10 @@ void WriteXlsxTemplate(lxw_workbook* workbook, lxw_worksheet* worksheet, int cel
         int weekDay = i;
         while (weekDay >= 7) weekDay -= 7;
         if (cellWidth == 1)
-            worksheet_write_string(worksheet, 1, i + 1, weekDays[weekDay], centerFormat);
+            worksheet_write_string(worksheet, 1, i + 1, weekDays[weekDay].c_str(), centerFormat);
         else
             worksheet_merge_range(worksheet, 1, i * cellWidth + 1,
-                1, (i+1) * cellWidth, weekDays[weekDay], centerFormat);
+                1, (i+1) * cellWidth, weekDays[weekDay].c_str(), centerFormat);
     }
 
     // Write lesson numbers

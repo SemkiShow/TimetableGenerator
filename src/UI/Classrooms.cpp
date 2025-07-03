@@ -1,3 +1,4 @@
+#include "Settings.hpp"
 #include "UI.hpp"
 #include "Timetable.hpp"
 #include <imgui.h>
@@ -10,32 +11,32 @@ int classroomsStartNumber, classroomsEndNumber, classroomsAmount;
 bool isEditClassroom = false;
 void ShowEditClassroom(bool* isOpen)
 {
-    if (!ImGui::Begin(((newClassroom ? "New" : "Edit") + std::string(" Classroom")).c_str(), isOpen))
+    if (!ImGui::Begin((newClassroom ? labels["New Classroom"] : labels["Edit Classroom"]).c_str(), isOpen))
     {
         ImGui::End();
         return;
     }
     if (newClassroom)
     {
-        if (ImGui::InputInt("start-number", &classroomsStartNumber))
+        if (ImGui::InputInt(labels["start number"].c_str(), &classroomsStartNumber))
         {
             classroomsEndNumber = classroomsStartNumber + classroomsAmount - 1;
         }
-        if (ImGui::InputInt("end-number", &classroomsEndNumber))
+        if (ImGui::InputInt(labels["end number"].c_str(), &classroomsEndNumber))
         {
             classroomsAmount = classroomsEndNumber - classroomsStartNumber + 1;
         }
-        if (ImGui::InputInt("amount", &classroomsAmount))
+        if (ImGui::InputInt(labels["amount"].c_str(), &classroomsAmount))
         {
             classroomsEndNumber = classroomsStartNumber + classroomsAmount - 1;
         }
     }
     else
     {
-        ImGui::InputText("name", &tmpTmpTimetable.classrooms[currentClassroomID].name);
+        ImGui::InputText(labels["name"].c_str(), &tmpTmpTimetable.classrooms[currentClassroomID].name);
     }
     ImGui::Separator();
-    if (ImGui::Button("Ok"))
+    if (ImGui::Button(labels["Ok"].c_str()))
     {
         if (newClassroom)
         {
@@ -50,7 +51,7 @@ void ShowEditClassroom(bool* isOpen)
         *isOpen = false;
     }
     ImGui::SameLine();
-    if (ImGui::Button("Cancel")) *isOpen = false;
+    if (ImGui::Button(labels["Cancel"].c_str())) *isOpen = false;
     ImGui::End();
 
 }
@@ -58,12 +59,12 @@ void ShowEditClassroom(bool* isOpen)
 bool isClassrooms = false;
 void ShowClassrooms(bool* isOpen)
 {
-    if (!ImGui::Begin("Classrooms", isOpen))
+    if (!ImGui::Begin(labels["Classrooms"].c_str(), isOpen))
     {
         ImGui::End();
         return;
     }
-    if (ImGui::Button("+"))
+    if (ImGui::Button(labels["+"].c_str()))
     {
         newClassroom = true;
         try
@@ -80,14 +81,14 @@ void ShowClassrooms(bool* isOpen)
     for (auto it = tmpTimetable.classrooms.begin(); it != tmpTimetable.classrooms.end();)
     {
         ImGui::PushID(it->first);
-        if (ImGui::Button("-"))
+        if (ImGui::Button(labels["-"].c_str()))
         {
             ImGui::PopID();
             it = tmpTimetable.classrooms.erase(it);
             continue;
         }
         ImGui::SameLine();
-        if (ImGui::Button("Edit"))
+        if (ImGui::Button(labels["Edit"].c_str()))
         {
             newClassroom = false;
             currentClassroomID = it->first;
@@ -99,13 +100,13 @@ void ShowClassrooms(bool* isOpen)
         ++it;
     }
     ImGui::Separator();
-    if (ImGui::Button("Ok"))
+    if (ImGui::Button(labels["Ok"].c_str()))
     {
         currentTimetable.classrooms = tmpTimetable.classrooms;
         currentTimetable.maxClassroomID = tmpTimetable.maxClassroomID;
         *isOpen = false;
     }
     ImGui::SameLine();
-    if (ImGui::Button("Cancel")) *isOpen = false;
+    if (ImGui::Button(labels["Cancel"].c_str())) *isOpen = false;
     ImGui::End();
 }

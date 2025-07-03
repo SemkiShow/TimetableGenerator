@@ -14,10 +14,17 @@ cp build_win/bin/TimetableGenerator.exe .
 
 # Zipping the build
 ./reset_save_files.sh
+./TimetableGenerator
 echo $1 > version.txt
-zip release.zip TimetableGenerator TimetableGenerator.exe resources/* templates/ timetables/ LICENSE README.md settings.txt version.txt
+releases=()
+for file in languages/*.txt; do
+    lang=$(basename "$file" .txt)
+    sed -i "s/^language=.*/language=$lang/" settings.txt
+    releases+=("release_$lang.zip")
+    zip release_$lang.zip TimetableGenerator TimetableGenerator.exe resources/* templates/ timetables/ languages/* LICENSE README.md settings.txt version.txt
+done
 rm TimetableGenerator TimetableGenerator.exe
 
 # Creating a GitHub release
-gh release create $1 release.zip
-rm release.zip
+gh release create $1 ${releases[@]}
+rm ${releases[@]}

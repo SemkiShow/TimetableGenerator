@@ -1,13 +1,12 @@
 #include "Searching.hpp"
+#include "Settings.hpp"
 #include "Timetable.hpp"
 #include "UI.hpp"
 #include <imgui.h>
 
-#define WIZARD_STEPS 6
-
 bool isWizard = false;
 int wizardStep = 0;
-const char* wizardTexts[WIZARD_STEPS] = {
+std::string wizardTexts[WIZARD_STEPS] = {
     "Welcome to the TimetableGenerator setup wizard!\n\nThe first step is to setup classrooms.\nAfter you are done, press Ok and continue to the next step.",
     "The next step is to add classes.\nAfter you are done, press Ok and continue to the next step.",
     "The next step is to add lessons.\nAfter you are done, press Ok and continue to the next step.",
@@ -27,19 +26,19 @@ void ShowWizard(bool* isOpen)
         *isOpen = true;
     }
     if (!*isOpen) return;
-    if (!ImGui::Begin("Setup wizard", isOpen))
+    if (!ImGui::Begin(labels["Setup wizard"].c_str(), isOpen))
     {
         ImGui::End();
         return;
     }
     ImGui::ProgressBar(wizardStep * 1.0 / (WIZARD_STEPS-1));
     ImGui::Text("Step %d", wizardStep + 1);
-    ImGui::Text("%s", wizardTexts[wizardStep]);
-    if (wizardStep > 0 && ImGui::Button("Back")) wizardStep--;
+    ImGui::Text("%s", wizardTexts[wizardStep].c_str());
+    if (wizardStep > 0 && ImGui::Button(labels["Back"].c_str())) wizardStep--;
     if (wizardStep > 0) ImGui::SameLine();
     if (wizardStep == WIZARD_STEPS - 1)
     {
-        if (ImGui::Button("Generate timetable"))
+        if (ImGui::Button(labels["Generate timetable"].c_str()))
         {
             *isOpen = false;
             BeginSearching(&currentTimetable);
@@ -47,7 +46,7 @@ void ShowWizard(bool* isOpen)
     }
     else
     {
-        if (ImGui::Button("Next"))
+        if (ImGui::Button(labels["Next"].c_str()))
         {
             if (wizardStep < WIZARD_STEPS-1)
             {

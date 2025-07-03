@@ -30,7 +30,7 @@ int main()
     flags |= FLAG_WINDOW_RESIZABLE;
     SetConfigFlags(flags);
 
-    InitWindow(windowSize[0], windowSize[1], ("Timetable Generator " + version).c_str());
+    InitWindow(windowSize[0], windowSize[1], (labels["Timetable Generator"] + " " + version).c_str());
     SetExitKey(-1);
 
     rlImGuiSetup(true);

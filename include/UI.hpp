@@ -2,9 +2,12 @@
 
 #include <string>
 
+#define WIZARD_STEPS 6
+
 extern int menuOffset;
 extern int windowSize[2];
-extern const char* weekDays[7];
+extern std::string weekDays[7];
+extern std::string wizardTexts[WIZARD_STEPS];
 
 extern std::string teacherLessonValues;
 extern std::string classTeacherValues;

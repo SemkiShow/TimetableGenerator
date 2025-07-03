@@ -1,3 +1,4 @@
+#include "Settings.hpp"
 #include "UI.hpp"
 #include "Timetable.hpp"
 #include <imgui.h>
@@ -34,15 +35,15 @@ static void ResetVariables()
 bool isEditLesson = false;
 void ShowEditLesson(bool* isOpen)
 {
-    if (!ImGui::Begin(((newLesson ? "New" : "Edit") + std::string(" Lesson")).c_str(), isOpen))
+    if (!ImGui::Begin((newLesson ? labels["New Lesson"] : labels["Edit Lesson"]).c_str(), isOpen))
     {
         ImGui::End();
         return;
     }
-    ImGui::InputText("name", &tmpTmpTimetable.lessons[currentLessonID].name);
+    ImGui::InputText(labels["name"].c_str(), &tmpTmpTimetable.lessons[currentLessonID].name);
     ImGui::Columns(2);
-    ImGui::Text("classes");
-    if (ImGui::Checkbox((allLessonClasses ? "Deselect all##1" : "Select all##1"), &allLessonClasses))
+    ImGui::Text("%s", labels["classes"].c_str());
+    if (ImGui::Checkbox((allLessonClasses ? labels["Deselect all"] + "##1" : labels["Select all"] + "##1").c_str(), &allLessonClasses))
     {
         for (auto& classPair: currentTimetable.classes)
         {
@@ -50,7 +51,12 @@ void ShowEditLesson(bool* isOpen)
             lessonClasses[classPair.first] = allLessonClasses;
         }
     }
-    if (currentTimetable.classes.size() == 0) ImGui::TextColored(ImVec4(255, 0, 0, 255), "You need to add classes\nin the Classes menu\nto select classes for this lesson!");
+    if (currentTimetable.classes.size() == 0)
+    {
+        ImGui::TextColored(ImVec4(255, 0, 0, 255), "%s", labels["You need to add classes"].c_str());
+        ImGui::TextColored(ImVec4(255, 0, 0, 255), "%s", labels["in the Classes menu"].c_str());
+        ImGui::TextColored(ImVec4(255, 0, 0, 255), "%s", labels["to select classes for this lesson!"].c_str());
+    }
     std::string lastClassNumber = "";
     int pushID = 0;
     for (int classID: currentTimetable.orderedClasses)
@@ -79,12 +85,17 @@ void ShowEditLesson(bool* isOpen)
     }
     ImGui::NextColumn();
     ImGui::Text("classrooms");
-    if (ImGui::Checkbox((allLessonClassrooms ? "Deselect all##2" : "Select all##2"), &allLessonClassrooms))
+    if (ImGui::Checkbox((allLessonClassrooms ? labels["Deselect all"] + "##2" : labels["Select all"] + "##2").c_str(), &allLessonClassrooms))
     {
         for (auto& classroom: currentTimetable.classrooms)
             lessonClassrooms[classroom.first] = allLessonClassrooms;
     }
-    if (currentTimetable.classrooms.size() == 0) ImGui::TextColored(ImVec4(255, 0, 0, 255), "You need to add classrooms\nin the Classrooms menu\nto select classrooms for this lesson!");
+    if (currentTimetable.classrooms.size() == 0)
+    {
+        ImGui::TextColored(ImVec4(255, 0, 0, 255), "%s", labels["You need to add classrooms"].c_str());
+        ImGui::TextColored(ImVec4(255, 0, 0, 255), "%s", labels["in the Classrooms menu"].c_str());
+        ImGui::TextColored(ImVec4(255, 0, 0, 255), "%s", labels["to select classrooms for this lesson!"].c_str());
+    }
     for (auto& classroom: currentTimetable.classrooms)
     {
         ImGui::PushID(pushID);
@@ -94,7 +105,7 @@ void ShowEditLesson(bool* isOpen)
     }
     ImGui::NextColumn();
     ImGui::Columns(1);
-    if (ImGui::Button("Ok"))
+    if (ImGui::Button(labels["Ok"].c_str()))
     {
         tmpTmpTimetable.lessons[currentLessonID].classIDs.clear();
         for (auto& classPair: currentTimetable.classes)
@@ -113,19 +124,19 @@ void ShowEditLesson(bool* isOpen)
         *isOpen = false;
     }
     ImGui::SameLine();
-    if (ImGui::Button("Cancel")) *isOpen = false;
+    if (ImGui::Button(labels["Cancel"].c_str())) *isOpen = false;
     ImGui::End();
 }
 
 bool isLessons = false;
 void ShowLessons(bool* isOpen)
 {
-    if (!ImGui::Begin("Lessons", isOpen))
+    if (!ImGui::Begin(labels["Lessons"].c_str(), isOpen))
     {
         ImGui::End();
         return;
     }
-    if (ImGui::Button("+"))
+    if (ImGui::Button(labels["+"].c_str()))
     {
         newLesson = true;
         tmpTmpTimetable.lessons = tmpTimetable.lessons;
@@ -141,14 +152,14 @@ void ShowLessons(bool* isOpen)
     for (auto it = tmpTimetable.lessons.begin(); it != tmpTimetable.lessons.end();)
     {
         ImGui::PushID(it->first);
-        if (ImGui::Button("-"))
+        if (ImGui::Button(labels["-"].c_str()))
         {
             ImGui::PopID();
             it = tmpTimetable.lessons.erase(it);
             continue;
         }
         ImGui::SameLine();
-        if (ImGui::Button("Edit"))
+        if (ImGui::Button(labels["Edit"].c_str()))
         {
             newLesson = false;
             tmpTmpTimetable.lessons = tmpTimetable.lessons;
@@ -182,13 +193,13 @@ void ShowLessons(bool* isOpen)
     }
     ImGui::Columns(1);
     ImGui::Separator();
-    if (ImGui::Button("Ok"))
+    if (ImGui::Button(labels["Ok"].c_str()))
     {
         currentTimetable.lessons = tmpTimetable.lessons;
         currentTimetable.maxLessonID = tmpTimetable.maxLessonID;
         *isOpen = false;
     }
     ImGui::SameLine();
-    if (ImGui::Button("Cancel")) *isOpen = false;
+    if (ImGui::Button(labels["Cancel"].c_str())) *isOpen = false;
     ImGui::End();
 }

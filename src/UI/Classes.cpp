@@ -117,7 +117,7 @@ bool newCombinedLesson = false;
 bool isCombineLessons = false;
 void ShowCombineLessons(bool* isOpen)
 {
-    if (!ImGui::Begin("Combine lessons", isOpen))
+    if (!ImGui::Begin(labels["Combine lessons"].c_str(), isOpen))
     {
         ImGui::End();
         return;
@@ -144,7 +144,7 @@ void ShowCombineLessons(bool* isOpen)
         ImGui::Separator();
     }
     ImGui::Columns(1);
-    if (ImGui::Button("Ok"))
+    if (ImGui::Button(labels["Ok"].c_str()))
     {
         tmpTmpTimetable.classes[currentClassID].timetableLessons[currentLessonID].lessonTeacherPairs.clear();
         int counter = 0;
@@ -165,7 +165,7 @@ void ShowCombineLessons(bool* isOpen)
         *isOpen = false;
     }
     ImGui::SameLine();
-    if (ImGui::Button("Cancel"))
+    if (ImGui::Button(labels["Cancel"].c_str()))
     {
         if (newCombinedLesson) tmpTmpTimetable.classes[currentClassID].timetableLessons.erase(currentLessonID);
         *isOpen = false;
@@ -176,27 +176,32 @@ void ShowCombineLessons(bool* isOpen)
 bool isEditClass = false;
 void ShowEditClass(bool* isOpen)
 {
-    if (!ImGui::Begin(((newClass ? "New" : "Edit") + std::string(" Class")).c_str(), isOpen))
+    if (!ImGui::Begin((newClass ? labels["New Class"] : labels["Edit Class"]).c_str(), isOpen))
     {
         ImGui::End();
         return;
     }
     if (bulkEditClass && !newClass)
-        ImGui::TextColored(ImVec4(255, 255, 0, 255), "Warning: you are bulk editing classes!\nAfter pressing Ok ALL classes with the number below\nwill be OVERWRITTEN with the data you enter.\nIf you don't want that to happen, press the Cancel button.");
-    if (ImGui::InputText("number", &tmpTmpTimetable.classes[currentClassID].number))
+    {
+        ImGui::TextColored(ImVec4(255, 255, 0, 255), "%s", labels["Warning: you are bulk editing classes!"].c_str());
+        ImGui::TextColored(ImVec4(255, 255, 0, 255), "%s", labels["After pressing Ok ALL classes with the number below"].c_str());
+        ImGui::TextColored(ImVec4(255, 255, 0, 255), "%s", labels["will be OVERWRITTEN with the data you enter."].c_str());
+        ImGui::TextColored(ImVec4(255, 255, 0, 255), "%s", labels["If you don't want that to happen, press the Cancel button."].c_str());
+    }
+    if (ImGui::InputText(labels["number"].c_str(), &tmpTmpTimetable.classes[currentClassID].number))
         ResetVariables();
     if (bulkEditClass)
     {
-        ImGui::InputInt("amount", &bulkClassesAmount);
+        ImGui::InputInt(labels["amount"].c_str(), &bulkClassesAmount);
         if (bulkClassesAmount < 1) bulkClassesAmount = 1;
     }
     else
     {
-        ImGui::InputText("letter", &tmpTmpTimetable.classes[currentClassID].letter);
-        ImGui::Combo("teacher", &classTeacherIndex, classTeacherValues.c_str());
+        ImGui::InputText(labels["letter"].c_str(), &tmpTmpTimetable.classes[currentClassID].letter);
+        ImGui::Combo(labels["teacher"].c_str(), &classTeacherIndex, classTeacherValues.c_str());
     }
     ImGui::Separator();
-    ImGui::Text("available-lessons");
+    ImGui::Text("%s", labels["available lessons"].c_str());
     ImGui::Separator();
     ImGui::Columns(daysPerWeek + 1);
     ImGui::LabelText("##1", "%s", "");
@@ -228,10 +233,10 @@ void ShowEditClass(bool* isOpen)
         tmpTmpTimetable.classes[currentClassID].days[i].lessons.resize(lessonsPerDay);
         int weekDay = i;
         while (weekDay >= 7) weekDay -= 7;
-        ImGui::Text("%s", weekDays[weekDay]);
+        ImGui::Text("%s", weekDays[weekDay].c_str());
         ImGui::PushID(pushID);
         bool availableClassLessonsVertical = allAvailableClassLessonsVertical[i];
-        if (ImGui::Checkbox((allAvailableClassLessonsVertical[i] ? "Deselect all" : "Select all"), &availableClassLessonsVertical))
+        if (ImGui::Checkbox((allAvailableClassLessonsVertical[i] ? labels["Deselect all"] : labels["Select all"]).c_str(), &availableClassLessonsVertical))
         {
             allAvailableClassLessonsVertical[i] = availableClassLessonsVertical;
             for (int j = 0; j < lessonsPerDay; j++)
@@ -252,9 +257,9 @@ void ShowEditClass(bool* isOpen)
     }
     ImGui::Columns(1);
     ImGui::Separator();
-    ImGui::LabelText("", "lessons");
+    ImGui::LabelText("", "%s", labels["lessons"].c_str());
     ImGui::Separator();
-    if (ImGui::Button("Combine lessons"))
+    if (ImGui::Button(labels["Combine lessons"].c_str()))
     {
         newCombinedLesson = true;
         for (auto& lesson: currentTimetable.lessons)
@@ -280,7 +285,7 @@ void ShowEditClass(bool* isOpen)
             continue;
         }
         ImGui::PushID(pushID);
-        if (ImGui::Button("-"))
+        if (ImGui::Button(labels["-"].c_str()))
         {
             ImGui::PopID();
             pushID++;
@@ -288,7 +293,7 @@ void ShowEditClass(bool* isOpen)
             break;
         }
         ImGui::SameLine();
-        if (ImGui::Button("Edit"))
+        if (ImGui::Button(labels["Edit"].c_str()))
         {
             newCombinedLesson = false;
             for (auto& lesson: currentTimetable.lessons)
@@ -335,7 +340,7 @@ void ShowEditClass(bool* isOpen)
         ImGui::PushID(pushID);
         ImGui::InputInt(lesson.second.name.c_str(), &classLessonAmounts[lesson.first]);
         ImGui::NextColumn();
-        if (ImGui::Checkbox((allClassLessonTeachers[lesson.first] ? "Deselect all##1" : "Select all##1"),
+        if (ImGui::Checkbox((allClassLessonTeachers[lesson.first] ? labels["Deselect all"] + "##1" : labels["Select all"] + "##1").c_str(),
         &allClassLessonTeachers[lesson.first]))
         {
             for (auto& teacher: currentTimetable.teachers)
@@ -357,7 +362,7 @@ void ShowEditClass(bool* isOpen)
         ImGui::Separator();
     }
     ImGui::Columns(1);
-    if (ImGui::Button("Ok"))
+    if (ImGui::Button(labels["Ok"].c_str()))
     {
         for (auto it = tmpTmpTimetable.classes[currentClassID].timetableLessons.begin(); it != tmpTmpTimetable.classes[currentClassID].timetableLessons.end();)
         {
@@ -453,19 +458,19 @@ void ShowEditClass(bool* isOpen)
         *isOpen = false;
     }
     ImGui::SameLine();
-    if (ImGui::Button("Cancel")) *isOpen = false;
+    if (ImGui::Button(labels["Cancel"].c_str())) *isOpen = false;
     ImGui::End();
 }
 
 bool isClasses = false;
 void ShowClasses(bool* isOpen)
 {
-    if (!ImGui::Begin("Classes", isOpen))
+    if (!ImGui::Begin(labels["Classes"].c_str(), isOpen))
     {
         ImGui::End();
         return;
     }
-    if (ImGui::Button("+"))
+    if (ImGui::Button(labels["+"].c_str()))
     {
         newClass = true;
         bulkEditClass = true;
@@ -490,7 +495,7 @@ void ShowClasses(bool* isOpen)
         {
             lastClassNumber = tmpTimetable.classes[tmpTimetable.orderedClasses[i]].number;
             ImGui::PushID(buttonID);
-            if (ImGui::Button("-"))
+            if (ImGui::Button(labels["-"].c_str()))
             {
                 ImGui::PopID();
                 for (auto it = tmpTimetable.classes.begin(); it != tmpTimetable.classes.end();)
@@ -506,7 +511,7 @@ void ShowClasses(bool* isOpen)
                 break;
             }
             ImGui::SameLine();
-            if (ImGui::Button("Edit"))
+            if (ImGui::Button(labels["Edit"].c_str()))
             {
                 bulkClassesAmount = 0;
                 for (auto& classPair: tmpTimetable.classes)
@@ -525,7 +530,7 @@ void ShowClasses(bool* isOpen)
             ImGui::SameLine();
             ImGui::Text("%s", lastClassNumber.c_str());
             ImGui::Indent();
-            if (ImGui::Button("+"))
+            if (ImGui::Button(labels["+"].c_str()))
             {
                 std::cout << classTeacherValues << "\n";
                 newClass = true;
@@ -555,14 +560,14 @@ void ShowClasses(bool* isOpen)
         }
         ImGui::Indent();
         ImGui::PushID(buttonID);
-        if (ImGui::Button("-"))
+        if (ImGui::Button(labels["-"].c_str()))
         {
             tmpTimetable.classes.erase(tmpTimetable.orderedClasses[i]);
             tmpTimetable.orderedClasses.erase(tmpTimetable.orderedClasses.begin() + i);
             i--;
         }
         ImGui::SameLine();
-        if (ImGui::Button("Edit"))
+        if (ImGui::Button(labels["Edit"].c_str()))
         {
             newClass = false;
             bulkEditClass = false;
@@ -586,7 +591,7 @@ void ShowClasses(bool* isOpen)
     }
     ImGui::Columns(1);
     ImGui::Separator();
-    if (ImGui::Button("Ok"))
+    if (ImGui::Button(labels["Ok"].c_str()))
     {
         currentTimetable.classes = tmpTimetable.classes;
         currentTimetable.maxClassID = tmpTimetable.maxClassID;
@@ -594,6 +599,6 @@ void ShowClasses(bool* isOpen)
         *isOpen = false;
     }
     ImGui::SameLine();
-    if (ImGui::Button("Cancel")) *isOpen = false;
+    if (ImGui::Button(labels["Cancel"].c_str())) *isOpen = false;
     ImGui::End();
 }

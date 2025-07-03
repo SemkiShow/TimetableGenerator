@@ -43,7 +43,7 @@ void GetLatestVersionName()
     if (!curl)
     {
         std::cerr << "Failed to initialize CURL" << std::endl;
-        latestVersion = "Error: CURL init failed!";
+        latestVersion = labels["Error: CURL init failed!"];
         return;
     }
 
@@ -58,7 +58,7 @@ void GetLatestVersionName()
     if (res != CURLE_OK)
     {
         std::cerr << "CURL request failed: " << curl_easy_strerror(res) << std::endl;
-        latestVersion = "Error: network request failed!";
+        latestVersion = labels["Error: network request failed!"];
     }
     else
     {
@@ -79,7 +79,7 @@ void GetLatestVersionName()
         else
         {
             std::cerr << "HTTP request failed: Status " << responseCode << std::endl;
-            latestVersion = "Error: bad HTTP status!";
+            latestVersion = labels["Error: bad HTTP status!"];
         }
     }
 
@@ -88,12 +88,30 @@ void GetLatestVersionName()
 
 void CheckForUpdates(bool showWindow)
 {
-    latestVersion = "loading...";
+    latestVersion = labels["loading..."];
     releaseNotes.clear();
-    releaseNotes.push_back("loading...");
+    releaseNotes.push_back(labels["loading..."]);
     if (showWindow) isNewVersion = true;
     std::thread networkThread(GetLatestVersionName);
     networkThread.detach();
+}
+
+std::string ExtractString(const std::string& input, const std::string& prefix, const std::string& suffix)
+{
+    size_t start = input.find(prefix);
+    if (start == std::string::npos) {
+        std::cerr << "Prefix not found\n";
+        return "";
+    }
+    start += prefix.length();
+
+    size_t end = input.rfind(suffix);
+    if (end == std::string::npos || end < start) {
+        std::cerr << "Suffix not found or invalid\n";
+        return "";
+    }
+
+    return input.substr(start, end - start);
 }
 
 std::string GetLatestVersionArchiveURL()
@@ -134,7 +152,30 @@ std::string GetLatestVersionArchiveURL()
                     releaseID++;
                     if (releaseID >= jsonObject.objects.size()) return "";
                 }
-                return jsonObject.objects[releaseID].objectPairs["assets"].objects[0].stringPairs["browser_download_url"];
+                int assetID = -1;
+                for (int i = 0; i < jsonObject.objects[releaseID].objectPairs["assets"].objects.size(); i++)
+                {
+                    std::string assetLanguage = ExtractString(jsonObject.objects[releaseID].objectPairs["assets"].objects[i].stringPairs["name"], "release_", ".zip");
+                    if (assetLanguage == language)
+                    {
+                        assetID = i;
+                        break;
+                    }
+                }
+                if (assetID == -1)
+                {
+                    for (int i = 0; i < jsonObject.objects[releaseID].objectPairs["assets"].objects.size(); i++)
+                    {
+                        std::string assetLanguage = ExtractString(jsonObject.objects[releaseID].objectPairs["assets"].objects[i].stringPairs["name"], "release_", ".zip");
+                        if (assetLanguage == "en")
+                        {
+                            assetID = i;
+                            break;
+                        }
+                    }
+                }
+                if (assetID == -1) assetID = 0;
+                return jsonObject.objects[releaseID].objectPairs["assets"].objects[assetID].stringPairs["browser_download_url"];
             }
             else std::cerr << "No releases found in JSON response" << std::endl;
         }
@@ -167,7 +208,7 @@ int DownloadFile(const std::string& url, const std::string& outputPath)
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteFileCallback);
-    curl_easy_setopt(curl, CURLOPT_USERAGENT, "TimetableGenerator");
+    curl_easy_setopt(curl, CURLOPT_USERAGENT, ("TimetableGenerator/" + version).c_str());
     curl_easy_setopt(curl, CURLOPT_CAINFO, "resources/cacert.pem");
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
     CURLcode res = curl_easy_perform(curl);
@@ -200,15 +241,12 @@ int UnzipFile(const std::string& zipPath, const std::string& extractDir)
 
         std::string outPath = extractDir + "/" + name;
 
-        // Check if entry is a directory (ends with '/')
         if (name[strlen(name) - 1] == '/')
         {
-            // Create directory
             std::filesystem::create_directories(outPath);
         }
         else
         {
-            // Ensure parent directory exists
             std::filesystem::create_directories(std::filesystem::path(outPath).parent_path());
 
             zip_file* zfile = zip_fopen_index(archive, i, 0);
@@ -264,41 +302,45 @@ void CopyFiles(const std::filesystem::path& src, const std::filesystem::path& de
 
 void UpdateToLatestVersion()
 {
-    downloadStatus = "Fetching the latest version URL...";
+    downloadStatus = labels["Fetching the latest version URL..."];
     std::string archiveURL = GetLatestVersionArchiveURL();
     if (archiveURL.empty())
     {
-        downloadStatus = "Failed to get archive URL";
+        downloadStatus = labels["Failed to get archive URL"];
         std::cerr << "Failed to get archive URL\n";
         return;
     }
 
-    downloadStatus = "Downloading the latest version...";
+    downloadStatus = labels["Downloading the latest version..."];
     if (!std::filesystem::exists("tmp"))
     {
         std::filesystem::create_directory("tmp");
     }
-    if (DownloadFile(archiveURL, "tmp/release.zip"))
+    if (DownloadFile(archiveURL, "tmp/release.zip") != 0)
     {
-        downloadStatus = "Failed to download the release!";
+        downloadStatus = labels["Failed to download the release!"];
         std::cerr << "Failed to download the release!\n";
         return;
     }
 
-    downloadStatus = "Unzipping the file...";
-    if (!std::filesystem::exists("tmp"))
+    downloadStatus = labels["Unzipping the release..."];
+    if (!std::filesystem::exists("tmp/release"))
     {
-        std::filesystem::create_directory("tmp");
+        std::filesystem::create_directory("tmp/release");
     }
-    if (UnzipFile("tmp/release.zip", "tmp/release"))
+    if (UnzipFile("tmp/release.zip", "tmp/release") != 0)
     {
-        downloadStatus = "Failed to uzip the release!";
+        downloadStatus = labels["Failed to unzip the release!"];
         std::cerr << "Failed to uzip the release!\n";
         return;
     }
     std::filesystem::copy_file("settings.txt", "tmp/settings.txt", std::filesystem::copy_options::overwrite_existing);
     CopyFiles("tmp/release", ".");
     std::filesystem::copy_file("tmp/settings.txt", "settings.txt", std::filesystem::copy_options::overwrite_existing);
-    
-    downloadStatus = "Successfully updated to " + latestVersion + "!\nRestart the application to see the new features";
+    std::filesystem::remove("tmp/release.zip");
+    std::filesystem::remove("tmp/settings.txt");
+    std::filesystem::remove_all("tmp/release");
+
+    downloadStatus = labels["Successfully updated to"] + " " + latestVersion + "!\n" +
+        labels["Restart the application to see the new features"];
 }

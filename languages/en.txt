@@ -1,0 +1,136 @@
+Timetable Generator
+Monday
+Tuesday
+Wednesday
+Thursday
+Friday
+Saturday
+Sunday
+Settings
+days per week
+lessons per day
+style
+dark
+light
+classic
+language
+Developer options
+vsync
+merged-font
+timetable-autosave-interval
+font-size
+max-mutations
+error-bonus-ratio
+timetables-per-generation
+max-iterations
+verbose-logging
+use-prereleases
+About
+TimetableGenerator
+A tool for creating timetables easily
+Developed by SemkiShow
+Licensed under GPLv3 License
+Updates
+The latest version is
+Your version is
+There are no new versions available
+loading...
+A new version is available!
+Release notes
+Update
+New timetable
+Save timetable as
+Enter the timetable name
+(for example, the name of the school)
+Ok
+Cancel
+Open timetable
+Select a timetable to open
+Generate timetable
+Timetable generating done!
+Generating a timetable that matches the requirements...
+Iteration:
+The best score is
+The best timetable has
+errors
+bonus points
+iterations have passed since last score improvement
+no lesson
+any lesson
+error
+File
+New
+Open
+Save
+Save As
+Export As
+Excel
+Setup wizard
+Classrooms
+Lessons
+Teachers
+Classes
+Help
+Check for updates
+Edit
+-
++
+New classroom
+Edit classroom
+start number
+end number
+amount
+name
+New lesson
+Edit lesson
+classes
+classrooms
+Deselect all
+Select all
+You need to add classes
+in the Classes menu
+to select classes for this lesson!
+You need to add classrooms
+in the Classrooms menu
+to select classrooms for this lesson!
+New teacher
+Edit teacher
+lessons
+You need to add lessons
+in the Lessons menu
+to select lessons for this teacher!
+available lessons
+min free periods
+max free periods
+Combine lessons
+New class
+Edit class
+Warning: you are bulk editing classes!
+After pressing Ok ALL classes with the number below
+will be OVERWRITTEN with the data you enter.
+If you don't want that to happen, press the Cancel button.
+number
+letter
+teacher
+Welcome to the TimetableGenerator setup wizard!
+After you are done, press Ok and continue to the next step.
+The first step is to setup classrooms.
+The next step is to add classes.
+The next step is to add lessons.
+The next step is to add teachers.
+The next step is to assign lessons to classes.
+You are done! Now press the Generate timetable
+button to begin the timetable finding process!
+Back
+Next
+Error: CURL init failed!
+Error: network request failed!
+Error: bad HTTP status!
+Fetching the latest version URL...
+Failed to get archive URL
+Downloading the latest version...
+Failed to download the release!
+Unzipping the release...
+Failed to unzip the release!
+Successfully updated to
+Restart the application to see the new features
