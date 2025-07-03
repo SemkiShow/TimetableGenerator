@@ -134,3 +134,18 @@ Unzipping the release...
 Failed to unzip the release!
 Successfully updated to
 Restart the application to see the new features
+Crash report
+The program has crashed last time it was opened!
+If you would like to send an anonymous crash report,
+select the data you want to share
+(by sending a crash report you can
+help to make Timetable Generator even better)
+send logs
+send timetables
+send settings
+send basic system information
+After pressing Create crash_report.zip
+email crash_report.zip to mgdeveloper123@gmail.com
+The email theme should be Timetable Generator crash report
+You can also provide a crash report description
+Create crash_report.zip

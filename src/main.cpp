@@ -1,3 +1,4 @@
+#include "Crashes.hpp"
 #include "Logging.hpp"
 #include "Settings.hpp"
 #include "UI.hpp"
@@ -7,7 +8,6 @@
 #include <ctime>
 #include <imgui.h>
 #include <raylib.h>
-#include <imgui.h>
 #include <rlImGui.h>
 
 int main()
@@ -26,6 +26,9 @@ int main()
 
     // Load settings
     Load("settings.txt");
+    if (hasCrashed) OpenCrashReport();
+    hasCrashed = true;
+    Save("settings.txt");
     CheckForUpdates(false);
 
     // Set raylib config flags
@@ -54,6 +57,7 @@ int main()
     }
 
     // Save settings and close the program
+    hasCrashed = false;
     Save("settings.txt");
     EndLogging();
     rlImGuiShutdown();

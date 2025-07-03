@@ -1,4 +1,5 @@
 #include "Settings.hpp"
+#include "Crashes.hpp"
 #include "Logging.hpp"
 #include "Timetable.hpp"
 #include "UI.hpp"
@@ -149,6 +150,7 @@ void Save(std::string fileName)
     settingsFile << "use-prereleases=" << (usePrereleases ? "true" : "false") << '\n';
     settingsFile << "language=" << language << '\n';
     settingsFile << "last-ca-update=" << lastCAUpdate << '\n';
+    settingsFile << "has-crashed=" << (hasCrashed ? "true" : "false") << '\n';
     settingsFile.close();
 
     // Save timetable
@@ -194,6 +196,7 @@ void Load(std::string fileName)
         if (label == "use-prereleases") usePrereleases = value == "true";
         if (label == "language") language = value;
         if (label == "last-ca-update") lastCAUpdate = value;
+        if (label == "has-crashed") hasCrashed = value == "true";
     }
     settingsFile.close();
 

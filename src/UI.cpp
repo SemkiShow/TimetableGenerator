@@ -1,4 +1,5 @@
 #include "UI.hpp"
+#include "Crashes.hpp"
 #include "Logging.hpp"
 #include "Settings.hpp"
 #include "Timetable.hpp"
@@ -399,6 +400,7 @@ void DrawFrame()
     if (isNewTimetable) ShowNewTimetable(&isNewTimetable);
     if (isOpenTimetable) ShowOpenTimetable(&isOpenTimetable);
     if (isGenerateTimetable) ShowGenerateTimetable(&isGenerateTimetable);
+    if (isCrashReport) ShowCrashReport(&isCrashReport);
 
     // Stop searching for a perfect timetable if the Generate timetable window is closed
     if (!isGenerateTimetable) iterationData.isDone = true;

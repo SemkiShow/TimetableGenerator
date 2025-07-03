@@ -134,3 +134,18 @@ Rozpakowywanie wydania...
 Nie udało się rozpakować wydania!
 Zaktualizowano pomyślnie do
 Zrestartuj aplikację, aby zobaczyć nowe funkcje
+Raport awarii
+Program uległ awarii podczas ostatniego uruchomienia!
+Jeśli chcesz wysłać anonimowy raport awarii,
+wybierz dane, które chcesz udostępnić
+(wysyłając raport awarii, możesz
+pomóc ulepszyć Generator Planów Lekcji)
+wyślij logi
+wyślij plany lekcji
+wyślij ustawienia
+wyślij podstawowe informacje o systemie
+Po naciśnięciu Utwórz crash_report.zip
+wyślij plik crash_report.zip na adres mgdeveloper123@gmail.com
+Temat e-maila powinien brzmieć: Generator Planów Lekcji Raport awarii
+Możesz również dołączyć opis awarii
+Utwórz crash_report.zip
