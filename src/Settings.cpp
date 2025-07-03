@@ -78,8 +78,8 @@ void ReloadLabels()
     // Read the language file
     LogInfo("Reloading labels");
     labels.clear();
-    std::ifstream languageFile("languages/" + language + ".txt");
-    std::ifstream englishFile("languages/en.txt");
+    std::ifstream languageFile("resources/languages/" + language + ".txt");
+    std::ifstream englishFile("resources/languages/en.txt");
     std::string languageBuffer;
     std::string englishBuffer;
     while (true)
@@ -204,7 +204,7 @@ void Load(std::string fileName)
     }
 
     // Load the language
-    ListFiles("languages", &availableLanguages);
+    ListFiles("resources/languages", &availableLanguages);
     for (int i = 0; i < availableLanguages.size(); i++)
     {
         availableLanguages[i] = std::filesystem::path(availableLanguages[i]).stem().string();
