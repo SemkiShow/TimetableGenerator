@@ -14,7 +14,7 @@ struct IterationData
     int bestTimetableIndex = 0;
     int bestScore = INT_MIN;
     int allTimeBestScore = bestScore;
-    double temperature = 0;
+    int timetablesPerGeneration = -1;
     bool isDone = true;
     Timetable* timetables;
     Timetable* population;

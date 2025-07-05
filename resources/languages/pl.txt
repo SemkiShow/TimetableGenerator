@@ -21,7 +21,9 @@ interwał-autozapisu-planu
 rozmiar-czcionki
 maks-mutacji
 współczynnik-premii-za-błędy
-plany-na-generację
+krok-planów-na-generację
+min-planów-na-generację
+maks-planów-na-generację
 maks-iteracji
 szczegółowe-logi
 używaj-wersji-testowych

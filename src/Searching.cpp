@@ -135,7 +135,7 @@ double EvaluateFitness(const Timetable& timetable)
 Timetable TournamentSelection(const Timetable* population)
 {
     int tournamentSize = 7;
-    auto populationDistribution = std::uniform_int_distribution<int>(0, timetablesPerGeneration-1);
+    auto populationDistribution = std::uniform_int_distribution<int>(0, iterationData.timetablesPerGeneration-1);
     int bestID = populationDistribution(rng);
 
     for (int i = 0; i < tournamentSize; i++)
@@ -226,7 +226,7 @@ void MutateTimetable(Timetable* timetable)
 
 void GeneticAlgorithm(int threadID, Timetable* population, Timetable* newPopulation)
 {
-    for (int i = threadID * timetablesPerGeneration / threadsNumber; i < (threadID + 1) * timetablesPerGeneration / threadsNumber; i++)
+    for (int i = threadID * iterationData.timetablesPerGeneration / threadsNumber; i < (threadID + 1) * iterationData.timetablesPerGeneration / threadsNumber; i++)
     {
         Timetable parent1 = TournamentSelection(population);
         Timetable parent2 = TournamentSelection(population);
@@ -245,65 +245,65 @@ void GeneticAlgorithm(int threadID, Timetable* population, Timetable* newPopulat
 void GetBestSpecies(Timetable* timetables, Timetable* population, Timetable* newPopulation, int* minErrors)
 {
     double averageFitness = 0;
-    for (int i = 0; i < timetablesPerGeneration; i++)
+    for (int i = 0; i < iterationData.timetablesPerGeneration; i++)
     {
         averageFitness += EvaluateFitness(population[i]);
         averageFitness += EvaluateFitness(newPopulation[i]);
     }
-    averageFitness /= timetablesPerGeneration * 2;
+    averageFitness /= iterationData.timetablesPerGeneration * 2;
 
     int counter = 1;
 
     // Selecting the new population with above average fitness and minimal errors
-    for (int i = 0; i < timetablesPerGeneration; i++)
+    for (int i = 0; i < iterationData.timetablesPerGeneration; i++)
     {
-        if (counter >= timetablesPerGeneration) break;
+        if (counter >= iterationData.timetablesPerGeneration) break;
         if (newPopulation[i].errors < *minErrors) *minErrors = newPopulation[i].errors;
         if (EvaluateFitness(newPopulation[i]) >= averageFitness && newPopulation[i].errors <= *minErrors)
             timetables[counter++] = newPopulation[i];
     }
 
     // Selecting the new population with above average fitness and more than minimal errors
-    for (int i = 0; i < timetablesPerGeneration; i++)
+    for (int i = 0; i < iterationData.timetablesPerGeneration; i++)
     {
-        if (counter >= timetablesPerGeneration) break;
+        if (counter >= iterationData.timetablesPerGeneration) break;
         if (newPopulation[i].errors < *minErrors) *minErrors = newPopulation[i].errors;
         if (EvaluateFitness(newPopulation[i]) >= averageFitness && newPopulation[i].errors > *minErrors)
             timetables[counter++] = newPopulation[i];
     }
 
     // Selecting the old population with above average fitness and minimal errors
-    for (int i = 0; i < timetablesPerGeneration; i++)
+    for (int i = 0; i < iterationData.timetablesPerGeneration; i++)
     {
-        if (counter >= timetablesPerGeneration) break;
+        if (counter >= iterationData.timetablesPerGeneration) break;
         if (population[i].errors < *minErrors) *minErrors = population[i].errors;
         if (EvaluateFitness(population[i]) >= averageFitness && population[i].errors <= *minErrors)
             timetables[counter++] = population[i];
     }
 
     // Selecting the old population with above average fitness and more than minimal errors
-    for (int i = 0; i < timetablesPerGeneration; i++)
+    for (int i = 0; i < iterationData.timetablesPerGeneration; i++)
     {
-        if (counter >= timetablesPerGeneration) break;
+        if (counter >= iterationData.timetablesPerGeneration) break;
         if (population[i].errors < *minErrors) *minErrors = population[i].errors;
         if (EvaluateFitness(population[i]) >= averageFitness && population[i].errors > *minErrors)
             timetables[counter++] = population[i];
     }
 
     // Choosing the rest of the population randomly from the old and new populations
-    for (int i = counter; i < timetablesPerGeneration; i++)
+    for (int i = counter; i < iterationData.timetablesPerGeneration; i++)
     {
         if (std::uniform_int_distribution<int>(0, 1)(rng) == 0)
         {
-            timetables[i] = population[std::uniform_int_distribution<int>(0, timetablesPerGeneration-1)(rng)];
+            timetables[i] = population[std::uniform_int_distribution<int>(0, iterationData.timetablesPerGeneration-1)(rng)];
         }
         else
         {
-            timetables[i] = newPopulation[std::uniform_int_distribution<int>(0, timetablesPerGeneration-1)(rng)];
+            timetables[i] = newPopulation[std::uniform_int_distribution<int>(0, iterationData.timetablesPerGeneration-1)(rng)];
         }
     }
 
-    std::cout << "Selected " << timetablesPerGeneration - counter << "/" << timetablesPerGeneration << " random timetables. ";
+    std::cout << "Selected " << iterationData.timetablesPerGeneration - counter << "/" << iterationData.timetablesPerGeneration << " random timetables. ";
 }
 
 int GetBestTimetableIndex(const Timetable* timetables, int* minErrors)
@@ -311,7 +311,7 @@ int GetBestTimetableIndex(const Timetable* timetables, int* minErrors)
     double bestTimetableScore = INT_MIN;
     int bestTimetableIndex = 0;
     double timetableScore = INT_MIN;
-    for (int i = 0; i < timetablesPerGeneration; i++)
+    for (int i = 0; i < iterationData.timetablesPerGeneration; i++)
     {
         timetableScore = EvaluateFitness(timetables[i]);
         if (timetables[i].errors < *minErrors) *minErrors = timetables[i].errors;
@@ -324,15 +324,22 @@ int GetBestTimetableIndex(const Timetable* timetables, int* minErrors)
     return bestTimetableIndex;
 }
 
+void StopSearching()
+{
+    LogInfo("Finished searching. The final timetable has " + std::to_string(iterationData.timetables[iterationData.bestTimetableIndex].errors) +
+        " errors and " + std::to_string(iterationData.timetables[iterationData.bestTimetableIndex].bonusPoints) + " bonus points");
+    SaveTimetable("timetables/" + iterationData.timetables[0].name + ".json", &iterationData.timetables[0]);
+    delete[] iterationData.timetables;
+    delete[] iterationData.population;
+    delete[] iterationData.newPopulation;
+}
+
 void RunASearchIteration()
 {
     // Exit if there are no errors or the iteratiuon count is over the limit
     if (iterationData.timetables[iterationData.bestTimetableIndex].errors <= 0 || (maxIterations != -1 && iterationData.iteration >= maxIterations))
     {
-        LogInfo("Finished searching. The final timetable has " + std::to_string(iterationData.timetables[iterationData.bestTimetableIndex].errors) +
-            " errors and " + std::to_string(iterationData.timetables[iterationData.bestTimetableIndex].bonusPoints) + " bonus points");
         iterationData.isDone = true;
-        SaveTimetable("timetables/" + iterationData.timetables[0].name + ".json", &iterationData.timetables[0]);
         return;
     }
     std::thread threads[threadsNumber];
@@ -354,6 +361,10 @@ void RunASearchIteration()
         LogInfo(std::to_string(iterationData.iterationsPerChange) + " iterations have passed since last score improvement");
     }
 
+    // Change timetables per generation dynamically
+    iterationData.timetablesPerGeneration = std::min(maxTimetablesPerGeneration,
+        std::max(minTimetablesPerGeneration, (iterationData.iterationsPerChange+1) * timetablesPerGenerationStep));
+
     // Run worker threads
     for (int i = 0; i < threadsNumber; i++)
         threads[i] = std::thread(GeneticAlgorithm, i, iterationData.timetables, iterationData.newPopulation);
@@ -370,7 +381,7 @@ void RunASearchIteration()
     iterationData.timetables[iterationData.bestTimetableIndex] = bufTimetable;
 
     // Save only the best species from the old and new populations
-    for (int i = 0; i < timetablesPerGeneration; i++)
+    for (int i = 0; i < iterationData.timetablesPerGeneration; i++)
         iterationData.population[i] = iterationData.timetables[i];
     GetBestSpecies(iterationData.timetables, iterationData.population, iterationData.newPopulation, &iterationData.minErrors);
 
@@ -386,6 +397,7 @@ void RunASearchIteration()
 void Iterate()
 {
     while (!iterationData.isDone) RunASearchIteration();
+    StopSearching();
 }
 
 void BeginSearching(const Timetable* timetable)
@@ -396,10 +408,10 @@ void BeginSearching(const Timetable* timetable)
 
     // Initialize a starting population
     iterationData = IterationData();
-    iterationData.timetables = new Timetable[timetablesPerGeneration];
-    iterationData.population = new Timetable[timetablesPerGeneration];
-    iterationData.newPopulation = new Timetable[timetablesPerGeneration];
-    for (int i = 0; i < timetablesPerGeneration; i++)
+    iterationData.timetables = new Timetable[maxTimetablesPerGeneration];
+    iterationData.population = new Timetable[maxTimetablesPerGeneration];
+    iterationData.newPopulation = new Timetable[maxTimetablesPerGeneration];
+    for (int i = 0; i < maxTimetablesPerGeneration; i++)
     {
         iterationData.timetables[i] = *timetable;
         RandomizeTimetable(&iterationData.timetables[i]);
@@ -416,6 +428,9 @@ void BeginSearching(const Timetable* timetable)
         iterationData.maxErrors = iterationData.timetables[iterationData.bestTimetableIndex].errors;
     }
     iterationData.allTimeBestScore = iterationData.bestScore;
+    iterationData.iteration = 0;
+    iterationData.timetablesPerGeneration = std::min(maxTimetablesPerGeneration,
+        std::max(minTimetablesPerGeneration, (iterationData.iterationsPerChange+1) * timetablesPerGenerationStep));
     iterationData.isDone = false;
     isGenerateTimetable = true;
 

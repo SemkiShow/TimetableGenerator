@@ -90,10 +90,11 @@ void ShowSettings(bool* isOpen)
         ImGui::SliderInt(labels["timetable-autosave-interval"].c_str(), &timetableAutosaveInterval, 0, 600);
         ImGui::InputInt(labels["font-size"].c_str(), &fontSize);
         if (fontSize < 5) fontSize = 5;
-        ImGui::InputInt(labels["max-mutations"].c_str(), &maxMutations);
-        if (maxMutations < 1) maxMutations = 1;
         ImGui::SliderFloat(labels["error-bonus-ratio"].c_str(), &errorBonusRatio, 0.1f, 100.0f);
-        ImGui::SliderInt(labels["timetables-per-generation"].c_str(), &timetablesPerGeneration, 10, 10000);
+        ImGui::SliderInt(labels["timetables-per-generation-step"].c_str(), &timetablesPerGenerationStep, 1, 100);
+        ImGui::SliderInt(labels["min-timetables-per-generation"].c_str(), &minTimetablesPerGeneration, 10, 10000);
+        ImGui::SliderInt(labels["max-timetables-per-generation"].c_str(), &maxTimetablesPerGeneration, 10, 10000);
+        if (maxTimetablesPerGeneration < minTimetablesPerGeneration) maxTimetablesPerGeneration = minTimetablesPerGeneration;
         ImGui::SliderInt(labels["max-iterations"].c_str(), &maxIterations, -1, 10000);
         if (ImGui::Checkbox(labels["verbose-logging"].c_str(), &verboseLogging))
         {

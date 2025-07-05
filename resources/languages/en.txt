@@ -21,7 +21,9 @@ timetable-autosave-interval
 font-size
 max-mutations
 error-bonus-ratio
-timetables-per-generation
+timetables-per-generation-step
+min-timetables-per-generation
+max-timetables-per-generation
 max-iterations
 verbose-logging
 use-prereleases
