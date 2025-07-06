@@ -16,6 +16,25 @@ std::vector<int> allAvailableTeacherLessonsHorizontal;
 std::unordered_map<int, int> availableTeacherLessons;
 std::string teacherLessonValues = "";
 
+void ResetTeacherLessonValues()
+{
+    teacherLessonValues = "";
+    teacherLessonValues += labels["no lesson"];
+    teacherLessonValues += '\0';
+    teacherLessonValues += labels["any lesson"];
+    teacherLessonValues += '\0';
+    for (auto& lesson: currentTimetable.lessons)
+    {
+        if (!teacherLessons[lesson.first]) continue;
+        if (lesson.second.name == "")
+            teacherLessonValues += labels["error"];
+        else
+            teacherLessonValues += lesson.second.name;
+        teacherLessonValues += '\0';
+    }
+    teacherLessonValues += '\0';
+}
+
 static void ResetVariables()
 {
     LogInfo("Resetting teacher variables");
@@ -68,6 +87,8 @@ static void ResetVariables()
                 tmpTmpTimetable.teachers[currentTeacherID].workDays[i].lessonIDs.push_back(1);
         }
     }
+
+    ResetTeacherLessonValues();
 }
 
 bool isEditTeacher = false;
@@ -105,9 +126,10 @@ void ShowEditTeacher(bool* isOpen)
     for (auto& lesson: currentTimetable.lessons)
     {
         ImGui::PushID(pushID);
-        ImGui::Checkbox("", &teacherLessons[lesson.first]);
-        ImGui::SameLine();
-        ImGui::Text("%s", lesson.second.name.c_str());
+        if (ImGui::Checkbox(lesson.second.name.c_str(), &teacherLessons[lesson.first]))
+        {
+            ResetTeacherLessonValues();
+        }
         ImGui::NextColumn();
         std::string classNames = "";
         for (int j = 0; j < lesson.second.classIDs.size(); j++)

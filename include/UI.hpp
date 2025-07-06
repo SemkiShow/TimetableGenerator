@@ -42,6 +42,8 @@ void ShowEditClass(bool* isOpen);
 void ShowClasses(bool* isOpen);
 void ShowWizard(bool* isOpen);
 
+void ResetTeacherLessonValues();
+
 void LoadFonts();
 void LoadStyle();
 void DrawFrame();
