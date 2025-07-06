@@ -324,28 +324,20 @@ int GetBestTimetableIndex(const Timetable* timetables, int* minErrors)
     return bestTimetableIndex;
 }
 
-void StopSearching()
-{
-    LogInfo("Finished searching. The final timetable has " + std::to_string(iterationData.timetables[iterationData.bestTimetableIndex].errors) +
-        " errors and " + std::to_string(iterationData.timetables[iterationData.bestTimetableIndex].bonusPoints) + " bonus points");
-    SaveTimetable("timetables/" + iterationData.timetables[0].name + ".json", &iterationData.timetables[0]);
-    delete[] iterationData.timetables;
-    delete[] iterationData.population;
-    delete[] iterationData.newPopulation;
-    iterationData.timetables = nullptr;
-    iterationData.population = nullptr;
-    iterationData.newPopulation = nullptr;
-    iterationData = IterationData();
-}
-
 void RunASearchIteration()
 {
+    // Make a thread lock
+    iterationData.threadLock = true;
+
     // Exit if there are no errors or the iteratiuon count is over the limit
     if (iterationData.timetables[iterationData.bestTimetableIndex].errors <= 0 || (maxIterations != -1 && iterationData.iteration >= maxIterations))
     {
         iterationData.isDone = true;
+        iterationData.threadLock = false;
         return;
     }
+
+    // Init the threads
     std::thread threads[threadsNumber];
 
     // Output debug info
@@ -396,11 +388,9 @@ void RunASearchIteration()
     else iterationData.iterationsPerChange = 0;
     iterationData.lastAllTimeBestScore = iterationData.allTimeBestScore;
     iterationData.lastBestScore = iterationData.bestScore;
-}
 
-void Iterate()
-{
-    while (!iterationData.isDone) RunASearchIteration();
+    // Release the thread lock
+    iterationData.threadLock = false;
 }
 
 void BeginSearching(const Timetable* timetable)
@@ -420,6 +410,7 @@ void BeginSearching(const Timetable* timetable)
     iterationData.timetables = new Timetable[maxTimetablesPerGeneration];
     iterationData.population = new Timetable[maxTimetablesPerGeneration];
     iterationData.newPopulation = new Timetable[maxTimetablesPerGeneration];
+    iterationData.timetablesPerGeneration = maxTimetablesPerGeneration;
     for (int i = 0; i < maxTimetablesPerGeneration; i++)
     {
         iterationData.timetables[i] = *timetable;
@@ -438,9 +429,20 @@ void BeginSearching(const Timetable* timetable)
     }
     iterationData.allTimeBestScore = iterationData.bestScore;
     iterationData.iteration = 0;
-    iterationData.timetablesPerGeneration = minTimetablesPerGeneration;
 
-    // Run the iterations on a separate thread to avoid GUI lag
-    std::thread iterationThread(Iterate);
-    iterationThread.detach();
+    // Run the iterations
+    while (!iterationData.isDone) RunASearchIteration();
+}
+
+void StopSearching()
+{
+    LogInfo("Finished searching. The final timetable has " + std::to_string(iterationData.timetables[iterationData.bestTimetableIndex].errors) +
+        " errors and " + std::to_string(iterationData.timetables[iterationData.bestTimetableIndex].bonusPoints) + " bonus points");
+    SaveTimetable("timetables/" + iterationData.timetables[0].name + ".json", &iterationData.timetables[0]);
+    delete[] iterationData.timetables;
+    delete[] iterationData.population;
+    delete[] iterationData.newPopulation;
+    iterationData.timetables = nullptr;
+    iterationData.population = nullptr;
+    iterationData.newPopulation = nullptr;
 }

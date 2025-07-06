@@ -5,17 +5,18 @@
 
 struct IterationData
 {
-    int iteration = 0;
-    int iterationsPerChange = 0;
-    int lastAllTimeBestScore = 0;
-    int lastBestScore = 0;
+    int iteration = -1;
+    int iterationsPerChange = -1;
+    int lastAllTimeBestScore = -1;
+    int lastBestScore = -1;
     int minErrors = INT_MAX;
     int maxErrors = INT_MIN;
-    int bestTimetableIndex = 0;
+    int bestTimetableIndex = -1;
     int bestScore = INT_MIN;
     int allTimeBestScore = bestScore;
     int timetablesPerGeneration = -1;
     bool isDone = true;
+    bool threadLock = true;
     Timetable* timetables = nullptr;
     Timetable* population = nullptr;
     Timetable* newPopulation = nullptr;

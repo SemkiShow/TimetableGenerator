@@ -7,7 +7,6 @@
 #include <string>
 #include <thread>
 
-bool isWizard = false;
 int wizardStep = 0;
 std::string wizardTexts[WIZARD_STEPS] = {
     "Welcome to the TimetableGenerator setup wizard!\n\nThe first step is to setup classrooms.\nAfter you are done, press Ok and continue to the next step.",
@@ -21,6 +20,7 @@ void (*wizardMenus[])() = {OpenClassrooms, OpenClasses, OpenLessons, OpenTeacher
 bool* wizardToggles[] = {&isClassrooms, &isClasses, &isLessons, &isTeachers, &isClasses};
 bool openWizard = false;
 
+bool isWizard = false;
 void ShowWizard(bool* isOpen)
 {
     if (wizardStep > 0 && wizardStep < WIZARD_STEPS && !*wizardToggles[wizardStep-1] && openWizard)

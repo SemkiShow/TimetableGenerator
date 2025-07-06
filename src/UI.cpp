@@ -15,6 +15,16 @@
 #include <misc/cpp/imgui_stdlib.h>
 #include <rlImGui.h>
 
+#if defined(__GNUC__) || defined(__clang__)
+#define COMPILER_BARRIER() asm volatile("" ::: "memory")
+#elif defined(_MSC_VER)
+#include <intrin.h>
+#pragma intrinsic(_ReadWriteBarrier)
+#define COMPILER_BARRIER() _ReadWriteBarrier()
+#else
+#error "Unsupported compiler"
+#endif
+
 int menuOffset = 20;
 int windowSize[2] = {16*50*2, 9*50*2};
 std::string weekDays[7] = {
@@ -230,6 +240,10 @@ void ShowGenerateTimetable(bool* isOpen)
         float progressPercentage = (-(iterationData.maxErrors * 1.0f / 100) * iterationData.minErrors + 100) / 100;
         ImGui::ProgressBar(pow(progressPercentage, 2));
     }
+    else
+    {
+        ImGui::LabelText("##1", "\n\n\n\n\n\n\n");
+    }
     ImGui::End();
 }
 
@@ -416,6 +430,12 @@ void DrawFrame()
     {
         wasGenerateTimetable = false;
         iterationData.isDone = true;
+        while (iterationData.threadLock)
+        {
+            // Preventing g++ from aggressively optimizing this loop, which frees
+            // timetables before the search iteration finishes, which leads to a segmentation fault
+            COMPILER_BARRIER();
+        }
         std::thread stopSearchingThread(StopSearching);
         stopSearchingThread.detach();
     }
