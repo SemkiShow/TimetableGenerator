@@ -22,6 +22,7 @@ set(IMGUI_VERSION 1.91.9b)
 set(LIBXLSXWRITER_VERSION 1.2.2)
 set(ZLIB_VERSION 1.3.1)
 set(LIBZIP_VERSION 1.11.4)
+set(UTF8CPP_VERSION 4.0.6)
 
 message(STATUS "Downloading required libraries")
 
@@ -153,12 +154,19 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(libzip)
 
+# utf8cpp
+FetchContent_Declare(
+    utf8cpp
+    URL https://github.com/nemtrif/utfcpp/archive/v${UTF8CPP_VERSION}.zip
+)
+FetchContent_MakeAvailable(utf8cpp)
+
 file(GLOB_RECURSE SOURCES src/*.cpp)
 add_executable(${PROJECT_NAME} ${SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE include/)
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-target_link_libraries(${PROJECT_NAME} PRIVATE raylib imgui rlimgui zlib xlsxwriter zip)
+target_link_libraries(${PROJECT_NAME} PRIVATE raylib imgui rlimgui zlib xlsxwriter zip utf8cpp)
 if (NOT TARGET CURL::libcurl)
     add_dependencies(${PROJECT_NAME} libpsl libcurl)
     target_include_directories(${PROJECT_NAME} PRIVATE

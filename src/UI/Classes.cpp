@@ -7,6 +7,7 @@
 #include <string>
 #include <unordered_map>
 #include <algorithm>
+#include <utf8.h>
 
 int currentClassID = 0;
 bool newClass = false;
@@ -181,6 +182,20 @@ void ShowCombineLessons(bool* isOpen)
     ImGui::End();
 }
 
+std::string GetNthUtf8Character(const std::string& utf8_str, int index)
+{
+    auto it = utf8_str.begin();
+    auto end = utf8_str.end();
+
+    for (int i = 0; i < index && it != end; ++i) utf8::next(it, end);
+
+    if (it == end) return "";
+
+    auto char_start = it;
+    utf8::next(it, end);
+    return std::string(char_start, it);
+}
+
 bool isEditClass = false;
 void ShowEditClass(bool* isOpen)
 {
@@ -207,6 +222,8 @@ void ShowEditClass(bool* isOpen)
     if (bulkEditClass)
     {
         ImGui::InputInt(labels["amount"].c_str(), &bulkClassesAmount);
+        if (bulkClassesAmount >= labels["abcdefghijklmnopqrstuvwxyz"].size())
+            bulkClassesAmount = labels["abcdefghijklmnopqrstuvwxyz"].size()-1;
         if (bulkClassesAmount < 1) bulkClassesAmount = 1;
     }
     // Class letter and teacher
@@ -485,7 +502,10 @@ void ShowEditClass(bool* isOpen)
                 }
             }
             for (int i = 0; i < bulkClassesAmount; i++)
-                tmpTmpTimetable.classes[tmpTmpTimetable.orderedClasses[orderedClassesID + i]].letter = 'a' + i;
+            {
+                tmpTmpTimetable.classes[tmpTmpTimetable.orderedClasses[orderedClassesID + i]].letter =
+                    GetNthUtf8Character(labels["abcdefghijklmnopqrstuvwxyz"], i);
+            }
         }
         else
         {
