@@ -50,8 +50,9 @@ void PrintXlsxError(lxw_workbook* workbook, lxw_worksheet* worksheet, int cellWi
     format_set_font_color(errorFormat, LXW_COLOR_RED);
     format_set_text_wrap(errorFormat);
 
+    std::string errorMessage = labels["Press the Generate timetable button"] + '\n' + labels["before exporting the timetable!"];
     worksheet_merge_range(worksheet, 2, 1, lessonsPerDay + 1, daysPerWeek * cellWidth,
-        "Press the Generate timetable button\nbefore exporting the timetable!", errorFormat);
+        errorMessage.c_str(), errorFormat);
 }
 
 void ExportClassesAsXlsx(Timetable* timetable)

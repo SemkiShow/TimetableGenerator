@@ -27,6 +27,8 @@ max-timetables-per-generation
 max-iterations
 verbose-logging
 use-prereleases
+Press the Generate timetable button
+before exporting the timetable!
 About
 TimetableGenerator
 A tool for creating timetables easily

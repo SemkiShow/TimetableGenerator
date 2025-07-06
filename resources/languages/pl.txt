@@ -27,6 +27,8 @@ maks-planów-na-generację
 maks-iteracji
 szczegółowe-logi
 używaj-wersji-testowych
+Naciśnij przycisk Generuj plan lekcji
+przed eksportowaniem planu!
 O programie
 TimetableGenerator
 Narzędzie do łatwego tworzenia planów lekcji
