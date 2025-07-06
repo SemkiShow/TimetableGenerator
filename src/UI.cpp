@@ -201,6 +201,7 @@ void ShowOpenTimetable(bool* isOpen)
     ImGui::End();
 }
 
+bool wasGenerateTimetable = false;
 bool isGenerateTimetable = false;
 void ShowGenerateTimetable(bool* isOpen)
 {
@@ -217,15 +218,18 @@ void ShowGenerateTimetable(bool* isOpen)
     {
         ImGui::Text("%s", labels["Generating a timetable that matches the requirements..."].c_str());
     }
-    ImGui::Text("%s", (labels["Iteration:"] + " " + std::to_string(iterationData.iteration)).c_str());
-    ImGui::Text("%s", (labels["The best score is"] + " " + std::to_string(iterationData.allTimeBestScore)).c_str());
-    ImGui::Text("%s", (labels["The best timetable has"] + " " +
-        std::to_string(iterationData.timetables[iterationData.bestTimetableIndex].errors) + " " + labels["errors"]).c_str());
-    ImGui::Text("%s", (labels["The best timetable has"] + " " +
-            std::to_string(iterationData.timetables[iterationData.bestTimetableIndex].bonusPoints) + " " + labels["bonus points"]).c_str());
-    ImGui::Text("%s", (std::to_string(iterationData.iterationsPerChange) + " " + labels["iterations have passed since last score improvement"]).c_str());
-    float progressPercentage = (-(iterationData.maxErrors * 1.0f / 100) * iterationData.minErrors + 100) / 100;
-    ImGui::ProgressBar(pow(progressPercentage, 2));
+    if (iterationData.iteration >= 0)
+    {
+        ImGui::Text("%s", (labels["Iteration:"] + " " + std::to_string(iterationData.iteration)).c_str());
+        ImGui::Text("%s", (labels["The best score is"] + " " + std::to_string(iterationData.allTimeBestScore)).c_str());
+        ImGui::Text("%s", (labels["The best timetable has"] + " " +
+            std::to_string(iterationData.timetables[iterationData.bestTimetableIndex].errors) + " " + labels["errors"]).c_str());
+        ImGui::Text("%s", (labels["The best timetable has"] + " " +
+                std::to_string(iterationData.timetables[iterationData.bestTimetableIndex].bonusPoints) + " " + labels["bonus points"]).c_str());
+        ImGui::Text("%s", (std::to_string(iterationData.iterationsPerChange) + " " + labels["iterations have passed since last score improvement"]).c_str());
+        float progressPercentage = (-(iterationData.maxErrors * 1.0f / 100) * iterationData.minErrors + 100) / 100;
+        ImGui::ProgressBar(pow(progressPercentage, 2));
+    }
     ImGui::End();
 }
 
@@ -343,7 +347,11 @@ void ShowMenuBar()
             if (ImGui::MenuItem(labels["Lessons"].c_str())) OpenLessons();
             if (ImGui::MenuItem(labels["Teachers"].c_str())) OpenTeachers();
             if (ImGui::MenuItem(labels["Classes"].c_str())) OpenClasses();
-            if (ImGui::MenuItem(labels["Generate timetable"].c_str())) BeginSearching(&currentTimetable);
+            if (ImGui::MenuItem(labels["Generate timetable"].c_str()))
+            {
+                std::thread beginSearchingThread(BeginSearching, &currentTimetable);
+                beginSearchingThread.detach();
+            }
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu(labels["Help"].c_str()))
@@ -404,7 +412,13 @@ void DrawFrame()
     if (isCrashReport) ShowCrashReport(&isCrashReport);
 
     // Stop searching for a perfect timetable if the Generate timetable window is closed
-    if (!isGenerateTimetable) iterationData.isDone = true;
+    if (!isGenerateTimetable && wasGenerateTimetable)
+    {
+        wasGenerateTimetable = false;
+        iterationData.isDone = true;
+        std::thread stopSearchingThread(StopSearching);
+        stopSearchingThread.detach();
+    }
 
     // Autosave the timetable
     if (GetTime() - timetableSaveTimer > timetableAutosaveInterval)

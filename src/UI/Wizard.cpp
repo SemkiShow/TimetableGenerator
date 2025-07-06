@@ -5,6 +5,7 @@
 #include "UI.hpp"
 #include <imgui.h>
 #include <string>
+#include <thread>
 
 bool isWizard = false;
 int wizardStep = 0;
@@ -34,7 +35,7 @@ void ShowWizard(bool* isOpen)
         ImGui::End();
         return;
     }
-    
+
     ImGui::ProgressBar(wizardStep * 1.0 / (WIZARD_STEPS-1));
     ImGui::Text("Step %d", wizardStep + 1);
     ImGui::Text("%s", wizardTexts[wizardStep].c_str());
@@ -45,7 +46,8 @@ void ShowWizard(bool* isOpen)
         if (ImGui::Button(labels["Generate timetable"].c_str()))
         {
             *isOpen = false;
-            BeginSearching(&currentTimetable);
+            std::thread beginSearchingThread(BeginSearching, &currentTimetable);
+            beginSearchingThread.detach();
         }
     }
     else

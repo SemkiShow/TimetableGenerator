@@ -16,9 +16,9 @@ struct IterationData
     int allTimeBestScore = bestScore;
     int timetablesPerGeneration = -1;
     bool isDone = true;
-    Timetable* timetables;
-    Timetable* population;
-    Timetable* newPopulation;
+    Timetable* timetables = nullptr;
+    Timetable* population = nullptr;
+    Timetable* newPopulation = nullptr;
 };
 
 extern IterationData iterationData;
@@ -27,3 +27,4 @@ extern unsigned int threadsNumber;
 void ScoreTimetable(Timetable* timetable);
 void BeginSearching(const Timetable* timetable);
 void RunASearchIteration();
+void StopSearching();

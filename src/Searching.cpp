@@ -332,6 +332,10 @@ void StopSearching()
     delete[] iterationData.timetables;
     delete[] iterationData.population;
     delete[] iterationData.newPopulation;
+    iterationData.timetables = nullptr;
+    iterationData.population = nullptr;
+    iterationData.newPopulation = nullptr;
+    iterationData = IterationData();
 }
 
 void RunASearchIteration()
@@ -397,7 +401,6 @@ void RunASearchIteration()
 void Iterate()
 {
     while (!iterationData.isDone) RunASearchIteration();
-    StopSearching();
 }
 
 void BeginSearching(const Timetable* timetable)
@@ -406,8 +409,14 @@ void BeginSearching(const Timetable* timetable)
     LogInfo("Starting to search for the perfect timetable");
     std::cout << "Initializing timetables...\n";
 
-    // Initialize a starting population
+    // Open the Generate timetable window
     iterationData = IterationData();
+    iterationData.isDone = false;
+    isGenerateTimetable = true;
+    wasGenerateTimetable = true;
+    iterationData.iteration = -1;
+
+    // Initialize a starting population
     iterationData.timetables = new Timetable[maxTimetablesPerGeneration];
     iterationData.population = new Timetable[maxTimetablesPerGeneration];
     iterationData.newPopulation = new Timetable[maxTimetablesPerGeneration];
@@ -429,10 +438,7 @@ void BeginSearching(const Timetable* timetable)
     }
     iterationData.allTimeBestScore = iterationData.bestScore;
     iterationData.iteration = 0;
-    iterationData.timetablesPerGeneration = std::min(maxTimetablesPerGeneration,
-        std::max(minTimetablesPerGeneration, (iterationData.iterationsPerChange+1) * timetablesPerGenerationStep));
-    iterationData.isDone = false;
-    isGenerateTimetable = true;
+    iterationData.timetablesPerGeneration = minTimetablesPerGeneration;
 
     // Run the iterations on a separate thread to avoid GUI lag
     std::thread iterationThread(Iterate);
