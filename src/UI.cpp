@@ -73,6 +73,56 @@ void LoadStyle()
     if (style == STYLE_CLASSIC) ImGui::StyleColorsClassic();
 }
 
+void OpenClassrooms()
+{
+    LogInfo("Opening classrooms");
+    tmpTimetable.classrooms = currentTimetable.classrooms;
+    tmpTimetable.maxClassroomID = currentTimetable.maxClassroomID;
+    isClassrooms = true;
+}
+
+void OpenLessons()
+{
+    LogInfo("Opening lessons");
+    tmpTimetable.lessons = currentTimetable.lessons;
+    tmpTimetable.maxLessonID = currentTimetable.maxLessonID;
+    isLessons = true;
+}
+
+void OpenTeachers()
+{
+    LogInfo("Opening teachers");
+    ResetTeacherLessonValues();
+    tmpTimetable.teachers = currentTimetable.teachers;
+    tmpTimetable.maxTeacherID = currentTimetable.maxTeacherID;
+    isTeachers = true;
+}
+
+void OpenClasses()
+{
+    LogInfo("Opening classes");
+    classTeacherValues = "";
+    for (auto& teacher: currentTimetable.teachers)
+    {
+        if (teacher.second.name == "")
+            classTeacherValues += labels["error"];
+        else
+            classTeacherValues += teacher.second.name;
+        classTeacherValues += '\0';
+    }
+    classTeacherValues += '\0';
+    tmpTimetable.classes = currentTimetable.classes;
+    tmpTimetable.maxClassID = currentTimetable.maxClassID;
+    tmpTimetable.orderedClasses = currentTimetable.orderedClasses;
+    isClasses = true;
+}
+
+void OpenWizard()
+{
+    LogInfo("Opening the setup wizard");
+    isWizard = true;
+}
+
 bool isSettings = false;
 void ShowSettings(bool* isOpen)
 {
@@ -182,6 +232,7 @@ void ShowNewTimetable(bool* isOpen)
         currentTimetable = Timetable();
         LoadTimetable("templates/" + timetableName + ".json", &currentTimetable);
         SaveTimetable("templates/" + timetableName + ".json", &currentTimetable);
+        OpenWizard();
         *isOpen = false;
     }
     ImGui::SameLine();
@@ -247,50 +298,6 @@ void ShowGenerateTimetable(bool* isOpen)
     ImGui::End();
 }
 
-void OpenClassrooms()
-{
-    LogInfo("Opening classrooms");
-    tmpTimetable.classrooms = currentTimetable.classrooms;
-    tmpTimetable.maxClassroomID = currentTimetable.maxClassroomID;
-    isClassrooms = true;
-}
-
-void OpenLessons()
-{
-    LogInfo("Opening lessons");
-    tmpTimetable.lessons = currentTimetable.lessons;
-    tmpTimetable.maxLessonID = currentTimetable.maxLessonID;
-    isLessons = true;
-}
-
-void OpenTeachers()
-{
-    LogInfo("Opening teachers");
-    ResetTeacherLessonValues();
-    tmpTimetable.teachers = currentTimetable.teachers;
-    tmpTimetable.maxTeacherID = currentTimetable.maxTeacherID;
-    isTeachers = true;
-}
-
-void OpenClasses()
-{
-    LogInfo("Opening classes");
-    classTeacherValues = "";
-    for (auto& teacher: currentTimetable.teachers)
-    {
-        if (teacher.second.name == "")
-            classTeacherValues += labels["error"];
-        else
-            classTeacherValues += teacher.second.name;
-        classTeacherValues += '\0';
-    }
-    classTeacherValues += '\0';
-    tmpTimetable.classes = currentTimetable.classes;
-    tmpTimetable.maxClassID = currentTimetable.maxClassID;
-    tmpTimetable.orderedClasses = currentTimetable.orderedClasses;
-    isClasses = true;
-}
-
 void ShowMenuBar()
 {
     if (ImGui::BeginMainMenuBar())
@@ -339,11 +346,7 @@ void ShowMenuBar()
         }
         if (currentTimetable.name != "" && ImGui::BeginMenu(currentTimetable.name.c_str()))
         {
-            if (ImGui::MenuItem(labels["Setup wizard"].c_str()))
-            {
-                LogInfo("Opening the setup wizard");
-                isWizard = true;
-            }
+            if (ImGui::MenuItem(labels["Setup wizard"].c_str())) OpenWizard();
             if (ImGui::MenuItem(labels["Classrooms"].c_str())) OpenClassrooms();
             if (ImGui::MenuItem(labels["Lessons"].c_str())) OpenLessons();
             if (ImGui::MenuItem(labels["Teachers"].c_str())) OpenTeachers();
