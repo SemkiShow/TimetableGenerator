@@ -117,6 +117,7 @@ Jeśli nie chcesz tego zrobić, naciśnij Anuluj.
 numer
 litera
 nauczyciel
+Uwaga: nie wybrano nauczyciela dla tej lekcji
 Witamy w kreatorze TimetableGenerator!
 Po zakończeniu kliknij OK, aby przejść do następnego kroku.
 Pierwszy krok to konfiguracja sal lekcyjnych.

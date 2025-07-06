@@ -117,6 +117,7 @@ If you don't want that to happen, press the Cancel button.
 number
 letter
 teacher
+Warning: no teacher selected for this lesson
 Welcome to the TimetableGenerator setup wizard!
 After you are done, press Ok and continue to the next step.
 The first step is to setup classrooms.

@@ -222,9 +222,9 @@ void ShowEditClass(bool* isOpen)
     if (bulkEditClass)
     {
         ImGui::InputInt(labels["amount"].c_str(), &bulkClassesAmount);
+        if (bulkClassesAmount < 1) bulkClassesAmount = 1;
         if (bulkClassesAmount >= labels["abcdefghijklmnopqrstuvwxyz"].size())
             bulkClassesAmount = labels["abcdefghijklmnopqrstuvwxyz"].size()-1;
-        if (bulkClassesAmount < 1) bulkClassesAmount = 1;
     }
     // Class letter and teacher
     else
@@ -380,10 +380,26 @@ void ShowEditClass(bool* isOpen)
     ImGui::Columns(2);
 
     // Lessons
-    ImGui::LabelText("##3", "%s", "");
     for (auto& lesson: currentTimetable.lessons)
     {
         if (!classLessons[std::to_string(lesson.first) + "0"]) continue;
+        bool anyTeacherSelected = false;
+        for (auto& teacher: currentTimetable.teachers)
+        {
+            if (!classLessonTeachers[std::to_string(lesson.first) + teacher.second.name + "0"]) continue;
+            if (classLessonTeachers[std::to_string(lesson.first) + teacher.second.name + "1"])
+            {
+                anyTeacherSelected = true;
+                break;
+            }
+        }
+        if (!anyTeacherSelected)
+        {
+            ImGui::PushID(pushID);
+            ImGui::TextColored(ImVec4(255, 255, 0, 255), "%s", labels["Warning: no teacher selected for this lesson"].c_str());
+            ImGui::PopID();
+            pushID++;
+        }
         ImGui::PushID(pushID);
         ImGui::NextColumn();
         if (ImGui::Checkbox((allClassLessonTeachers[lesson.first] ? labels["Deselect all"] + "##1" : labels["Select all"] + "##1").c_str(),
