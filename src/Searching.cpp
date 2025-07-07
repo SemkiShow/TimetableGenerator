@@ -24,7 +24,7 @@ int GetLessonsAmount(const std::map<int, TimetableLesson> timetableLessons)
 int GetLessonPlacesAmount(const std::vector<Day> days)
 {
     int output = 0;
-    for (int i = 0; i < daysPerWeek; i++)
+    for (int i = 0; i < iterationData.daysPerWeek; i++)
     {
         for (int j = 0; j < days[i].lessons.size(); j++)
         {
@@ -63,8 +63,8 @@ void RandomizeTimetable(Timetable* timetable)
         }
         std::shuffle(timetableLessonIDs.begin(), timetableLessonIDs.end(), rng);
         int counter = 0;
-        classPair.second.days.resize(daysPerWeek);
-        for (int i = 0; i < daysPerWeek; i++)
+        classPair.second.days.resize(iterationData.daysPerWeek);
+        for (int i = 0; i < iterationData.daysPerWeek; i++)
         {
             classPair.second.days[i].classroomLessonPairs.clear();
             for (int j = 0; j < classPair.second.days[i].lessons.size(); j++)
@@ -91,10 +91,10 @@ void RandomizeTimetable(Timetable* timetable)
     }
 }
 
-std::uniform_int_distribution<int> dayDistribution(0, daysPerWeek - 1);
 void SwapRandomTimetableLessons(Timetable* timetable)
 {
     std::uniform_int_distribution<int> classDistribution(0, timetable->orderedClasses.size() - 1);
+    std::uniform_int_distribution<int> dayDistribution(0, iterationData.daysPerWeek - 1);
     std::uniform_int_distribution<int> lesson1Distribution;
     std::uniform_int_distribution<int> lesson2Distribution;
     int classID, classIndex, lesson1Day, lesson2Day, lesson1Index, lesson2Index;
@@ -163,6 +163,7 @@ Timetable Crossover(const Timetable& parent1, const Timetable& parent2)
 void MutateTimetableClassroom(Timetable* timetable)
 {
     std::uniform_int_distribution<int> classDistribution(0, timetable->orderedClasses.size() - 1);
+    std::uniform_int_distribution<int> dayDistribution(0, iterationData.daysPerWeek - 1);
     std::uniform_int_distribution<int> lessonDistribution;
     std::uniform_int_distribution<int> classroomDistribution;
     std::uniform_int_distribution<int> lessonTeacherPairDistribution;
@@ -326,11 +327,15 @@ int GetBestTimetableIndex(const Timetable* timetables, int* minErrors)
 
 void RunASearchIteration()
 {
+    // Wait for another thread
+    while (iterationData.threadLock) COMPILER_BARRIER();
+
     // Make a thread lock
     iterationData.threadLock = true;
 
     // Exit if there are no errors or the iteratiuon count is over the limit
-    if (iterationData.timetables[iterationData.bestTimetableIndex].errors <= 0 || (maxIterations != -1 && iterationData.iteration >= maxIterations))
+    if (iterationData.timetables[iterationData.bestTimetableIndex].errors <= 0 ||
+    (maxIterations != -1 && iterationData.iteration >= maxIterations))
     {
         iterationData.isDone = true;
         iterationData.threadLock = false;
@@ -358,8 +363,8 @@ void RunASearchIteration()
     }
 
     // Change timetables per generation dynamically
-    iterationData.timetablesPerGeneration = std::min(maxTimetablesPerGeneration,
-        std::max(minTimetablesPerGeneration, (iterationData.iterationsPerChange+1) * timetablesPerGenerationStep));
+    iterationData.timetablesPerGeneration = std::min(iterationData.maxTimetablesPerGeneration,
+        std::max(iterationData.minTimetablesPerGeneration, (iterationData.iterationsPerChange+1) * timetablesPerGenerationStep));
 
     // Run worker threads
     for (int i = 0; i < threadsNumber; i++)
@@ -405,13 +410,20 @@ void BeginSearching(const Timetable* timetable)
     isGenerateTimetable = true;
     wasGenerateTimetable = true;
     iterationData.iteration = -1;
+    iterationData.threadLock = true;
+
+    // Make a copy of settings
+    iterationData.daysPerWeek = daysPerWeek;
+    iterationData.lessonsPerDay = lessonsPerDay;
+    iterationData.minTimetablesPerGeneration = minTimetablesPerGeneration;
+    iterationData.maxTimetablesPerGeneration = maxTimetablesPerGeneration;
 
     // Initialize a starting population
-    iterationData.timetables = new Timetable[maxTimetablesPerGeneration];
-    iterationData.population = new Timetable[maxTimetablesPerGeneration];
-    iterationData.newPopulation = new Timetable[maxTimetablesPerGeneration];
-    iterationData.timetablesPerGeneration = maxTimetablesPerGeneration;
-    for (int i = 0; i < maxTimetablesPerGeneration; i++)
+    iterationData.timetables = new Timetable[iterationData.maxTimetablesPerGeneration];
+    iterationData.population = new Timetable[iterationData.maxTimetablesPerGeneration];
+    iterationData.newPopulation = new Timetable[iterationData.maxTimetablesPerGeneration];
+    iterationData.timetablesPerGeneration = iterationData.maxTimetablesPerGeneration;
+    for (int i = 0; i < iterationData.maxTimetablesPerGeneration; i++)
     {
         iterationData.timetables[i] = *timetable;
         RandomizeTimetable(&iterationData.timetables[i]);
@@ -429,6 +441,9 @@ void BeginSearching(const Timetable* timetable)
     }
     iterationData.allTimeBestScore = iterationData.bestScore;
     iterationData.iteration = 0;
+
+    // Release the thread lock
+    iterationData.threadLock = false;
 
     // Run the iterations
     while (!iterationData.isDone) RunASearchIteration();

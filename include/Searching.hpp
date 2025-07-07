@@ -3,8 +3,21 @@
 #include "Timetable.hpp"
 #include <limits.h>
 
+// Preventing g++ from aggressively optimizing this loop, which frees
+// timetables before the search iteration finishes, which leads to a segmentation fault
+#if defined(__GNUC__) || defined(__clang__)
+#define COMPILER_BARRIER() asm volatile("" ::: "memory")
+#elif defined(_MSC_VER)
+#include <intrin.h>
+#pragma intrinsic(_ReadWriteBarrier)
+#define COMPILER_BARRIER() _ReadWriteBarrier()
+#else
+#error "Unsupported compiler"
+#endif
+
 struct IterationData
 {
+    // Iteration-specific data
     int iteration = -1;
     int iterationsPerChange = -1;
     int lastAllTimeBestScore = -1;
@@ -16,7 +29,16 @@ struct IterationData
     int allTimeBestScore = bestScore;
     int timetablesPerGeneration = -1;
     bool isDone = true;
-    bool threadLock = true;
+    bool threadLock = false;
+
+    // Settings copy (I can't use the real settings data, because
+    // if settings are changed while searching for a timetable, the program crashes)
+    int daysPerWeek = 5;
+    int lessonsPerDay = 8;
+    int minTimetablesPerGeneration = 100;
+    int maxTimetablesPerGeneration = 5000;
+
+    // Timetables used for searching
     Timetable* timetables = nullptr;
     Timetable* population = nullptr;
     Timetable* newPopulation = nullptr;

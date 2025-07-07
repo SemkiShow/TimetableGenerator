@@ -15,16 +15,6 @@
 #include <misc/cpp/imgui_stdlib.h>
 #include <rlImGui.h>
 
-#if defined(__GNUC__) || defined(__clang__)
-#define COMPILER_BARRIER() asm volatile("" ::: "memory")
-#elif defined(_MSC_VER)
-#include <intrin.h>
-#pragma intrinsic(_ReadWriteBarrier)
-#define COMPILER_BARRIER() _ReadWriteBarrier()
-#else
-#error "Unsupported compiler"
-#endif
-
 int menuOffset = 20;
 int windowSize[2] = {16*50*2, 9*50*2};
 std::string weekDays[7] = {
@@ -132,6 +122,7 @@ void ShowSettings(bool* isOpen)
         return;
     }
     ImGui::InputInt(labels["days per week"].c_str(), &daysPerWeek);
+    if (daysPerWeek < 1) daysPerWeek = 1;
     ImGui::InputInt(labels["lessons per day"].c_str(), &lessonsPerDay);
     if (lessonsPerDay < 1) lessonsPerDay = 1;
     if (ImGui::Combo(labels["style"].c_str(), &style, styleValues.c_str()))
@@ -158,7 +149,10 @@ void ShowSettings(bool* isOpen)
         ImGui::SliderInt(labels["max-iterations"].c_str(), &maxIterations, -1, 10000);
         if (ImGui::Checkbox(labels["verbose-logging"].c_str(), &verboseLogging))
         {
+            while (iterationData.threadLock) COMPILER_BARRIER();
+            iterationData.threadLock = true;
             threadsNumber = (verboseLogging ? 1 : std::max(std::thread::hardware_concurrency(), (unsigned int)1));
+            iterationData.threadLock = false;
         }
         ImGui::Checkbox(labels["use-prereleases"].c_str(), &usePrereleases);
         ImGui::TreePop();
@@ -355,6 +349,13 @@ void ShowMenuBar()
             if (ImGui::MenuItem(labels["Classes"].c_str())) OpenClasses();
             if (ImGui::MenuItem(labels["Generate timetable"].c_str()))
             {
+                if (iterationData.timetables != nullptr)
+                {
+                    iterationData.isDone = true;
+                    while (iterationData.threadLock) COMPILER_BARRIER();
+                    StopSearching();
+                }
+                while (iterationData.threadLock) COMPILER_BARRIER();
                 std::thread beginSearchingThread(BeginSearching, &currentTimetable);
                 beginSearchingThread.detach();
             }
@@ -422,12 +423,7 @@ void DrawFrame()
     {
         wasGenerateTimetable = false;
         iterationData.isDone = true;
-        while (iterationData.threadLock)
-        {
-            // Preventing g++ from aggressively optimizing this loop, which frees
-            // timetables before the search iteration finishes, which leads to a segmentation fault
-            COMPILER_BARRIER();
-        }
+        while (iterationData.threadLock) COMPILER_BARRIER();
         std::thread stopSearchingThread(StopSearching);
         stopSearchingThread.detach();
     }

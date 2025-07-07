@@ -11,6 +11,7 @@
 extern bool vsync;
 extern bool mergedFont;
 extern int timetableAutosaveInterval;
+extern int daysPerWeek;
 extern int lessonsPerDay;
 extern int fontSize;
 extern int minFreePeriods;
@@ -19,7 +20,6 @@ extern int timetablesPerGenerationStep;
 extern int minTimetablesPerGeneration;
 extern int maxTimetablesPerGeneration;
 extern float errorBonusRatio;
-extern int daysPerWeek;
 extern int maxIterations;
 extern bool verboseLogging;
 extern int style;

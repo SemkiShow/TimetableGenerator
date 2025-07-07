@@ -15,6 +15,7 @@
 bool vsync = true;
 bool mergedFont = false;
 int timetableAutosaveInterval = 60;
+int daysPerWeek = 5;
 int lessonsPerDay = 8;
 int fontSize = 16;
 int minFreePeriods = 0;
@@ -23,7 +24,6 @@ int timetablesPerGenerationStep = 10;
 int minTimetablesPerGeneration = 100;
 int maxTimetablesPerGeneration = 5000;
 float errorBonusRatio = 10.0f;
-int daysPerWeek = 5;
 int maxIterations = -1;
 bool verboseLogging = false;
 int style = STYLE_DARK;
