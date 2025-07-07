@@ -176,7 +176,7 @@ void GetLessonCollisionErrors(Timetable* timetable)
         }
         for (auto& lesson: classPair.second.timetableLessons)
         {
-            if (totalLessonIntersections[lesson.first] > lesson.second.amount - classDays)
+            if (totalLessonIntersections[lesson.first] > std::max(0, lesson.second.amount - classDays))
             {
                 timetable->errors += totalLessonIntersections[lesson.first] - (lesson.second.amount - classDays);
                 if (verboseLogging)
@@ -252,7 +252,6 @@ void GetFreePeriodErrors(Timetable* timetable, std::unordered_map<int, std::vect
             timetable->errors += minFreePeriods - teacherFreePeriods[teacher.first];
             if (verboseLogging)
             {
-                std::cout << teacher.second.name << ". " << teacherFreePeriods[teacher.first] << ". ";
                 std::cout << "Too little teacher free periods error. ";
             }
         }
@@ -261,7 +260,6 @@ void GetFreePeriodErrors(Timetable* timetable, std::unordered_map<int, std::vect
             timetable->errors += teacherFreePeriods[teacher.first] - maxFreePeriods;
             if (verboseLogging)
             {
-                std::cout << teacher.second.name << ". " << teacherFreePeriods[teacher.first] << ". ";
                 std::cout << "Too many teacher free periods error. ";
             }
         }
