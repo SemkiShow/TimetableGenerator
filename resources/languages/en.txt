@@ -132,6 +132,7 @@ Next
 Error: CURL init failed!
 Error: network request failed!
 Error: bad HTTP status!
+Error: no valid new version found!
 Fetching the latest version URL...
 Failed to get archive URL
 Downloading the latest version...

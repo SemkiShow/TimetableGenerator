@@ -40,13 +40,14 @@ size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp)
 
 void GetLatestVersionName()
 {
-    LogInfo("Fetching the latest version name");
+    LogInfo("Fetching the latest version archive URL");
     CURL* curl = curl_easy_init();
     if (!curl)
     {
         std::cerr << "Failed to initialize CURL" << std::endl;
         LogError("Failed to initialize CURL");
         latestVersion = labels["Error: CURL init failed!"];
+        curl_easy_cleanup(curl);
         return;
     }
 
@@ -74,8 +75,21 @@ void GetLatestVersionName()
             ParseJSON(readBuffer, &jsonObject);
             if (!jsonObject.objects.empty())
             {
-                latestVersion = jsonObject.objects[0].stringPairs["tag_name"];
-                releaseNotes = MultiSplit(jsonObject.objects[0].stringPairs["body"], "\\n");
+                LogInfo("Successfully fetched releases info");
+                int releaseID = 0;
+                while (jsonObject.objects[releaseID].boolPairs["draft"] ||
+                    (jsonObject.objects[releaseID].boolPairs["prerelease"] && !usePrereleases))
+                {
+                    releaseID++;
+                    if (releaseID >= jsonObject.objects.size())
+                    {
+                        latestVersion = labels["Error: no valid new version found!"];
+                        curl_easy_cleanup(curl);
+                        return;
+                    }
+                }
+                latestVersion = jsonObject.objects[releaseID].stringPairs["tag_name"];
+                releaseNotes = MultiSplit(jsonObject.objects[releaseID].stringPairs["body"], "\\n");
                 if (latestVersion != version) isNewVersion = true;
                 LogInfo("Fetched the newest version name: " + latestVersion);
             }
@@ -83,6 +97,7 @@ void GetLatestVersionName()
             {
                 std::cerr << "No releases found in JSON response" << std::endl;
                 LogError("No releases found in JSON response");
+                latestVersion = labels["Error: no valid new version found!"];
             }
         }
         else
@@ -94,6 +109,7 @@ void GetLatestVersionName()
     }
 
     curl_easy_cleanup(curl);
+    return;
 }
 
 void CheckForUpdates(bool showWindow)

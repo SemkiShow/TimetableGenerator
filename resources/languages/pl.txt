@@ -132,6 +132,7 @@ Dalej
 Błąd: inicjalizacja CURL nie powiodła się!
 Błąd: żądanie sieciowe nie powiodło się!
 Błąd: zły status HTTP!
+Błąd: nie znaleziono poprawnej nowej wersji!
 Pobieranie adresu najnowszej wersji...
 Nie udało się pobrać adresu archiwum
 Pobieranie najnowszej wersji...
