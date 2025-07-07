@@ -79,9 +79,9 @@ void ShowEditClassroom(bool* isOpen)
             {
                 for (int i = classroomsStartNumber; i <= classroomsEndNumber; i++)
                 {
-                    tmpTmpTimetable.maxClassroomID++;
                     tmpTmpTimetable.classrooms[tmpTmpTimetable.maxClassroomID] = Classroom();
                     tmpTmpTimetable.classrooms[tmpTmpTimetable.maxClassroomID].name = std::to_string(i);
+                    tmpTmpTimetable.maxClassroomID++;
                 }
             }
         }
