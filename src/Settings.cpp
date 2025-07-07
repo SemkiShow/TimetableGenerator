@@ -67,6 +67,7 @@ void ListFiles(const std::string& path, std::vector<std::string>* files)
             files->push_back(entry.path().string());
         }
     }
+    std::sort(files->begin(), files->end());
 }
 
 std::string TrimJunk(const std::string& input)
