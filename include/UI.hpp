@@ -12,6 +12,7 @@ extern std::string wizardTexts[WIZARD_STEPS];
 extern std::string teacherLessonValues;
 extern std::string classTeacherValues;
 extern bool wasGenerateTimetable;
+extern std::string generateTimetableStatus;
 extern bool isEditClassroom;
 extern bool isClassrooms;
 extern bool isEditLesson;

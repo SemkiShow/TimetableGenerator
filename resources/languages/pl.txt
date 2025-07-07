@@ -21,11 +21,12 @@ scalona-czcionka
 interwał-autozapisu-planu
 rozmiar-czcionki
 maks-mutacji
-współczynnik-premii-za-błędy
+współczynnik-punktów-bonusowych-za-błędy
 krok-planów-na-generację
 min-planów-na-generację
 maks-planów-na-generację
 maks-iteracji
+dodatkowe-punkty-bonusowe
 szczegółowe-logi
 używaj-wersji-testowych
 Naciśnij przycisk Generuj plan lekcji
@@ -52,8 +53,10 @@ Anuluj
 Otwórz plan lekcji
 Wybierz plan lekcji do otwarcia
 Generuj plan lekcji
-Generowanie planu zakończone!
-Generowanie planu zgodnego z wymaganiami...
+Przydzielanie pamięci dla planów zajęć...
+Generowanie planu zajęć zgodnego z wymaganiami...
+Wyszukiwanie dodatkowych punktów bonusowych...
+Generowanie planu zajęć zakończone!
 Iteracja:
 Najlepszy wynik to
 Najlepszy plan zawiera

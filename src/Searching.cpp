@@ -307,7 +307,7 @@ void GetBestSpecies(Timetable* timetables, Timetable* population, Timetable* new
     std::cout << "Selected " << iterationData.timetablesPerGeneration - counter << "/" << iterationData.timetablesPerGeneration << " random timetables. ";
 }
 
-int GetBestTimetableIndex(const Timetable* timetables, int* minErrors)
+int GetBestTimetableIndex(const Timetable* timetables)
 {
     double bestTimetableScore = INT_MIN;
     int bestTimetableIndex = 0;
@@ -315,8 +315,12 @@ int GetBestTimetableIndex(const Timetable* timetables, int* minErrors)
     for (int i = 0; i < iterationData.timetablesPerGeneration; i++)
     {
         timetableScore = EvaluateFitness(timetables[i]);
-        if (timetables[i].errors < *minErrors) *minErrors = timetables[i].errors;
-        if (timetableScore > bestTimetableScore && timetables[i].errors <= *minErrors)
+        if (timetables[i].errors < iterationData.minErrors) iterationData.minErrors = timetables[i].errors;
+        if (timetables[i].errors == 0 && timetables[i].bonusPoints > iterationData.maxBonusPoints)
+        {
+            iterationData.maxBonusPoints = timetables[i].bonusPoints;
+        }
+        if (timetableScore > bestTimetableScore && timetables[i].errors <= iterationData.minErrors)
         {
             bestTimetableScore = timetableScore;
             bestTimetableIndex = i;
@@ -333,12 +337,23 @@ void RunASearchIteration()
     // Make a thread lock
     iterationData.threadLock = true;
 
-    // Exit if there are no errors or the iteratiuon count is over the limit
-    if (iterationData.timetables[iterationData.bestTimetableIndex].errors <= 0 ||
+    // Change the status is a timetable with 0 errors is found
+    if (iterationData.timetables[iterationData.bestTimetableIndex].errors == 0)
+    {
+        if (iterationData.startBonusPoints == INT_MAX)
+        {
+            iterationData.startBonusPoints = iterationData.timetables[iterationData.bestTimetableIndex].bonusPoints;
+        }
+        generateTimetableStatus = labels["Finding additional bonus points..."];
+    }
+
+    // Exit if there are the additional bonus points counter is over the limit or the iteratiuon count is over the limit
+    if (iterationData.timetables[iterationData.bestTimetableIndex].bonusPoints - iterationData.startBonusPoints >= additionalBonusPoints ||
     (maxIterations != -1 && iterationData.iteration >= maxIterations))
     {
         iterationData.isDone = true;
         iterationData.threadLock = false;
+        generateTimetableStatus = labels["Timetable generating done!"];
         return;
     }
 
@@ -373,7 +388,7 @@ void RunASearchIteration()
         threads[i].join();
 
     // Get the best timetable from the current generation
-    iterationData.bestTimetableIndex = GetBestTimetableIndex(iterationData.timetables, &iterationData.minErrors);
+    iterationData.bestTimetableIndex = GetBestTimetableIndex(iterationData.timetables);
     iterationData.bestScore = EvaluateFitness(iterationData.timetables[iterationData.bestTimetableIndex]);
 
     // Save the best timetable at index 0 (elitism)
@@ -407,6 +422,7 @@ void BeginSearching(const Timetable* timetable)
     // Open the Generate timetable window
     iterationData = IterationData();
     iterationData.isDone = false;
+    generateTimetableStatus = labels["Allocating memory for the timetables..."];
     isGenerateTimetable = true;
     wasGenerateTimetable = true;
     iterationData.iteration = -1;
@@ -433,7 +449,7 @@ void BeginSearching(const Timetable* timetable)
     }
 
     // Initialize the iteration variables
-    iterationData.bestTimetableIndex = GetBestTimetableIndex(iterationData.timetables, &iterationData.minErrors);
+    iterationData.bestTimetableIndex = GetBestTimetableIndex(iterationData.timetables);
     iterationData.bestScore = EvaluateFitness(iterationData.timetables[iterationData.bestTimetableIndex]);
     if (iterationData.timetables[iterationData.bestTimetableIndex].errors > iterationData.maxErrors)
     {
@@ -446,6 +462,7 @@ void BeginSearching(const Timetable* timetable)
     iterationData.threadLock = false;
 
     // Run the iterations
+    generateTimetableStatus = labels["Generating a timetable that matches the requirements..."];
     while (!iterationData.isDone) RunASearchIteration();
 }
 

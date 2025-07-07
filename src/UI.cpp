@@ -30,6 +30,8 @@ std::vector<std::string> timetableFiles;
 
 int timetableSaveTimer = GetTime();
 
+std::string generateTimetableStatus = "";
+
 bool lastVsync = vsync;
 bool lastMergedFont = mergedFont;
 int lastFontSize = fontSize;
@@ -147,6 +149,7 @@ void ShowSettings(bool* isOpen)
         ImGui::SliderInt(labels["max-timetables-per-generation"].c_str(), &maxTimetablesPerGeneration, 10, 10000);
         if (maxTimetablesPerGeneration < minTimetablesPerGeneration) maxTimetablesPerGeneration = minTimetablesPerGeneration;
         ImGui::SliderInt(labels["max-iterations"].c_str(), &maxIterations, -1, 10000);
+        ImGui::SliderInt(labels["additional-bonus-points"].c_str(), &additionalBonusPoints, 0, 100);
         if (ImGui::Checkbox(labels["verbose-logging"].c_str(), &verboseLogging))
         {
             while (iterationData.threadLock) COMPILER_BARRIER();
@@ -267,15 +270,19 @@ void ShowGenerateTimetable(bool* isOpen)
         ImGui::End();
         return;
     }
-    if (iterationData.isDone)
+    if (generateTimetableStatus == labels["Timetable generating done!"])
     {
         ImGui::TextColored(ImVec4(0, 255, 0, 255), "%s", labels["Timetable generating done!"].c_str());
     }
     else
     {
-        ImGui::Text("%s", labels["Generating a timetable that matches the requirements..."].c_str());
+        ImGui::Text("%s", generateTimetableStatus.c_str());
     }
-    if (iterationData.iteration >= 0)
+    if (generateTimetableStatus == labels["Allocating memory for the timetables..."])
+    {
+        ImGui::LabelText("##1", "\n\n\n\n\n\n\n");
+    }
+    else
     {
         ImGui::Text("%s", (labels["Iteration:"] + " " + std::to_string(iterationData.iteration)).c_str());
         ImGui::Text("%s", (labels["The best score is"] + " " + std::to_string(iterationData.allTimeBestScore)).c_str());
@@ -284,12 +291,16 @@ void ShowGenerateTimetable(bool* isOpen)
         ImGui::Text("%s", (labels["The best timetable has"] + " " +
                 std::to_string(iterationData.timetables[iterationData.bestTimetableIndex].bonusPoints) + " " + labels["bonus points"]).c_str());
         ImGui::Text("%s", (std::to_string(iterationData.iterationsPerChange) + " " + labels["iterations have passed since last score improvement"]).c_str());
-        float progressPercentage = (-(iterationData.maxErrors * 1.0f / 100) * iterationData.minErrors + 100) / 100;
+        float progressPercentage = 1;
+        if (generateTimetableStatus == labels["Generating a timetable that matches the requirements..."])
+        {
+            progressPercentage = (-(iterationData.maxErrors * 1.0f / 100) * iterationData.minErrors + 100) / 100;
+        }
+        else if (generateTimetableStatus == labels["Finding additional bonus points..."])
+        {
+            progressPercentage = (iterationData.maxBonusPoints - iterationData.startBonusPoints) * 1.0f / additionalBonusPoints;
+        }
         ImGui::ProgressBar(pow(progressPercentage, 2));
-    }
-    else
-    {
-        ImGui::LabelText("##1", "\n\n\n\n\n\n\n");
     }
     ImGui::End();
 }

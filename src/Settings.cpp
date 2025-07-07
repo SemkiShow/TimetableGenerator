@@ -12,23 +12,24 @@
 #include <string>
 #include <unordered_map>
 
+int daysPerWeek = 5;
+int lessonsPerDay = 8;
+int style = STYLE_DARK;
+std::string language = "en";
 bool vsync = true;
 bool mergedFont = false;
 int timetableAutosaveInterval = 60;
-int daysPerWeek = 5;
-int lessonsPerDay = 8;
 int fontSize = 16;
 int minFreePeriods = 0;
 int maxFreePeriods = 0;
-int timetablesPerGenerationStep = 10;
+int timetablesPerGenerationStep = 100;
 int minTimetablesPerGeneration = 100;
-int maxTimetablesPerGeneration = 5000;
+int maxTimetablesPerGeneration = 10000;
 float errorBonusRatio = 10.0f;
 int maxIterations = -1;
+int additionalBonusPoints = 1;
 bool verboseLogging = false;
-int style = STYLE_DARK;
 bool usePrereleases = false;
-std::string language = "en";
 std::string lastCAUpdate = "";
 
 std::string version = "";
@@ -137,6 +138,7 @@ void Save(std::string fileName)
     settingsFile << "days-per-week=" << daysPerWeek << '\n';
     settingsFile << "lessons-per-day=" << lessonsPerDay << '\n';
     settingsFile << "style=" << style << '\n';
+    settingsFile << "language=" << language << '\n';
     settingsFile << "min-free-periods=" << minFreePeriods << '\n';
     settingsFile << "max-free-periods=" << maxFreePeriods << '\n';
     settingsFile << "vsync=" << (vsync ? "true" : "false") << '\n';
@@ -148,9 +150,9 @@ void Save(std::string fileName)
     settingsFile << "min-timetables-per-generation=" << minTimetablesPerGeneration << '\n';
     settingsFile << "max-timetables-per-generation=" << maxTimetablesPerGeneration << '\n';
     settingsFile << "max-iterations=" << maxIterations << '\n';
+    settingsFile << "additional-bonus-points=" << additionalBonusPoints << '\n';
     settingsFile << "verbose-logging=" << (verboseLogging ? "true" : "false") << '\n';
     settingsFile << "use-prereleases=" << (usePrereleases ? "true" : "false") << '\n';
-    settingsFile << "language=" << language << '\n';
     settingsFile << "last-ca-update=" << lastCAUpdate << '\n';
     settingsFile << "has-crashed=" << (hasCrashed ? "true" : "false") << '\n';
     settingsFile.close();
@@ -184,6 +186,7 @@ void Load(std::string fileName)
         if (label == "days-per-week") daysPerWeek = stoi(value);
         if (label == "lessons-per-day") lessonsPerDay = stoi(value);
         if (label == "style") style = stoi(value);
+        if (label == "language") language = value;
         if (label == "min-free-periods") minFreePeriods = stoi(value);
         if (label == "max-free-periods") maxFreePeriods = stoi(value);
         if (label == "vsync") vsync = value == "true";
@@ -195,9 +198,9 @@ void Load(std::string fileName)
         if (label == "max-timetables-per-generation") maxTimetablesPerGeneration = stoi(value);
         if (label == "error-bonus-ratio") errorBonusRatio = stof(value);
         if (label == "max-iterations") maxIterations = stoi(value);
+        if (label == "additional-bonus-points") additionalBonusPoints = stoi(value);
         if (label == "verbose-logging") verboseLogging = value == "true";
         if (label == "use-prereleases") usePrereleases = value == "true";
-        if (label == "language") language = value;
         if (label == "last-ca-update") lastCAUpdate = value;
         if (label == "has-crashed") hasCrashed = value == "true";
     }

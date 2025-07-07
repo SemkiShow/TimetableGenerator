@@ -26,6 +26,7 @@ timetables-per-generation-step
 min-timetables-per-generation
 max-timetables-per-generation
 max-iterations
+additional-bonus-points
 verbose-logging
 use-prereleases
 Press the Generate timetable button
@@ -52,8 +53,10 @@ Cancel
 Open timetable
 Select a timetable to open
 Generate timetable
-Timetable generating done!
+Allocating memory for the timetables...
 Generating a timetable that matches the requirements...
+Finding additional bonus points...
+Timetable generating done!
 Iteration:
 The best score is
 The best timetable has

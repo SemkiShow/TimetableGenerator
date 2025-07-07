@@ -8,11 +8,13 @@
 #define STYLE_LIGHT 1
 #define STYLE_CLASSIC 2
 
+extern int daysPerWeek;
+extern int lessonsPerDay;
+extern int style;
+extern std::string language;
 extern bool vsync;
 extern bool mergedFont;
 extern int timetableAutosaveInterval;
-extern int daysPerWeek;
-extern int lessonsPerDay;
 extern int fontSize;
 extern int minFreePeriods;
 extern int maxFreePeriods;
@@ -21,10 +23,9 @@ extern int minTimetablesPerGeneration;
 extern int maxTimetablesPerGeneration;
 extern float errorBonusRatio;
 extern int maxIterations;
+extern int additionalBonusPoints;
 extern bool verboseLogging;
-extern int style;
 extern bool usePrereleases;
-extern std::string language;
 extern std::string lastCAUpdate;
 
 extern std::string version;

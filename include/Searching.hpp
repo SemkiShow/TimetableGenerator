@@ -30,6 +30,8 @@ struct IterationData
     int timetablesPerGeneration = -1;
     bool isDone = true;
     bool threadLock = false;
+    int startBonusPoints = INT_MAX;
+    int maxBonusPoints = INT_MIN;
 
     // Settings copy (I can't use the real settings data, because
     // if settings are changed while searching for a timetable, the program crashes)
