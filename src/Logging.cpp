@@ -30,7 +30,4 @@ void LogError(std::string data)
     logFile << "[ERROR] " << time << ": " << data << '\n';
 }
 
-void EndLogging()
-{
-    logFile.close();
-}
+void EndLogging() { logFile.close(); }

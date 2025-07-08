@@ -1,8 +1,8 @@
 #pragma once
 
+#include <map>
 #include <string>
 #include <vector>
-#include <map>
 
 #define ANY_LESSON -2
 #define NO_LESSON -3

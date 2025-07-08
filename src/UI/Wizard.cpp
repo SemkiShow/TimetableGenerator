@@ -14,8 +14,7 @@ std::string wizardTexts[WIZARD_STEPS] = {
     "The next step is to add lessons.\nAfter you are done, press Ok and continue to the next step.",
     "The next step is to add teachers.\nAfter you are done, press Ok and continue to the next step.",
     "The next step is to assign lessons to classes.\nAfter you are done, press Ok and continue to the next step.",
-    "You are done! Now press the Generate timetable\nbutton to begin the timetable finding process!"
-};
+    "You are done! Now press the Generate timetable\nbutton to begin the timetable finding process!"};
 void (*wizardMenus[])() = {OpenClassrooms, OpenClasses, OpenLessons, OpenTeachers, OpenClasses};
 bool* wizardToggles[] = {&isClassrooms, &isClasses, &isLessons, &isTeachers, &isClasses};
 bool openWizard = false;
@@ -23,7 +22,8 @@ bool openWizard = false;
 bool isWizard = false;
 void ShowWizard(bool* isOpen)
 {
-    if (wizardStep > 0 && wizardStep < WIZARD_STEPS && !*wizardToggles[wizardStep-1] && openWizard)
+    if (wizardStep > 0 && wizardStep < WIZARD_STEPS && !*wizardToggles[wizardStep - 1] &&
+        openWizard)
     {
         openWizard = false;
         *isOpen = true;
@@ -36,7 +36,7 @@ void ShowWizard(bool* isOpen)
         return;
     }
 
-    ImGui::ProgressBar(wizardStep * 1.0 / (WIZARD_STEPS-1));
+    ImGui::ProgressBar(wizardStep * 1.0 / (WIZARD_STEPS - 1));
     ImGui::Text("Step %d", wizardStep + 1);
     ImGui::Text("%s", wizardTexts[wizardStep].c_str());
     if (wizardStep > 0 && ImGui::Button(labels["Back"].c_str())) wizardStep--;
@@ -55,7 +55,7 @@ void ShowWizard(bool* isOpen)
         if (ImGui::Button(labels["Next"].c_str()))
         {
             LogInfo("Clicked Next in the wizard menu while on step " + std::to_string(wizardStep));
-            if (wizardStep < WIZARD_STEPS-1)
+            if (wizardStep < WIZARD_STEPS - 1)
             {
                 wizardMenus[wizardStep]();
                 openWizard = true;

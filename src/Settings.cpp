@@ -6,8 +6,8 @@
 #include "Updates.hpp"
 #include <algorithm>
 #include <ctime>
-#include <fstream>
 #include <filesystem>
+#include <fstream>
 #include <iostream>
 #include <string>
 #include <unordered_map>
@@ -73,8 +73,8 @@ void ListFiles(const std::string& path, std::vector<std::string>* files)
 std::string TrimJunk(const std::string& input)
 {
     auto first = input.find_first_not_of("\t\n\r\f\v");
-    auto last  = input.find_last_not_of ("\t\n\r\f\v");
-    return (first == input.npos) ? "" : input.substr(first, last-first+1);
+    auto last = input.find_last_not_of("\t\n\r\f\v");
+    return (first == input.npos) ? "" : input.substr(first, last - first + 1);
 }
 
 void ReloadLabels()
@@ -115,18 +115,18 @@ void ReloadLabels()
 
     // Assign translated wizard texts
     wizardTexts[0] = labels["Welcome to the TimetableGenerator setup wizard!"] + "\n\n" +
-        labels["The first step is to setup classrooms."] + "\n" +
-        labels["After you are done, press Ok and continue to the next step."];
+                     labels["The first step is to setup classrooms."] + "\n" +
+                     labels["After you are done, press Ok and continue to the next step."];
     wizardTexts[1] = labels["The next step is to add classes."] + "\n" +
-        labels["After you are done, press Ok and continue to the next step."];
+                     labels["After you are done, press Ok and continue to the next step."];
     wizardTexts[2] = labels["The next step is to add lessons."] + "\n" +
-        labels["After you are done, press Ok and continue to the next step."];
+                     labels["After you are done, press Ok and continue to the next step."];
     wizardTexts[3] = labels["The next step is to add teachers."] + "\n" +
-        labels["After you are done, press Ok and continue to the next step."];
+                     labels["After you are done, press Ok and continue to the next step."];
     wizardTexts[4] = labels["The next step is to assign lessons to classes."] + "\n" +
-        labels["After you are done, press Ok and continue to the next step."];
+                     labels["After you are done, press Ok and continue to the next step."];
     wizardTexts[5] = labels["You are done! Now press the Generate timetable"] + "\n" +
-        labels["button to begin the timetable finding process!"];
+                     labels["button to begin the timetable finding process!"];
 }
 
 void Save(std::string fileName)
@@ -245,7 +245,7 @@ void Load(std::string fileName)
         std::istringstream ss(lastCAUpdate);
         ss >> std::get_time(&parsedTm, "%a %b %d %H:%M:%S %Y");
         time_t reconstructedTime = mktime(&parsedTm);
-        if (difftime(time(0), reconstructedTime) > 60*60*24*30)
+        if (difftime(time(0), reconstructedTime) > 60 * 60 * 24 * 30)
         {
             UpdateCACertificate();
         }

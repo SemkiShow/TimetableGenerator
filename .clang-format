@@ -1,0 +1,12 @@
+BasedOnStyle: LLVM
+ColumnLimit: 100
+IndentWidth: 4
+UseTab: Never
+PointerAlignment: Left
+
+BreakBeforeBraces: Allman
+AllowShortIfStatementsOnASingleLine: true
+BreakBeforeBinaryOperators: None
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowAllArgumentsOnNextLine: false
+BreakStringLiterals: false

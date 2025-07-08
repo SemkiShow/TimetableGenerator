@@ -1,31 +1,24 @@
 #include "UI.hpp"
 #include "Crashes.hpp"
 #include "Logging.hpp"
+#include "Searching.hpp"
 #include "Settings.hpp"
+#include "System.hpp"
 #include "Timetable.hpp"
 #include "Updates.hpp"
-#include "Searching.hpp"
-#include "System.hpp"
 #include <cmath>
 #include <filesystem>
-#include <string>
-#include <thread>
-#include <raylib.h>
 #include <imgui.h>
 #include <misc/cpp/imgui_stdlib.h>
+#include <raylib.h>
 #include <rlImGui.h>
+#include <string>
+#include <thread>
 
 int menuOffset = 20;
-int windowSize[2] = {16*50*2, 9*50*2};
-std::string weekDays[7] = {
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday"
-};
+int windowSize[2] = {16 * 50 * 2, 9 * 50 * 2};
+std::string weekDays[7] = {"Monday", "Tuesday",  "Wednesday", "Thursday",
+                           "Friday", "Saturday", "Sunday"};
 std::vector<std::string> timetableFiles;
 
 Texture2D* faqScreenshots;
@@ -43,7 +36,8 @@ void LoadFonts()
     LogInfo("Loading fonts");
     ImGuiIO& io = ImGui::GetIO();
     io.Fonts->Clear();
-    ImFont* defaultFont = io.Fonts->AddFontFromFileTTF("resources/ProggyClean.ttf", (float)fontSize);
+    ImFont* defaultFont =
+        io.Fonts->AddFontFromFileTTF("resources/ProggyClean.ttf", (float)fontSize);
     ImFontGlyphRangesBuilder builder;
     builder.AddRanges(io.Fonts->GetGlyphRangesCyrillic());
     builder.AddRanges(io.Fonts->GetGlyphRangesVietnamese());
@@ -53,7 +47,8 @@ void LoadFonts()
     ImFontConfig fontConfig;
     fontConfig.MergeMode = mergedFont;
     fontConfig.PixelSnapH = true;
-    ImFont* font = io.Fonts->AddFontFromFileTTF("resources/DroidSansMono.ttf", (float)fontSize, &fontConfig, glyphRanges.Data);
+    ImFont* font = io.Fonts->AddFontFromFileTTF("resources/DroidSansMono.ttf", (float)fontSize,
+                                                &fontConfig, glyphRanges.Data);
     io.Fonts->TexID = 0;
     io.Fonts->Build();
     rlImGuiReloadFonts();
@@ -107,7 +102,7 @@ void OpenClasses()
 {
     LogInfo("Opening classes");
     classTeacherValues = "";
-    for (auto& teacher: currentTimetable.teachers)
+    for (auto& teacher : currentTimetable.teachers)
     {
         if (teacher.second.name == "")
             classTeacherValues += labels["error"];
@@ -153,21 +148,29 @@ void ShowSettings(bool* isOpen)
     {
         ImGui::Checkbox(labels["vsync"].c_str(), &vsync);
         ImGui::Checkbox(labels["merged-font"].c_str(), &mergedFont);
-        ImGui::SliderInt(labels["timetable-autosave-interval"].c_str(), &timetableAutosaveInterval, 0, 600);
+        ImGui::SliderInt(labels["timetable-autosave-interval"].c_str(), &timetableAutosaveInterval,
+                         0, 600);
         ImGui::InputInt(labels["font-size"].c_str(), &fontSize);
         if (fontSize < 5) fontSize = 5;
         ImGui::SliderFloat(labels["error-bonus-ratio"].c_str(), &errorBonusRatio, 0.1f, 100.0f);
-        ImGui::SliderInt(labels["timetables-per-generation-step"].c_str(), &timetablesPerGenerationStep, 1, 100);
-        ImGui::SliderInt(labels["min-timetables-per-generation"].c_str(), &minTimetablesPerGeneration, 10, 10000);
-        ImGui::SliderInt(labels["max-timetables-per-generation"].c_str(), &maxTimetablesPerGeneration, 10, 10000);
-        if (maxTimetablesPerGeneration < minTimetablesPerGeneration) maxTimetablesPerGeneration = minTimetablesPerGeneration;
+        ImGui::SliderInt(labels["timetables-per-generation-step"].c_str(),
+                         &timetablesPerGenerationStep, 1, 100);
+        ImGui::SliderInt(labels["min-timetables-per-generation"].c_str(),
+                         &minTimetablesPerGeneration, 10, 10000);
+        ImGui::SliderInt(labels["max-timetables-per-generation"].c_str(),
+                         &maxTimetablesPerGeneration, 10, 10000);
+        if (maxTimetablesPerGeneration < minTimetablesPerGeneration)
+            maxTimetablesPerGeneration = minTimetablesPerGeneration;
         ImGui::SliderInt(labels["max-iterations"].c_str(), &maxIterations, -1, 10000);
         ImGui::SliderInt(labels["additional-bonus-points"].c_str(), &additionalBonusPoints, 0, 100);
         if (ImGui::Checkbox(labels["verbose-logging"].c_str(), &verboseLogging))
         {
-            while (iterationData.threadLock) COMPILER_BARRIER();
+            while (iterationData.threadLock)
+                COMPILER_BARRIER();
             iterationData.threadLock = true;
-            threadsNumber = (verboseLogging ? 1 : std::max(std::thread::hardware_concurrency(), (unsigned int)1));
+            threadsNumber =
+                (verboseLogging ? 1
+                                : std::max(std::thread::hardware_concurrency(), (unsigned int)1));
             iterationData.threadLock = false;
         }
         ImGui::Checkbox(labels["use-prereleases"].c_str(), &usePrereleases);
@@ -201,7 +204,8 @@ void ShowNewVersion(bool* isOpen)
     }
     ImGui::Text("%s", (labels["The latest version is"] + " " + latestVersion).c_str());
     ImGui::Text("%s", (labels["Your version is"] + " " + version).c_str());
-    if (version == latestVersion) ImGui::Text("%s", labels["There are no new versions available"].c_str());
+    if (version == latestVersion)
+        ImGui::Text("%s", labels["There are no new versions available"].c_str());
     else if (latestVersion != labels["loading..."])
     {
         ImGui::Text("%s", labels["A new version is available!"].c_str());
@@ -228,7 +232,8 @@ bool newTimetable = false;
 std::string timetableName = "";
 void ShowNewTimetable(bool* isOpen)
 {
-    if (!ImGui::Begin((newTimetable ? labels["New timetable"] : labels["Save timetable as"]).c_str(), isOpen))
+    if (!ImGui::Begin(
+            (newTimetable ? labels["New timetable"] : labels["Save timetable as"]).c_str(), isOpen))
     {
         ImGui::End();
         return;
@@ -285,7 +290,8 @@ void ShowGenerateTimetable(bool* isOpen)
     }
     if (generateTimetableStatus == labels["Timetable generating done!"])
     {
-        ImGui::TextColored(ImVec4(0, 255, 0, 255), "%s", labels["Timetable generating done!"].c_str());
+        ImGui::TextColored(ImVec4(0, 255, 0, 255), "%s",
+                           labels["Timetable generating done!"].c_str());
     }
     else
     {
@@ -297,21 +303,36 @@ void ShowGenerateTimetable(bool* isOpen)
     }
     else
     {
-        ImGui::Text("%s", (labels["Iteration:"] + " " + std::to_string(iterationData.iteration)).c_str());
-        ImGui::Text("%s", (labels["The best score is"] + " " + std::to_string(iterationData.allTimeBestScore)).c_str());
+        ImGui::Text("%s",
+                    (labels["Iteration:"] + " " + std::to_string(iterationData.iteration)).c_str());
+        ImGui::Text("%s", (labels["The best score is"] + " " +
+                           std::to_string(iterationData.allTimeBestScore))
+                              .c_str());
         ImGui::Text("%s", (labels["The best timetable has"] + " " +
-            std::to_string(iterationData.timetables[iterationData.bestTimetableIndex].errors) + " " + labels["errors"]).c_str());
-        ImGui::Text("%s", (labels["The best timetable has"] + " " +
-                std::to_string(iterationData.timetables[iterationData.bestTimetableIndex].bonusPoints) + " " + labels["bonus points"]).c_str());
-        ImGui::Text("%s", (std::to_string(iterationData.iterationsPerChange) + " " + labels["iterations have passed since last score improvement"]).c_str());
+                           std::to_string(
+                               iterationData.timetables[iterationData.bestTimetableIndex].errors) +
+                           " " + labels["errors"])
+                              .c_str());
+        ImGui::Text("%s",
+                    (labels["The best timetable has"] + " " +
+                     std::to_string(
+                         iterationData.timetables[iterationData.bestTimetableIndex].bonusPoints) +
+                     " " + labels["bonus points"])
+                        .c_str());
+        ImGui::Text("%s", (std::to_string(iterationData.iterationsPerChange) + " " +
+                           labels["iterations have passed since last score improvement"])
+                              .c_str());
         float progressPercentage = 1;
-        if (generateTimetableStatus == labels["Generating a timetable that matches the requirements..."])
+        if (generateTimetableStatus ==
+            labels["Generating a timetable that matches the requirements..."])
         {
-            progressPercentage = (-(iterationData.maxErrors * 1.0f / 100) * iterationData.minErrors + 100) / 100;
+            progressPercentage =
+                (-(iterationData.maxErrors * 1.0f / 100) * iterationData.minErrors + 100) / 100;
         }
         else if (generateTimetableStatus == labels["Finding additional bonus points..."])
         {
-            progressPercentage = (iterationData.maxBonusPoints - iterationData.startBonusPoints) * 1.0f / additionalBonusPoints;
+            progressPercentage = (iterationData.maxBonusPoints - iterationData.startBonusPoints) *
+                                 1.0f / additionalBonusPoints;
         }
         ImGui::ProgressBar(pow(progressPercentage, 2));
     }
@@ -321,8 +342,8 @@ void ShowGenerateTimetable(bool* isOpen)
 void DrawImage(Texture2D texture)
 {
     ImGui::Image((ImTextureID)(uintptr_t)texture.id,
-        ImVec2(texture.width * 1.0f * fontSize / DEFAULT_FONT_SIZE,
-            texture.height * 1.0f * fontSize / DEFAULT_FONT_SIZE));
+                 ImVec2(texture.width * 1.0f * fontSize / DEFAULT_FONT_SIZE,
+                        texture.height * 1.0f * fontSize / DEFAULT_FONT_SIZE));
 }
 
 bool isFAQ = false;
@@ -335,7 +356,9 @@ void ShowFAQ(bool* isOpen)
     }
     if (ImGui::TreeNode(labels["How do I contact the developer?"].c_str()))
     {
-        ImGui::Text("%s", labels["You can contact me by sending an email to mgdeveloper123@gmail.com"].c_str());
+        ImGui::Text(
+            "%s",
+            labels["You can contact me by sending an email to mgdeveloper123@gmail.com"].c_str());
         ImGui::TreePop();
     }
     if (ImGui::TreeNode(labels["How do I add multiple lessons to one timetable cell?"].c_str()))
@@ -343,9 +366,11 @@ void ShowFAQ(bool* isOpen)
         ImGui::Text("%s", labels["To add multiple lessons to one timetable cell, click"].c_str());
         ImGui::Text("%s", labels["Combine lessons while editing a class."].c_str());
         DrawImage(faqScreenshots[0]);
-        ImGui::Text("%s", labels["Select the lessons and teachers to combine and press Ok."].c_str());
+        ImGui::Text("%s",
+                    labels["Select the lessons and teachers to combine and press Ok."].c_str());
         DrawImage(faqScreenshots[1]);
-        ImGui::Text("%s", labels["Then set the amount per week for the created combined lesson."].c_str());
+        ImGui::Text(
+            "%s", labels["Then set the amount per week for the created combined lesson."].c_str());
         DrawImage(faqScreenshots[2]);
         ImGui::TreePop();
     }
@@ -410,10 +435,12 @@ void ShowMenuBar()
                 if (iterationData.timetables != nullptr)
                 {
                     iterationData.isDone = true;
-                    while (iterationData.threadLock) COMPILER_BARRIER();
+                    while (iterationData.threadLock)
+                        COMPILER_BARRIER();
                     StopSearching();
                 }
-                while (iterationData.threadLock) COMPILER_BARRIER();
+                while (iterationData.threadLock)
+                    COMPILER_BARRIER();
                 std::thread beginSearchingThread(BeginSearching, &currentTimetable);
                 beginSearchingThread.detach();
             }
@@ -483,7 +510,8 @@ void DrawFrame()
     {
         wasGenerateTimetable = false;
         iterationData.isDone = true;
-        while (iterationData.threadLock) COMPILER_BARRIER();
+        while (iterationData.threadLock)
+            COMPILER_BARRIER();
         std::thread stopSearchingThread(StopSearching);
         stopSearchingThread.detach();
     }
@@ -499,8 +527,10 @@ void DrawFrame()
     if (lastVsync != vsync)
     {
         lastVsync = vsync;
-        if (!vsync) ClearWindowState(FLAG_VSYNC_HINT);
-        else SetWindowState(FLAG_VSYNC_HINT);
+        if (!vsync)
+            ClearWindowState(FLAG_VSYNC_HINT);
+        else
+            SetWindowState(FLAG_VSYNC_HINT);
     }
 
     // End imgui drawing

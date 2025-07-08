@@ -32,7 +32,8 @@ int ZipFile(zip_t* archive, std::string path)
     }
     std::string fileContents = "";
     std::string buf = "";
-    while (std::getline(fileStream, buf)) fileContents += buf + "\n";
+    while (std::getline(fileStream, buf))
+        fileContents += buf + "\n";
     char* buffer = new char[fileContents.size()];
     memcpy(buffer, fileContents.data(), fileContents.size());
 
@@ -40,7 +41,8 @@ int ZipFile(zip_t* archive, std::string path)
     zip_source_t* source = zip_source_buffer(archive, buffer, fileContents.size(), 1);
     if (source == nullptr)
     {
-        std::cerr << "Failed to create crash report zip source: " << zip_strerror(archive) << std::endl;
+        std::cerr << "Failed to create crash report zip source: " << zip_strerror(archive)
+                  << std::endl;
         LogError(std::string("Failed to create crash report zip source: ") + zip_strerror(archive));
         return 1;
     }
@@ -48,7 +50,8 @@ int ZipFile(zip_t* archive, std::string path)
     // Add the source as a new file entry
     if (zip_file_add(archive, path.c_str(), source, ZIP_FL_OVERWRITE) < 0)
     {
-        std::cerr << "Failed to add file to crash report zip: " << zip_strerror(archive) << std::endl;
+        std::cerr << "Failed to add file to crash report zip: " << zip_strerror(archive)
+                  << std::endl;
         LogError(std::string("Failed to add file to crash report zip: ") + zip_strerror(archive));
         zip_source_free(source);
         return 1;
@@ -102,24 +105,26 @@ int ZipSystemInfo(zip_t* archive)
     }
     for (int i = 0; i < GetMonitorCount(); i++)
     {
-        float monitorDiagonal = sqrt(pow(GetMonitorPhysicalWidth(i), 2) + pow(GetMonitorPhysicalHeight(i), 2));
+        float monitorDiagonal =
+            sqrt(pow(GetMonitorPhysicalWidth(i), 2) + pow(GetMonitorPhysicalHeight(i), 2));
         monitorDiagonal /= 25.4;
         char monitorDiagonalString[50];
         snprintf(monitorDiagonalString, sizeof(monitorDiagonalString), "%.1f", monitorDiagonal);
-        systemInfo += "Display " + std::to_string(i) + " (" + GetMonitorName(i) + "): " +
-        std::to_string(GetMonitorWidth(i)) + "x" + std::to_string(GetMonitorHeight(i)) +
-        "@" + std::to_string(GetMonitorRefreshRate(i)) + "Hz " + monitorDiagonalString + "'\n";
+        systemInfo +=
+            "Display " + std::to_string(i) + " (" + GetMonitorName(i) +
+            "): " + std::to_string(GetMonitorWidth(i)) + "x" + std::to_string(GetMonitorHeight(i)) +
+            "@" + std::to_string(GetMonitorRefreshRate(i)) + "Hz " + monitorDiagonalString + "'\n";
     }
     std::vector<std::string> mounts = GetAllMountPoints();
     for (int i = 0; i < mounts.size(); i++)
     {
         std::filesystem::space_info spaceInfo = GetDiskInfo(mounts[i]);
         systemInfo += "Disk " + std::to_string(i) + " at " + mounts[i] +
-            " capacity: " + std::to_string(spaceInfo.capacity / 1024 / 1024) + " MB\n";
+                      " capacity: " + std::to_string(spaceInfo.capacity / 1024 / 1024) + " MB\n";
         systemInfo += "Disk " + std::to_string(i) + " at " + mounts[i] +
-            " free: " + std::to_string(spaceInfo.free / 1024 / 1024) + " MB\n";
+                      " free: " + std::to_string(spaceInfo.free / 1024 / 1024) + " MB\n";
         systemInfo += "Disk " + std::to_string(i) + " at " + mounts[i] +
-            " available: " + std::to_string(spaceInfo.available / 1024 / 1024) + " MB\n";
+                      " available: " + std::to_string(spaceInfo.available / 1024 / 1024) + " MB\n";
     }
 
     // Copy the system info into a temporary buffer
@@ -130,7 +135,8 @@ int ZipSystemInfo(zip_t* archive)
     zip_source_t* source = zip_source_buffer(archive, buffer, systemInfo.size(), 1);
     if (source == nullptr)
     {
-        std::cerr << "Failed to create crash report zip source: " << zip_strerror(archive) << std::endl;
+        std::cerr << "Failed to create crash report zip source: " << zip_strerror(archive)
+                  << std::endl;
         LogError(std::string("Failed to create crash report zip source: ") + zip_strerror(archive));
         return 1;
     }
@@ -138,7 +144,8 @@ int ZipSystemInfo(zip_t* archive)
     // Add the source as a new file entry
     if (zip_file_add(archive, "system_info.txt", source, ZIP_FL_OVERWRITE) < 0)
     {
-        std::cerr << "Failed to add file to crash report zip: " << zip_strerror(archive) << std::endl;
+        std::cerr << "Failed to add file to crash report zip: " << zip_strerror(archive)
+                  << std::endl;
         LogError(std::string("Failed to add file to crash report zip: ") + zip_strerror(archive));
         zip_source_free(source);
         return 1;
@@ -157,8 +164,10 @@ int CreateCrashReport()
     {
         zip_error_t ziperror;
         zip_error_init_with_code(&ziperror, error);
-        std::cerr << "Failed to create crash report zip archive: " << zip_error_strerror(&ziperror) << std::endl;
-        LogError(std::string("Failed to create crash report zip archive: ") + zip_error_strerror(&ziperror));
+        std::cerr << "Failed to create crash report zip archive: " << zip_error_strerror(&ziperror)
+                  << std::endl;
+        LogError(std::string("Failed to create crash report zip archive: ") +
+                 zip_error_strerror(&ziperror));
         zip_error_fini(&ziperror);
         return 1;
     }
@@ -172,7 +181,8 @@ int CreateCrashReport()
     // Close the archive to write changes
     if (zip_close(archive) < 0)
     {
-        std::cerr << "Failed to close crash report zip archive: " << zip_strerror(archive) << std::endl;
+        std::cerr << "Failed to close crash report zip archive: " << zip_strerror(archive)
+                  << std::endl;
         LogError(std::string("Failed to close crash report zip archive: ") + zip_strerror(archive));
         return 1;
     }

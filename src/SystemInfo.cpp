@@ -3,19 +3,19 @@
 #include <string>
 
 #if defined(_WIN32)
-    #include <windows.h>
-    #include <comdef.h>
-    #include <versionhelpers.h>
+#include <comdef.h>
+#include <versionhelpers.h>
+#include <windows.h>
 #elif defined(__APPLE__)
-    #include <sys/types.h>
-    #include <sys/sysctl.h>
-    #include <IOKit/IOKitLib.h>
-    #include <CoreFoundation/CoreFoundation.h>
-    #include <sys/utsname.h>
-    #include <cstdlib>
+#include <CoreFoundation/CoreFoundation.h>
+#include <IOKit/IOKitLib.h>
+#include <cstdlib>
+#include <sys/sysctl.h>
+#include <sys/types.h>
+#include <sys/utsname.h>
 #elif defined(__linux__)
-    #include <fstream>
-    #include <cstdlib>
+#include <cstdlib>
+#include <fstream>
 #endif
 
 std::string GetOS()
@@ -26,7 +26,8 @@ std::string GetOS()
     osvi.dwOSVersionInfoSize = sizeof(osvi);
     if (GetVersionExW((LPOSVERSIONINFOW)&osvi))
     {
-        std::wstring wversion = L"Windows " + std::to_wstring(osvi.dwMajorVersion) + L"." + std::to_wstring(osvi.dwMinorVersion);
+        std::wstring wversion = L"Windows " + std::to_wstring(osvi.dwMajorVersion) + L"." +
+                                std::to_wstring(osvi.dwMinorVersion);
         return std::string(wversion.begin(), wversion.end());
     }
     return "Windows (unknown version)";
@@ -79,16 +80,17 @@ std::string GetOS()
 #endif
 }
 
-
 std::string GetCPU()
 {
 #if defined(_WIN32)
     HKEY hKey;
     char cpuName[0x40];
     DWORD size = sizeof(cpuName);
-    if (RegOpenKeyExA(HKEY_LOCAL_MACHINE, "HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0", 0, KEY_READ, &hKey) == ERROR_SUCCESS)
+    if (RegOpenKeyExA(HKEY_LOCAL_MACHINE, "HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0", 0,
+                      KEY_READ, &hKey) == ERROR_SUCCESS)
     {
-        if (RegQueryValueExA(hKey, "ProcessorNameString", nullptr, nullptr, (LPBYTE)cpuName, &size) == ERROR_SUCCESS)
+        if (RegQueryValueExA(hKey, "ProcessorNameString", nullptr, nullptr, (LPBYTE)cpuName,
+                             &size) == ERROR_SUCCESS)
         {
             RegCloseKey(hKey);
             return std::string(cpuName);
@@ -183,7 +185,8 @@ std::vector<std::string> GetGPUs()
         io_object_t device;
         while ((device = IOIteratorNext(iter)))
         {
-            CFTypeRef model = IORegistryEntryCreateCFProperty(device, CFSTR("model"), kCFAllocatorDefault, 0);
+            CFTypeRef model =
+                IORegistryEntryCreateCFProperty(device, CFSTR("model"), kCFAllocatorDefault, 0);
             if (model && CFGetTypeID(model) == CFDataGetTypeID())
             {
                 CFDataRef data = (CFDataRef)model;
@@ -253,7 +256,9 @@ std::filesystem::space_info GetDiskInfo(const std::string path)
     {
         return std::filesystem::space(path);
     }
-    catch (const std::exception&) {}
+    catch (const std::exception&)
+    {
+    }
     std::filesystem::space_info emptySpaceInfo;
     return emptySpaceInfo;
 }

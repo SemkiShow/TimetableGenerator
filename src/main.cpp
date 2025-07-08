@@ -1,10 +1,9 @@
 #include "Crashes.hpp"
 #include "Logging.hpp"
 #include "Settings.hpp"
-#include "UI.hpp"
 #include "Timetable.hpp"
+#include "UI.hpp"
 #include "Updates.hpp"
-#include "Logging.hpp"
 #include <ctime>
 #include <imgui.h>
 #include <raylib.h>
@@ -39,7 +38,8 @@ int main()
     SetConfigFlags(flags);
 
     // Init raylib
-    InitWindow(windowSize[0], windowSize[1], (labels["Timetable Generator"] + " " + version).c_str());
+    InitWindow(windowSize[0], windowSize[1],
+               (labels["Timetable Generator"] + " " + version).c_str());
     SetExitKey(-1);
     LoadFAQScreenshots();
 
@@ -47,9 +47,9 @@ int main()
     rlImGuiSetup(true);
     LoadFonts();
     LoadStyle();
-    #ifdef IMGUI_HAS_DOCK
+#ifdef IMGUI_HAS_DOCK
     ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-    #endif
+#endif
 
     // Main loop
     while (!WindowShouldClose())
@@ -62,7 +62,7 @@ int main()
     Save("settings.txt");
     EndLogging();
     rlImGuiShutdown();
-	CloseWindow();
+    CloseWindow();
 
-	return 0;
+    return 0;
 }

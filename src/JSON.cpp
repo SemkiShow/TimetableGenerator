@@ -16,78 +16,75 @@ std::string JSONToString(JSONObject jsonObject)
         {
             if (jsonObject.format == JSON_NEWLINE) output += INDENTATION;
             output += '"' + jsonObject.strings[i] + '"';
-            if (i < jsonObject.strings.size()-1 ||
-                jsonObject.ints.size() > 0 ||
-                jsonObject.bools.size() > 0 ||
-                jsonObject.objects.size() > 0) output += ", ";
+            if (i < jsonObject.strings.size() - 1 || jsonObject.ints.size() > 0 ||
+                jsonObject.bools.size() > 0 || jsonObject.objects.size() > 0)
+                output += ", ";
             if (jsonObject.format == JSON_NEWLINE) output += '\n';
         }
         for (int i = 0; i < jsonObject.ints.size(); i++)
         {
             if (jsonObject.format == JSON_NEWLINE) output += INDENTATION;
             output += std::to_string(jsonObject.ints[i]);
-            if (i < jsonObject.ints.size()-1 ||
-                jsonObject.bools.size() > 0 ||
-                jsonObject.objects.size() > 0) output += ", ";
+            if (i < jsonObject.ints.size() - 1 || jsonObject.bools.size() > 0 ||
+                jsonObject.objects.size() > 0)
+                output += ", ";
             if (jsonObject.format == JSON_NEWLINE) output += '\n';
         }
         for (int i = 0; i < jsonObject.bools.size(); i++)
         {
             if (jsonObject.format == JSON_NEWLINE) output += INDENTATION;
             output += (jsonObject.bools[i] ? "true" : "false");
-            if (i < jsonObject.bools.size()-1 ||
-            jsonObject.objects.size() > 0) output += ", ";
+            if (i < jsonObject.bools.size() - 1 || jsonObject.objects.size() > 0) output += ", ";
             if (jsonObject.format == JSON_NEWLINE) output += '\n';
         }
         for (int i = 0; i < jsonObject.objects.size(); i++)
         {
             if (jsonObject.format == JSON_NEWLINE) output += INDENTATION;
             output += JSONToString(jsonObject.objects[i]);
-            if (i < jsonObject.objects.size()-1) output += ", ";
+            if (i < jsonObject.objects.size() - 1) output += ", ";
             if (jsonObject.format == JSON_NEWLINE) output += '\n';
         }
     }
     if (jsonObject.type == JSON_OBJECT)
     {
         int i = 0;
-        for (auto pair: jsonObject.stringPairs)
+        for (auto pair : jsonObject.stringPairs)
         {
             if (jsonObject.format == JSON_NEWLINE) output += INDENTATION;
             output += '"' + pair.first + "\": " + '"' + pair.second + '"';
-            if (i < jsonObject.stringPairs.size()-1 ||
-                jsonObject.intPairs.size() > 0 ||
-                jsonObject.boolPairs.size() > 0 ||
-                jsonObject.objectPairs.size() > 0) output += ", ";
+            if (i < jsonObject.stringPairs.size() - 1 || jsonObject.intPairs.size() > 0 ||
+                jsonObject.boolPairs.size() > 0 || jsonObject.objectPairs.size() > 0)
+                output += ", ";
             if (jsonObject.format == JSON_NEWLINE) output += '\n';
             i++;
         }
         i = 0;
-        for (auto pair: jsonObject.intPairs)
+        for (auto pair : jsonObject.intPairs)
         {
             if (jsonObject.format == JSON_NEWLINE) output += INDENTATION;
             output += '"' + pair.first + "\": " + std::to_string(pair.second);
-            if (i < jsonObject.intPairs.size()-1 ||
-                jsonObject.boolPairs.size() > 0 ||
-                jsonObject.objectPairs.size() > 0) output += ", ";
+            if (i < jsonObject.intPairs.size() - 1 || jsonObject.boolPairs.size() > 0 ||
+                jsonObject.objectPairs.size() > 0)
+                output += ", ";
             if (jsonObject.format == JSON_NEWLINE) output += '\n';
             i++;
         }
         i = 0;
-        for (auto pair: jsonObject.boolPairs)
+        for (auto pair : jsonObject.boolPairs)
         {
             if (jsonObject.format == JSON_NEWLINE) output += INDENTATION;
             output += '"' + pair.first + "\": " + (pair.second ? "true" : "false");
-            if (i < jsonObject.boolPairs.size()-1 ||
-                jsonObject.objectPairs.size() > 0) output += ", ";
+            if (i < jsonObject.boolPairs.size() - 1 || jsonObject.objectPairs.size() > 0)
+                output += ", ";
             if (jsonObject.format == JSON_NEWLINE) output += '\n';
             i++;
         }
         i = 0;
-        for (auto pair: jsonObject.objectPairs)
+        for (auto pair : jsonObject.objectPairs)
         {
             if (jsonObject.format == JSON_NEWLINE) output += INDENTATION;
             output += '"' + pair.first + "\": " + JSONToString(pair.second);
-            if (i < jsonObject.objectPairs.size()-1) output += ", ";
+            if (i < jsonObject.objectPairs.size() - 1) output += ", ";
             if (jsonObject.format == JSON_NEWLINE) output += '\n';
             i++;
         }
@@ -110,15 +107,15 @@ void SaveJSON(std::string path, JSONObject* jsonObject)
 std::string TrimSpaces(const std::string& input)
 {
     auto first = input.find_first_not_of(" \t\n\r\f\v");
-    auto last  = input.find_last_not_of (" \t\n\r\f\v");
-    return (first == input.npos) ? "" : input.substr(first, last-first+1);
+    auto last = input.find_last_not_of(" \t\n\r\f\v");
+    return (first == input.npos) ? "" : input.substr(first, last - first + 1);
 }
 
 std::string TrimQuotes(const std::string& input)
 {
     auto first = input.find_first_not_of("\"\t\n\r\f\v");
-    auto last  = input.find_last_not_of ("\"\t\n\r\f\v");
-    return (first == input.npos) ? "" : input.substr(first, last-first+1);
+    auto last = input.find_last_not_of("\"\t\n\r\f\v");
+    return (first == input.npos) ? "" : input.substr(first, last - first + 1);
 }
 
 bool IsNumber(std::string input)
@@ -167,19 +164,20 @@ void ParseJSON(std::string json, JSONObject* jsonObject)
             if (bracketLevel == 1)
             {
                 jsonObject->type = (json[i] == '{' ? JSON_OBJECT : JSON_LIST);
-                startIndex = i+1;
+                startIndex = i + 1;
             }
         }
         if (json[i] == '}' || json[i] == ']' && !insideString)
         {
-            if (bracketLevel == 1 && json.size() > 2) values.push_back(json.substr(startIndex, i - startIndex));
+            if (bracketLevel == 1 && json.size() > 2)
+                values.push_back(json.substr(startIndex, i - startIndex));
             bracketLevel--;
             if (bracketLevel <= 0) break;
         }
         if (json[i] == ',' && bracketLevel == 1 && !insideString)
         {
             values.push_back(json.substr(startIndex, i - startIndex));
-            startIndex = i+1;
+            startIndex = i + 1;
         }
     }
     for (int i = 0; i < values.size(); i++)
@@ -190,10 +188,12 @@ void ParseJSON(std::string json, JSONObject* jsonObject)
             if (values[i][0] == '{' || values[i][0] == '[')
             {
                 jsonObject->objects.push_back(JSONObject());
-                ParseJSON(values[i], &jsonObject->objects[jsonObject->objects.size()-1]);
+                ParseJSON(values[i], &jsonObject->objects[jsonObject->objects.size() - 1]);
             }
-            else if (values[i] == "true" || values[i] == "false") jsonObject->bools.push_back(values[i] == "true");
-            else if (IsNumber(values[i])) jsonObject->ints.push_back(stoi(values[i]));
+            else if (values[i] == "true" || values[i] == "false")
+                jsonObject->bools.push_back(values[i] == "true");
+            else if (IsNumber(values[i]))
+                jsonObject->ints.push_back(stoi(values[i]));
             else
                 jsonObject->strings.push_back(TrimQuotes(values[i]));
         }
@@ -224,7 +224,8 @@ void LoadJSON(std::string path, JSONObject* jsonObject)
     std::ifstream timetableFile(path);
     std::string buf, json;
     while (std::getline(timetableFile, buf))
-        for (int i = 0; i < buf.size(); i++) if (buf[i] != '\t') json += buf[i];
+        for (int i = 0; i < buf.size(); i++)
+            if (buf[i] != '\t') json += buf[i];
     timetableFile.close();
 
     ParseJSON(json, jsonObject);

@@ -1,8 +1,8 @@
 #include "Updates.hpp"
-#include "Logging.hpp"
-#include "UI.hpp"
 #include "JSON.hpp"
+#include "Logging.hpp"
 #include "Settings.hpp"
+#include "UI.hpp"
 #include <cstring>
 #include <filesystem>
 #include <iostream>
@@ -23,7 +23,8 @@ std::vector<std::string> MultiSplit(const std::string& input, const std::string&
     size_t start = 0;
     size_t end;
 
-    while ((end = input.find(delimiter, start)) != std::string::npos) {
+    while ((end = input.find(delimiter, start)) != std::string::npos)
+    {
         output.push_back(input.substr(start, end - start));
         start = end + delimiter.length();
     }
@@ -52,7 +53,8 @@ void GetLatestVersionName()
     }
 
     std::string readBuffer;
-    curl_easy_setopt(curl, CURLOPT_URL, "https://api.github.com/repos/SemkiShow/TimetableGenerator/releases");
+    curl_easy_setopt(curl, CURLOPT_URL,
+                     "https://api.github.com/repos/SemkiShow/TimetableGenerator/releases");
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
     curl_easy_setopt(curl, CURLOPT_USERAGENT, ("TimetableGenerator/" + version).c_str());
@@ -78,7 +80,7 @@ void GetLatestVersionName()
                 LogInfo("Successfully fetched releases info");
                 int releaseID = 0;
                 while (jsonObject.objects[releaseID].boolPairs["draft"] ||
-                    (jsonObject.objects[releaseID].boolPairs["prerelease"] && !usePrereleases))
+                       (jsonObject.objects[releaseID].boolPairs["prerelease"] && !usePrereleases))
                 {
                     releaseID++;
                     if (releaseID >= jsonObject.objects.size())
@@ -122,17 +124,20 @@ void CheckForUpdates(bool showWindow)
     networkThread.detach();
 }
 
-std::string ExtractString(const std::string& input, const std::string& prefix, const std::string& suffix)
+std::string ExtractString(const std::string& input, const std::string& prefix,
+                          const std::string& suffix)
 {
     size_t start = input.find(prefix);
-    if (start == std::string::npos) {
+    if (start == std::string::npos)
+    {
         std::cerr << "Prefix not found\n";
         return "";
     }
     start += prefix.length();
 
     size_t end = input.rfind(suffix);
-    if (end == std::string::npos || end < start) {
+    if (end == std::string::npos || end < start)
+    {
         std::cerr << "Suffix not found or invalid\n";
         return "";
     }
@@ -152,7 +157,8 @@ std::string GetLatestVersionArchiveURL()
     }
 
     std::string readBuffer;
-    curl_easy_setopt(curl, CURLOPT_URL, "https://api.github.com/repos/SemkiShow/TimetableGenerator/releases");
+    curl_easy_setopt(curl, CURLOPT_URL,
+                     "https://api.github.com/repos/SemkiShow/TimetableGenerator/releases");
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
     curl_easy_setopt(curl, CURLOPT_USERAGENT, ("TimetableGenerator/" + version).c_str());
@@ -177,15 +183,20 @@ std::string GetLatestVersionArchiveURL()
                 LogInfo("Successfully fetched releases info");
                 int releaseID = 0;
                 while (jsonObject.objects[releaseID].boolPairs["draft"] ||
-                    (jsonObject.objects[releaseID].boolPairs["prerelease"] && !usePrereleases))
+                       (jsonObject.objects[releaseID].boolPairs["prerelease"] && !usePrereleases))
                 {
                     releaseID++;
                     if (releaseID >= jsonObject.objects.size()) return "";
                 }
                 int assetID = -1;
-                for (int i = 0; i < jsonObject.objects[releaseID].objectPairs["assets"].objects.size(); i++)
+                for (int i = 0;
+                     i < jsonObject.objects[releaseID].objectPairs["assets"].objects.size(); i++)
                 {
-                    std::string assetLanguage = ExtractString(jsonObject.objects[releaseID].objectPairs["assets"].objects[i].stringPairs["name"], "release_", ".zip");
+                    std::string assetLanguage = ExtractString(jsonObject.objects[releaseID]
+                                                                  .objectPairs["assets"]
+                                                                  .objects[i]
+                                                                  .stringPairs["name"],
+                                                              "release_", ".zip");
                     if (assetLanguage == language)
                     {
                         assetID = i;
@@ -195,9 +206,15 @@ std::string GetLatestVersionArchiveURL()
                 if (assetID == -1)
                 {
                     LogError("Current language not found in the response");
-                    for (int i = 0; i < jsonObject.objects[releaseID].objectPairs["assets"].objects.size(); i++)
+                    for (int i = 0;
+                         i < jsonObject.objects[releaseID].objectPairs["assets"].objects.size();
+                         i++)
                     {
-                        std::string assetLanguage = ExtractString(jsonObject.objects[releaseID].objectPairs["assets"].objects[i].stringPairs["name"], "release_", ".zip");
+                        std::string assetLanguage = ExtractString(jsonObject.objects[releaseID]
+                                                                      .objectPairs["assets"]
+                                                                      .objects[i]
+                                                                      .stringPairs["name"],
+                                                                  "release_", ".zip");
                         if (assetLanguage == "en")
                         {
                             assetID = i;
@@ -210,7 +227,10 @@ std::string GetLatestVersionArchiveURL()
                     assetID = 0;
                     LogError("English not found in the response");
                 }
-                return jsonObject.objects[releaseID].objectPairs["assets"].objects[assetID].stringPairs["browser_download_url"];
+                return jsonObject.objects[releaseID]
+                    .objectPairs["assets"]
+                    .objects[assetID]
+                    .stringPairs["browser_download_url"];
             }
             else
             {
@@ -384,15 +404,17 @@ void UpdateToLatestVersion()
         std::cerr << "Failed to uzip the release!\n";
         return;
     }
-    std::filesystem::copy_file("settings.txt", "tmp/settings.txt", std::filesystem::copy_options::overwrite_existing);
+    std::filesystem::copy_file("settings.txt", "tmp/settings.txt",
+                               std::filesystem::copy_options::overwrite_existing);
     CopyFiles("tmp/release", ".");
-    std::filesystem::copy_file("tmp/settings.txt", "settings.txt", std::filesystem::copy_options::overwrite_existing);
+    std::filesystem::copy_file("tmp/settings.txt", "settings.txt",
+                               std::filesystem::copy_options::overwrite_existing);
     std::filesystem::remove("tmp/release.zip");
     std::filesystem::remove("tmp/settings.txt");
     std::filesystem::remove_all("tmp/release");
 
     downloadStatus = labels["Successfully updated to"] + " " + latestVersion + "!\n" +
-        labels["Restart the application to see the new features"];
+                     labels["Restart the application to see the new features"];
     LogInfo("Successfully updated to " + latestVersion);
 }
 
@@ -403,7 +425,8 @@ void UpdateCACertificate()
         std::filesystem::create_directory("tmp");
     }
     DownloadFile("https://curl.se/ca/cacert.pem", "tmp/cacert.pem");
-    std::filesystem::copy_file("tmp/cacert.pem", "resources/cacert.pem", std::filesystem::copy_options::overwrite_existing);
+    std::filesystem::copy_file("tmp/cacert.pem", "resources/cacert.pem",
+                               std::filesystem::copy_options::overwrite_existing);
     std::filesystem::remove("tmp/cacert.pem");
     std::cout << "Updated the CA certificate\n";
     LogInfo("Updated the CA certificate");
