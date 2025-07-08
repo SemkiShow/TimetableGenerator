@@ -435,6 +435,7 @@ void ShowMenuBar()
                 if (iterationData.timetables != nullptr)
                 {
                     iterationData.isDone = true;
+                    generateTimetableStatus = labels["Allocating memory for the timetables..."];
                     while (iterationData.threadLock)
                         COMPILER_BARRIER();
                     StopSearching();
