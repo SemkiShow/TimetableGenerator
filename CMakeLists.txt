@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.14)
 project(TimetableGenerator)
 
+add_compile_options(-Wno-error)
+
 if (UNIX)
     set(GLFW_BUILD_WAYLAND OFF CACHE BOOL "Build GLFW Wayland support")
     set(GLFW_BUILD_X11 ON CACHE BOOL "Build GLFW X11 support")
@@ -125,6 +127,11 @@ if (NOT TARGET CURL::libcurl)
             -DBUILD_CURL_EXE=OFF
         DEPENDS mbedtls libpsl
     )
+    if (EXISTS "${LIBCURL_INSTALL_DIR}/lib/libcurl.a")
+        set(LIBCURL_LIBRARY ${LIBCURL_INSTALL_DIR}/lib/libcurl.a)
+    else()
+        set(LIBCURL_LIBRARY ${LIBCURL_INSTALL_DIR}/lib64/libcurl.a)
+    endif()
 endif()
 
 # zlib
@@ -174,7 +181,7 @@ if (NOT TARGET CURL::libcurl)
         ${LIBPSL_INSTALL_DIR}/include
     )
     target_link_libraries(${PROJECT_NAME} PUBLIC
-        ${LIBCURL_INSTALL_DIR}/lib/libcurl.a
+        ${LIBCURL_LIBRARY}
         mbedtls
         ${LIBPSL_INSTALL_DIR}/lib/libpsl.a
     )
