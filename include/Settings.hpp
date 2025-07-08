@@ -8,6 +8,8 @@
 #define STYLE_LIGHT 1
 #define STYLE_CLASSIC 2
 
+#define DEFAULT_FONT_SIZE 16
+
 extern int daysPerWeek;
 extern int lessonsPerDay;
 extern int style;

@@ -28,6 +28,8 @@ std::string weekDays[7] = {
 };
 std::vector<std::string> timetableFiles;
 
+Texture2D* faqScreenshots;
+
 int timetableSaveTimer = GetTime();
 
 std::string generateTimetableStatus = "";
@@ -63,6 +65,17 @@ void LoadStyle()
     if (style == STYLE_DARK) ImGui::StyleColorsDark();
     if (style == STYLE_LIGHT) ImGui::StyleColorsLight();
     if (style == STYLE_CLASSIC) ImGui::StyleColorsClassic();
+}
+
+void LoadFAQScreenshots()
+{
+    std::vector<std::string> faqScreenshotFiles;
+    ListFiles("resources/faq-screenshots", &faqScreenshotFiles);
+    faqScreenshots = new Texture2D[faqScreenshotFiles.size()];
+    for (int i = 0; i < faqScreenshotFiles.size(); i++)
+    {
+        faqScreenshots[i] = LoadTexture(faqScreenshotFiles[i].c_str());
+    }
 }
 
 void OpenClassrooms()
@@ -305,6 +318,40 @@ void ShowGenerateTimetable(bool* isOpen)
     ImGui::End();
 }
 
+void DrawImage(Texture2D texture)
+{
+    ImGui::Image((ImTextureID)(uintptr_t)texture.id,
+        ImVec2(texture.width * 1.0f * fontSize / DEFAULT_FONT_SIZE,
+            texture.height * 1.0f * fontSize / DEFAULT_FONT_SIZE));
+}
+
+bool isFAQ = false;
+void ShowFAQ(bool* isOpen)
+{
+    if (!ImGui::Begin(labels["FAQ"].c_str(), isOpen))
+    {
+        ImGui::End();
+        return;
+    }
+    if (ImGui::TreeNode(labels["How do I contact the developer?"].c_str()))
+    {
+        ImGui::Text("%s", labels["You can contact me by sending an email to mgdeveloper123@gmail.com"].c_str());
+        ImGui::TreePop();
+    }
+    if (ImGui::TreeNode(labels["How do I add multiple lessons to one timetable cell?"].c_str()))
+    {
+        ImGui::Text("%s", labels["To add multiple lessons to one timetable cell, click"].c_str());
+        ImGui::Text("%s", labels["Combine lessons while editing a class."].c_str());
+        DrawImage(faqScreenshots[0]);
+        ImGui::Text("%s", labels["Select the lessons and teachers to combine and press Ok."].c_str());
+        DrawImage(faqScreenshots[1]);
+        ImGui::Text("%s", labels["Then set the amount per week for the created combined lesson."].c_str());
+        DrawImage(faqScreenshots[2]);
+        ImGui::TreePop();
+    }
+    ImGui::End();
+}
+
 void ShowMenuBar()
 {
     if (ImGui::BeginMainMenuBar())
@@ -374,6 +421,7 @@ void ShowMenuBar()
         }
         if (ImGui::BeginMenu(labels["Help"].c_str()))
         {
+            if (ImGui::MenuItem(labels["FAQ"].c_str())) isFAQ = true;
             if (ImGui::MenuItem(labels["Check for updates"].c_str())) CheckForUpdates();
             if (ImGui::MenuItem(labels["About"].c_str())) isAbout = true;
             ImGui::EndMenu();
@@ -428,6 +476,7 @@ void DrawFrame()
     if (isOpenTimetable) ShowOpenTimetable(&isOpenTimetable);
     if (isGenerateTimetable) ShowGenerateTimetable(&isGenerateTimetable);
     if (isCrashReport) ShowCrashReport(&isCrashReport);
+    if (isFAQ) ShowFAQ(&isFAQ);
 
     // Stop searching for a perfect timetable if the Generate timetable window is closed
     if (!isGenerateTimetable && wasGenerateTimetable)

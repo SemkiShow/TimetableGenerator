@@ -41,6 +41,7 @@ int main()
     // Init raylib
     InitWindow(windowSize[0], windowSize[1], (labels["Timetable Generator"] + " " + version).c_str());
     SetExitKey(-1);
+    LoadFAQScreenshots();
 
     // Init imgui
     rlImGuiSetup(true);

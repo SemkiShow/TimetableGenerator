@@ -159,3 +159,11 @@ email crash_report.zip to mgdeveloper123@gmail.com
 The email theme should be Timetable Generator crash report
 You can also provide a crash report description
 Create crash_report.zip
+FAQ
+How do I contact the developer?
+You can contact me by sending an email to mgdeveloper123@gmail.com
+How do I add multiple lessons to one timetable cell?
+To add multiple lessons to one timetable cell, click
+Combine lessons while editing a class.
+Select the lessons and teachers to combine and press Ok.
+Then set the amount per week for the created combined lesson.

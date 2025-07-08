@@ -159,3 +159,11 @@ wyślij plik crash_report.zip na adres mgdeveloper123@gmail.com
 Temat e-maila powinien brzmieć: Generator Planów Lekcji Raport awarii
 Możesz również dołączyć opis awarii
 Utwórz crash_report.zip
+FAQ
+Jak skontaktować się z deweloperem?
+Możesz skontaktować się ze mną, wysyłając e-mail na adres mgdeveloper123@gmail.com
+Jak dodać kilka lekcji do jednej komórki planu zajęć?
+Aby dodać kilka lekcji do jednej komórki planu, kliknij
+Połącz lekcje podczas edycji klasy.
+Wybierz lekcje i nauczycieli do połączenia i kliknij OK.
+Następnie ustaw liczbę godzin tygodniowo dla utworzonej lekcji łączonej.

@@ -47,4 +47,5 @@ void ResetTeacherLessonValues();
 
 void LoadFonts();
 void LoadStyle();
+void LoadFAQScreenshots();
 void DrawFrame();
