@@ -127,11 +127,6 @@ if (NOT TARGET CURL::libcurl)
             -DBUILD_CURL_EXE=OFF
         DEPENDS mbedtls libpsl
     )
-    if (EXISTS "${LIBCURL_INSTALL_DIR}/lib/libcurl.a")
-        set(LIBCURL_LIBRARY ${LIBCURL_INSTALL_DIR}/lib/libcurl.a)
-    else()
-        set(LIBCURL_LIBRARY ${LIBCURL_INSTALL_DIR}/lib64/libcurl.a)
-    endif()
 endif()
 
 # zlib
@@ -180,11 +175,13 @@ if (NOT TARGET CURL::libcurl)
         ${LIBCURL_INSTALL_DIR}/include
         ${LIBPSL_INSTALL_DIR}/include
     )
-    target_link_libraries(${PROJECT_NAME} PUBLIC
-        ${LIBCURL_LIBRARY}
-        mbedtls
-        ${LIBPSL_INSTALL_DIR}/lib/libpsl.a
-    )
+    if (EXISTS "${LIBCURL_INSTALL_DIR}/lib/")
+        target_link_directories(${PROJECT_NAME} PRIVATE ${LIBCURL_INSTALL_DIR}/lib)
+    else()
+        target_link_directories(${PROJECT_NAME} PRIVATE ${LIBCURL_INSTALL_DIR}/lib64)
+    endif()
+    target_link_directories(${PROJECT_NAME} PRIVATE ${LIBPSL_INSTALL_DIR}/lib)
+    target_link_libraries(${PROJECT_NAME} PUBLIC curl mbedtls psl)
 else()
     target_link_libraries(${PROJECT_NAME} PRIVATE CURL::libcurl)
 endif()
