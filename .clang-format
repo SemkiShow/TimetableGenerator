@@ -10,3 +10,4 @@ BreakBeforeBinaryOperators: None
 AllowAllParametersOfDeclarationOnNextLine: false
 AllowAllArgumentsOnNextLine: false
 BreakStringLiterals: false
+SpaceBeforeRangeBasedForLoopColon: false

@@ -3,7 +3,6 @@
 #include "Settings.hpp"
 #include "UI.hpp"
 #include <algorithm>
-#include <ctime>
 #include <iostream>
 #include <random>
 #include <string>
@@ -16,7 +15,7 @@ IterationData iterationData = IterationData();
 int GetLessonsAmount(const std::map<int, TimetableLesson> timetableLessons)
 {
     int output = 0;
-    for (auto& lesson : timetableLessons)
+    for (auto& lesson: timetableLessons)
         output += lesson.second.amount;
     return output;
 }
@@ -36,7 +35,7 @@ int GetLessonPlacesAmount(const std::vector<Day> days)
 
 bool IsTimetableCorrect(const Timetable* timetable)
 {
-    for (auto& classPair : timetable->classes)
+    for (auto& classPair: timetable->classes)
     {
         if (GetLessonsAmount(classPair.second.timetableLessons) >
             GetLessonPlacesAmount(classPair.second.days))
@@ -53,10 +52,10 @@ void RandomizeTimetable(Timetable* timetable)
         std::cerr << "Error: the timetable is incorrect!\n";
         return;
     }
-    for (auto& classPair : timetable->classes)
+    for (auto& classPair: timetable->classes)
     {
         std::vector<int> timetableLessonIDs;
-        for (auto& lesson : classPair.second.timetableLessons)
+        for (auto& lesson: classPair.second.timetableLessons)
         {
             for (int i = 0; i < lesson.second.amount; i++)
                 timetableLessonIDs.push_back(lesson.first);
@@ -180,7 +179,7 @@ Timetable Crossover(const Timetable& parent1, const Timetable& parent2)
     Timetable child = parent1;
     auto distribution2 = std::uniform_int_distribution<int>(0, 1);
 
-    for (auto& parent2Classes : parent2.classes)
+    for (auto& parent2Classes: parent2.classes)
     {
         if (distribution2(rng) == 0) child.classes[parent2Classes.first] = parent2Classes.second;
     }

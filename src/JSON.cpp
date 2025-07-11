@@ -48,7 +48,7 @@ std::string JSONToString(JSONObject jsonObject)
     if (jsonObject.type == JSON_OBJECT)
     {
         int i = 0;
-        for (auto pair : jsonObject.stringPairs)
+        for (auto pair: jsonObject.stringPairs)
         {
             if (jsonObject.format == JSON_NEWLINE) output += INDENTATION;
             output += '"' + pair.first + "\": " + '"' + pair.second + '"';
@@ -59,7 +59,7 @@ std::string JSONToString(JSONObject jsonObject)
             i++;
         }
         i = 0;
-        for (auto pair : jsonObject.intPairs)
+        for (auto pair: jsonObject.intPairs)
         {
             if (jsonObject.format == JSON_NEWLINE) output += INDENTATION;
             output += '"' + pair.first + "\": " + std::to_string(pair.second);
@@ -70,7 +70,7 @@ std::string JSONToString(JSONObject jsonObject)
             i++;
         }
         i = 0;
-        for (auto pair : jsonObject.boolPairs)
+        for (auto pair: jsonObject.boolPairs)
         {
             if (jsonObject.format == JSON_NEWLINE) output += INDENTATION;
             output += '"' + pair.first + "\": " + (pair.second ? "true" : "false");
@@ -80,7 +80,7 @@ std::string JSONToString(JSONObject jsonObject)
             i++;
         }
         i = 0;
-        for (auto pair : jsonObject.objectPairs)
+        for (auto pair: jsonObject.objectPairs)
         {
             if (jsonObject.format == JSON_NEWLINE) output += INDENTATION;
             output += '"' + pair.first + "\": " + JSONToString(pair.second);

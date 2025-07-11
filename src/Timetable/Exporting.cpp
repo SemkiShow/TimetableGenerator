@@ -76,12 +76,12 @@ void ExportClassesAsXlsx(Timetable* timetable)
     format_set_align(lessonFormat, LXW_ALIGN_CENTER);
     format_set_text_wrap(lessonFormat);
 
-    for (auto& classPair : timetable->classes)
+    for (auto& classPair: timetable->classes)
     {
         LogInfo("Exporting class with ID " + std::to_string(classPair.first));
         // Find longest combined lesson
         int longestCombinedLesson = 1;
-        for (auto& lesson : classPair.second.timetableLessons)
+        for (auto& lesson: classPair.second.timetableLessons)
         {
             if (lesson.second.lessonTeacherPairs.size() > longestCombinedLesson)
                 longestCombinedLesson = lesson.second.lessonTeacherPairs.size();
@@ -172,11 +172,11 @@ struct TeacherData
 std::unordered_map<int, std::vector<TeacherData>> GetTeacherData(Timetable* timetable)
 {
     std::unordered_map<int, std::vector<TeacherData>> teacherData;
-    for (auto& teacher : timetable->teachers)
+    for (auto& teacher: timetable->teachers)
     {
         teacherData[teacher.first].resize(daysPerWeek * lessonsPerDay);
     }
-    for (auto& classPair : timetable->classes)
+    for (auto& classPair: timetable->classes)
     {
         classPair.second.days.resize(daysPerWeek);
         for (int i = 0; i < daysPerWeek; i++)
@@ -251,7 +251,7 @@ void ExportTeachersAsXlsx(Timetable* timetable)
     format_set_align(lessonFormat, LXW_ALIGN_CENTER);
     format_set_text_wrap(lessonFormat);
 
-    for (auto& teacher : timetable->teachers)
+    for (auto& teacher: timetable->teachers)
     {
         LogInfo("Exporting teacher with ID " + std::to_string(teacher.first));
         lxw_worksheet* worksheet = workbook_add_worksheet(workbook, teacher.second.name.c_str());
@@ -298,11 +298,11 @@ struct ClassroomData
 std::unordered_map<int, std::vector<ClassroomData>> GetClassroomData(Timetable* timetable)
 {
     std::unordered_map<int, std::vector<ClassroomData>> classroomData;
-    for (auto& classroom : timetable->classrooms)
+    for (auto& classroom: timetable->classrooms)
     {
         classroomData[classroom.first].resize(daysPerWeek * lessonsPerDay);
     }
-    for (auto& classPair : timetable->classes)
+    for (auto& classPair: timetable->classes)
     {
         classPair.second.days.resize(daysPerWeek);
         for (int i = 0; i < daysPerWeek; i++)
@@ -382,7 +382,7 @@ void ExportClassroomsAsXlsx(Timetable* timetable)
     format_set_align(lessonFormat, LXW_ALIGN_CENTER);
     format_set_text_wrap(lessonFormat);
 
-    for (auto& classroom : timetable->classrooms)
+    for (auto& classroom: timetable->classrooms)
     {
         LogInfo("Exporting classroom with ID " + std::to_string(classroom.first));
         lxw_worksheet* worksheet = workbook_add_worksheet(workbook, classroom.second.name.c_str());

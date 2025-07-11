@@ -21,7 +21,7 @@ static void ResetVariables()
     allLessonClasses = allLessonClassrooms = true;
     lessonClassGroups.clear();
     lessonClasses.clear();
-    for (auto& classPair : currentTimetable.classes)
+    for (auto& classPair: currentTimetable.classes)
     {
         lessonClassGroups[classPair.second.number] = true;
         lessonClasses[classPair.first] = newLesson;
@@ -29,7 +29,7 @@ static void ResetVariables()
     for (int i = 0; i < tmpTmpTimetable.lessons[currentLessonID].classIDs.size(); i++)
         lessonClasses[tmpTmpTimetable.lessons[currentLessonID].classIDs[i]] = true;
     lessonClassrooms.clear();
-    for (auto& classroom : currentTimetable.classrooms)
+    for (auto& classroom: currentTimetable.classrooms)
         lessonClassrooms[classroom.first] = newLesson;
     for (int i = 0; i < tmpTmpTimetable.lessons[currentLessonID].classroomIDs.size(); i++)
         lessonClassrooms[tmpTmpTimetable.lessons[currentLessonID].classroomIDs[i]] = true;
@@ -56,7 +56,7 @@ void ShowEditLesson(bool* isOpen)
             &allLessonClasses))
     {
         LogInfo("Clicked allLessonClasses in a lesson with ID " + std::to_string(currentLessonID));
-        for (auto& classPair : currentTimetable.classes)
+        for (auto& classPair: currentTimetable.classes)
         {
             lessonClassGroups[classPair.second.number] = allLessonClasses;
             lessonClasses[classPair.first] = allLessonClasses;
@@ -75,7 +75,7 @@ void ShowEditLesson(bool* isOpen)
     // Classes
     std::string lastClassNumber = "";
     int pushID = 0;
-    for (int classID : currentTimetable.orderedClasses)
+    for (int classID: currentTimetable.orderedClasses)
     {
         if (lastClassNumber != currentTimetable.classes[classID].number)
         {
@@ -88,7 +88,7 @@ void ShowEditLesson(bool* isOpen)
             {
                 LogInfo("Clicked lessonClassGroups in class ID " + std::to_string(classID) +
                         " in lesson with ID " + std::to_string(currentLessonID));
-                for (auto& classPair : currentTimetable.classes)
+                for (auto& classPair: currentTimetable.classes)
                 {
                     if (classPair.second.number == currentTimetable.classes[classID].number)
                         lessonClasses[classPair.first] =
@@ -120,7 +120,7 @@ void ShowEditLesson(bool* isOpen)
             &allLessonClassrooms))
     {
         LogInfo("Clicked allLessonClassrooms in lesson with ID " + std::to_string(currentLessonID));
-        for (auto& classroom : currentTimetable.classrooms)
+        for (auto& classroom: currentTimetable.classrooms)
             lessonClassrooms[classroom.first] = allLessonClassrooms;
     }
 
@@ -135,7 +135,7 @@ void ShowEditLesson(bool* isOpen)
     }
 
     // Classrooms
-    for (auto& classroom : currentTimetable.classrooms)
+    for (auto& classroom: currentTimetable.classrooms)
     {
         ImGui::PushID(pushID);
         ImGui::Checkbox(classroom.second.name.c_str(), &lessonClassrooms[classroom.first]);
@@ -150,13 +150,13 @@ void ShowEditLesson(bool* isOpen)
     {
         LogInfo("Clicked Ok while editing a lesson with ID " + std::to_string(currentLessonID));
         tmpTmpTimetable.lessons[currentLessonID].classIDs.clear();
-        for (auto& classPair : currentTimetable.classes)
+        for (auto& classPair: currentTimetable.classes)
         {
             if (lessonClasses[classPair.first])
                 tmpTmpTimetable.lessons[currentLessonID].classIDs.push_back(classPair.first);
         }
         tmpTmpTimetable.lessons[currentLessonID].classroomIDs.clear();
-        for (auto& classroom : currentTimetable.classrooms)
+        for (auto& classroom: currentTimetable.classrooms)
         {
             if (lessonClassrooms[classroom.first])
                 tmpTmpTimetable.lessons[currentLessonID].classroomIDs.push_back(classroom.first);

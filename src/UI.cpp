@@ -102,7 +102,7 @@ void OpenClasses()
 {
     LogInfo("Opening classes");
     classTeacherValues = "";
-    for (auto& teacher : currentTimetable.teachers)
+    for (auto& teacher: currentTimetable.teachers)
     {
         if (teacher.second.name == "")
             classTeacherValues += labels["error"];

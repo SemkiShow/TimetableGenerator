@@ -45,15 +45,15 @@ static void ResetVariables()
 
     allClassLessons = true;
     allClassLessonTeachers.clear();
-    for (auto& lesson : currentTimetable.lessons)
+    for (auto& lesson: currentTimetable.lessons)
         allClassLessonTeachers[lesson.first] = true;
     classLessons.clear();
     classLessonTeachers.clear();
 
-    for (auto& lesson : currentTimetable.lessons)
+    for (auto& lesson: currentTimetable.lessons)
     {
         classLessons[std::to_string(lesson.first) + "0"] = false;
-        for (auto& teacher : currentTimetable.teachers)
+        for (auto& teacher: currentTimetable.teachers)
         {
             classLessonTeachers[std::to_string(lesson.first) + teacher.second.name + "0"] = false;
             classLessonTeachers[std::to_string(lesson.first) + teacher.second.name + "1"] =
@@ -62,7 +62,7 @@ static void ResetVariables()
         }
     }
 
-    for (auto& lesson : currentTimetable.lessons)
+    for (auto& lesson: currentTimetable.lessons)
     {
         bool classIDFound = false;
         for (int i = 0; i < lesson.second.classIDs.size(); i++)
@@ -78,7 +78,7 @@ static void ResetVariables()
         }
         if (!classIDFound) continue;
         classLessons[std::to_string(lesson.first) + "0"] = true;
-        for (auto& teacher : currentTimetable.teachers)
+        for (auto& teacher: currentTimetable.teachers)
         {
             bool lessonIDFound = false;
             for (int i = 0; i < teacher.second.lessonIDs.size(); i++)
@@ -94,13 +94,13 @@ static void ResetVariables()
         }
     }
 
-    for (auto& lesson : currentTimetable.lessons)
+    for (auto& lesson: currentTimetable.lessons)
     {
-        for (auto& teacher : currentTimetable.teachers)
+        for (auto& teacher: currentTimetable.teachers)
         {
             bool lessonTeacherPairFound = false;
             int lessonTeacherPairID = -1;
-            for (auto& timetableLesson : tmpTmpTimetable.classes[currentClassID].timetableLessons)
+            for (auto& timetableLesson: tmpTmpTimetable.classes[currentClassID].timetableLessons)
             {
                 if (timetableLesson.second.lessonTeacherPairs.size() != 1) continue;
                 if (lesson.first == timetableLesson.second.lessonTeacherPairs[0].lessonID &&
@@ -135,7 +135,7 @@ void ShowCombineLessons(bool* isOpen)
     // Lessons
     ImGui::Columns(2);
     int pushID = 0;
-    for (auto& lesson : currentTimetable.lessons)
+    for (auto& lesson: currentTimetable.lessons)
     {
         if (!classLessons[std::to_string(lesson.first) + "0"]) continue;
         ImGui::PushID(pushID);
@@ -144,7 +144,7 @@ void ShowCombineLessons(bool* isOpen)
         ImGui::NextColumn();
         ImGui::PopID();
         pushID++;
-        for (auto& teacher : currentTimetable.teachers)
+        for (auto& teacher: currentTimetable.teachers)
         {
             if (!classLessonTeachers[std::to_string(lesson.first) + teacher.second.name + "0"])
                 continue;
@@ -169,10 +169,10 @@ void ShowCombineLessons(bool* isOpen)
             .timetableLessons[currentLessonID]
             .lessonTeacherPairs.clear();
         int counter = 0;
-        for (auto& lesson : currentTimetable.lessons)
+        for (auto& lesson: currentTimetable.lessons)
         {
             if (!classLessons[std::to_string(lesson.first) + "2"]) continue;
-            for (auto& teacher : currentTimetable.teachers)
+            for (auto& teacher: currentTimetable.teachers)
             {
                 if (!classLessonTeachers[std::to_string(lesson.first) + teacher.second.name + "2"])
                     continue;
@@ -341,11 +341,11 @@ void ShowEditClass(bool* isOpen)
         LogInfo("Clicked the combine lessons button in class with ID " +
                 std::to_string(currentClassID));
         newCombinedLesson = true;
-        for (auto& lesson : currentTimetable.lessons)
+        for (auto& lesson: currentTimetable.lessons)
         {
             if (!classLessons[std::to_string(lesson.first) + "0"]) continue;
             classLessons[std::to_string(lesson.first) + "2"] = false;
-            for (auto& teacher : currentTimetable.teachers)
+            for (auto& teacher: currentTimetable.teachers)
             {
                 if (!classLessonTeachers[std::to_string(lesson.first) + teacher.second.name + "0"])
                     continue;
@@ -383,11 +383,11 @@ void ShowEditClass(bool* isOpen)
             LogInfo("Editing a timetable lesson with ID " + std::to_string(it->first) +
                     " in a class with ID " + std::to_string(currentClassID));
             newCombinedLesson = false;
-            for (auto& lesson : currentTimetable.lessons)
+            for (auto& lesson: currentTimetable.lessons)
             {
                 if (!classLessons[std::to_string(lesson.first) + "0"]) continue;
                 classLessons[std::to_string(lesson.first) + "2"] = false;
-                for (auto& teacher : currentTimetable.teachers)
+                for (auto& teacher: currentTimetable.teachers)
                 {
                     if (!classLessonTeachers[std::to_string(lesson.first) + teacher.second.name +
                                              "0"])
@@ -434,11 +434,11 @@ void ShowEditClass(bool* isOpen)
     ImGui::Columns(2);
 
     // Lessons
-    for (auto& lesson : currentTimetable.lessons)
+    for (auto& lesson: currentTimetable.lessons)
     {
         if (!classLessons[std::to_string(lesson.first) + "0"]) continue;
         bool anyTeacherSelected = false;
-        for (auto& teacher : currentTimetable.teachers)
+        for (auto& teacher: currentTimetable.teachers)
         {
             if (!classLessonTeachers[std::to_string(lesson.first) + teacher.second.name + "0"])
                 continue;
@@ -465,14 +465,14 @@ void ShowEditClass(bool* isOpen)
         {
             LogInfo("Clicked allClassLessonTeachers in class with ID " +
                     std::to_string(currentClassID));
-            for (auto& teacher : currentTimetable.teachers)
+            for (auto& teacher: currentTimetable.teachers)
                 classLessonTeachers[std::to_string(lesson.first) + teacher.second.name + "1"] =
                     allClassLessonTeachers[lesson.first];
         }
         ImGui::NextColumn();
         ImGui::PopID();
         pushID++;
-        for (auto& teacher : currentTimetable.teachers)
+        for (auto& teacher: currentTimetable.teachers)
         {
             if (!classLessonTeachers[std::to_string(lesson.first) + teacher.second.name + "0"])
                 continue;
@@ -514,16 +514,16 @@ void ShowEditClass(bool* isOpen)
         }
         int timetableLessonCounter = 0;
         std::map<int, TimetableLesson> timetableLessons;
-        for (auto lesson : tmpTmpTimetable.classes[currentClassID].timetableLessons)
+        for (auto lesson: tmpTmpTimetable.classes[currentClassID].timetableLessons)
         {
             timetableLessons[timetableLessonCounter++] = lesson.second;
         }
         tmpTmpTimetable.classes[currentClassID].timetableLessons = timetableLessons;
         tmpTmpTimetable.classes[currentClassID].maxTimetableLessonID = timetableLessonCounter - 1;
-        for (auto& lesson : currentTimetable.lessons)
+        for (auto& lesson: currentTimetable.lessons)
         {
             if (!classLessons[std::to_string(lesson.first) + "0"]) continue;
-            for (auto& teacher : currentTimetable.teachers)
+            for (auto& teacher: currentTimetable.teachers)
             {
                 if (!classLessonTeachers[std::to_string(lesson.first) + teacher.second.name + "0"])
                     continue;
@@ -593,7 +593,7 @@ void ShowEditClass(bool* isOpen)
                 tmpTmpTimetable.classes[tmpTmpTimetable.maxClassID].number =
                     tmpTmpTimetable.classes[currentClassID].number;
             }
-            for (auto& classPair : tmpTmpTimetable.classes)
+            for (auto& classPair: tmpTmpTimetable.classes)
             {
                 if (classPair.first == currentClassID) continue;
                 if (classPair.second.number == tmpTmpTimetable.classes[currentClassID].number)
@@ -611,7 +611,7 @@ void ShowEditClass(bool* isOpen)
         }
         else
         {
-            for (auto& teacher : currentTimetable.teachers)
+            for (auto& teacher: currentTimetable.teachers)
             {
                 if (classTeacherIndex <= 0)
                 {
@@ -692,7 +692,7 @@ void ShowClasses(bool* isOpen)
             {
                 LogInfo("Bulk editing classes with number " + lastClassNumber);
                 bulkClassesAmount = 0;
-                for (auto& classPair : tmpTimetable.classes)
+                for (auto& classPair: tmpTimetable.classes)
                 {
                     if (classPair.second.number == lastClassNumber) bulkClassesAmount++;
                 }

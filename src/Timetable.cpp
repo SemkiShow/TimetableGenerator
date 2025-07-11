@@ -21,14 +21,14 @@ void SaveTimetable(std::string path, Timetable* timetable)
     jsonObject.objectPairs["classrooms"] = JSONObject();
     jsonObject.objectPairs["classrooms"].type = JSON_OBJECT;
     jsonObject.objectPairs["classrooms"].format = JSON_INLINE;
-    for (auto& classroom : timetable->classrooms)
+    for (auto& classroom: timetable->classrooms)
         jsonObject.objectPairs["classrooms"].stringPairs[std::to_string(classroom.first)] =
             classroom.second.name;
 
     // Lessons
     jsonObject.objectPairs["lessons"] = JSONObject();
     jsonObject.objectPairs["lessons"].type = JSON_OBJECT;
-    for (auto& lesson : timetable->lessons)
+    for (auto& lesson: timetable->lessons)
     {
         jsonObject.objectPairs["lessons"].objectPairs[std::to_string(lesson.first)] = JSONObject();
         jsonObject.objectPairs["lessons"].objectPairs[std::to_string(lesson.first)].type =
@@ -80,7 +80,7 @@ void SaveTimetable(std::string path, Timetable* timetable)
     // Teachers
     jsonObject.objectPairs["teachers"] = JSONObject();
     jsonObject.objectPairs["teachers"].type = JSON_OBJECT;
-    for (auto& teacher : timetable->teachers)
+    for (auto& teacher: timetable->teachers)
     {
         // Teacher
         jsonObject.objectPairs["teachers"].objectPairs[std::to_string(teacher.first)] =
@@ -151,7 +151,7 @@ void SaveTimetable(std::string path, Timetable* timetable)
     // Classes
     jsonObject.objectPairs["classes"] = JSONObject();
     jsonObject.objectPairs["classes"].type = JSON_OBJECT;
-    for (auto& classPair : timetable->classes)
+    for (auto& classPair: timetable->classes)
     {
         // Class
         jsonObject.objectPairs["classes"].objectPairs[std::to_string(classPair.first)] =
@@ -180,7 +180,7 @@ void SaveTimetable(std::string path, Timetable* timetable)
             .objectPairs[std::to_string(classPair.first)]
             .objectPairs["lessons"]
             .type = JSON_OBJECT;
-        for (auto& timetableLesson : classPair.second.timetableLessons)
+        for (auto& timetableLesson: classPair.second.timetableLessons)
         {
             jsonObject.objectPairs["classes"]
                 .objectPairs[std::to_string(classPair.first)]
@@ -367,7 +367,7 @@ void LoadTimetable(std::string path, Timetable* timetable)
     timetable->name = TrimJunk(timetable->name);
 
     // Classrooms
-    for (auto& classroom : jsonObject.objectPairs["classrooms"].stringPairs)
+    for (auto& classroom: jsonObject.objectPairs["classrooms"].stringPairs)
     {
         if (classroom.second == "") continue;
         int classroomID = stoi(classroom.first);
@@ -377,7 +377,7 @@ void LoadTimetable(std::string path, Timetable* timetable)
     }
 
     // Lessons
-    for (auto& lesson : jsonObject.objectPairs["lessons"].objectPairs)
+    for (auto& lesson: jsonObject.objectPairs["lessons"].objectPairs)
     {
         if (lesson.second.stringPairs["name"] == "") continue;
         int lessonID = stoi(lesson.first);
@@ -393,7 +393,7 @@ void LoadTimetable(std::string path, Timetable* timetable)
     }
 
     // Teachers
-    for (auto& teacher : jsonObject.objectPairs["teachers"].objectPairs)
+    for (auto& teacher: jsonObject.objectPairs["teachers"].objectPairs)
     {
         if (teacher.second.stringPairs["name"] == "") continue;
         int teacherID = stoi(teacher.first);
@@ -416,7 +416,7 @@ void LoadTimetable(std::string path, Timetable* timetable)
     }
 
     // Classes
-    for (auto& classPair : jsonObject.objectPairs["classes"].objectPairs)
+    for (auto& classPair: jsonObject.objectPairs["classes"].objectPairs)
     {
         if (classPair.second.stringPairs["number"] == "") continue;
         int classID = stoi(classPair.first);
@@ -425,7 +425,7 @@ void LoadTimetable(std::string path, Timetable* timetable)
         timetable->classes[classID].number = classPair.second.stringPairs["number"];
         timetable->classes[classID].letter = classPair.second.stringPairs["letter"];
         timetable->classes[classID].teacherID = classPair.second.intPairs["teacherID"];
-        for (auto& lesson : classPair.second.objectPairs["lessons"].objectPairs)
+        for (auto& lesson: classPair.second.objectPairs["lessons"].objectPairs)
         {
             int lessonID = stoi(lesson.first);
             if (lessonID > timetable->classes[classID].maxTimetableLessonID)

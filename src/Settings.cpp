@@ -60,7 +60,7 @@ std::vector<std::string> Split(std::string input, char delimiter)
 void ListFiles(const std::string& path, std::vector<std::string>* files)
 {
     files->clear();
-    for (const auto& entry : std::filesystem::directory_iterator(path))
+    for (const auto& entry: std::filesystem::directory_iterator(path))
     {
         if (std::filesystem::is_regular_file(entry.path()))
         {

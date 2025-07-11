@@ -23,7 +23,7 @@ void ResetTeacherLessonValues()
     teacherLessonValues += '\0';
     teacherLessonValues += labels["any lesson"];
     teacherLessonValues += '\0';
-    for (auto& lesson : currentTimetable.lessons)
+    for (auto& lesson: currentTimetable.lessons)
     {
         if (!teacherLessons[lesson.first]) continue;
         if (lesson.second.name == "")
@@ -44,7 +44,7 @@ static void ResetVariables()
     allAvailableTeacherLessonsHorizontal.clear();
     allAvailableTeacherLessonsHorizontal.resize(lessonsPerDay, 1);
     teacherLessons.clear();
-    for (auto& lesson : currentTimetable.lessons)
+    for (auto& lesson: currentTimetable.lessons)
         teacherLessons[lesson.first] = false;
     for (int i = 0; i < tmpTmpTimetable.teachers[currentTeacherID].lessonIDs.size(); i++)
         teacherLessons[tmpTmpTimetable.teachers[currentTeacherID].lessonIDs[i]] = true;
@@ -66,7 +66,7 @@ static void ResetVariables()
             else
             {
                 int counter = 2;
-                for (auto& lesson : currentTimetable.lessons)
+                for (auto& lesson: currentTimetable.lessons)
                 {
                     if (lessonID == lesson.first)
                     {
@@ -114,7 +114,7 @@ void ShowEditTeacher(bool* isOpen)
     {
         LogInfo("Clicked allTeacherLessons in a teacher with ID " +
                 std::to_string(currentTeacherID));
-        for (auto& lesson : currentTimetable.lessons)
+        for (auto& lesson: currentTimetable.lessons)
             teacherLessons[lesson.first] = allTeacherLessons;
     }
 
@@ -130,7 +130,7 @@ void ShowEditTeacher(bool* isOpen)
     // Lesons
     ImGui::Columns(3);
     int pushID = 0;
-    for (auto& lesson : currentTimetable.lessons)
+    for (auto& lesson: currentTimetable.lessons)
     {
         ImGui::PushID(pushID);
         if (ImGui::Checkbox(lesson.second.name.c_str(), &teacherLessons[lesson.first]))
@@ -220,7 +220,7 @@ void ShowEditTeacher(bool* isOpen)
     {
         LogInfo("Clicked Ok while editing a teacher with ID " + std::to_string(currentTeacherID));
         tmpTmpTimetable.teachers[currentTeacherID].lessonIDs.clear();
-        for (auto& lesson : currentTimetable.lessons)
+        for (auto& lesson: currentTimetable.lessons)
         {
             if (teacherLessons[lesson.first])
                 tmpTmpTimetable.teachers[currentTeacherID].lessonIDs.push_back(lesson.first);
@@ -238,7 +238,7 @@ void ShowEditTeacher(bool* isOpen)
                 else
                 {
                     availableTeacherLessons[i * lessonsPerDay + j] -= 2;
-                    for (auto& lesson : currentTimetable.lessons)
+                    for (auto& lesson: currentTimetable.lessons)
                     {
                         if (availableTeacherLessons[i * lessonsPerDay + j] <= 0)
                         {

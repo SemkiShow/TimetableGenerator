@@ -352,7 +352,7 @@ int UnzipFile(const std::string& zipPath, const std::string& extractDir)
 
 void CopyFiles(const std::filesystem::path& src, const std::filesystem::path& dest)
 {
-    for (const auto& entry : std::filesystem::recursive_directory_iterator(src))
+    for (const auto& entry: std::filesystem::recursive_directory_iterator(src))
     {
         const auto& from = entry.path();
         auto to = dest / std::filesystem::relative(from, src);

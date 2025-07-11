@@ -1,5 +1,4 @@
 #include "Logging.hpp"
-#include <cstring>
 #include <ctime>
 #include <fstream>
 #include <string>
