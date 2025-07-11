@@ -370,7 +370,8 @@ void ShowEditClass(bool* isOpen)
         ImGui::PushID(pushID);
         if (ImGui::Button(labels["-"].c_str()))
         {
-            LogInfo("Removed class with ID " + std::to_string(it->first));
+            LogInfo("Removed a timetable lesson with ID " + std::to_string(it->first) +
+                    " in a class with ID " + std::to_string(it->first));
             ImGui::PopID();
             pushID++;
             it = tmpTmpTimetable.classes[currentClassID].timetableLessons.erase(it);
@@ -379,7 +380,8 @@ void ShowEditClass(bool* isOpen)
         ImGui::SameLine();
         if (ImGui::Button(labels["Edit"].c_str()))
         {
-            LogInfo("Editing class with ID " + std::to_string(currentClassID));
+            LogInfo("Editing a timetable lesson with ID " + std::to_string(it->first) +
+                    " in a class with ID " + std::to_string(currentClassID));
             newCombinedLesson = false;
             for (auto& lesson : currentTimetable.lessons)
             {
@@ -475,11 +477,14 @@ void ShowEditClass(bool* isOpen)
             if (!classLessonTeachers[std::to_string(lesson.first) + teacher.second.name + "0"])
                 continue;
             ImGui::PushID(pushID);
+            ImGui::BeginDisabled(
+                !classLessonTeachers[std::to_string(lesson.first) + teacher.second.name + "1"]);
             ImGui::InputInt(
                 lesson.second.name.c_str(),
                 &classLessonAmounts[std::to_string(lesson.first) + teacher.second.name]);
             if (classLessonAmounts[std::to_string(lesson.first) + teacher.second.name] < 0)
                 classLessonAmounts[std::to_string(lesson.first) + teacher.second.name] = 0;
+            ImGui::EndDisabled();
             ImGui::NextColumn();
             ImGui::Checkbox(
                 teacher.second.name.c_str(),
@@ -508,14 +513,12 @@ void ShowEditClass(bool* isOpen)
             ++it;
         }
         int timetableLessonCounter = 0;
-        for (auto it = tmpTmpTimetable.classes[currentClassID].timetableLessons.begin();
-             it != tmpTmpTimetable.classes[currentClassID].timetableLessons.end();)
+        std::map<int, TimetableLesson> timetableLessons;
+        for (auto lesson : tmpTmpTimetable.classes[currentClassID].timetableLessons)
         {
-            tmpTmpTimetable.classes[currentClassID].timetableLessons[timetableLessonCounter] =
-                it->second;
-            it = tmpTmpTimetable.classes[currentClassID].timetableLessons.erase(it);
-            timetableLessonCounter++;
+            timetableLessons[timetableLessonCounter++] = lesson.second;
         }
+        tmpTmpTimetable.classes[currentClassID].timetableLessons = timetableLessons;
         tmpTmpTimetable.classes[currentClassID].maxTimetableLessonID = timetableLessonCounter - 1;
         for (auto& lesson : currentTimetable.lessons)
         {
@@ -557,32 +560,34 @@ void ShowEditClass(bool* isOpen)
                 if (it->second.number == tmpTmpTimetable.classes[currentClassID].number &&
                     it->first != currentClassID)
                 {
-                    if (classCounter > bulkClassesAmount && !newClass)
+                    classCounter++;
+                    if (classCounter >= bulkClassesAmount && !newClass)
                     {
                         tmpTmpTimetable.orderedClasses.erase(
                             find(tmpTmpTimetable.orderedClasses.begin(),
                                  tmpTmpTimetable.orderedClasses.end(), it->first));
                         it = tmpTmpTimetable.classes.erase(it);
-                        classCounter--;
                         continue;
                     }
-                    classCounter++;
                 }
                 ++it;
             }
-            int orderedClassesID = -1;
+            int firstOrderedClassesID = -1;
+            int lastOrderedClassesID = -1;
             for (int i = 0; i < tmpTmpTimetable.orderedClasses.size(); i++)
             {
-                if (tmpTmpTimetable.orderedClasses[i] == currentClassID)
+                if (tmpTmpTimetable.classes[tmpTmpTimetable.orderedClasses[i]].number ==
+                    tmpTmpTimetable.classes[currentClassID].number)
                 {
-                    orderedClassesID = i;
+                    if (firstOrderedClassesID == -1) firstOrderedClassesID = i;
+                    lastOrderedClassesID = i;
                 }
             }
             for (int i = 0; i < bulkClassesAmount - 1 - classCounter; i++)
             {
                 tmpTmpTimetable.maxClassID++;
                 tmpTmpTimetable.orderedClasses.insert(tmpTmpTimetable.orderedClasses.begin() +
-                                                          orderedClassesID + i + 1,
+                                                          lastOrderedClassesID + i + 1,
                                                       tmpTmpTimetable.maxClassID);
                 tmpTmpTimetable.classes[tmpTmpTimetable.maxClassID] = Class();
                 tmpTmpTimetable.classes[tmpTmpTimetable.maxClassID].number =
@@ -600,7 +605,7 @@ void ShowEditClass(bool* isOpen)
             }
             for (int i = 0; i < bulkClassesAmount; i++)
             {
-                tmpTmpTimetable.classes[tmpTmpTimetable.orderedClasses[orderedClassesID + i]]
+                tmpTmpTimetable.classes[tmpTmpTimetable.orderedClasses[firstOrderedClassesID + i]]
                     .letter = GetNthUtf8Character(labels["abcdefghijklmnopqrstuvwxyz"], i);
             }
         }
