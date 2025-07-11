@@ -84,7 +84,7 @@ if (NOT TARGET CURL::libcurl)
 
     # libpsl
     set(LIBPSL_INSTALL_DIR ${CMAKE_BINARY_DIR}/_deps/libpsl-install)
-    if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    if (WIN32)
         ExternalProject_Add(
             libpsl
             URL https://github.com/rockdaboot/libpsl/archive/${LIBPSL_VERSION}.zip

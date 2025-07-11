@@ -1,7 +1,7 @@
 #include "Crashes.hpp"
 #include "Logging.hpp"
 #include "Settings.hpp"
-#include "Timetable.hpp"
+// #include "Timetable.hpp"
 #include "UI.hpp"
 #include "Updates.hpp"
 #include <ctime>
@@ -15,13 +15,13 @@ int main()
     srand(time(0));
 
     // Timetable save and load testing
-    Timetable timetableSave;
-    timetableSave.name = "save";
-    GenerateRandomTimetable(&timetableSave);
-    SaveTimetable("timetables/save.json", &timetableSave);
-    Timetable timetableLoad;
-    LoadTimetable("timetables/save.json", &timetableLoad);
-    SaveTimetable("timetables/load.json", &timetableLoad);
+    // Timetable timetableSave;
+    // timetableSave.name = "save";
+    // GenerateRandomTimetable(&timetableSave);
+    // SaveTimetable("timetables/save.json", &timetableSave);
+    // Timetable timetableLoad;
+    // LoadTimetable("timetables/save.json", &timetableLoad);
+    // SaveTimetable("timetables/load.json", &timetableLoad);
 
     // Load settings
     Load("settings.txt");

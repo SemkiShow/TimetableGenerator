@@ -202,19 +202,19 @@ void ShowCombineLessons(bool* isOpen)
     ImGui::End();
 }
 
-std::string GetNthUtf8Character(const std::string& utf8_str, int index)
+std::string GetNthUtf8Character(const std::string& utf8String, int index)
 {
-    auto it = utf8_str.begin();
-    auto end = utf8_str.end();
+    auto it = utf8String.begin();
+    auto end = utf8String.end();
 
     for (int i = 0; i < index && it != end; ++i)
         utf8::next(it, end);
 
     if (it == end) return "";
 
-    auto char_start = it;
+    auto charStart = it;
     utf8::next(it, end);
-    return std::string(char_start, it);
+    return std::string(charStart, it);
 }
 
 bool isEditClass = false;
@@ -421,7 +421,7 @@ void ShowEditClass(bool* isOpen)
             text += currentTimetable.lessons[it->second.lessonTeacherPairs[j].lessonID].name + " (";
             text +=
                 currentTimetable.teachers[it->second.lessonTeacherPairs[j].teacherID].name + ")";
-            if (j < it->second.lessonTeacherPairs.size() - 1) text += ", ";
+            if (j < it->second.lessonTeacherPairs.size() - 1) text += "\n";
         }
         ImGui::InputInt(text.c_str(), &it->second.amount);
         ImGui::PopID();
@@ -557,7 +557,7 @@ void ShowEditClass(bool* isOpen)
                 if (it->second.number == tmpTmpTimetable.classes[currentClassID].number &&
                     it->first != currentClassID)
                 {
-                    if (classCounter >= bulkClassesAmount && !newClass)
+                    if (classCounter > bulkClassesAmount && !newClass)
                     {
                         tmpTmpTimetable.orderedClasses.erase(
                             find(tmpTmpTimetable.orderedClasses.begin(),
