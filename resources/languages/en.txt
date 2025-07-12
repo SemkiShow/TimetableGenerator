@@ -112,6 +112,7 @@ min free periods
 max free periods
 Warning: changing the current year can be quite destructive.
 If something went wrong, press the Cancel button to revert all changes
+none
 Combine lessons
 New class
 Edit class

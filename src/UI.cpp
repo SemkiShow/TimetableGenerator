@@ -92,7 +92,6 @@ void OpenLessons()
 void OpenTeachers()
 {
     LogInfo("Opening teachers");
-    ResetTeacherLessonValues();
     tmpTimetable.teachers = currentTimetable.teachers;
     tmpTimetable.maxTeacherID = currentTimetable.maxTeacherID;
     isTeachers = true;
@@ -101,16 +100,6 @@ void OpenTeachers()
 void OpenClasses()
 {
     LogInfo("Opening classes");
-    classTeacherValues = "";
-    for (auto& teacher: currentTimetable.teachers)
-    {
-        if (teacher.second.name == "")
-            classTeacherValues += labels["error"];
-        else
-            classTeacherValues += teacher.second.name;
-        classTeacherValues += '\0';
-    }
-    classTeacherValues += '\0';
     tmpTimetable.classes = currentTimetable.classes;
     tmpTimetable.maxClassID = currentTimetable.maxClassID;
     tmpTimetable.orderedClasses = currentTimetable.orderedClasses;

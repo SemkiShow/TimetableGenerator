@@ -11,8 +11,6 @@ extern int windowSize[2];
 extern std::string weekDays[7];
 extern std::string wizardTexts[WIZARD_STEPS];
 
-extern std::string teacherLessonValues;
-extern std::string classTeacherValues;
 extern bool wasGenerateTimetable;
 extern std::string generateTimetableStatus;
 extern std::map<int, Lesson> tmpLessons;
@@ -45,8 +43,6 @@ void ShowCombineLessons(bool* isOpen);
 void ShowEditClass(bool* isOpen);
 void ShowClasses(bool* isOpen);
 void ShowWizard(bool* isOpen);
-
-void ResetTeacherLessonValues();
 
 void LoadFonts();
 void LoadStyle();

@@ -112,6 +112,7 @@ min. ilość okienek
 maks. ilość okienek
 Uwaga: zmiana bieżącego roku może być bardzo destrukcyjna.
 Jeśli coś poszło nie tak, naciśnij przycisk Anuluj, aby cofnąć wszystkie zmiany
+brak
 Połącz lekcje
 Nowa klasa
 Edytuj klasę

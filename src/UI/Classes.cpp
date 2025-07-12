@@ -15,6 +15,7 @@ bool bulkEditClass = false;
 int bulkClassesAmount = 1;
 int classTeacherIndex = 0;
 std::string classTeacherValues = "";
+std::vector<int> classTeachers;
 bool allClassLessons = true;
 std::unordered_map<std::string, bool> classLessons;
 std::unordered_map<std::string, int> classLessonAmounts;
@@ -24,6 +25,51 @@ std::vector<bool> allAvailableClassLessonsVertical;
 std::vector<bool> allAvailableClassLessonsHorizontal;
 std::map<int, Lesson> tmpLessons;
 std::map<int, Lesson> tmpTmpLessons;
+
+void ResetClassTeacherValues()
+{
+    classTeacherValues = labels["none"];
+    classTeacherValues += '\0';
+    classTeachers.clear();
+    classTeachers.push_back(-1);
+    for (auto& teacher: currentTimetable.teachers)
+    {
+        bool isTeacherTaken = false;
+        for (auto& classPair: tmpTmpTimetable.classes)
+        {
+            if (classPair.second.teacherID == teacher.first && classPair.first != currentClassID)
+            {
+                isTeacherTaken = true;
+                break;
+            }
+        }
+
+        if (!isTeacherTaken)
+        {
+            if (teacher.second.name == "")
+            {
+                classTeacherValues += labels["error"];
+            }
+            else
+            {
+                classTeacherValues += teacher.second.name;
+            }
+            classTeachers.push_back(teacher.first);
+            classTeacherValues += '\0';
+        }
+    }
+    classTeacherValues += '\0';
+
+    classTeacherIndex = 0;
+    for (int i = 0; i < classTeachers.size(); i++)
+    {
+        if (tmpTmpTimetable.classes[currentClassID].teacherID == classTeachers[i])
+        {
+            classTeacherIndex = i;
+            break;
+        }
+    }
+}
 
 static void ResetVariables()
 {
@@ -123,6 +169,7 @@ static void ResetVariables()
     }
 
     tmpTmpLessons = tmpLessons;
+    ResetClassTeacherValues();
 }
 
 static int currentLessonID = 0;
@@ -703,14 +750,14 @@ void ShowEditClass(bool* isOpen)
         }
         else
         {
-            for (auto& teacher: currentTimetable.teachers)
+            if (classTeacherIndex >= 0 && classTeacherIndex < classTeachers.size())
             {
-                if (classTeacherIndex <= 0)
-                {
-                    tmpTmpTimetable.classes[currentClassID].teacherID = teacher.first;
-                    break;
-                }
-                classTeacherIndex--;
+                tmpTmpTimetable.classes[currentClassID].teacherID =
+                    classTeachers[classTeacherIndex];
+            }
+            else
+            {
+                tmpTmpTimetable.classes[currentClassID].teacherID = -1;
             }
         }
         tmpTimetable.classes = tmpTmpTimetable.classes;
