@@ -22,6 +22,8 @@ std::unordered_map<int, bool> allClassLessonTeachers;
 std::unordered_map<std::string, bool> classLessonTeachers;
 std::vector<bool> allAvailableClassLessonsVertical;
 std::vector<bool> allAvailableClassLessonsHorizontal;
+std::map<int, Lesson> tmpLessons;
+std::map<int, Lesson> tmpTmpLessons;
 
 static void ResetVariables()
 {
@@ -45,12 +47,12 @@ static void ResetVariables()
 
     allClassLessons = true;
     allClassLessonTeachers.clear();
-    for (auto& lesson: currentTimetable.lessons)
+    for (auto& lesson: tmpLessons)
         allClassLessonTeachers[lesson.first] = true;
     classLessons.clear();
     classLessonTeachers.clear();
 
-    for (auto& lesson: currentTimetable.lessons)
+    for (auto& lesson: tmpLessons)
     {
         classLessons[std::to_string(lesson.first) + "0"] = false;
         for (auto& teacher: currentTimetable.teachers)
@@ -62,7 +64,7 @@ static void ResetVariables()
         }
     }
 
-    for (auto& lesson: currentTimetable.lessons)
+    for (auto& lesson: tmpLessons)
     {
         bool classIDFound = false;
         for (int i = 0; i < lesson.second.classIDs.size(); i++)
@@ -94,7 +96,7 @@ static void ResetVariables()
         }
     }
 
-    for (auto& lesson: currentTimetable.lessons)
+    for (auto& lesson: tmpLessons)
     {
         for (auto& teacher: currentTimetable.teachers)
         {
@@ -119,6 +121,8 @@ static void ResetVariables()
             classLessonTeachers[std::to_string(lesson.first) + teacher.second.name + "1"] = true;
         }
     }
+
+    tmpTmpLessons = tmpLessons;
 }
 
 static int currentLessonID = 0;
@@ -135,7 +139,7 @@ void ShowCombineLessons(bool* isOpen)
     // Lessons
     ImGui::Columns(2);
     int pushID = 0;
-    for (auto& lesson: currentTimetable.lessons)
+    for (auto& lesson: tmpLessons)
     {
         if (!classLessons[std::to_string(lesson.first) + "0"]) continue;
         ImGui::PushID(pushID);
@@ -169,7 +173,7 @@ void ShowCombineLessons(bool* isOpen)
             .timetableLessons[currentLessonID]
             .lessonTeacherPairs.clear();
         int counter = 0;
-        for (auto& lesson: currentTimetable.lessons)
+        for (auto& lesson: tmpLessons)
         {
             if (!classLessons[std::to_string(lesson.first) + "2"]) continue;
             for (auto& teacher: currentTimetable.teachers)
@@ -217,6 +221,72 @@ std::string GetNthUtf8Character(const std::string& utf8String, int index)
     return std::string(charStart, it);
 }
 
+bool CompareTimetableLessons(const TimetableLesson lesson1, const TimetableLesson lesson2)
+{
+    bool areSame = lesson1.lessonTeacherPairs.size() == lesson2.lessonTeacherPairs.size();
+    if (!areSame) return false;
+    for (int i = 0; i < lesson1.lessonTeacherPairs.size(); i++)
+    {
+        if (lesson1.lessonTeacherPairs[i].lessonID != lesson2.lessonTeacherPairs[i].lessonID ||
+            lesson1.lessonTeacherPairs[i].teacherID != lesson2.lessonTeacherPairs[i].teacherID)
+        {
+            areSame = false;
+            break;
+        }
+    }
+    return areSame;
+}
+
+void FetchClassLessonsFromSimularClasses(Timetable* timetable, int classID)
+{
+    // Add missing lessons
+    std::string classNumber = timetable->classes[classID].number;
+    for (auto& classPair: timetable->classes)
+    {
+        if (classPair.first == classID) continue;
+        if (classPair.second.number != classNumber) continue;
+
+        for (auto& lesson1: classPair.second.timetableLessons)
+        {
+            bool foundMatchingLesson = false;
+            for (auto& lesson2: timetable->classes[classID].timetableLessons)
+            {
+                if (CompareTimetableLessons(lesson1.second, lesson2.second))
+                {
+                    foundMatchingLesson = true;
+                    break;
+                }
+            }
+            if (!foundMatchingLesson)
+            {
+                timetable->classes[classID].maxTimetableLessonID++;
+                timetable->classes[classID]
+                    .timetableLessons[timetable->classes[classID].maxTimetableLessonID] =
+                    lesson1.second;
+
+                // Make added lessons support the class
+                for (int i = 0; i < lesson1.second.lessonTeacherPairs.size(); i++)
+                {
+                    bool foundMatchingClassID = false;
+                    int lessonID = lesson1.second.lessonTeacherPairs[i].lessonID;
+                    for (int j = 0; j < tmpTmpLessons[lessonID].classIDs.size(); j++)
+                    {
+                        if (tmpTmpLessons[lessonID].classIDs[j] == classID)
+                        {
+                            foundMatchingClassID = true;
+                            break;
+                        }
+                    }
+                    if (!foundMatchingClassID)
+                    {
+                        tmpTmpLessons[lessonID].classIDs.push_back(classID);
+                    }
+                }
+            }
+        }
+    }
+}
+
 bool isEditClass = false;
 void ShowEditClass(bool* isOpen)
 {
@@ -242,7 +312,12 @@ void ShowEditClass(bool* isOpen)
 
     // Class number
     if (ImGui::InputText(labels["number"].c_str(), &tmpTmpTimetable.classes[currentClassID].number))
+    {
+        tmpTmpTimetable.classes[currentClassID].timetableLessons.clear();
+        tmpTmpTimetable.classes[currentClassID].maxTimetableLessonID = 0;
         ResetVariables();
+        FetchClassLessonsFromSimularClasses(&tmpTmpTimetable, currentClassID);
+    }
 
     // Classes amount
     if (bulkEditClass)
@@ -341,7 +416,7 @@ void ShowEditClass(bool* isOpen)
         LogInfo("Clicked the combine lessons button in class with ID " +
                 std::to_string(currentClassID));
         newCombinedLesson = true;
-        for (auto& lesson: currentTimetable.lessons)
+        for (auto& lesson: tmpLessons)
         {
             if (!classLessons[std::to_string(lesson.first) + "0"]) continue;
             classLessons[std::to_string(lesson.first) + "2"] = false;
@@ -383,7 +458,7 @@ void ShowEditClass(bool* isOpen)
             LogInfo("Editing a timetable lesson with ID " + std::to_string(it->first) +
                     " in a class with ID " + std::to_string(currentClassID));
             newCombinedLesson = false;
-            for (auto& lesson: currentTimetable.lessons)
+            for (auto& lesson: tmpLessons)
             {
                 if (!classLessons[std::to_string(lesson.first) + "0"]) continue;
                 classLessons[std::to_string(lesson.first) + "2"] = false;
@@ -420,7 +495,7 @@ void ShowEditClass(bool* isOpen)
         std::string text = "";
         for (int j = 0; j < it->second.lessonTeacherPairs.size(); j++)
         {
-            text += currentTimetable.lessons[it->second.lessonTeacherPairs[j].lessonID].name + " (";
+            text += tmpLessons[it->second.lessonTeacherPairs[j].lessonID].name + " (";
             text +=
                 currentTimetable.teachers[it->second.lessonTeacherPairs[j].teacherID].name + ")";
             if (j < it->second.lessonTeacherPairs.size() - 1) text += "\n";
@@ -434,7 +509,7 @@ void ShowEditClass(bool* isOpen)
     ImGui::Columns(2);
 
     // Lessons
-    for (auto& lesson: currentTimetable.lessons)
+    for (auto& lesson: tmpLessons)
     {
         if (!classLessons[std::to_string(lesson.first) + "0"]) continue;
         bool anyTeacherSelected = false;
@@ -520,7 +595,7 @@ void ShowEditClass(bool* isOpen)
         }
         tmpTmpTimetable.classes[currentClassID].timetableLessons = timetableLessons;
         tmpTmpTimetable.classes[currentClassID].maxTimetableLessonID = timetableLessonCounter - 1;
-        for (auto& lesson: currentTimetable.lessons)
+        for (auto& lesson: tmpLessons)
         {
             if (!classLessons[std::to_string(lesson.first) + "0"]) continue;
             for (auto& teacher: currentTimetable.teachers)
@@ -592,6 +667,7 @@ void ShowEditClass(bool* isOpen)
                 tmpTmpTimetable.classes[tmpTmpTimetable.maxClassID] = Class();
                 tmpTmpTimetable.classes[tmpTmpTimetable.maxClassID].number =
                     tmpTmpTimetable.classes[currentClassID].number;
+                FetchClassLessonsFromSimularClasses(&tmpTmpTimetable, tmpTmpTimetable.maxClassID);
             }
             for (auto& classPair: tmpTmpTimetable.classes)
             {
@@ -624,6 +700,7 @@ void ShowEditClass(bool* isOpen)
         tmpTimetable.classes = tmpTmpTimetable.classes;
         tmpTimetable.maxClassID = tmpTmpTimetable.maxClassID;
         tmpTimetable.orderedClasses = tmpTmpTimetable.orderedClasses;
+        tmpLessons = tmpTmpLessons;
         *isOpen = false;
     }
     ImGui::SameLine();
@@ -654,6 +731,7 @@ void ShowClasses(bool* isOpen)
         tmpTmpTimetable.classes[currentClassID] = Class();
         tmpTmpTimetable.classes[currentClassID].number = "0";
         ResetVariables();
+        FetchClassLessonsFromSimularClasses(&tmpTmpTimetable, currentClassID);
         isEditClass = true;
     }
     ImGui::Separator();
@@ -728,13 +806,14 @@ void ShowClasses(bool* isOpen)
                                                           currentClassID,
                                                       tmpTmpTimetable.maxClassID);
                 tmpTmpTimetable.classes[tmpTmpTimetable.maxClassID] = Class();
-                tmpTmpTimetable.classes[tmpTmpTimetable.maxClassID].number =
-                    tmpTmpTimetable.classes[tmpTmpTimetable.orderedClasses[currentClassID - 1]]
-                        .number;
+                tmpTmpTimetable.classes[tmpTmpTimetable.maxClassID].number = lastClassNumber;
+                tmpTmpTimetable.classes[tmpTmpTimetable.maxClassID].letter =
+                    GetNthUtf8Character(labels["abcdefghijklmnopqrstuvwxyz"], currentClassID);
                 currentClassID = tmpTmpTimetable.maxClassID;
+                ResetVariables();
+                FetchClassLessonsFromSimularClasses(&tmpTmpTimetable, tmpTmpTimetable.maxClassID);
                 LogInfo("Adding a new class with number " + lastClassNumber + " and ID " +
                         std::to_string(currentClassID));
-                ResetVariables();
                 isEditClass = true;
             }
             ImGui::Unindent();
@@ -798,6 +877,7 @@ void ShowClasses(bool* isOpen)
         currentTimetable.classes = tmpTimetable.classes;
         currentTimetable.maxClassID = tmpTimetable.maxClassID;
         currentTimetable.orderedClasses = tmpTimetable.orderedClasses;
+        currentTimetable.lessons = tmpLessons;
         *isOpen = false;
     }
     ImGui::SameLine();

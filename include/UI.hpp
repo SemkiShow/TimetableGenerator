@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Timetable.hpp"
+#include <map>
 #include <string>
 
 #define WIZARD_STEPS 6
@@ -13,6 +15,7 @@ extern std::string teacherLessonValues;
 extern std::string classTeacherValues;
 extern bool wasGenerateTimetable;
 extern std::string generateTimetableStatus;
+extern std::map<int, Lesson> tmpLessons;
 extern bool isEditClassroom;
 extern bool isClassrooms;
 extern bool isEditLesson;

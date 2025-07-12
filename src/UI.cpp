@@ -114,6 +114,7 @@ void OpenClasses()
     tmpTimetable.classes = currentTimetable.classes;
     tmpTimetable.maxClassID = currentTimetable.maxClassID;
     tmpTimetable.orderedClasses = currentTimetable.orderedClasses;
+    tmpLessons = currentTimetable.lessons;
     isClasses = true;
 }
 
