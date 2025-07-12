@@ -1,7 +1,6 @@
 #include "Logging.hpp"
 #include "Searching.hpp"
 #include "Settings.hpp"
-#include "Timetable.hpp"
 #include "UI.hpp"
 #include <imgui.h>
 #include <string>

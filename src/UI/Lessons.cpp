@@ -1,6 +1,5 @@
 #include "Logging.hpp"
 #include "Settings.hpp"
-#include "Timetable.hpp"
 #include "UI.hpp"
 #include <imgui.h>
 #include <misc/cpp/imgui_stdlib.h>

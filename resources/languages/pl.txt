@@ -110,6 +110,8 @@ aby wybrać lekcje dla tego nauczyciela!
 dostępne lekcje
 min. ilość okienek
 maks. ilość okienek
+Uwaga: zmiana bieżącego roku może być bardzo destrukcyjna.
+Jeśli coś poszło nie tak, naciśnij przycisk Anuluj, aby cofnąć wszystkie zmiany
 Połącz lekcje
 Nowa klasa
 Edytuj klasę

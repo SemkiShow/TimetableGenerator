@@ -110,6 +110,8 @@ to select lessons for this teacher!
 available lessons
 min free periods
 max free periods
+Warning: changing the current year can be quite destructive.
+If something went wrong, press the Cancel button to revert all changes
 Combine lessons
 New class
 Edit class

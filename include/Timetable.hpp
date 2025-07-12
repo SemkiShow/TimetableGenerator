@@ -68,6 +68,7 @@ struct Class
 struct Timetable
 {
     std::string name = "";
+    int year = -1;
     int errors = -1;
     int bonusPoints = -1;
     int maxClassroomID = -1;

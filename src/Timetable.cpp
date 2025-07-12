@@ -17,6 +17,9 @@ void SaveTimetable(std::string path, Timetable* timetable)
     JSONObject jsonObject;
     jsonObject.type = JSON_OBJECT;
 
+    // Timetable year
+    jsonObject.intPairs["year"] = timetable->year;
+
     // Classrooms
     jsonObject.objectPairs["classrooms"] = JSONObject();
     jsonObject.objectPairs["classrooms"].type = JSON_OBJECT;
@@ -365,6 +368,13 @@ void LoadTimetable(std::string path, Timetable* timetable)
     *timetable = Timetable();
     timetable->name = std::filesystem::path(path).stem().string();
     timetable->name = TrimJunk(timetable->name);
+    timetable->year = jsonObject.intPairs["year"];
+    if (timetable->year == -1)
+    {
+        time_t now = time(0);
+        tm* localTime = localtime(&now);
+        timetable->year = 1900 + localTime->tm_year;
+    }
 
     // Classrooms
     for (auto& classroom: jsonObject.objectPairs["classrooms"].stringPairs)
