@@ -170,7 +170,7 @@ void SaveTimetable(std::string path, Timetable* timetable)
             .objectPairs[std::to_string(classPair.first)]
             .stringPairs["letter"] = classPair.second.letter;
 
-        // Teacher name
+        // Teacher ID
         jsonObject.objectPairs["classes"]
             .objectPairs[std::to_string(classPair.first)]
             .intPairs["teacherID"] = classPair.second.teacherID;

@@ -1,7 +1,7 @@
 #include "JSON.hpp"
-#include <cctype>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 int indentationLevel = 0;
 #define INDENTATION std::string(indentationLevel, '\t')
@@ -121,16 +121,12 @@ std::string TrimQuotes(const std::string& input)
 
 bool IsNumber(const std::string& input)
 {
-    bool isNumber = true;
-    for (size_t i = 0; i < input.size(); i++)
-    {
-        if (!std::isdigit(input[i]))
-        {
-            isNumber = false;
-            break;
-        }
-    }
-    return isNumber;
+    std::istringstream iss(input);
+    double d;
+    char c;
+    if (!(iss >> d)) return false;
+    if (iss >> c) return false;
+    return true;
 }
 
 std::vector<std::string> Split(std::string input, char delimiter = ' ', int limit = -1)
