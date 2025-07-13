@@ -17,11 +17,20 @@ cp build_win/bin/TimetableGenerator.exe .
 ./TimetableGenerator
 echo $1 > version.txt
 releases=()
+systems=("linux" "windows")
 for file in resources/languages/*.txt; do
     lang=$(basename "$file" .txt)
     sed -i "s/^language=.*/language=$lang/" settings.txt
-    releases+=("release_$lang.zip")
-    zip release_$lang.zip TimetableGenerator TimetableGenerator.exe resources/* templates/ timetables/ logs/ LICENSE README.md settings.txt version.txt
+    for system in "${systems[@]}"; do
+        releases+=("release-$system-$lang.zip")
+        zip release-$system-$lang.zip resources/* templates/ timetables/ logs/ LICENSE README.md settings.txt version.txt
+        if [ $system == "linux" ]; then
+            zip release-$system-$lang.zip TimetableGenerator
+        fi
+        if [ $system == "windows" ]; then
+            zip release-$system-$lang.zip TimetableGenerator.exe
+        fi
+    done
 done
 rm TimetableGenerator TimetableGenerator.exe
 

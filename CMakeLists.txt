@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 project(TimetableGenerator)
 
-add_compile_options(-Wno-error)
-
 if (UNIX)
     set(GLFW_BUILD_WAYLAND OFF CACHE BOOL "Build GLFW Wayland support")
     set(GLFW_BUILD_X11 ON CACHE BOOL "Build GLFW X11 support")
@@ -26,6 +24,8 @@ set(ZLIB_VERSION 1.3.1)
 set(LIBZIP_VERSION 1.11.4)
 set(UTF8CPP_VERSION 4.0.6)
 
+# Turn off all warning-related errors when compiling third-party code
+add_compile_options(-Wno-error)
 message(STATUS "Downloading required libraries")
 
 # raylib
