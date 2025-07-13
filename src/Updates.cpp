@@ -189,6 +189,11 @@ std::string GetLatestVersionArchiveURL()
                     if (releaseID >= jsonObject.objects.size()) return "";
                 }
                 int assetID = -1;
+#ifdef _WIN32
+                std::string releasePrefix = "release-windows-";
+#else
+                std::string releasePrefix = "release-linux-";
+#endif
                 for (size_t i = 0;
                      i < jsonObject.objects[releaseID].objectPairs["assets"].objects.size(); i++)
                 {
@@ -196,7 +201,7 @@ std::string GetLatestVersionArchiveURL()
                                                                   .objectPairs["assets"]
                                                                   .objects[i]
                                                                   .stringPairs["name"],
-                                                              "release_", ".zip");
+                                                              releasePrefix, ".zip");
                     if (assetLanguage == language)
                     {
                         assetID = i;
@@ -214,7 +219,7 @@ std::string GetLatestVersionArchiveURL()
                                                                       .objectPairs["assets"]
                                                                       .objects[i]
                                                                       .stringPairs["name"],
-                                                                  "release_", ".zip");
+                                                                  releasePrefix, ".zip");
                         if (assetLanguage == "en")
                         {
                             assetID = i;
