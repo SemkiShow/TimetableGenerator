@@ -369,7 +369,7 @@ void LoadTimetable(std::string path, Timetable* timetable)
     timetable->name = std::filesystem::path(path).stem().string();
     timetable->name = TrimJunk(timetable->name);
     timetable->year = jsonObject.intPairs["year"];
-    if (timetable->year == -1)
+    if (timetable->year < 1900)
     {
         time_t now = time(0);
         tm* localTime = localtime(&now);
