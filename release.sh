@@ -3,6 +3,11 @@
 set -e
 shopt -s globstar
 
+if [ -z "$1" ]; then
+    echo "You must specify the release version!"
+    exit 1
+fi
+
 # Compiling for Linux
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j
