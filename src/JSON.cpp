@@ -1,4 +1,5 @@
 #include "JSON.hpp"
+#include <cctype>
 #include <fstream>
 #include <iostream>
 
@@ -12,7 +13,7 @@ std::string JSONToString(JSONObject jsonObject)
     indentationLevel++;
     if (jsonObject.type == JSON_LIST)
     {
-        for (int i = 0; i < jsonObject.strings.size(); i++)
+        for (size_t i = 0; i < jsonObject.strings.size(); i++)
         {
             if (jsonObject.format == JSON_NEWLINE) output += INDENTATION;
             output += '"' + jsonObject.strings[i] + '"';
@@ -21,7 +22,7 @@ std::string JSONToString(JSONObject jsonObject)
                 output += ", ";
             if (jsonObject.format == JSON_NEWLINE) output += '\n';
         }
-        for (int i = 0; i < jsonObject.ints.size(); i++)
+        for (size_t i = 0; i < jsonObject.ints.size(); i++)
         {
             if (jsonObject.format == JSON_NEWLINE) output += INDENTATION;
             output += std::to_string(jsonObject.ints[i]);
@@ -30,14 +31,14 @@ std::string JSONToString(JSONObject jsonObject)
                 output += ", ";
             if (jsonObject.format == JSON_NEWLINE) output += '\n';
         }
-        for (int i = 0; i < jsonObject.bools.size(); i++)
+        for (size_t i = 0; i < jsonObject.bools.size(); i++)
         {
             if (jsonObject.format == JSON_NEWLINE) output += INDENTATION;
             output += (jsonObject.bools[i] ? "true" : "false");
             if (i < jsonObject.bools.size() - 1 || jsonObject.objects.size() > 0) output += ", ";
             if (jsonObject.format == JSON_NEWLINE) output += '\n';
         }
-        for (int i = 0; i < jsonObject.objects.size(); i++)
+        for (size_t i = 0; i < jsonObject.objects.size(); i++)
         {
             if (jsonObject.format == JSON_NEWLINE) output += INDENTATION;
             output += JSONToString(jsonObject.objects[i]);
@@ -47,7 +48,7 @@ std::string JSONToString(JSONObject jsonObject)
     }
     if (jsonObject.type == JSON_OBJECT)
     {
-        int i = 0;
+        size_t i = 0;
         for (auto pair: jsonObject.stringPairs)
         {
             if (jsonObject.format == JSON_NEWLINE) output += INDENTATION;
@@ -118,17 +119,18 @@ std::string TrimQuotes(const std::string& input)
     return (first == input.npos) ? "" : input.substr(first, last - first + 1);
 }
 
-bool IsNumber(std::string input)
+bool IsNumber(const std::string& input)
 {
-    try
+    bool isNumber = true;
+    for (size_t i = 0; i < input.size(); i++)
     {
-        int a = stoi(input);
-        return true;
+        if (!std::isdigit(input[i]))
+        {
+            isNumber = false;
+            break;
+        }
     }
-    catch (const std::exception&)
-    {
-        return false;
-    }
+    return isNumber;
 }
 
 std::vector<std::string> Split(std::string input, char delimiter = ' ', int limit = -1)
@@ -136,7 +138,7 @@ std::vector<std::string> Split(std::string input, char delimiter = ' ', int limi
     std::vector<std::string> output;
     output.push_back("");
     int index = 0;
-    for (int i = 0; i < input.size(); i++)
+    for (size_t i = 0; i < input.size(); i++)
     {
         if (input[i] == delimiter && (index < (limit - 1) && limit != -1))
         {
@@ -155,10 +157,10 @@ void ParseJSON(std::string json, JSONObject* jsonObject)
     int startIndex = 0;
     std::vector<std::string> values;
     bool insideString = false;
-    for (int i = 0; i < json.size(); i++)
+    for (size_t i = 0; i < json.size(); i++)
     {
         if (json[i] == '\"') insideString = !insideString;
-        if (json[i] == '{' || json[i] == '[' && !insideString)
+        if ((json[i] == '{' || json[i] == '[') && !insideString)
         {
             bracketLevel++;
             if (bracketLevel == 1)
@@ -167,7 +169,7 @@ void ParseJSON(std::string json, JSONObject* jsonObject)
                 startIndex = i + 1;
             }
         }
-        if (json[i] == '}' || json[i] == ']' && !insideString)
+        if ((json[i] == '}' || json[i] == ']') && !insideString)
         {
             if (bracketLevel == 1 && json.size() > 2)
                 values.push_back(json.substr(startIndex, i - startIndex));
@@ -180,7 +182,7 @@ void ParseJSON(std::string json, JSONObject* jsonObject)
             startIndex = i + 1;
         }
     }
-    for (int i = 0; i < values.size(); i++)
+    for (size_t i = 0; i < values.size(); i++)
     {
         values[i] = TrimSpaces(values[i]);
         if (jsonObject->type == JSON_LIST)
@@ -200,7 +202,7 @@ void ParseJSON(std::string json, JSONObject* jsonObject)
         if (jsonObject->type == JSON_OBJECT)
         {
             std::vector<std::string> keyValuePair = Split(values[i], ':', 2);
-            for (int i = 0; i < keyValuePair.size(); i++)
+            for (size_t i = 0; i < keyValuePair.size(); i++)
                 keyValuePair[i] = TrimSpaces(keyValuePair[i]);
             if (keyValuePair[0].size() == 0 || keyValuePair[1].size() == 0) return;
 
@@ -224,7 +226,7 @@ void LoadJSON(std::string path, JSONObject* jsonObject)
     std::ifstream timetableFile(path);
     std::string buf, json;
     while (std::getline(timetableFile, buf))
-        for (int i = 0; i < buf.size(); i++)
+        for (size_t i = 0; i < buf.size(); i++)
             if (buf[i] != '\t') json += buf[i];
     timetableFile.close();
 

@@ -12,8 +12,8 @@
 #include <string>
 #include <unordered_map>
 
-int daysPerWeek = 5;
-int lessonsPerDay = 8;
+unsigned int daysPerWeek = 5;
+unsigned int lessonsPerDay = 8;
 int style = STYLE_DARK;
 std::string language = "en";
 bool vsync = true;
@@ -44,7 +44,7 @@ std::vector<std::string> Split(std::string input, char delimiter)
     std::vector<std::string> output;
     output.push_back("");
     int index = 0;
-    for (int i = 0; i < input.size(); i++)
+    for (size_t i = 0; i < input.size(); i++)
     {
         if (input[i] == delimiter)
         {
@@ -215,14 +215,14 @@ void Load(std::string fileName)
 
     // Load the language
     ListFiles("resources/languages", &availableLanguages);
-    for (int i = 0; i < availableLanguages.size(); i++)
+    for (size_t i = 0; i < availableLanguages.size(); i++)
     {
         availableLanguages[i] = std::filesystem::path(availableLanguages[i]).stem().string();
     }
     std::sort(availableLanguages.begin(), availableLanguages.end());
     languageValues = "";
     languageID = -1;
-    for (int i = 0; i < availableLanguages.size(); i++)
+    for (size_t i = 0; i < availableLanguages.size(); i++)
     {
         languageValues += availableLanguages[i];
         languageValues += '\0';

@@ -36,8 +36,7 @@ void LoadFonts()
     LogInfo("Loading fonts");
     ImGuiIO& io = ImGui::GetIO();
     io.Fonts->Clear();
-    ImFont* defaultFont =
-        io.Fonts->AddFontFromFileTTF("resources/ProggyClean.ttf", (float)fontSize);
+    io.Fonts->AddFontFromFileTTF("resources/ProggyClean.ttf", (float)fontSize);
     ImFontGlyphRangesBuilder builder;
     builder.AddRanges(io.Fonts->GetGlyphRangesCyrillic());
     builder.AddRanges(io.Fonts->GetGlyphRangesVietnamese());
@@ -47,8 +46,8 @@ void LoadFonts()
     ImFontConfig fontConfig;
     fontConfig.MergeMode = mergedFont;
     fontConfig.PixelSnapH = true;
-    ImFont* font = io.Fonts->AddFontFromFileTTF("resources/DroidSansMono.ttf", (float)fontSize,
-                                                &fontConfig, glyphRanges.Data);
+    io.Fonts->AddFontFromFileTTF("resources/DroidSansMono.ttf", (float)fontSize, &fontConfig,
+                                 glyphRanges.Data);
     io.Fonts->TexID = 0;
     io.Fonts->Build();
     rlImGuiReloadFonts();
@@ -67,7 +66,7 @@ void LoadFAQScreenshots()
     std::vector<std::string> faqScreenshotFiles;
     ListFiles("resources/faq-screenshots", &faqScreenshotFiles);
     faqScreenshots = new Texture2D[faqScreenshotFiles.size()];
-    for (int i = 0; i < faqScreenshotFiles.size(); i++)
+    for (size_t i = 0; i < faqScreenshotFiles.size(); i++)
     {
         faqScreenshots[i] = LoadTexture(faqScreenshotFiles[i].c_str());
     }
@@ -122,9 +121,9 @@ void ShowSettings(bool* isOpen)
         ImGui::End();
         return;
     }
-    ImGui::InputInt(labels["days per week"].c_str(), &daysPerWeek);
+    ImGui::InputScalar(labels["days per week"].c_str(), ImGuiDataType_U32, &daysPerWeek);
     if (daysPerWeek < 1) daysPerWeek = 1;
-    ImGui::InputInt(labels["lessons per day"].c_str(), &lessonsPerDay);
+    ImGui::InputScalar(labels["lessons per day"].c_str(), ImGuiDataType_U32, &lessonsPerDay);
     if (lessonsPerDay < 1) lessonsPerDay = 1;
     if (ImGui::Combo(labels["style"].c_str(), &style, styleValues.c_str()))
     {
@@ -202,7 +201,7 @@ void ShowNewVersion(bool* isOpen)
         ImGui::Text("%s", labels["A new version is available!"].c_str());
         if (ImGui::TreeNode(labels["Release notes"].c_str()))
         {
-            for (int i = 0; i < (int)releaseNotes.size() - 2; i++)
+            for (size_t i = 0; i < releaseNotes.size() - 2; i++)
             {
                 ImGui::Text("%s", releaseNotes[i].c_str());
             }
@@ -257,7 +256,7 @@ void ShowOpenTimetable(bool* isOpen)
         return;
     }
     ImGui::Text("%s", labels["Select a timetable to open"].c_str());
-    for (int i = 0; i < timetableFiles.size(); i++)
+    for (size_t i = 0; i < timetableFiles.size(); i++)
     {
         if (ImGui::Button(timetableFiles[i].c_str()))
         {
@@ -385,7 +384,7 @@ void ShowMenuBar()
             {
                 LogInfo("Opening a timetable");
                 ListFiles("templates/", &timetableFiles);
-                for (int i = 0; i < timetableFiles.size(); i++)
+                for (size_t i = 0; i < timetableFiles.size(); i++)
                     timetableFiles[i] = std::filesystem::path(timetableFiles[i]).stem().string();
                 isOpenTimetable = true;
             }

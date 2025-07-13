@@ -10,8 +10,8 @@
 
 #define DEFAULT_FONT_SIZE 16
 
-extern int daysPerWeek;
-extern int lessonsPerDay;
+extern unsigned int daysPerWeek;
+extern unsigned int lessonsPerDay;
 extern int style;
 extern std::string language;
 extern bool vsync;

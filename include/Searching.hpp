@@ -35,8 +35,8 @@ struct IterationData
 
     // Settings copy (I can't use the real settings data, because
     // if settings are changed while searching for a timetable, the program crashes)
-    int daysPerWeek = 5;
-    int lessonsPerDay = 8;
+    unsigned int daysPerWeek = 5;
+    unsigned int lessonsPerDay = 8;
     int minTimetablesPerGeneration = 100;
     int maxTimetablesPerGeneration = 5000;
 

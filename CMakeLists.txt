@@ -163,6 +163,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(utf8cpp)
 
+add_compile_options(-Wall -Wextra)
 file(GLOB_RECURSE SOURCES src/*.cpp)
 add_executable(${PROJECT_NAME} ${SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE include/)

@@ -23,9 +23,9 @@ int GetLessonsAmount(const std::map<int, TimetableLesson> timetableLessons)
 int GetLessonPlacesAmount(const std::vector<Day> days)
 {
     int output = 0;
-    for (int i = 0; i < iterationData.daysPerWeek; i++)
+    for (size_t i = 0; i < iterationData.daysPerWeek; i++)
     {
-        for (int j = 0; j < days[i].lessons.size(); j++)
+        for (size_t j = 0; j < days[i].lessons.size(); j++)
         {
             if (days[i].lessons[j]) output++;
         }
@@ -61,12 +61,12 @@ void RandomizeTimetable(Timetable* timetable)
                 timetableLessonIDs.push_back(lesson.first);
         }
         std::shuffle(timetableLessonIDs.begin(), timetableLessonIDs.end(), rng);
-        int counter = 0;
+        size_t counter = 0;
         classPair.second.days.resize(iterationData.daysPerWeek);
-        for (int i = 0; i < iterationData.daysPerWeek; i++)
+        for (size_t i = 0; i < iterationData.daysPerWeek; i++)
         {
             classPair.second.days[i].classroomLessonPairs.clear();
-            for (int j = 0; j < classPair.second.days[i].lessons.size(); j++)
+            for (size_t j = 0; j < classPair.second.days[i].lessons.size(); j++)
             {
                 classPair.second.days[i].classroomLessonPairs.push_back(ClassroomLessonPair());
                 if (classPair.second.days[i].lessons[j])
@@ -75,7 +75,7 @@ void RandomizeTimetable(Timetable* timetable)
                     {
                         classPair.second.days[i].classroomLessonPairs[j].timetableLessonID =
                             timetableLessonIDs[counter];
-                        for (int k = 0;
+                        for (size_t k = 0;
                              k < classPair.second.timetableLessons[timetableLessonIDs[counter]]
                                      .lessonTeacherPairs.size();
                              k++)
@@ -159,12 +159,12 @@ double EvaluateFitness(const Timetable& timetable)
 
 Timetable TournamentSelection(const Timetable* population)
 {
-    int tournamentSize = 7;
+    size_t tournamentSize = 7;
     auto populationDistribution =
         std::uniform_int_distribution<int>(0, iterationData.timetablesPerGeneration - 1);
     int bestID = populationDistribution(rng);
 
-    for (int i = 0; i < tournamentSize; i++)
+    for (size_t i = 0; i < tournamentSize; i++)
     {
         int challengerID = populationDistribution(rng);
         if (EvaluateFitness(population[challengerID]) > EvaluateFitness(population[bestID]))
@@ -194,22 +194,21 @@ void MutateTimetableClassroom(Timetable* timetable)
     std::uniform_int_distribution<int> lessonDistribution;
     std::uniform_int_distribution<int> classroomDistribution;
     std::uniform_int_distribution<int> lessonTeacherPairDistribution;
-    int classID, classIndex, dayID, classroomLessonPairID, lessonTeacherPairID, classroomID;
     while (true)
     {
         // Get class ID
         if (timetable->orderedClasses.empty()) std::cerr << "The timetable's classes are empty!\n";
-        classIndex = classDistribution(rng);
-        classID = timetable->orderedClasses[classIndex];
+        int classIndex = classDistribution(rng);
+        int classID = timetable->orderedClasses[classIndex];
 
         // Get day ID
-        dayID = dayDistribution(rng);
+        int dayID = dayDistribution(rng);
 
         // Get ClassroomLessonPair ID
         if (timetable->classes[classID].days[dayID].classroomLessonPairs.empty()) continue;
         lessonDistribution = std::uniform_int_distribution<int>(
             0, timetable->classes[classID].days[dayID].classroomLessonPairs.size() - 1);
-        classroomLessonPairID = lessonDistribution(rng);
+        int classroomLessonPairID = lessonDistribution(rng);
 
         // Get classroom ID
         if (timetable->classes[classID]
@@ -247,7 +246,7 @@ void MutateTimetableClassroom(Timetable* timetable)
                                                           .timetableLessons[timetableLessonID]
                                                           .lessonTeacherPairs.size() -
                                                       1);
-        lessonTeacherPairID = lessonTeacherPairDistribution(rng);
+        int lessonTeacherPairID = lessonTeacherPairDistribution(rng);
 
         // Generate and replace a new classroom ID
         int lessonID = timetable->classes[classID]
@@ -267,13 +266,13 @@ void MutateTimetableClassroom(Timetable* timetable)
 
 void MutateTimetable(Timetable* timetable)
 {
-    int swapsAmount = std::uniform_int_distribution<int>(0, 30)(rng);
-    for (int i = 0; i < swapsAmount; i++)
+    size_t swapsAmount = std::uniform_int_distribution<int>(0, 30)(rng);
+    for (size_t i = 0; i < swapsAmount; i++)
     {
         SwapRandomTimetableLessons(timetable);
     }
-    int classroomsMutationsAmount = std::uniform_int_distribution<int>(0, 10)(rng);
-    for (int i = 0; i < classroomsMutationsAmount; i++)
+    size_t classroomsMutationsAmount = std::uniform_int_distribution<int>(0, 10)(rng);
+    for (size_t i = 0; i < classroomsMutationsAmount; i++)
     {
         MutateTimetableClassroom(timetable);
     }
@@ -281,7 +280,7 @@ void MutateTimetable(Timetable* timetable)
 
 void GeneticAlgorithm(int threadID, Timetable* population, Timetable* newPopulation)
 {
-    for (int i = threadID * iterationData.timetablesPerGeneration / threadsNumber;
+    for (size_t i = threadID * iterationData.timetablesPerGeneration / threadsNumber;
          i < (threadID + 1) * iterationData.timetablesPerGeneration / threadsNumber; i++)
     {
         Timetable parent1 = TournamentSelection(population);
@@ -425,7 +424,7 @@ void RunASearchIteration()
     }
 
     // Init the threads
-    std::thread threads[threadsNumber];
+    std::thread* threads = new std::thread[threadsNumber];
 
     // Output debug info
     std::cout << "\x1b[34mIteration " << iterationData.iteration++ << "\x1b[0m. ";
@@ -459,10 +458,10 @@ void RunASearchIteration()
                           (iterationData.iterationsPerChange + 1) * timetablesPerGenerationStep));
 
     // Run worker threads
-    for (int i = 0; i < threadsNumber; i++)
+    for (size_t i = 0; i < threadsNumber; i++)
         threads[i] =
             std::thread(GeneticAlgorithm, i, iterationData.timetables, iterationData.newPopulation);
-    for (int i = 0; i < threadsNumber; i++)
+    for (size_t i = 0; i < threadsNumber; i++)
         threads[i].join();
 
     // Get the best timetable from the current generation
@@ -491,6 +490,9 @@ void RunASearchIteration()
         iterationData.iterationsPerChange = 0;
     iterationData.lastAllTimeBestScore = iterationData.allTimeBestScore;
     iterationData.lastBestScore = iterationData.bestScore;
+
+    // Free threads
+    delete[] threads;
 
     // Release the thread lock
     iterationData.threadLock = false;

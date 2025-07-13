@@ -33,7 +33,7 @@ static void ResetVariables()
     allAvailableClassLessonsHorizontal.resize(lessonsPerDay, true);
 
     tmpTmpTimetable.classes[currentClassID].days.resize(daysPerWeek);
-    for (int i = 0; i < daysPerWeek; i++)
+    for (size_t i = 0; i < daysPerWeek; i++)
     {
         if (tmpTmpTimetable.classes[currentClassID].days[i].lessons.size() < lessonsPerDay)
         {
@@ -66,7 +66,7 @@ static void ResetVariables()
     for (auto& lesson: tmpLessons)
     {
         bool classIDFound = false;
-        for (int i = 0; i < lesson.second.classIDs.size(); i++)
+        for (size_t i = 0; i < lesson.second.classIDs.size(); i++)
         {
             if (currentClassID == lesson.second.classIDs[i] ||
                 (tmpTmpTimetable.classes[currentClassID].number ==
@@ -82,7 +82,7 @@ static void ResetVariables()
         for (auto& teacher: currentTimetable.teachers)
         {
             bool lessonIDFound = false;
-            for (int i = 0; i < teacher.second.lessonIDs.size(); i++)
+            for (size_t i = 0; i < teacher.second.lessonIDs.size(); i++)
             {
                 if (teacher.second.lessonIDs[i] == lesson.first)
                 {
@@ -243,7 +243,7 @@ void ShowEditClass(bool* isOpen)
     {
         ImGui::InputInt(labels["amount"].c_str(), &bulkClassesAmount);
         if (bulkClassesAmount < 1) bulkClassesAmount = 1;
-        if (bulkClassesAmount >= labels["abcdefghijklmnopqrstuvwxyz"].size())
+        if ((size_t)bulkClassesAmount >= labels["abcdefghijklmnopqrstuvwxyz"].size())
             bulkClassesAmount = labels["abcdefghijklmnopqrstuvwxyz"].size() - 1;
     }
     // Class letter and teacher
@@ -263,7 +263,7 @@ void ShowEditClass(bool* isOpen)
     int pushID = 3;
     allAvailableClassLessonsHorizontal.resize(lessonsPerDay, true);
     tmpTmpTimetable.classes[currentClassID].days.resize(daysPerWeek);
-    for (int i = 0; i < lessonsPerDay; i++)
+    for (size_t i = 0; i < lessonsPerDay; i++)
     {
         ImGui::PushID(pushID);
         bool availableClassLessonsHorizontal = allAvailableClassLessonsHorizontal[i];
@@ -272,7 +272,7 @@ void ShowEditClass(bool* isOpen)
             LogInfo("Clicked allAvailableClassLessonsHorizontal number  " + std::to_string(i) +
                     " in class with ID " + std::to_string(currentClassID));
             allAvailableClassLessonsHorizontal[i] = availableClassLessonsHorizontal;
-            for (int j = 0; j < daysPerWeek; j++)
+            for (size_t j = 0; j < daysPerWeek; j++)
             {
                 tmpTmpTimetable.classes[currentClassID].days[j].lessons.resize(lessonsPerDay);
                 tmpTmpTimetable.classes[currentClassID].days[j].lessons[i] =
@@ -285,7 +285,7 @@ void ShowEditClass(bool* isOpen)
     ImGui::NextColumn();
     allAvailableClassLessonsVertical.resize(daysPerWeek, false);
     tmpTmpTimetable.classes[currentClassID].days.resize(daysPerWeek);
-    for (int i = 0; i < daysPerWeek; i++)
+    for (size_t i = 0; i < daysPerWeek; i++)
     {
         tmpTmpTimetable.classes[currentClassID].days[i].lessons.resize(lessonsPerDay);
         int weekDay = i;
@@ -302,13 +302,13 @@ void ShowEditClass(bool* isOpen)
             LogInfo("Clicked allAvailableClassLessonsVertical number  " + std::to_string(i) +
                     " in class with ID " + std::to_string(currentClassID));
             allAvailableClassLessonsVertical[i] = availableClassLessonsVertical;
-            for (int j = 0; j < lessonsPerDay; j++)
+            for (size_t j = 0; j < lessonsPerDay; j++)
                 tmpTmpTimetable.classes[currentClassID].days[i].lessons[j] =
                     allAvailableClassLessonsVertical[i];
         }
         ImGui::PopID();
         pushID++;
-        for (int j = 0; j < lessonsPerDay; j++)
+        for (size_t j = 0; j < lessonsPerDay; j++)
         {
             ImGui::PushID(pushID);
             bool isLessonAvailable = tmpTmpTimetable.classes[currentClassID].days[i].lessons[j];
@@ -390,7 +390,7 @@ void ShowEditClass(bool* isOpen)
                         false;
                 }
             }
-            for (int j = 0; j < it->second.lessonTeacherPairs.size(); j++)
+            for (size_t j = 0; j < it->second.lessonTeacherPairs.size(); j++)
             {
                 if (!classLessons[std::to_string(it->second.lessonTeacherPairs[j].lessonID) + "0"])
                     continue;
@@ -412,7 +412,7 @@ void ShowEditClass(bool* isOpen)
         }
         ImGui::SameLine();
         std::string text = "";
-        for (int j = 0; j < it->second.lessonTeacherPairs.size(); j++)
+        for (size_t j = 0; j < it->second.lessonTeacherPairs.size(); j++)
         {
             text += tmpLessons[it->second.lessonTeacherPairs[j].lessonID].name + " (";
             text +=
@@ -553,21 +553,11 @@ void ShowEditClass(bool* isOpen)
                     classPair.second.teacherID = teacherID;
                 }
             }
-            int firstOrderedClassesID = -1;
-            for (int i = 0; i < tmpTmpTimetable.orderedClasses.size(); i++)
-            {
-                if (tmpTmpTimetable.classes[tmpTmpTimetable.orderedClasses[i]].number ==
-                    tmpTmpTimetable.classes[currentClassID].number)
-                {
-                    firstOrderedClassesID = i;
-                    break;
-                }
-            }
             UpdateClassLetters(&tmpTmpTimetable);
         }
         else
         {
-            if (classTeacherIndex >= 0 && classTeacherIndex < classTeacherIDs.size())
+            if (classTeacherIndex >= 0 && (size_t)classTeacherIndex < classTeacherIDs.size())
             {
                 tmpTmpTimetable.classes[currentClassID].teacherID =
                     classTeacherIDs[classTeacherIndex];
@@ -632,7 +622,7 @@ void ShowClasses(bool* isOpen)
     ImGui::Columns(2);
     std::string lastClassNumber = "";
     int buttonID = 0;
-    for (int i = 0; i < tmpTimetable.orderedClasses.size(); i++)
+    for (size_t i = 0; i < tmpTimetable.orderedClasses.size(); i++)
     {
         if (lastClassNumber != tmpTimetable.classes[tmpTimetable.orderedClasses[i]].number)
         {
@@ -684,7 +674,7 @@ void ShowClasses(bool* isOpen)
             {
                 newClass = true;
                 bulkEditClass = false;
-                for (int j = 0; j < tmpTimetable.orderedClasses.size(); j++)
+                for (size_t j = 0; j < tmpTimetable.orderedClasses.size(); j++)
                 {
                     if (tmpTimetable.classes[tmpTimetable.orderedClasses[j]].number ==
                         lastClassNumber)

@@ -23,7 +23,7 @@ void WriteXlsxTemplate(lxw_workbook* workbook, lxw_worksheet* worksheet, int cel
 
     // Write week days
     worksheet_set_column(worksheet, 1, daysPerWeek * cellWidth, 15, NULL);
-    for (int i = 0; i < daysPerWeek; i++)
+    for (size_t i = 0; i < daysPerWeek; i++)
     {
         int weekDay = i;
         while (weekDay >= 7)
@@ -36,7 +36,7 @@ void WriteXlsxTemplate(lxw_workbook* workbook, lxw_worksheet* worksheet, int cel
     }
 
     // Write lesson numbers
-    for (int i = 0; i < lessonsPerDay; i++)
+    for (size_t i = 0; i < lessonsPerDay; i++)
     {
         worksheet_write_number(worksheet, i + 2, 0, i, lessonNumberFormat);
     }
@@ -83,7 +83,7 @@ void ExportClassesAsXlsx(Timetable* timetable)
         int longestCombinedLesson = 1;
         for (auto& lesson: classPair.second.timetableLessons)
         {
-            if (lesson.second.lessonTeacherPairs.size() > longestCombinedLesson)
+            if (lesson.second.lessonTeacherPairs.size() > (size_t)longestCombinedLesson)
                 longestCombinedLesson = lesson.second.lessonTeacherPairs.size();
         }
         lxw_worksheet* worksheet = workbook_add_worksheet(
@@ -109,10 +109,10 @@ void ExportClassesAsXlsx(Timetable* timetable)
 
         // Write class timetable lessons
         classPair.second.days.resize(daysPerWeek);
-        for (int i = 0; i < daysPerWeek; i++)
+        for (size_t i = 0; i < daysPerWeek; i++)
         {
             classPair.second.days[i].classroomLessonPairs.resize(lessonsPerDay);
-            for (int j = 0; j < lessonsPerDay; j++)
+            for (size_t j = 0; j < lessonsPerDay; j++)
             {
                 int timetableLessonID =
                     classPair.second.days[i].classroomLessonPairs[j].timetableLessonID;
@@ -123,7 +123,7 @@ void ExportClassesAsXlsx(Timetable* timetable)
                     continue;
                 }
                 if (j >= classPair.second.days[i].classroomLessonPairs.size()) continue;
-                for (int k = 0;
+                for (size_t k = 0;
                      k <
                      classPair.second.timetableLessons[timetableLessonID].lessonTeacherPairs.size();
                      k++)
@@ -179,15 +179,15 @@ std::unordered_map<int, std::vector<TeacherData>> GetTeacherData(Timetable* time
     for (auto& classPair: timetable->classes)
     {
         classPair.second.days.resize(daysPerWeek);
-        for (int i = 0; i < daysPerWeek; i++)
+        for (size_t i = 0; i < daysPerWeek; i++)
         {
             classPair.second.days[i].classroomLessonPairs.resize(lessonsPerDay);
-            for (int j = 0; j < lessonsPerDay; j++)
+            for (size_t j = 0; j < lessonsPerDay; j++)
             {
                 int timetableLessonID =
                     classPair.second.days[i].classroomLessonPairs[j].timetableLessonID;
                 if (timetableLessonID < 0) continue;
-                for (int k = 0;
+                for (size_t k = 0;
                      k <
                      classPair.second.timetableLessons[timetableLessonID].lessonTeacherPairs.size();
                      k++)
@@ -265,9 +265,9 @@ void ExportTeachersAsXlsx(Timetable* timetable)
 
         // Write teacher lessons
         auto teacherData = GetTeacherData(timetable);
-        for (int i = 0; i < daysPerWeek; i++)
+        for (size_t i = 0; i < daysPerWeek; i++)
         {
-            for (int j = 0; j < lessonsPerDay; j++)
+            for (size_t j = 0; j < lessonsPerDay; j++)
             {
                 int lessonID = teacherData[teacher.first][i * lessonsPerDay + j].lessonID;
                 if (lessonID < 0) continue;
@@ -305,15 +305,15 @@ std::unordered_map<int, std::vector<ClassroomData>> GetClassroomData(Timetable* 
     for (auto& classPair: timetable->classes)
     {
         classPair.second.days.resize(daysPerWeek);
-        for (int i = 0; i < daysPerWeek; i++)
+        for (size_t i = 0; i < daysPerWeek; i++)
         {
             classPair.second.days[i].classroomLessonPairs.resize(lessonsPerDay);
-            for (int j = 0; j < lessonsPerDay; j++)
+            for (size_t j = 0; j < lessonsPerDay; j++)
             {
                 int timetableLessonID =
                     classPair.second.days[i].classroomLessonPairs[j].timetableLessonID;
                 if (timetableLessonID < 0) continue;
-                for (int k = 0;
+                for (size_t k = 0;
                      k <
                      classPair.second.timetableLessons[timetableLessonID].lessonTeacherPairs.size();
                      k++)
@@ -396,9 +396,9 @@ void ExportClassroomsAsXlsx(Timetable* timetable)
 
         // Write classroom lessons
         auto classroomData = GetClassroomData(timetable);
-        for (int i = 0; i < daysPerWeek; i++)
+        for (size_t i = 0; i < daysPerWeek; i++)
         {
-            for (int j = 0; j < lessonsPerDay; j++)
+            for (size_t j = 0; j < lessonsPerDay; j++)
             {
                 int lessonID = classroomData[classroom.first][i * lessonsPerDay + j].lessonID;
                 if (lessonID < 0) continue;

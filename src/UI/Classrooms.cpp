@@ -26,7 +26,7 @@ void ShowEditClassroom(bool* isOpen)
         try
         {
             bool isNameANumber = true;
-            for (int i = 0; i < tmpTmpTimetable.classrooms[currentClassroomID].name.size(); i++)
+            for (size_t i = 0; i < tmpTmpTimetable.classrooms[currentClassroomID].name.size(); i++)
             {
                 if (!std::isdigit(tmpTmpTimetable.classrooms[currentClassroomID].name[i]))
                 {

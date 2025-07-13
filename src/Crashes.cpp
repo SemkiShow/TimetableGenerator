@@ -64,7 +64,7 @@ void ZipLogs(zip_t* archive)
 {
     std::vector<std::string> logFiles;
     ListFiles("logs/", &logFiles);
-    for (int i = 0; i < logFiles.size(); i++)
+    for (size_t i = 0; i < logFiles.size(); i++)
     {
         ZipFile(archive, logFiles[i]);
     }
@@ -75,7 +75,7 @@ void ZipTimetables(zip_t* archive)
     // Zip templates
     std::vector<std::string> templateFiles;
     ListFiles("templates/", &templateFiles);
-    for (int i = 0; i < templateFiles.size(); i++)
+    for (size_t i = 0; i < templateFiles.size(); i++)
     {
         ZipFile(archive, templateFiles[i]);
     }
@@ -83,7 +83,7 @@ void ZipTimetables(zip_t* archive)
     // Zip timetables
     std::vector<std::string> timetableFiles;
     ListFiles("timetables/", &timetableFiles);
-    for (int i = 0; i < timetableFiles.size(); i++)
+    for (size_t i = 0; i < timetableFiles.size(); i++)
     {
         ZipFile(archive, timetableFiles[i]);
     }
@@ -97,7 +97,7 @@ int ZipSystemInfo(zip_t* archive)
     systemInfo += "CPU: " + GetCPU() + '\n';
     systemInfo += "RAM: " + std::to_string(GetRAMMegabytes()) + " MB\n";
     std::vector<std::string> gpus = GetGPUs();
-    for (int i = 0; i < gpus.size(); i++)
+    for (size_t i = 0; i < gpus.size(); i++)
     {
         if (gpus[i].empty()) continue;
         if (!gpus[i].empty() && gpus[i].back() == '\n') gpus[i].pop_back();
@@ -116,7 +116,7 @@ int ZipSystemInfo(zip_t* archive)
             "@" + std::to_string(GetMonitorRefreshRate(i)) + "Hz " + monitorDiagonalString + "'\n";
     }
     std::vector<std::string> mounts = GetAllMountPoints();
-    for (int i = 0; i < mounts.size(); i++)
+    for (size_t i = 0; i < mounts.size(); i++)
     {
         std::filesystem::space_info spaceInfo = GetDiskInfo(mounts[i]);
         systemInfo += "Disk " + std::to_string(i) + " at " + mounts[i] +

@@ -78,7 +78,7 @@ void GetLatestVersionName()
             if (!jsonObject.objects.empty())
             {
                 LogInfo("Successfully fetched releases info");
-                int releaseID = 0;
+                size_t releaseID = 0;
                 while (jsonObject.objects[releaseID].boolPairs["draft"] ||
                        (jsonObject.objects[releaseID].boolPairs["prerelease"] && !usePrereleases))
                 {
@@ -181,7 +181,7 @@ std::string GetLatestVersionArchiveURL()
             if (!jsonObject.objects.empty())
             {
                 LogInfo("Successfully fetched releases info");
-                int releaseID = 0;
+                size_t releaseID = 0;
                 while (jsonObject.objects[releaseID].boolPairs["draft"] ||
                        (jsonObject.objects[releaseID].boolPairs["prerelease"] && !usePrereleases))
                 {
@@ -189,7 +189,7 @@ std::string GetLatestVersionArchiveURL()
                     if (releaseID >= jsonObject.objects.size()) return "";
                 }
                 int assetID = -1;
-                for (int i = 0;
+                for (size_t i = 0;
                      i < jsonObject.objects[releaseID].objectPairs["assets"].objects.size(); i++)
                 {
                     std::string assetLanguage = ExtractString(jsonObject.objects[releaseID]
@@ -206,7 +206,7 @@ std::string GetLatestVersionArchiveURL()
                 if (assetID == -1)
                 {
                     LogError("Current language not found in the response");
-                    for (int i = 0;
+                    for (size_t i = 0;
                          i < jsonObject.objects[releaseID].objectPairs["assets"].objects.size();
                          i++)
                     {

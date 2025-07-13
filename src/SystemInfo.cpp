@@ -172,7 +172,7 @@ std::vector<std::string> GetGPUs()
     DISPLAY_DEVICEA dd;
     dd.cb = sizeof(dd);
 
-    for (int i = 0; EnumDisplayDevicesA(0, i, &dd, 0); ++i)
+    for (size_t i = 0; EnumDisplayDevicesA(0, i, &dd, 0); ++i)
     {
         gpus.push_back(dd.DeviceString);
     }

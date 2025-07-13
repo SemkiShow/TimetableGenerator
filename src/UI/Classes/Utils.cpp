@@ -41,7 +41,7 @@ void ResetClassTeacherValues()
     classTeacherValues += '\0';
 
     classTeacherIndex = 0;
-    for (int i = 0; i < classTeacherIDs.size(); i++)
+    for (size_t i = 0; i < classTeacherIDs.size(); i++)
     {
         if (tmpTmpTimetable.classes[currentClassID].teacherID == classTeacherIDs[i])
         {
@@ -70,7 +70,7 @@ bool CompareTimetableLessons(const TimetableLesson lesson1, const TimetableLesso
 {
     bool areSame = lesson1.lessonTeacherPairs.size() == lesson2.lessonTeacherPairs.size();
     if (!areSame) return false;
-    for (int i = 0; i < lesson1.lessonTeacherPairs.size(); i++)
+    for (size_t i = 0; i < lesson1.lessonTeacherPairs.size(); i++)
     {
         if (lesson1.lessonTeacherPairs[i].lessonID != lesson2.lessonTeacherPairs[i].lessonID ||
             lesson1.lessonTeacherPairs[i].teacherID != lesson2.lessonTeacherPairs[i].teacherID)
@@ -110,11 +110,11 @@ void FetchClassLessonsFromSimularClasses(Timetable* timetable, int classID)
                     lesson1.second;
 
                 // Make added lessons support the class
-                for (int i = 0; i < lesson1.second.lessonTeacherPairs.size(); i++)
+                for (size_t i = 0; i < lesson1.second.lessonTeacherPairs.size(); i++)
                 {
                     bool foundMatchingClassID = false;
                     int lessonID = lesson1.second.lessonTeacherPairs[i].lessonID;
-                    for (int j = 0; j < tmpTmpLessons[lessonID].classIDs.size(); j++)
+                    for (size_t j = 0; j < tmpTmpLessons[lessonID].classIDs.size(); j++)
                     {
                         if (tmpTmpLessons[lessonID].classIDs[j] == classID)
                         {
@@ -152,7 +152,7 @@ void ChangeClassesAmount(Timetable* timetable, const std::string& classNumber,
         ++it;
     }
     int lastOrderedClassesID = -1;
-    for (int i = 0; i < timetable->orderedClasses.size(); i++)
+    for (size_t i = 0; i < timetable->orderedClasses.size(); i++)
     {
         if (timetable->classes[timetable->orderedClasses[i]].number == classNumber)
         {
@@ -175,7 +175,7 @@ void UpdateClassLetters(Timetable* timetable)
 {
     int letterCounter = 0;
     std::string lastClassNumber = "";
-    for (int i = 0; i < timetable->orderedClasses.size(); i++)
+    for (size_t i = 0; i < timetable->orderedClasses.size(); i++)
     {
         Class& classPair = timetable->classes[timetable->orderedClasses[i]];
         if (classPair.number != lastClassNumber)
@@ -199,15 +199,15 @@ int GetClassesAmount(Timetable* timetable, const std::string& classNumber)
 }
 
 void ShiftClass(Timetable* timetable, const int direction,
-                const std::vector<std::string> classNumbers, const int i)
+                const std::vector<std::string> classNumbers, const size_t i)
 {
-    if (i + direction < 0 || i + direction >= classNumbers.size()) return;
+    if ((int)i + direction < 0 || i + direction >= classNumbers.size()) return;
 
     std::cout << classNumbers[i] << "->" << classNumbers[i + direction] << '\n';
 
     // Save class teachers
     std::vector<int> classTeachers;
-    for (int j = 0; j < timetable->orderedClasses.size(); j++)
+    for (size_t j = 0; j < timetable->orderedClasses.size(); j++)
     {
         Class& classPair = timetable->classes[timetable->orderedClasses[j]];
         if (classPair.number == classNumbers[i])
@@ -223,7 +223,7 @@ void ShiftClass(Timetable* timetable, const int direction,
 
     // Restore class teachers
     int teacherIndexCounter = 0;
-    for (int j = 0; j < timetable->orderedClasses.size(); j++)
+    for (size_t j = 0; j < timetable->orderedClasses.size(); j++)
     {
         Class& classPair = timetable->classes[timetable->orderedClasses[j]];
         std::cout << classPair.number << ", "
@@ -246,7 +246,7 @@ void ShiftClasses(Timetable* timetable, const int direction)
     {
         classNumbers.push_back(timetable->classes[timetable->orderedClasses[0]].number);
     }
-    for (int i = 0; i < timetable->orderedClasses.size(); i++)
+    for (size_t i = 0; i < timetable->orderedClasses.size(); i++)
     {
         auto& classPair = timetable->classes[timetable->orderedClasses[i]];
         if (classPair.number != classNumbers[classNumbers.size() - 1])
@@ -258,7 +258,7 @@ void ShiftClasses(Timetable* timetable, const int direction)
     // Change classes' amounts
     if (direction < 0)
     {
-        for (int i = 0; i < classNumbers.size(); i++)
+        for (size_t i = 0; i < classNumbers.size(); i++)
         {
             ShiftClass(timetable, direction, classNumbers, i);
         }

@@ -25,12 +25,12 @@ static void ResetVariables()
         lessonClassGroups[classPair.second.number] = true;
         lessonClasses[classPair.first] = newLesson;
     }
-    for (int i = 0; i < tmpTmpTimetable.lessons[currentLessonID].classIDs.size(); i++)
+    for (size_t i = 0; i < tmpTmpTimetable.lessons[currentLessonID].classIDs.size(); i++)
         lessonClasses[tmpTmpTimetable.lessons[currentLessonID].classIDs[i]] = true;
     lessonClassrooms.clear();
     for (auto& classroom: currentTimetable.classrooms)
         lessonClassrooms[classroom.first] = newLesson;
-    for (int i = 0; i < tmpTmpTimetable.lessons[currentLessonID].classroomIDs.size(); i++)
+    for (size_t i = 0; i < tmpTmpTimetable.lessons[currentLessonID].classroomIDs.size(); i++)
         lessonClassrooms[tmpTmpTimetable.lessons[currentLessonID].classroomIDs[i]] = true;
 }
 
@@ -74,7 +74,7 @@ void ShowEditLesson(bool* isOpen)
     // Classes
     std::string lastClassNumber = "";
     int pushID = 0;
-    for (int classID: currentTimetable.orderedClasses)
+    for (size_t classID: currentTimetable.orderedClasses)
     {
         if (lastClassNumber != currentTimetable.classes[classID].number)
         {
@@ -222,7 +222,7 @@ void ShowLessons(bool* isOpen)
         ImGui::NextColumn();
 
         std::string classNames = "";
-        for (int i = 0; i < it->second.classIDs.size(); i++)
+        for (size_t i = 0; i < it->second.classIDs.size(); i++)
         {
             classNames += currentTimetable.classes[it->second.classIDs[i]].number;
             classNames += currentTimetable.classes[it->second.classIDs[i]].letter;
@@ -232,7 +232,7 @@ void ShowLessons(bool* isOpen)
         ImGui::NextColumn();
 
         std::string lessonClassrooms = "";
-        for (int i = 0; i < it->second.classroomIDs.size(); i++)
+        for (size_t i = 0; i < it->second.classroomIDs.size(); i++)
         {
             lessonClassrooms += currentTimetable.classrooms[it->second.classroomIDs[i]].name;
             if (i < it->second.classroomIDs.size() - 1) lessonClassrooms += ' ';
