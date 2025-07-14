@@ -24,9 +24,9 @@ fi
 if [ "$1" == "-w" ] || [ "$1" == "--windows" ]; then
     clear
     ./reset_save_files.sh --soft
-    cmake -B build_win -DCMAKE_TOOLCHAIN_FILE="$(pwd)/mingw-w64-x86_64.cmake" -DCMAKE_BUILD_TYPE=RelWithDebInfo
-    cmake --build build_win -j32
-    wine ./build_win/bin/TimetableGenerator.exe
+    cmake -B build_windows -DCMAKE_TOOLCHAIN_FILE="$(pwd)/mingw-w64-x86_64.cmake" -DCMAKE_BUILD_TYPE=RelWithDebInfo
+    cmake --build build_windows -j32
+    wine ./build_windows/bin/TimetableGenerator.exe
 fi
 
 # Profile build

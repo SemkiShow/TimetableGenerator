@@ -14,9 +14,9 @@ cmake --build build -j
 cp build/bin/TimetableGenerator .
 
 # Compiling for Windows
-cmake -B build_win -DCMAKE_TOOLCHAIN_FILE=mingw-w64-x86_64.cmake -DCMAKE_BUILD_TYPE=Release
-cmake --build build_win -j
-cp build_win/bin/TimetableGenerator.exe .
+cmake -B build_windows -DCMAKE_TOOLCHAIN_FILE=mingw-w64-x86_64.cmake -DCMAKE_BUILD_TYPE=Release
+cmake --build build_windows -j
+cp build_windows/bin/TimetableGenerator.exe .
 
 # Zipping the build
 ./reset_save_files.sh
