@@ -60,7 +60,7 @@ void PrintXlsxError(lxw_workbook* workbook, lxw_worksheet* worksheet, int cellWi
 void ExportClassesAsXlsx(Timetable* timetable)
 {
     LogInfo("Exporting classes of timetables/" + timetable->name + ".json");
-    std::string fileName = "timetables/classes_" + timetable->name + ".xlsx";
+    std::string fileName = "timetables/" + labels["Classes"] + "_" + timetable->name + ".xlsx";
     lxw_workbook* workbook = workbook_new(fileName.c_str());
 
     lxw_format* headingFormat = workbook_add_format(workbook);
@@ -235,7 +235,7 @@ std::unordered_map<int, std::vector<TeacherData>> GetTeacherData(Timetable* time
 void ExportTeachersAsXlsx(Timetable* timetable)
 {
     LogInfo("Exporting teachers of timetables/" + timetable->name + ".json");
-    std::string fileName = "timetables/teachers_" + timetable->name + ".xlsx";
+    std::string fileName = "timetables/" + labels["Teachers"] + "_" + timetable->name + ".xlsx";
     lxw_workbook* workbook = workbook_new(fileName.c_str());
 
     lxw_format* headingFormat = workbook_add_format(workbook);
@@ -366,7 +366,7 @@ std::unordered_map<int, std::vector<ClassroomData>> GetClassroomData(Timetable* 
 void ExportClassroomsAsXlsx(Timetable* timetable)
 {
     LogInfo("Exporting classrooms of timetables/" + timetable->name + ".json");
-    std::string fileName = "timetables/classrooms_" + timetable->name + ".xlsx";
+    std::string fileName = "timetables/" + labels["Classrooms"] + "_" + timetable->name + ".xlsx";
     lxw_workbook* workbook = workbook_new(fileName.c_str());
 
     lxw_format* headingFormat = workbook_add_format(workbook);
