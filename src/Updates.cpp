@@ -430,6 +430,10 @@ void UpdateCACertificate()
         std::filesystem::create_directory("tmp");
     }
     DownloadFile("https://curl.se/ca/cacert.pem", "tmp/cacert.pem");
+    if (std::filesystem::exists("resources/cacert.pem"))
+    {
+        std::filesystem::remove("resources/cacert.pem");
+    }
     std::filesystem::copy_file("tmp/cacert.pem", "resources/cacert.pem",
                                std::filesystem::copy_options::overwrite_existing);
     std::filesystem::remove("tmp/cacert.pem");
