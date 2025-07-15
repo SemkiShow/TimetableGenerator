@@ -125,87 +125,6 @@ static void ResetVariables()
     ResetClassTeacherValues();
 }
 
-static int currentLessonID = 0;
-bool newCombinedLesson = false;
-bool isCombineLessons = false;
-void ShowCombineLessons(bool* isOpen)
-{
-    if (!ImGui::Begin(labels["Combine lessons"].c_str(), isOpen))
-    {
-        ImGui::End();
-        return;
-    }
-
-    // Lessons
-    ImGui::Columns(2);
-    int pushID = 0;
-    for (auto& lesson: tmpLessons)
-    {
-        if (!classLessons[std::to_string(lesson.first) + "0"]) continue;
-        ImGui::PushID(pushID);
-        ImGui::Checkbox(lesson.second.name.c_str(),
-                        &classLessons[std::to_string(lesson.first) + "2"]);
-        ImGui::NextColumn();
-        ImGui::PopID();
-        pushID++;
-        for (auto& teacher: currentTimetable.teachers)
-        {
-            if (!classLessonTeachers[std::to_string(lesson.first) + teacher.second.name + "0"])
-                continue;
-            ImGui::PushID(pushID);
-            ImGui::Checkbox(
-                teacher.second.name.c_str(),
-                &classLessonTeachers[std::to_string(lesson.first) + teacher.second.name + "2"]);
-            ImGui::PopID();
-            pushID++;
-        }
-        ImGui::NextColumn();
-        ImGui::Separator();
-    }
-    ImGui::Columns(1);
-
-    // Ok and Cancel
-    if (ImGui::Button(labels["Ok"].c_str()))
-    {
-        LogInfo("Pressed the Ok button in combine lessons of class with ID " +
-                std::to_string(currentClassID));
-        tmpTmpTimetable.classes[currentClassID]
-            .timetableLessons[currentLessonID]
-            .lessonTeacherPairs.clear();
-        int counter = 0;
-        for (auto& lesson: tmpLessons)
-        {
-            if (!classLessons[std::to_string(lesson.first) + "2"]) continue;
-            for (auto& teacher: currentTimetable.teachers)
-            {
-                if (!classLessonTeachers[std::to_string(lesson.first) + teacher.second.name + "2"])
-                    continue;
-                tmpTmpTimetable.classes[currentClassID]
-                    .timetableLessons[currentLessonID]
-                    .lessonTeacherPairs.push_back(LessonTeacherPair());
-                tmpTmpTimetable.classes[currentClassID]
-                    .timetableLessons[currentLessonID]
-                    .lessonTeacherPairs[counter]
-                    .lessonID = lesson.first;
-                tmpTmpTimetable.classes[currentClassID]
-                    .timetableLessons[currentLessonID]
-                    .lessonTeacherPairs[counter]
-                    .teacherID = teacher.first;
-                counter++;
-            }
-        }
-        *isOpen = false;
-    }
-    ImGui::SameLine();
-    if (ImGui::Button(labels["Cancel"].c_str()))
-    {
-        if (newCombinedLesson)
-            tmpTmpTimetable.classes[currentClassID].timetableLessons.erase(currentLessonID);
-        *isOpen = false;
-    }
-    ImGui::End();
-}
-
 bool isEditClass = false;
 void ShowEditClass(bool* isOpen)
 {
@@ -335,18 +254,7 @@ void ShowEditClass(bool* isOpen)
         LogInfo("Clicked the combine lessons button in class with ID " +
                 std::to_string(currentClassID));
         newCombinedLesson = true;
-        for (auto& lesson: tmpLessons)
-        {
-            if (!classLessons[std::to_string(lesson.first) + "0"]) continue;
-            classLessons[std::to_string(lesson.first) + "2"] = false;
-            for (auto& teacher: currentTimetable.teachers)
-            {
-                if (!classLessonTeachers[std::to_string(lesson.first) + teacher.second.name + "0"])
-                    continue;
-                classLessonTeachers[std::to_string(lesson.first) + teacher.second.name + "2"] =
-                    false;
-            }
-        }
+        ResetCombineLessonsVariables();
         tmpTmpTimetable.classes[currentClassID].maxTimetableLessonID++;
         currentLessonID = tmpTmpTimetable.classes[currentClassID].maxTimetableLessonID;
         tmpTmpTimetable.classes[currentClassID].timetableLessons[currentLessonID] =
@@ -377,37 +285,8 @@ void ShowEditClass(bool* isOpen)
             LogInfo("Editing a timetable lesson with ID " + std::to_string(it->first) +
                     " in a class with ID " + std::to_string(currentClassID));
             newCombinedLesson = false;
-            for (auto& lesson: tmpLessons)
-            {
-                if (!classLessons[std::to_string(lesson.first) + "0"]) continue;
-                classLessons[std::to_string(lesson.first) + "2"] = false;
-                for (auto& teacher: currentTimetable.teachers)
-                {
-                    if (!classLessonTeachers[std::to_string(lesson.first) + teacher.second.name +
-                                             "0"])
-                        continue;
-                    classLessonTeachers[std::to_string(lesson.first) + teacher.second.name + "2"] =
-                        false;
-                }
-            }
-            for (size_t j = 0; j < it->second.lessonTeacherPairs.size(); j++)
-            {
-                if (!classLessons[std::to_string(it->second.lessonTeacherPairs[j].lessonID) + "0"])
-                    continue;
-                if (!classLessonTeachers[std::to_string(it->second.lessonTeacherPairs[j].lessonID) +
-                                         currentTimetable
-                                             .teachers[it->second.lessonTeacherPairs[j].teacherID]
-                                             .name +
-                                         "0"])
-                    continue;
-                classLessons[std::to_string(it->second.lessonTeacherPairs[j].lessonID) + "2"] =
-                    true;
-                classLessonTeachers
-                    [std::to_string(it->second.lessonTeacherPairs[j].lessonID) +
-                     currentTimetable.teachers[it->second.lessonTeacherPairs[j].teacherID].name +
-                     "2"] = true;
-            }
             currentLessonID = it->first;
+            ResetCombineLessonsVariables();
             isCombineLessons = true;
         }
         ImGui::SameLine();
