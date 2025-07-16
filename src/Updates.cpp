@@ -91,7 +91,11 @@ void GetLatestVersionName()
                     }
                 }
                 latestVersion = jsonObject.objects[releaseID].stringPairs["tag_name"];
-                releaseNotes = MultiSplit(jsonObject.objects[releaseID].stringPairs["body"], "\\n");
+                releaseNotes = MultiSplit(jsonObject.objects[releaseID].stringPairs["body"], "\\r\\n");
+                if (releaseNotes.size() <= 1)
+                {
+                    releaseNotes = MultiSplit(jsonObject.objects[releaseID].stringPairs["body"], "\\n");
+                }
                 if (latestVersion != version) isNewVersion = true;
                 LogInfo("Fetched the newest version name: " + latestVersion);
             }

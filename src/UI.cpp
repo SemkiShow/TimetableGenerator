@@ -201,7 +201,7 @@ void ShowNewVersion(bool* isOpen)
         ImGui::Text("%s", labels["A new version is available!"].c_str());
         if (ImGui::TreeNode(labels["Release notes"].c_str()))
         {
-            for (size_t i = 0; i < releaseNotes.size() - 2; i++)
+            for (int i = 0; i < (int)releaseNotes.size() - 2; i++)
             {
                 ImGui::Text("%s", releaseNotes[i].c_str());
             }
