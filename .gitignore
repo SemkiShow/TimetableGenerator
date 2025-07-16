@@ -7,7 +7,7 @@ templates/
 version.txt
 .cache/
 gmon.out
-profile.txt
+perf.data*
 tmp/
 logs/
 crash_report.zip

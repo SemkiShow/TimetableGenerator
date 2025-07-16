@@ -35,8 +35,8 @@ if [ "$1" == "-p" ] || [ "$1" == "--profile" ]; then
     ./reset_save_files.sh --soft
     cmake -B build_profile -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -pg"
     cmake --build build_profile -j
-    ./build_profile/bin/TimetableGenerator
-    gprof ./build_profile/bin/TimetableGenerator > profile.txt
+    perf record --call-graph dwarf ./build_profile/bin/TimetableGenerator
+    hotspot perf.data
 fi
 
 # Memory leak build
