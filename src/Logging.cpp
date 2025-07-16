@@ -10,7 +10,7 @@ void BeginLogging()
     time_t now = time(0);
     std::string time = asctime(localtime(&now));
     if (!time.empty() && time.back() == '\n') time.pop_back();
-    logFile.open(std::string("logs/log") + time + ".log");
+    logFile.open(std::string("logs/") + time + ".log");
 }
 
 void LogInfo(std::string data)
