@@ -57,6 +57,6 @@ if [ "$1" == "--help" ]; then
     echo ""
     echo "-d, --debug      Compile the debug build and run it with gdb"
     echo "-w, --windows    Compile the Windows build and run it with Wine"
-    echo "-p, --profile    Compile the profile build and run it with gprof"
+    echo "-p, --profile    Compile the profile build, profile it with perf and display the data with hotspot"
     echo "-m, --memory-leak    Compile the memory leak build and run it"
 fi

@@ -1,7 +1,10 @@
 #include "Searching.hpp"
 #include "Settings.hpp"
+#include "Timetable.hpp"
+#include <algorithm>
 #include <iostream>
 #include <unordered_map>
+#include <vector>
 
 std::unordered_map<int, std::vector<WorkDay>> GetTeacherLessons(Timetable* timetable)
 {
@@ -340,6 +343,80 @@ void GetLessonGapErrors(Timetable* timetable)
     }
 }
 
+std::vector<std::vector<int>> GetAllRuleVariants(const TimetableLessonRule timetableLessonRule)
+{
+    std::vector<std::vector<int>> ruleVariants;
+    if (timetableLessonRule.preserveOrder)
+    {
+        ruleVariants.push_back(timetableLessonRule.timetableLessonIDs);
+        return ruleVariants;
+    }
+    std::vector<int> timetableLessonIDs = timetableLessonRule.timetableLessonIDs;
+    std::sort(timetableLessonIDs.begin(), timetableLessonIDs.end());
+    do
+    {
+        ruleVariants.push_back(timetableLessonIDs);
+    } while (std::next_permutation(timetableLessonIDs.begin(), timetableLessonIDs.end()));
+    return ruleVariants;
+}
+
+std::vector<int> GetVectorSlice(const std::vector<int> input, size_t begin, size_t end)
+{
+    if (begin >= input.size() || end >= input.size()) return input;
+    std::vector<int> slice(input.begin() + begin, input.begin() + end);
+    return slice;
+}
+
+int GetRuleAmount(Class classPair, const std::vector<int> timetableLessonIDs)
+{
+    int output = 0;
+    classPair.days.resize(iterationData.daysPerWeek);
+    for (size_t i = 0; i < iterationData.daysPerWeek; i++)
+    {
+        std::vector<int> classTimetableLessonIDs;
+        for (size_t j = 0; j < classPair.days[i].classroomLessonPairs.size(); j++)
+        {
+            classTimetableLessonIDs.push_back(
+                classPair.days[i].classroomLessonPairs[j].timetableLessonID);
+        }
+        for (size_t j = 0; j + timetableLessonIDs.size() < classTimetableLessonIDs.size(); j++)
+        {
+            if (GetVectorSlice(classTimetableLessonIDs, j, j + timetableLessonIDs.size()) ==
+                timetableLessonIDs)
+            {
+                output++;
+            }
+        }
+    }
+    return output;
+}
+
+void GetTimetableLessonRulesErrors(Timetable* timetable)
+{
+    for (auto& classPair: timetable->classes)
+    {
+        for (size_t i = 0; i < classPair.second.timetableLessonRules.size(); i++)
+        {
+            TimetableLessonRule& timetableLessonRule = classPair.second.timetableLessonRules[i];
+            std::vector<std::vector<int>> ruleVariants = GetAllRuleVariants(timetableLessonRule);
+            int totalRuleAmount = 0;
+            for (size_t j = 0; j < ruleVariants.size(); j++)
+            {
+                totalRuleAmount += GetRuleAmount(classPair.second, ruleVariants[j]);
+            }
+            if (totalRuleAmount < classPair.second.timetableLessonRules[i].amount ||
+                totalRuleAmount > classPair.second.timetableLessonRules[i].amount)
+            {
+                timetable->errors++;
+                if (verboseLogging)
+                {
+                    std::cout << "Class rule error. ";
+                }
+            }
+        }
+    }
+}
+
 void GetTimetableErrors(Timetable* timetable,
                         std::unordered_map<int, std::vector<WorkDay>> teacherLessons)
 {
@@ -363,6 +440,9 @@ void GetTimetableErrors(Timetable* timetable,
 
     // Get gaps in the timetable errors
     GetLessonGapErrors(timetable);
+
+    // Get timetable lesson rules errors
+    GetTimetableLessonRulesErrors(timetable);
 }
 
 void GetTeacherMovementBonusPoints(Timetable* timetable)

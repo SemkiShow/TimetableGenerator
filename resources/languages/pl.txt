@@ -20,7 +20,6 @@ vsync
 scalona-czcionka
 interwał-autozapisu-planu
 rozmiar-czcionki
-maks-mutacji
 współczynnik-punktów-bonusowych-za-błędy
 krok-planów-na-generację
 min-planów-na-generację
@@ -114,6 +113,15 @@ Uwaga: zmiana bieżącego roku może być bardzo destrukcyjna.
 Jeśli coś poszło nie tak, naciśnij przycisk Anuluj, aby cofnąć wszystkie zmiany
 brak
 Połącz lekcje
+Dodaj zasadę lekcji
+Nowa zasada
+Edytuj zasadę
+Zachowaj kolejność
+Zasady
+Zachowaj kolejność
+Liczba
+Tak
+Nie
 Nowa klasa
 Edytuj klasę
 Uwaga: edytujesz wiele klas jednocześnie!

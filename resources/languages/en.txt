@@ -20,7 +20,6 @@ vsync
 merged-font
 timetable-autosave-interval
 font-size
-max-mutations
 error-bonus-ratio
 timetables-per-generation-step
 min-timetables-per-generation
@@ -114,6 +113,15 @@ Warning: changing the current year can be quite destructive.
 If something went wrong, press the Cancel button to revert all changes
 none
 Combine lessons
+Add a lesson rule
+New rule
+Edit rule
+preserve order
+Rules
+Preserve order
+Amount
+Yes
+No
 New class
 Edit class
 Warning: you are bulk editing classes!

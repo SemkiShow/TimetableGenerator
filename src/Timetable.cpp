@@ -354,6 +354,65 @@ void SaveTimetable(std::string path, Timetable* timetable)
                 }
             }
         }
+
+        // Timetable lesson rules
+        jsonObject.objectPairs["classes"]
+            .objectPairs[std::to_string(classPair.first)]
+            .objectPairs["timetableLessonRules"] = JSONObject();
+        jsonObject.objectPairs["classes"]
+            .objectPairs[std::to_string(classPair.first)]
+            .objectPairs["timetableLessonRules"]
+            .type = JSON_LIST;
+        for (size_t i = 0; i < classPair.second.timetableLessonRules.size(); i++)
+        {
+            jsonObject.objectPairs["classes"]
+                .objectPairs[std::to_string(classPair.first)]
+                .objectPairs["timetableLessonRules"]
+                .objects.push_back(JSONObject());
+            jsonObject.objectPairs["classes"]
+                .objectPairs[std::to_string(classPair.first)]
+                .objectPairs["timetableLessonRules"]
+                .objects[i]
+                .type = JSON_OBJECT;
+            jsonObject.objectPairs["classes"]
+                .objectPairs[std::to_string(classPair.first)]
+                .objectPairs["timetableLessonRules"]
+                .objects[i]
+                .boolPairs["preserveOrder"] =
+                classPair.second.timetableLessonRules[i].preserveOrder;
+            jsonObject.objectPairs["classes"]
+                .objectPairs[std::to_string(classPair.first)]
+                .objectPairs["timetableLessonRules"]
+                .objects[i]
+                .intPairs["amount"] = classPair.second.timetableLessonRules[i].amount;
+            jsonObject.objectPairs["classes"]
+                .objectPairs[std::to_string(classPair.first)]
+                .objectPairs["timetableLessonRules"]
+                .objects[i]
+                .objectPairs["timetableLessonIDs"] = JSONObject();
+            jsonObject.objectPairs["classes"]
+                .objectPairs[std::to_string(classPair.first)]
+                .objectPairs["timetableLessonRules"]
+                .objects[i]
+                .objectPairs["timetableLessonIDs"]
+                .type = JSON_LIST;
+            jsonObject.objectPairs["classes"]
+                .objectPairs[std::to_string(classPair.first)]
+                .objectPairs["timetableLessonRules"]
+                .objects[i]
+                .objectPairs["timetableLessonIDs"]
+                .format = JSON_INLINE;
+            for (size_t j = 0;
+                 j < classPair.second.timetableLessonRules[i].timetableLessonIDs.size(); j++)
+            {
+                jsonObject.objectPairs["classes"]
+                    .objectPairs[std::to_string(classPair.first)]
+                    .objectPairs["timetableLessonRules"]
+                    .objects[i]
+                    .objectPairs["timetableLessonIDs"]
+                    .ints.push_back(classPair.second.timetableLessonRules[i].timetableLessonIDs[j]);
+            }
+        }
     }
 
     SaveJSON(path, &jsonObject);
@@ -436,6 +495,8 @@ void LoadTimetable(std::string path, Timetable* timetable)
         timetable->classes[classID].number = classPair.second.stringPairs["number"];
         timetable->classes[classID].letter = classPair.second.stringPairs["letter"];
         timetable->classes[classID].teacherID = classPair.second.intPairs["teacherID"];
+
+        // Lessons
         for (auto& lesson: classPair.second.objectPairs["lessons"].objectPairs)
         {
             int lessonID = stoi(lesson.first);
@@ -466,6 +527,8 @@ void LoadTimetable(std::string path, Timetable* timetable)
                 timetable->classes[classID].days[i].lessons.push_back(
                     classPair.second.objectPairs["lessonNumbers"].objects[i].bools[j]);
         }
+
+        // Days
         for (size_t i = 0; i < classPair.second.objectPairs["days"].objects.size(); i++)
         {
             for (size_t j = 0; j < classPair.second.objectPairs["days"].objects[i].objects.size();
@@ -494,6 +557,31 @@ void LoadTimetable(std::string path, Timetable* timetable)
                                                     .objectPairs["classroomIDs"]
                                                     .ints[k]);
                 }
+            }
+        }
+
+        // Timetable lesson rules
+        for (size_t i = 0; i < classPair.second.objectPairs["timetableLessonRules"].objects.size();
+             i++)
+        {
+            timetable->classes[classID].timetableLessonRules.push_back(TimetableLessonRule());
+            timetable->classes[classID].timetableLessonRules[i].preserveOrder =
+                classPair.second.objectPairs["timetableLessonRules"]
+                    .objects[i]
+                    .boolPairs["preserveOrder"];
+            timetable->classes[classID].timetableLessonRules[i].amount =
+                classPair.second.objectPairs["timetableLessonRules"].objects[i].intPairs["amount"];
+            for (size_t j = 0; j < classPair.second.objectPairs["timetableLessonRules"]
+                                       .objects[i]
+                                       .objectPairs["timetableLessonIDs"]
+                                       .ints.size();
+                 j++)
+            {
+                timetable->classes[classID].timetableLessonRules[i].timetableLessonIDs.push_back(
+                    classPair.second.objectPairs["timetableLessonRules"]
+                        .objects[i]
+                        .objectPairs["timetableLessonIDs"]
+                        .ints[j]);
             }
         }
     }
@@ -580,6 +668,8 @@ void GenerateRandomTimetable(Timetable* timetable)
                 std::advance(it, rand() % timetable->teachers.size());
                 timetable->classes[classID].teacherID = it->first;
             }
+
+            // Lessons
             for (size_t k = 0; k < 5; k++)
             {
                 timetable->classes[classID].timetableLessons[k] = TimetableLesson();
@@ -600,6 +690,8 @@ void GenerateRandomTimetable(Timetable* timetable)
                         .teacherID = it->first;
                 }
             }
+
+            // Days
             timetable->classes[classID].days.resize(daysPerWeek);
             for (size_t k = 0; k < daysPerWeek; k++)
             {

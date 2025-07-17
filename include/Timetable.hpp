@@ -55,6 +55,13 @@ struct Day
     std::vector<ClassroomLessonPair> classroomLessonPairs;
 };
 
+struct TimetableLessonRule
+{
+    bool preserveOrder = false;
+    int amount = 1;
+    std::vector<int> timetableLessonIDs;
+};
+
 struct Class
 {
     std::string number = "";
@@ -63,6 +70,7 @@ struct Class
     int maxTimetableLessonID = -1;
     std::map<int, TimetableLesson> timetableLessons;
     std::vector<Day> days;
+    std::vector<TimetableLessonRule> timetableLessonRules;
 };
 
 struct Timetable

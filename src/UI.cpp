@@ -485,6 +485,7 @@ void DrawFrame()
     if (isEditTeacher) ShowEditTeacher(&isEditTeacher);
     if (isTeachers) ShowTeachers(&isTeachers);
     if (isCombineLessons) ShowCombineLessons(&isCombineLessons);
+    if (isRules) ShowRules(&isRules);
     if (isEditClass) ShowEditClass(&isEditClass);
     if (isClasses) ShowClasses(&isClasses);
     if (isAbout) ShowAbout(&isAbout);
