@@ -158,6 +158,7 @@ FetchContent_Declare(
     URL https://github.com/nih-at/libzip/archive/v${LIBZIP_VERSION}.zip
 )
 FetchContent_MakeAvailable(libzip)
+add_dependencies(zip zlibstatic)
 
 # utf8cpp
 FetchContent_Declare(
@@ -172,7 +173,7 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE include/)
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-target_link_libraries(${PROJECT_NAME} PRIVATE raylib imgui rlimgui zlib xlsxwriter zip utf8cpp)
+target_link_libraries(${PROJECT_NAME} PRIVATE raylib imgui rlimgui zlibstatic xlsxwriter zip utf8cpp)
 if (NOT TARGET CURL::libcurl)
     add_dependencies(${PROJECT_NAME} libpsl libcurl)
     target_include_directories(${PROJECT_NAME} PRIVATE
