@@ -10,6 +10,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <sstream>
 #include <unordered_map>
 
 unsigned int daysPerWeek = 5;

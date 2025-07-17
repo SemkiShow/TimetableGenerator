@@ -1,6 +1,7 @@
 #include "SystemInfo.hpp"
 #include <iostream>
 #include <string>
+#include <fstream>
 
 #if defined(_WIN32)
 #include <comdef.h>
@@ -15,7 +16,6 @@
 #include <sys/utsname.h>
 #elif defined(__linux__)
 #include <cstdlib>
-#include <fstream>
 #endif
 
 std::string GetOS()
