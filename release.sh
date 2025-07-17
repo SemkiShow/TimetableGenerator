@@ -10,12 +10,12 @@ fi
 
 # Compiling for Linux
 cmake -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build -j32
+cmake --build build -j${nproc}
 cp build/bin/TimetableGenerator .
 
 # Compiling for Windows
 cmake -B build_windows -DCMAKE_TOOLCHAIN_FILE=mingw-w64-x86_64.cmake -DCMAKE_BUILD_TYPE=Release
-cmake --build build_windows -j32
+cmake --build build_windows -j${nproc}
 cp build_windows/bin/TimetableGenerator.exe .
 
 # Zipping the build
