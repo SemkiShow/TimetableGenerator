@@ -1,8 +1,10 @@
-#include "Searching.hpp"
 #include "Logging.hpp"
+#include "Searching.hpp"
 #include "Settings.hpp"
+#include "Timetable.hpp"
 #include "UI.hpp"
 #include <algorithm>
+#include <curl/curl.h>
 #include <iostream>
 #include <random>
 #include <string>
@@ -248,11 +250,14 @@ void MutateTimetableClassroom(Timetable* timetable)
                                                       1);
         int lessonTeacherPairID = lessonTeacherPairDistribution(rng);
 
-        // Generate and replace a new classroom ID
+        // Generate a lessonID
         int lessonID = timetable->classes[classID]
                            .timetableLessons[timetableLessonID]
                            .lessonTeacherPairs[lessonTeacherPairID]
                            .lessonID;
+        if (timetable->lessons[lessonID].classroomIDs.empty()) continue;
+
+        // Generate and replace a new classroom ID
         classroomDistribution = std::uniform_int_distribution<int>(
             0, timetable->lessons[lessonID].classroomIDs.size() - 1);
         int newClassroomID = timetable->lessons[lessonID].classroomIDs[classroomDistribution(rng)];
@@ -390,6 +395,21 @@ int GetBestTimetableIndex(const Timetable* timetables)
     return bestTimetableIndex;
 }
 
+void InjectRandomImmigrants(Timetable* population)
+{
+    for (int i = 0;
+         i < std::uniform_int_distribution<int>(0, iterationData.timetablesPerGeneration / 10)(rng);
+         i++)
+    {
+        int idx =
+            std::uniform_int_distribution<int>(1, iterationData.timetablesPerGeneration - 1)(rng);
+        Timetable immigrant = currentTimetable;
+        RandomizeTimetable(&immigrant);
+        ScoreTimetable(&immigrant);
+        population[idx] = immigrant;
+    }
+}
+
 void RunASearchIteration()
 {
     // Wait for another thread
@@ -456,6 +476,12 @@ void RunASearchIteration()
         std::min(iterationData.maxTimetablesPerGeneration,
                  std::max(iterationData.minTimetablesPerGeneration,
                           (iterationData.iterationsPerChange + 1) * timetablesPerGenerationStep));
+
+    // Inject random immigrants
+    if (iterationData.iteration % 10 == 0)
+    {
+        InjectRandomImmigrants(iterationData.timetables);
+    }
 
     // Run worker threads
     for (size_t i = 0; i < threadsNumber; i++)
@@ -540,6 +566,16 @@ void BeginSearching(const Timetable* timetable)
     iterationData.maxErrors = iterationData.timetables[iterationData.bestTimetableIndex].errors;
     iterationData.allTimeBestScore = iterationData.bestScore;
     iterationData.iteration = 0;
+
+    // Pre-cache class rule variants
+    for (auto& classPair: timetable->classes)
+    {
+        for (size_t i = 0; i < classPair.second.timetableLessonRules.size(); i++)
+        {
+            iterationData.classRuleVariants[classPair.first].push_back(
+                GetAllRuleVariants(classPair.second.timetableLessonRules[i]));
+        }
+    }
 
     // Release the thread lock
     iterationData.threadLock = false;

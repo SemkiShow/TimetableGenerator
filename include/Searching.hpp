@@ -2,6 +2,7 @@
 
 #include "Timetable.hpp"
 #include <limits.h>
+#include <unordered_map>
 
 // Preventing g++ from aggressively optimizing this loop, which frees
 // timetables before the search iteration finishes, which leads to a segmentation fault
@@ -32,6 +33,7 @@ struct IterationData
     bool threadLock = false;
     int startBonusPoints = INT_MAX;
     int maxBonusPoints = INT_MIN;
+    std::unordered_map<int, std::vector<std::vector<TimetableLessonRule>>> classRuleVariants;
 
     // Settings copy (I can't use the real settings data, because
     // if settings are changed while searching for a timetable, the program crashes)
@@ -49,6 +51,7 @@ struct IterationData
 extern IterationData iterationData;
 extern unsigned int threadsNumber;
 
+std::vector<TimetableLessonRule> GetAllRuleVariants(const TimetableLessonRule timetableLessonRule);
 void ScoreTimetable(Timetable* timetable);
 void BeginSearching(const Timetable* timetable);
 void RunASearchIteration();

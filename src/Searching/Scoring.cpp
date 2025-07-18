@@ -3,6 +3,7 @@
 #include "Timetable.hpp"
 #include <algorithm>
 #include <iostream>
+#include <set>
 #include <unordered_map>
 #include <vector>
 
@@ -343,20 +344,31 @@ void GetLessonGapErrors(Timetable* timetable)
     }
 }
 
-std::vector<std::vector<int>> GetAllRuleVariants(const TimetableLessonRule timetableLessonRule)
+std::vector<TimetableLessonRule> GetAllRuleVariants(const TimetableLessonRule timetableLessonRule)
 {
-    std::vector<std::vector<int>> ruleVariants;
+    std::vector<TimetableLessonRule> ruleVariants;
     if (timetableLessonRule.preserveOrder)
     {
-        ruleVariants.push_back(timetableLessonRule.timetableLessonIDs);
+        ruleVariants.push_back(TimetableLessonRule());
+        ruleVariants[0].timetableLessonIDs = timetableLessonRule.timetableLessonIDs;
+        ruleVariants[0].amount = timetableLessonRule.amount;
         return ruleVariants;
     }
     std::vector<int> timetableLessonIDs = timetableLessonRule.timetableLessonIDs;
+    std::set<std::vector<int>> idSet;
     std::sort(timetableLessonIDs.begin(), timetableLessonIDs.end());
+    size_t index = 0;
     do
     {
-        ruleVariants.push_back(timetableLessonIDs);
+        idSet.insert(timetableLessonIDs);
     } while (std::next_permutation(timetableLessonIDs.begin(), timetableLessonIDs.end()));
+    for (const auto& ids: idSet)
+    {
+        ruleVariants.push_back(TimetableLessonRule());
+        ruleVariants[index].timetableLessonIDs = ids;
+        ruleVariants[index].amount = timetableLessonRule.amount;
+        index++;
+    }
     return ruleVariants;
 }
 
@@ -395,17 +407,18 @@ void GetTimetableLessonRulesErrors(Timetable* timetable)
 {
     for (auto& classPair: timetable->classes)
     {
-        for (size_t i = 0; i < classPair.second.timetableLessonRules.size(); i++)
+        for (size_t i = 0; i < iterationData.classRuleVariants[classPair.first].size(); i++)
         {
-            TimetableLessonRule& timetableLessonRule = classPair.second.timetableLessonRules[i];
-            std::vector<std::vector<int>> ruleVariants = GetAllRuleVariants(timetableLessonRule);
             int totalRuleAmount = 0;
-            for (size_t j = 0; j < ruleVariants.size(); j++)
+            std::vector<TimetableLessonRule>& ruleVariants =
+                iterationData.classRuleVariants[classPair.first][i];
+            for (size_t j = 0; j < iterationData.classRuleVariants[classPair.first][i].size(); j++)
             {
-                totalRuleAmount += GetRuleAmount(classPair.second, ruleVariants[j]);
+                totalRuleAmount +=
+                    GetRuleAmount(classPair.second, ruleVariants[j].timetableLessonIDs);
             }
-            if (totalRuleAmount < classPair.second.timetableLessonRules[i].amount ||
-                totalRuleAmount > classPair.second.timetableLessonRules[i].amount)
+            if (totalRuleAmount < ruleVariants[0].amount ||
+                totalRuleAmount > ruleVariants[0].amount)
             {
                 timetable->errors++;
                 if (verboseLogging)
