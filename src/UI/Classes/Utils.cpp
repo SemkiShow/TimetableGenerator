@@ -230,6 +230,61 @@ void ShiftClass(Timetable* timetable, const int direction,
     }
 }
 
+void FixClassTeachers(Timetable* timetable)
+{
+    // Get all free teacher IDs
+    std::vector<int> freeTeachers;
+    for (auto& teacher: currentTimetable.teachers)
+    {
+        freeTeachers.push_back(teacher.first);
+    }
+    for (auto& classPair: timetable->classes)
+    {
+        if (classPair.second.teacherID == -1) continue;
+        auto it = std::find(freeTeachers.begin(), freeTeachers.end(), classPair.second.teacherID);
+        if (it == freeTeachers.end()) continue;
+        freeTeachers.erase(it);
+    }
+
+    // Remove all incompatible teachers
+    for (auto& classPair: timetable->classes)
+    {
+        if (classPair.second.teacherID == -1) continue;
+        bool foundClass = false;
+        for (size_t j = 0; j < currentTimetable.teachers[classPair.second.teacherID].lessonIDs.size(); j++)
+        {
+            int& lessonID = currentTimetable.teachers[classPair.second.teacherID].lessonIDs[j];
+            for (size_t k = 0; k < tmpLessons[lessonID].classIDs.size(); k++)
+            {
+                if (classPair.first != tmpLessons[lessonID].classIDs[k]) continue;
+                foundClass = true;
+                break;
+            }
+            if (foundClass) break;
+        }
+        if (!foundClass) classPair.second.teacherID = -1;
+    }
+
+    // Add teachers to classes with no teacher
+    for (size_t i = 0; i < freeTeachers.size(); i++)
+    {
+        bool foundClass = false;
+        for (size_t j = 0; j < currentTimetable.teachers[freeTeachers[i]].lessonIDs.size(); j++)
+        {
+            int& lessonID = currentTimetable.teachers[freeTeachers[i]].lessonIDs[j];
+            for (size_t k = 0; k < tmpLessons[lessonID].classIDs.size(); k++)
+            {
+                Class& classPair = timetable->classes[tmpLessons[lessonID].classIDs[k]];
+                if (classPair.teacherID != -1) continue;
+                classPair.teacherID = freeTeachers[i];
+                foundClass = true;
+                break;
+            }
+            if (foundClass) break;
+        }
+    }
+}
+
 void ShiftClasses(Timetable* timetable, const int direction)
 {
     // Update the year
@@ -268,6 +323,9 @@ void ShiftClasses(Timetable* timetable, const int direction)
 
     // Fix class letters
     UpdateClassLetters(timetable);
+
+    // Fix class teachers
+    FixClassTeachers(timetable);
 }
 
 void LoadTimetableLessonsFromSelection()
