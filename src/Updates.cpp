@@ -85,9 +85,21 @@ void GetLatestVersionName()
                     releaseID++;
                     if (releaseID >= jsonObject.objects.size())
                     {
-                        latestVersion = labels["Error: no valid new version found!"];
-                        curl_easy_cleanup(curl);
-                        return;
+                        break;
+                    }
+                }
+                if (releaseID >= jsonObject.objects.size())
+                {
+                    releaseID = 0;
+                    while (jsonObject.objects[releaseID].boolPairs["draft"])
+                    {
+                        releaseID++;
+                        if (releaseID >= jsonObject.objects.size())
+                        {
+                            latestVersion = labels["Error: no valid new version found!"];
+                            curl_easy_cleanup(curl);
+                            return;
+                        }
                     }
                 }
                 latestVersion = jsonObject.objects[releaseID].stringPairs["tag_name"];
