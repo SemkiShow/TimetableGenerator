@@ -517,6 +517,13 @@ void RunASearchIteration()
     iterationData.lastAllTimeBestScore = iterationData.allTimeBestScore;
     iterationData.lastBestScore = iterationData.bestScore;
 
+    // Update the error plot
+    for (size_t i = 0; i < iterationData.errorValuesPoints - 1; i++)
+    {
+        iterationData.errorValues[i] = iterationData.errorValues[i + 1];
+    }
+    iterationData.errorValues[iterationData.errorValuesPoints - 1] = iterationData.minErrors;
+
     // Free threads
     delete[] threads;
 
@@ -566,6 +573,10 @@ void BeginSearching(const Timetable* timetable)
     iterationData.maxErrors = iterationData.timetables[iterationData.bestTimetableIndex].errors;
     iterationData.allTimeBestScore = iterationData.bestScore;
     iterationData.iteration = 0;
+    for (size_t i = 0; i < iterationData.errorValuesPoints; i++)
+    {
+        iterationData.errorValues[i] = 0;
+    }
 
     // Pre-cache class rule variants
     for (auto& classPair: timetable->classes)

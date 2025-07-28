@@ -34,6 +34,8 @@ struct IterationData
     int startBonusPoints = INT_MAX;
     int maxBonusPoints = INT_MIN;
     std::unordered_map<int, std::vector<std::vector<TimetableLessonRule>>> classRuleVariants;
+    const static size_t errorValuesPoints = 1000;
+    float errorValues[errorValuesPoints];
 
     // Settings copy (I can't use the real settings data, because
     // if settings are changed while searching for a timetable, the program crashes)

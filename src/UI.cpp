@@ -1,10 +1,10 @@
-#include "UI.hpp"
 #include "Crashes.hpp"
 #include "Logging.hpp"
 #include "Searching.hpp"
 #include "Settings.hpp"
 #include "System.hpp"
 #include "Timetable.hpp"
+#include "UI.hpp"
 #include "Updates.hpp"
 #include <cmath>
 #include <filesystem>
@@ -325,6 +325,8 @@ void ShowGenerateTimetable(bool* isOpen)
                                  1.0f / additionalBonusPoints;
         }
         ImGui::ProgressBar(pow(progressPercentage, 2));
+        ImGui::PlotLines(labels["errors"].c_str(), iterationData.errorValues, iterationData.errorValuesPoints, 0,
+                         NULL, FLT_MAX, FLT_MAX, ImVec2(0, 100));
     }
     ImGui::End();
 }
