@@ -9,14 +9,16 @@ if [ -z "$1" ]; then
 fi
 
 # Compiling for Linux
-cmake -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build -j${nproc}
-cp build/bin/TimetableGenerator .
+mkdir -p build_release
+cmake -B build_release -DCMAKE_BUILD_TYPE=Release
+cmake --build build_release -j${nproc}
+cp build_release/bin/TimetableGenerator .
 
 # Compiling for Windows
-cmake -B build_windows -DCMAKE_TOOLCHAIN_FILE=mingw-w64-x86_64.cmake -DCMAKE_BUILD_TYPE=Release
-cmake --build build_windows -j${nproc}
-cp build_windows/bin/TimetableGenerator.exe .
+mkdir -p build_release_windows
+cmake -B build_release_windows -DCMAKE_TOOLCHAIN_FILE=mingw-w64-x86_64.cmake -DCMAKE_BUILD_TYPE=Release
+cmake --build build_release_windows -j${nproc}
+cp build_release_windows/bin/TimetableGenerator.exe .
 
 # Zipping the build
 ./reset_save_files.sh
@@ -42,4 +44,4 @@ rm TimetableGenerator TimetableGenerator.exe
 
 # Creating a GitHub release
 gh release create $1 ${releases[@]}
-rm ${releases[@]}
+rm ${releases[@]} settings.txt
