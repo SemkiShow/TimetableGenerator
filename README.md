@@ -1,9 +1,9 @@
 # Timetable Generator
 
 <p float="left">
-  <img src="resources/screenshots/TimetableGenerator1.png" width="200" />
-  <img src="resources/screenshots/TimetableGenerator2.png" width="200" /> 
-  <img src="resources/screenshots/TimetableGenerator3.png" width="200" />
+  <img src="resources/screenshots/TimetableGenerator1.png" width="300" />
+  <img src="resources/screenshots/TimetableGenerator2.png" width="300" /> 
+  <img src="resources/screenshots/TimetableGenerator3.png" width="300" />
 </p>
 
 A tool for creating timetables easily
@@ -94,3 +94,4 @@ chmod +x run.sh
 chmod +x run.sh
 ./run.sh
 ```
+
