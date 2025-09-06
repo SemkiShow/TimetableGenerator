@@ -1,5 +1,11 @@
 # Timetable Generator
 
+<p float="left">
+  <img src="resources/screenshots/TimetableGenerator1.png" width="200" />
+  <img src="resources/screenshots/TimetableGenerator2.png" width="200" /> 
+  <img src="resources/screenshots/TimetableGenerator3.png" width="200" />
+</p>
+
 A tool for creating timetables easily
 
 <details>
