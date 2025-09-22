@@ -22,7 +22,6 @@ cp build_release_windows/bin/TimetableGenerator.exe .
 
 # Zipping the build
 ./reset_save_files.sh
-./TimetableGenerator
 echo $1 > version.txt
 releases=()
 systems=("linux" "windows")
@@ -31,7 +30,7 @@ for file in resources/languages/*.txt; do
     sed -i "s/^language=.*/language=$lang/" settings.txt
     for system in "${systems[@]}"; do
         releases+=("release-$system-$lang.zip")
-        zip release-$system-$lang.zip resources/** templates/ timetables/ logs/ LICENSE README.md settings.txt version.txt
+        zip release-$system-$lang.zip resources/** templates/ timetables/ logs/ LICENSE README.md version.txt
         if [ $system == "linux" ]; then
             zip release-$system-$lang.zip TimetableGenerator
         fi
