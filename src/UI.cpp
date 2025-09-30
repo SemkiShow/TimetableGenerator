@@ -52,9 +52,7 @@ void LoadFonts()
     fontConfig.PixelSnapH = true;
     io.Fonts->AddFontFromFileTTF("resources/DroidSansMono.ttf", (float)fontSize, &fontConfig,
                                  glyphRanges.Data);
-    io.Fonts->TexID = 0;
     io.Fonts->Build();
-    rlImGuiReloadFonts();
 }
 
 void LoadStyle()
@@ -329,8 +327,9 @@ void ShowGenerateTimetable(bool* isOpen)
                                  1.0f / additionalBonusPoints;
         }
         ImGui::ProgressBar(pow(progressPercentage, 2));
-        ImGui::PlotLines(labels["errors"].c_str(), iterationData.errorValues, iterationData.errorValuesPoints, 0,
-                         NULL, FLT_MAX, FLT_MAX, ImVec2(0, 100));
+        ImGui::PlotLines(labels["errors"].c_str(), iterationData.errorValues,
+                         iterationData.errorValuesPoints, 0, NULL, FLT_MAX, FLT_MAX,
+                         ImVec2(0, 100));
     }
     ImGui::End();
 }

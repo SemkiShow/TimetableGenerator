@@ -13,115 +13,72 @@ endif()
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-include(FetchContent)
 include(ExternalProject)
 
 # Generate compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Dependencies
-set(RAYLIB_VERSION 5.5)
-set(IMGUI_VERSION 1.91.9b)
-set(LIBXLSXWRITER_VERSION 1.2.2)
-set(ZLIB_VERSION 1.3.1)
-set(LIBZIP_VERSION 1.11.4)
-set(UTF8CPP_VERSION 4.0.6)
-
 # Turn off all warning-related errors when compiling third-party code
 add_compile_options(-Wno-error)
-message(STATUS "Downloading required libraries")
 
 # raylib
-FetchContent_Declare(
-    raylib
-    DOWNLOAD_EXTRACT_TIMESTAMP OFF
-    URL https://github.com/raysan5/raylib/archive/${RAYLIB_VERSION}.tar.gz
-    FIND_PACKAGE_ARGS
-)
-FetchContent_MakeAvailable(raylib)
+add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/raylib ${CMAKE_BINARY_DIR}/_deps/raylib-build)
 
 # Imgui
-FetchContent_Declare(
-    imgui
-    URL https://github.com/ocornut/imgui/archive/v${IMGUI_VERSION}-docking.zip
-)
-FetchContent_MakeAvailable(imgui)
 add_library(imgui)
-file(GLOB imgui-src ${imgui_SOURCE_DIR}/*.cpp ${imgui_SOURCE_DIR}/misc/cpp/*.cpp)
+file(GLOB imgui-src ${CMAKE_SOURCE_DIR}/thirdparty/imgui/*.cpp ${CMAKE_SOURCE_DIR}/thirdparty/imgui/misc/cpp/*.cpp)
 target_sources(imgui PRIVATE ${imgui-src})
-target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR})
+target_include_directories(imgui PUBLIC ${CMAKE_SOURCE_DIR}/thirdparty/imgui)
 
 # rlImGui
-FetchContent_Declare(
-    rlimgui
-    URL https://github.com/raylib-extras/rlImGui/archive/refs/heads/main.zip
-)
-FetchContent_MakeAvailable(rlimgui)
 add_library(rlimgui)
-file(GLOB rlimgui-src ${rlimgui_SOURCE_DIR}/*.cpp)
+file(GLOB rlimgui-src ${CMAKE_SOURCE_DIR}/thirdparty/rlImGui/*.cpp)
 target_sources(rlimgui PRIVATE ${rlimgui-src})
-target_include_directories(rlimgui PUBLIC ${rlimgui_SOURCE_DIR})
+target_include_directories(rlimgui PUBLIC ${CMAKE_SOURCE_DIR}/thirdparty/rlImGui)
 target_link_libraries(rlimgui raylib imgui)
 
 # Curl
 find_package(CURL QUIET)
 
 if (NOT TARGET CURL::libcurl)
-    set(LIBCURL_VERSION 8_14_1)
-    set(LIBPSL_VERSION 0.21.5)
-    set(MBEDTLS_VERSION 3.6.3.1)
-
     # MbedTLS
     set(ENABLE_TESTING OFF CACHE BOOL "" FORCE)
     set(ENABLE_PROGRAMS OFF CACHE BOOL "" FORCE)
     set(MBEDTLS_CONFIG_FILE ${CMAKE_SOURCE_DIR}/include/my_mbedtls_config.h CACHE FILEPATH "" FORCE)
-    FetchContent_Declare(
-        mbedtls
-        URL https://github.com/Mbed-TLS/mbedtls/archive/refs/tags/v${MBEDTLS_VERSION}.zip
-    )
-    FetchContent_MakeAvailable(mbedtls)
-    set(MBEDTLS_INCLUDE_DIR ${mbedtls_SOURCE_DIR}/include CACHE PATH "" FORCE)
-    set(MBEDTLS_LIBRARY ${mbedtls_BINARY_DIR}/library/libmbedtls.a CACHE FILEPATH "" FORCE)
-    set(MBEDX509_LIBRARY ${mbedtls_BINARY_DIR}/library/libmbedx509.a CACHE FILEPATH "" FORCE)
-    set(MBEDCRYPTO_LIBRARY ${mbedtls_BINARY_DIR}/library/libmbedcrypto.a CACHE FILEPATH "" FORCE)
+    add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/mbedtls ${CMAKE_BINARY_DIR}/_deps/mbedtls-build)
+    set(MBEDTLS_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/thirdparty/mbedtls/include CACHE PATH "" FORCE)
+    set(MBEDTLS_LIBRARY ${CMAKE_BINARY_DIR}/_deps/mbedtls-build/library/libmbedtls.a CACHE FILEPATH "" FORCE)
+    set(MBEDX509_LIBRARY ${CMAKE_BINARY_DIR}/_deps/mbedtls-build/library/libmbedx509.a CACHE FILEPATH "" FORCE)
+    set(MBEDCRYPTO_LIBRARY ${CMAKE_BINARY_DIR}/_deps/mbedtls-build/library/libmbedcrypto.a CACHE FILEPATH "" FORCE)
 
     # libpsl
     set(LIBPSL_INSTALL_DIR ${CMAKE_BINARY_DIR}/_deps/libpsl-install)
-    if (CMAKE_CROSSCOMPILING AND CMAKE_SYSTEM_NAME STREQUAL "Windows")
-        ExternalProject_Add(
-            libpsl
-            URL https://github.com/rockdaboot/libpsl/archive/${LIBPSL_VERSION}.zip
-            PREFIX ${CMAKE_BINARY_DIR}/_deps/libpsl
-            CONFIGURE_COMMAND ./autogen.sh && ./configure --host=x86_64-w64-mingw32 --prefix=${LIBPSL_INSTALL_DIR} --disable-runtime --disable-shared --enable-static
-            BUILD_COMMAND curl -o list/public_suffix_list.dat https://publicsuffix.org/list/public_suffix_list.dat && make -j
-            INSTALL_COMMAND make install
-            BUILD_IN_SOURCE 1
-        )
-    else()
-        ExternalProject_Add(
-            libpsl
-            URL https://github.com/rockdaboot/libpsl/archive/${LIBPSL_VERSION}.zip
-            PREFIX ${CMAKE_BINARY_DIR}/_deps/libpsl
-            CONFIGURE_COMMAND ./autogen.sh && ./configure --prefix=${LIBPSL_INSTALL_DIR} --disable-runtime --disable-shared --enable-static
-            BUILD_COMMAND curl -o list/public_suffix_list.dat https://publicsuffix.org/list/public_suffix_list.dat && make -j
-            INSTALL_COMMAND make install
-            BUILD_IN_SOURCE 1
-        )
-    endif()
+    file(COPY ${CMAKE_SOURCE_DIR}/thirdparty/libpsl DESTINATION ${CMAKE_BINARY_DIR}/_deps)
+    ExternalProject_Add(
+        libpsl
+        SOURCE_DIR ${CMAKE_BINARY_DIR}/_deps/libpsl
+        PREFIX ${CMAKE_BINARY_DIR}/_deps/libpsl
+        CONFIGURE_COMMAND curl -o list/public_suffix_list.dat https://publicsuffix.org/list/public_suffix_list.dat &&
+            ./autogen.sh && ./configure --prefix=${LIBPSL_INSTALL_DIR} --disable-runtime --disable-shared --enable-static $<$<AND:$<BOOL:${CMAKE_CROSSCOMPILING}>,$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>>:--host=x86_64-w64-mingw32>
+        BUILD_COMMAND make -j
+        INSTALL_COMMAND make install
+        BUILD_IN_SOURCE 1
+    )
 
     set(LIBCURL_INSTALL_DIR ${CMAKE_BINARY_DIR}/_deps/libcurl-install)
     ExternalProject_Add(
         libcurl
-        URL https://github.com/curl/curl/archive/curl-${LIBCURL_VERSION}.zip
+        SOURCE_DIR ${CMAKE_SOURCE_DIR}/thirdparty/curl
+        BINARY_DIR ${CMAKE_BINARY_DIR}/_deps/libcurl-build
         PREFIX ${CMAKE_BINARY_DIR}/_deps/libcurl
         CMAKE_ARGS
             -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
             -DCMAKE_INSTALL_PREFIX=${LIBCURL_INSTALL_DIR}
             -DCURL_USE_MBEDTLS=ON
-            -DMBEDTLS_INCLUDE_DIR=${mbedtls_SOURCE_DIR}/include
-            -DMBEDTLS_LIBRARY=${mbedtls_BINARY_DIR}/library/libmbedtls.a
-            -DMBEDX509_LIBRARY=${mbedtls_BINARY_DIR}/library/libmbedx509.a
-            -DMBEDCRYPTO_LIBRARY=${mbedtls_BINARY_DIR}/library/libmbedcrypto.a
+            -DMBEDTLS_INCLUDE_DIR=${CMAKE_SOURCE_DIR}/thirdparty/mbedtls/include
+            -DMBEDTLS_LIBRARY=${CMAKE_BINARY_DIR}/_deps/mbedtls-build/library/libmbedtls.a
+            -DMBEDX509_LIBRARY=${CMAKE_BINARY_DIR}/_deps/mbedtls-build/library/libmbedx509.a
+            -DMBEDCRYPTO_LIBRARY=${CMAKE_BINARY_DIR}/_deps/mbedtls-build/library/libmbedcrypto.a
             -DCURL_USE_LIBPSL=ON
             -DLIBPSL_INCLUDE_DIR=${LIBPSL_INSTALL_DIR}/include
             -DLIBPSL_LIBRARY=${LIBPSL_INSTALL_DIR}/lib/libpsl.a
@@ -133,39 +90,23 @@ if (NOT TARGET CURL::libcurl)
 endif()
 
 # zlib
-FetchContent_Declare(
-    zlib
-    URL https://github.com/madler/zlib/archive/v${ZLIB_VERSION}.zip
-)
-FetchContent_MakeAvailable(zlib)
-set(ZLIB_INCLUDE_DIR "${zlib_SOURCE_DIR};${zlib_BINARY_DIR}" CACHE PATH "" FORCE)
+add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/zlib ${CMAKE_BINARY_DIR}/_deps/zlib-build)
+set(ZLIB_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/thirdparty/zlib;${CMAKE_BINARY_DIR}/_deps/zlib-build" CACHE PATH "" FORCE)
 if (WIN32)
-    set(ZLIB_LIBRARY ${zlib_BINARY_DIR}/libzlibstatic.a CACHE FILEPATH "" FORCE)
+    set(ZLIB_LIBRARY ${CMAKE_BINARY_DIR}/_deps/zlib-build/libzlibstatic.a CACHE FILEPATH "" FORCE)
 else()
-    set(ZLIB_LIBRARY ${zlib_BINARY_DIR}/libz.a CACHE FILEPATH "" FORCE)
+    set(ZLIB_LIBRARY ${CMAKE_BINARY_DIR}/_deps/zlib-build/libz.a CACHE FILEPATH "" FORCE)
 endif()
 
 # libxlsxwriter
-FetchContent_Declare(
-    xlsxwriter
-    URL https://github.com/jmcnamara/libxlsxwriter/archive/v${LIBXLSXWRITER_VERSION}.zip
-)
-FetchContent_MakeAvailable(xlsxwriter)
+add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/libxlsxwriter ${CMAKE_BINARY_DIR}/_deps/libxlsxwriter-build)
 
 # libzip
-FetchContent_Declare(
-    libzip
-    URL https://github.com/nih-at/libzip/archive/v${LIBZIP_VERSION}.zip
-)
-FetchContent_MakeAvailable(libzip)
+add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/libzip ${CMAKE_BINARY_DIR}/_deps/libzip-build)
 add_dependencies(zip zlibstatic)
 
 # utf8cpp
-FetchContent_Declare(
-    utf8cpp
-    URL https://github.com/nemtrif/utfcpp/archive/v${UTF8CPP_VERSION}.zip
-)
-FetchContent_MakeAvailable(utf8cpp)
+add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/utfcpp ${CMAKE_BINARY_DIR}/_deps/utfcpp)
 
 add_compile_options(-Wall -Wextra)
 file(GLOB_RECURSE SOURCES src/*.cpp)

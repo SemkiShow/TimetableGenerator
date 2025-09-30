@@ -22,6 +22,7 @@ cp build_release_windows/bin/TimetableGenerator.exe .
 
 # Zipping the build
 ./reset_save_files.sh
+./TimetableGenerator
 echo $1 > version.txt
 releases=()
 systems=("linux" "windows")
