@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2025 SemkiShow
+//
+// SPDX-License-Identifier: GPL-3.0-only
+
 #include "Updates.hpp"
 #include "JSON.hpp"
 #include "Logging.hpp"
