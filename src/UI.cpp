@@ -20,7 +20,7 @@
 #include <thread>
 
 int menuOffset = 20;
-int windowSize[2] = {16 * 50 * 2, 9 * 50 * 2};
+int windowSize[2] = {16 * 50, 9 * 50};
 std::string weekDays[7] = {"Monday", "Tuesday",  "Wednesday", "Thursday",
                            "Friday", "Saturday", "Sunday"};
 std::vector<std::string> timetableFiles;
