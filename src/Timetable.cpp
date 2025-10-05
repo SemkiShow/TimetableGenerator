@@ -21,6 +21,9 @@ void Timetable::Save(const std::string& path)
     JSONObject jsonObject;
     jsonObject.type = JSON_OBJECT;
 
+    // Version
+    jsonObject.intPairs["version"] = version;
+
     // Timetable year
     jsonObject.intPairs["year"] = year;
 
@@ -429,6 +432,7 @@ void Timetable::Load(const std::string& path)
     LoadJSON(path, &jsonObject);
 
     *this = Timetable();
+    version = jsonObject.intPairs["version"];
     name = std::filesystem::path(path).stem().string();
     name = TrimJunk(name);
     year = jsonObject.intPairs["year"];

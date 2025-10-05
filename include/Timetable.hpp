@@ -81,6 +81,7 @@ class Timetable
 {
   public:
     std::string name = "";
+    int version = 0;
     int year = -1;
     int errors = -1;
     int bonusPoints = -1;
