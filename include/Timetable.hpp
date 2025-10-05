@@ -77,8 +77,9 @@ struct Class
     std::vector<TimetableLessonRule> timetableLessonRules;
 };
 
-struct Timetable
+class Timetable
 {
+  public:
     std::string name = "";
     int year = -1;
     int errors = -1;
@@ -92,13 +93,18 @@ struct Timetable
     std::map<int, Teacher> teachers;
     std::map<int, Class> classes;
     std::vector<int> orderedClasses;
+
+    void Save(const std::string& path);
+    void Load(const std::string& path);
+    void GenerateRandomTimetable();
+    void ExportAsXlsx();
+
+  private:
+    void ExportClassesAsXlsx();
+    void ExportTeachersAsXlsx();
+    void ExportClassroomsAsXlsx();
 };
 
 extern Timetable currentTimetable;
 extern Timetable tmpTimetable;
 extern Timetable tmpTmpTimetable;
-
-void SaveTimetable(std::string path, Timetable* timetable);
-void LoadTimetable(std::string path, Timetable* timetable);
-void GenerateRandomTimetable(Timetable* timetable);
-void ExportTimetableAsXlsx(Timetable* timetable);

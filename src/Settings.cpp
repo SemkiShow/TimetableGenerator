@@ -164,7 +164,7 @@ void Save(std::string fileName)
     settingsFile.close();
 
     // Save timetable
-    SaveTimetable("templates/" + currentTimetable.name + ".json", &currentTimetable);
+    currentTimetable.Save("templates/" + currentTimetable.name + ".json");
 }
 
 void Load(std::string fileName)
@@ -215,7 +215,7 @@ void Load(std::string fileName)
     // Load the current timetable
     if (currentTimetable.name != "")
     {
-        LoadTimetable("templates/" + currentTimetable.name + ".json", &currentTimetable);
+        currentTimetable.Load("templates/" + currentTimetable.name + ".json");
     }
 
     // Load the language

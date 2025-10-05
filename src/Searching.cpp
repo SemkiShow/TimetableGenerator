@@ -608,8 +608,7 @@ void StopSearching()
             " errors and " +
             std::to_string(iterationData.timetables[iterationData.bestTimetableIndex].bonusPoints) +
             " bonus points");
-    SaveTimetable("timetables/" + iterationData.timetables[0].name + ".json",
-                  &iterationData.timetables[0]);
+    iterationData.timetables[0].Save("timetables/" + iterationData.timetables[0].name + ".json");
     delete[] iterationData.timetables;
     delete[] iterationData.population;
     delete[] iterationData.newPopulation;

@@ -237,10 +237,10 @@ void ShowNewTimetable(bool* isOpen)
     {
         LogInfo("Creating a new timetable at templates/" + timetableName + ".json");
         if (newTimetable) currentTimetable = Timetable();
-        SaveTimetable("templates/" + timetableName + ".json", &currentTimetable);
+        currentTimetable.Save("templates/" + timetableName + ".json");
         currentTimetable = Timetable();
-        LoadTimetable("templates/" + timetableName + ".json", &currentTimetable);
-        SaveTimetable("templates/" + timetableName + ".json", &currentTimetable);
+        currentTimetable.Load("templates/" + timetableName + ".json");
+        currentTimetable.Save("templates/" + timetableName + ".json");
         OpenWizard();
         *isOpen = false;
     }
@@ -264,7 +264,7 @@ void ShowOpenTimetable(bool* isOpen)
         {
             LogInfo("Opening a timetable at templates/" + timetableFiles[i] + ".json");
             currentTimetable = Timetable();
-            LoadTimetable("templates/" + timetableFiles[i] + ".json", &currentTimetable);
+            currentTimetable.Load("templates/" + timetableFiles[i] + ".json");
             *isOpen = false;
         }
     }
@@ -396,7 +396,7 @@ void ShowMenuBar()
             if (ImGui::MenuItem(labels["Save"].c_str()))
             {
                 LogInfo("Manually saving a timetable");
-                SaveTimetable("templates/" + currentTimetable.name + ".json", &currentTimetable);
+                currentTimetable.Save("templates/" + currentTimetable.name + ".json");
             }
             if (ImGui::MenuItem(labels["Save As"].c_str()))
             {
@@ -410,7 +410,7 @@ void ShowMenuBar()
                 if (ImGui::MenuItem(labels["Excel"].c_str()))
                 {
                     LogInfo("Exporting a timetable as Excel");
-                    ExportTimetableAsXlsx(&currentTimetable);
+                    currentTimetable.ExportAsXlsx();
                     OpenInFileManager("timetables/");
                 }
                 ImGui::EndMenu();
@@ -517,7 +517,7 @@ void DrawFrame()
     if (GetTime() - timetableSaveTimer > timetableAutosaveInterval)
     {
         timetableSaveTimer = GetTime();
-        SaveTimetable("templates/" + currentTimetable.name + ".json", &currentTimetable);
+        currentTimetable.Save("templates/" + currentTimetable.name + ".json");
     }
 
     // Change vsync state
