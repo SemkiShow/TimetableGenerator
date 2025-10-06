@@ -237,11 +237,12 @@ void ShowNewTimetable(bool* isOpen)
     {
         LogInfo("Creating a new timetable at templates/" + timetableName + ".json");
         if (newTimetable) currentTimetable = Timetable();
+        currentTimetable.name = timetableName;
         currentTimetable.Save("templates/" + timetableName + ".json");
         currentTimetable = Timetable();
         currentTimetable.Load("templates/" + timetableName + ".json");
         currentTimetable.Save("templates/" + timetableName + ".json");
-        OpenWizard();
+        if (newTimetable) OpenWizard();
         *isOpen = false;
     }
     ImGui::SameLine();
@@ -380,7 +381,7 @@ void ShowMenuBar()
         {
             if (ImGui::MenuItem(labels["New"].c_str()))
             {
-                LogInfo("Creating a new timatable");
+                LogInfo("Creating a new timetable");
                 newTimetable = true;
                 timetableName = "";
                 isNewTimetable = true;

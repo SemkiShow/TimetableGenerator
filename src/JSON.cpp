@@ -3,234 +3,324 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include "JSON.hpp"
+#include <climits>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 
-int indentationLevel = 0;
-#define INDENTATION std::string(indentationLevel, '\t')
-std::string JSONToString(JSONObject jsonObject)
+inline std::string Indentation(size_t level) { return std::string(level, '\t'); }
+
+void JSON::SkipWhitespace(const std::string& s, size_t& idx)
 {
-    std::string output = "";
-    output += (jsonObject.type == JSON_OBJECT ? "{" : "[");
-    if (jsonObject.format == JSON_NEWLINE) output += '\n';
-    indentationLevel++;
-    if (jsonObject.type == JSON_LIST)
+    while (idx < s.size() && isspace(s[idx]))
+        ++idx;
+}
+
+JSON JSON::ParseValue(const std::string& s, size_t& idx)
+{
+    SkipWhitespace(s, idx);
+    if (idx >= s.size()) throw std::runtime_error("Unexpected end of input");
+
+    if (s[idx] == '{') return ParseObject(s, idx);
+    if (s[idx] == '[') return ParseArray(s, idx);
+    if (s[idx] == '"') return ParseString(s, idx);
+    if (isdigit(s[idx]) || s[idx] == '-' || s[idx] == '+') return ParseNumber(s, idx);
+    if (s.compare(idx, 4, "true") == 0)
     {
-        for (size_t i = 0; i < jsonObject.strings.size(); i++)
-        {
-            if (jsonObject.format == JSON_NEWLINE) output += INDENTATION;
-            output += '"' + jsonObject.strings[i] + '"';
-            if (i < jsonObject.strings.size() - 1 || jsonObject.ints.size() > 0 ||
-                jsonObject.bools.size() > 0 || jsonObject.objects.size() > 0)
-                output += ", ";
-            if (jsonObject.format == JSON_NEWLINE) output += '\n';
-        }
-        for (size_t i = 0; i < jsonObject.ints.size(); i++)
-        {
-            if (jsonObject.format == JSON_NEWLINE) output += INDENTATION;
-            output += std::to_string(jsonObject.ints[i]);
-            if (i < jsonObject.ints.size() - 1 || jsonObject.bools.size() > 0 ||
-                jsonObject.objects.size() > 0)
-                output += ", ";
-            if (jsonObject.format == JSON_NEWLINE) output += '\n';
-        }
-        for (size_t i = 0; i < jsonObject.bools.size(); i++)
-        {
-            if (jsonObject.format == JSON_NEWLINE) output += INDENTATION;
-            output += (jsonObject.bools[i] ? "true" : "false");
-            if (i < jsonObject.bools.size() - 1 || jsonObject.objects.size() > 0) output += ", ";
-            if (jsonObject.format == JSON_NEWLINE) output += '\n';
-        }
-        for (size_t i = 0; i < jsonObject.objects.size(); i++)
-        {
-            if (jsonObject.format == JSON_NEWLINE) output += INDENTATION;
-            output += JSONToString(jsonObject.objects[i]);
-            if (i < jsonObject.objects.size() - 1) output += ", ";
-            if (jsonObject.format == JSON_NEWLINE) output += '\n';
-        }
+        idx += 4;
+        return JSON(true);
     }
-    if (jsonObject.type == JSON_OBJECT)
+    if (s.compare(idx, 5, "false") == 0)
     {
-        size_t i = 0;
-        for (auto pair: jsonObject.stringPairs)
-        {
-            if (jsonObject.format == JSON_NEWLINE) output += INDENTATION;
-            output += '"' + pair.first + "\": " + '"' + pair.second + '"';
-            if (i < jsonObject.stringPairs.size() - 1 || jsonObject.intPairs.size() > 0 ||
-                jsonObject.boolPairs.size() > 0 || jsonObject.objectPairs.size() > 0)
-                output += ", ";
-            if (jsonObject.format == JSON_NEWLINE) output += '\n';
-            i++;
-        }
-        i = 0;
-        for (auto pair: jsonObject.intPairs)
-        {
-            if (jsonObject.format == JSON_NEWLINE) output += INDENTATION;
-            output += '"' + pair.first + "\": " + std::to_string(pair.second);
-            if (i < jsonObject.intPairs.size() - 1 || jsonObject.boolPairs.size() > 0 ||
-                jsonObject.objectPairs.size() > 0)
-                output += ", ";
-            if (jsonObject.format == JSON_NEWLINE) output += '\n';
-            i++;
-        }
-        i = 0;
-        for (auto pair: jsonObject.boolPairs)
-        {
-            if (jsonObject.format == JSON_NEWLINE) output += INDENTATION;
-            output += '"' + pair.first + "\": " + (pair.second ? "true" : "false");
-            if (i < jsonObject.boolPairs.size() - 1 || jsonObject.objectPairs.size() > 0)
-                output += ", ";
-            if (jsonObject.format == JSON_NEWLINE) output += '\n';
-            i++;
-        }
-        i = 0;
-        for (auto pair: jsonObject.objectPairs)
-        {
-            if (jsonObject.format == JSON_NEWLINE) output += INDENTATION;
-            output += '"' + pair.first + "\": " + JSONToString(pair.second);
-            if (i < jsonObject.objectPairs.size() - 1) output += ", ";
-            if (jsonObject.format == JSON_NEWLINE) output += '\n';
-            i++;
-        }
+        idx += 5;
+        return JSON(false);
     }
-    indentationLevel--;
-    if (jsonObject.format == JSON_NEWLINE) output += INDENTATION;
-    output += (jsonObject.type == JSON_OBJECT ? "}" : "]");
-    return output;
-}
-
-void SaveJSON(std::string path, JSONObject* jsonObject)
-{
-    std::ofstream timetableFile(path);
-    indentationLevel = 0;
-    timetableFile << JSONToString(*jsonObject);
-    timetableFile.close();
-    std::cout << "Saved " << path << "\n";
-}
-
-std::string TrimSpaces(const std::string& input)
-{
-    auto first = input.find_first_not_of(" \t\n\r\f\v");
-    auto last = input.find_last_not_of(" \t\n\r\f\v");
-    return (first == input.npos) ? "" : input.substr(first, last - first + 1);
-}
-
-std::string TrimQuotes(const std::string& input)
-{
-    auto first = input.find_first_not_of("\"\t\n\r\f\v");
-    auto last = input.find_last_not_of("\"\t\n\r\f\v");
-    return (first == input.npos) ? "" : input.substr(first, last - first + 1);
-}
-
-bool IsNumber(const std::string& input)
-{
-    std::istringstream iss(input);
-    double d;
-    char c;
-    if (!(iss >> d)) return false;
-    if (iss >> c) return false;
-    return true;
-}
-
-std::vector<std::string> Split(std::string input, char delimiter = ' ', int limit = -1)
-{
-    std::vector<std::string> output;
-    output.push_back("");
-    int index = 0;
-    for (size_t i = 0; i < input.size(); i++)
+    if (s.compare(idx, 4, "null") == 0)
     {
-        if (input[i] == delimiter && (index < (limit - 1) && limit != -1))
-        {
-            index++;
-            output.push_back("");
-            continue;
-        }
-        output[index] += input[i];
+        idx += 4;
+        return JSON(nullptr);
     }
-    return output;
+
+    throw std::runtime_error(std::string("Unexpected token: ") + s[idx]);
 }
 
-void ParseJSON(std::string json, JSONObject* jsonObject)
+JSON JSON::ParseObject(const std::string& s, size_t& idx)
 {
-    int bracketLevel = 0;
-    int startIndex = 0;
-    std::vector<std::string> values;
-    bool insideString = false;
-    for (size_t i = 0; i < json.size(); i++)
+    ++idx; // skip '{'
+    object_t obj;
+    SkipWhitespace(s, idx);
+    if (idx < s.size() && s[idx] == '}')
     {
-        if (json[i] == '\"') insideString = !insideString;
-        if ((json[i] == '{' || json[i] == '[') && !insideString)
+        ++idx;
+        return obj;
+    }
+
+    while (true)
+    {
+        SkipWhitespace(s, idx);
+        if (s[idx] != '"') throw std::runtime_error("Expected string key");
+        std::string key = ParseString(s, idx).GetString();
+        SkipWhitespace(s, idx);
+        if (s[idx] != ':') throw std::runtime_error("Expected ':' after key");
+        ++idx;
+        JSON val = ParseValue(s, idx);
+        obj[key] = val;
+        SkipWhitespace(s, idx);
+        if (s[idx] == '}')
         {
-            bracketLevel++;
-            if (bracketLevel == 1)
+            ++idx;
+            break;
+        }
+        if (s[idx] != ',') throw std::runtime_error("Expected ',' or '}'");
+        ++idx;
+    }
+    return JSON(obj);
+}
+
+JSON JSON::ParseArray(const std::string& s, size_t& idx)
+{
+    ++idx; // skip '['
+    array_t arr;
+    SkipWhitespace(s, idx);
+    if (idx < s.size() && s[idx] == ']')
+    {
+        ++idx;
+        return arr;
+    }
+
+    while (true)
+    {
+        JSON val = ParseValue(s, idx);
+        arr.push_back(val);
+        SkipWhitespace(s, idx);
+        if (s[idx] == ']')
+        {
+            ++idx;
+            break;
+        }
+        if (s[idx] != ',') throw std::runtime_error("Expected ',' or ']'");
+        ++idx;
+    }
+    return JSON(arr);
+}
+
+JSON JSON::ParseString(const std::string& s, size_t& idx)
+{
+    ++idx; // skip '"'
+    std::string str;
+    while (idx < s.size())
+    {
+        if (s[idx] == '"')
+        {
+            ++idx;
+            break;
+        }
+        if (s[idx] == '\\')
+        {
+            ++idx;
+            if (idx >= s.size()) throw std::runtime_error("Invalid escape sequence");
+            switch (s[idx])
             {
-                jsonObject->type = (json[i] == '{' ? JSON_OBJECT : JSON_LIST);
-                startIndex = i + 1;
+            case '"':
+                str.push_back('"');
+                break;
+            case '\\':
+                str.push_back('\\');
+                break;
+            case '/':
+                str.push_back('/');
+                break;
+            case 'b':
+                str.push_back('\b');
+                break;
+            case 'f':
+                str.push_back('\f');
+                break;
+            case 'n':
+                str.push_back('\n');
+                break;
+            case 'r':
+                str.push_back('\r');
+                break;
+            case 't':
+                str.push_back('\t');
+                break;
+            default:
+                throw std::runtime_error("Unknown escape character");
             }
         }
-        if ((json[i] == '}' || json[i] == ']') && !insideString)
+        else
+            str.push_back(s[idx]);
+        ++idx;
+    }
+    return JSON(str);
+}
+
+JSON JSON::ParseNumber(const std::string& s, size_t& idx)
+{
+    size_t start = idx;
+    if (s[idx] == '-' || s[idx] == '+') ++idx;
+
+    bool isDouble = false;
+
+    while (idx < s.size())
+    {
+        char c = s[idx];
+        if (isdigit(c))
         {
-            if (bracketLevel == 1 && json.size() > 2)
-                values.push_back(json.substr(startIndex, i - startIndex));
-            bracketLevel--;
-            if (bracketLevel <= 0) break;
+            ++idx;
         }
-        if (json[i] == ',' && bracketLevel == 1 && !insideString)
+        else if (c == '.')
         {
-            values.push_back(json.substr(startIndex, i - startIndex));
-            startIndex = i + 1;
+            if (isDouble) throw std::runtime_error("Invalid number: multiple decimals");
+            isDouble = true;
+            ++idx;
+        }
+        else if (c == 'e' || c == 'E')
+        {
+            isDouble = true;
+            ++idx;
+            if (idx < s.size() && (s[idx] == '+' || s[idx] == '-')) ++idx;
+            if (idx >= s.size() || !isdigit(s[idx]))
+                throw std::runtime_error("Invalid number: exponent missing digits");
+            while (idx < s.size() && isdigit(s[idx]))
+                ++idx;
+        }
+        else
+        {
+            break;
         }
     }
-    for (size_t i = 0; i < values.size(); i++)
+
+    std::string numStr = s.substr(start, idx - start);
+
+    try
     {
-        values[i] = TrimSpaces(values[i]);
-        if (jsonObject->type == JSON_LIST)
+        if (isDouble)
         {
-            if (values[i][0] == '{' || values[i][0] == '[')
-            {
-                jsonObject->objects.push_back(JSONObject());
-                ParseJSON(values[i], &jsonObject->objects[jsonObject->objects.size() - 1]);
-            }
-            else if (values[i] == "true" || values[i] == "false")
-                jsonObject->bools.push_back(values[i] == "true");
-            else if (IsNumber(values[i]))
-                jsonObject->ints.push_back(stoi(values[i]));
+            // If it has decimal point or exponent → store as double
+            double d = std::stod(numStr);
+            return JSON(d);
+        }
+        else
+        {
+            // Try parsing as int first
+            long long n = std::stoll(numStr);
+            if (n >= INT_MIN && n <= INT_MAX)
+                return JSON(static_cast<int>(n)); // store as int if fits
             else
-                jsonObject->strings.push_back(TrimQuotes(values[i]));
+                return JSON(static_cast<double>(n)); // store as double if too big
         }
-        if (jsonObject->type == JSON_OBJECT)
-        {
-            std::vector<std::string> keyValuePair = Split(values[i], ':', 2);
-            for (size_t i = 0; i < keyValuePair.size(); i++)
-                keyValuePair[i] = TrimSpaces(keyValuePair[i]);
-            if (keyValuePair[0].size() == 0 || keyValuePair[1].size() == 0) return;
-
-            if (keyValuePair[1][0] == '{' || keyValuePair[1][0] == '[')
-            {
-                jsonObject->objectPairs[TrimQuotes(keyValuePair[0])] = JSONObject();
-                ParseJSON(values[i], &jsonObject->objectPairs[TrimQuotes(keyValuePair[0])]);
-            }
-            else if (keyValuePair[1] == "true" || keyValuePair[1] == "false")
-                jsonObject->boolPairs[TrimQuotes(keyValuePair[0])] = keyValuePair[1] == "true";
-            else if (IsNumber(keyValuePair[1]))
-                jsonObject->intPairs[TrimQuotes(keyValuePair[0])] = stoi(keyValuePair[1]);
-            else
-                jsonObject->stringPairs[TrimQuotes(keyValuePair[0])] = TrimQuotes(keyValuePair[1]);
-        }
+    }
+    catch (const std::exception& e)
+    {
+        throw std::runtime_error(std::string("Invalid number: ") + e.what());
     }
 }
 
-void LoadJSON(std::string path, JSONObject* jsonObject)
+std::string JSON::EscapeString(const std::string& s)
 {
-    std::ifstream timetableFile(path);
-    std::string buf, json;
-    while (std::getline(timetableFile, buf))
-        for (size_t i = 0; i < buf.size(); i++)
-            if (buf[i] != '\t') json += buf[i];
-    timetableFile.close();
+    std::string out;
+    for (char c: s)
+    {
+        switch (c)
+        {
+        case '"':
+            out += "\\\"";
+            break;
+        case '\\':
+            out += "\\\\";
+            break;
+        case '\b':
+            out += "\\b";
+            break;
+        case '\f':
+            out += "\\f";
+            break;
+        case '\n':
+            out += "\\n";
+            break;
+        case '\r':
+            out += "\\r";
+            break;
+        case '\t':
+            out += "\\t";
+            break;
+        default:
+            out += c;
+            break;
+        }
+    }
+    return out;
+}
 
-    ParseJSON(json, jsonObject);
+std::string JSON::ToString(size_t level) const
+{
+    std::ostringstream oss;
+    if (IsNull())
+        oss << "null";
+    else if (IsBool())
+        oss << (std::get<bool>(value) ? "true" : "false");
+    else if (IsInt())
+        oss << std::get<int>(value);
+    else if (IsDouble())
+        oss << std::get<double>(value);
+    else if (IsString())
+        oss << "\"" << EscapeString(std::get<std::string>(value)) << "\"";
+    else if (IsArray())
+    {
+        const auto& arr = std::get<array_t>(value);
+        oss << "[";
+        if (format == JSONFormat::Newline) oss << '\n';
+        for (size_t i = 0; i < arr.size(); ++i)
+        {
+            if (format == JSONFormat::Newline) oss << Indentation(level + 1);
+            oss << arr[i].ToString(level + 1);
+            if (i < arr.size() - 1) oss << ", ";
+            if (format == JSONFormat::Newline) oss << '\n';
+        }
+        if (format == JSONFormat::Newline) oss << Indentation(level);
+        oss << "]";
+    }
+    else if (IsObject())
+    {
+        const auto& obj = std::get<object_t>(value);
+        oss << "{";
+        if (format == JSONFormat::Newline) oss << '\n';
+        size_t count = 0;
+        for (const auto& [k, v]: obj)
+        {
+            if (format == JSONFormat::Newline) oss << Indentation(level + 1);
+            oss << "\"" << EscapeString(k) << "\": " << v.ToString(level + 1);
+            if (count++ < obj.size() - 1) oss << ", ";
+            if (format == JSONFormat::Newline) oss << '\n';
+        }
+        if (format == JSONFormat::Newline) oss << Indentation(level);
+        oss << "}";
+    }
+    return oss.str();
+}
 
-    std::cout << "Loaded " << path << "\n";
+void JSON::Save(const std::string& path)
+{
+    std::ofstream f(path);
+    if (!f) throw std::runtime_error("Cannot open file: " + path);
+    f << ToString();
+    f.close();
+}
+
+JSON JSON::Load(const std::string& path)
+{
+    std::ifstream f(path);
+    if (!f) throw std::runtime_error("Cannot open file: " + path);
+    std::stringstream ss;
+    ss << f.rdbuf();
+    f.close();
+    return Parse(ss.str());
+}
+
+JSON JSON::Parse(const std::string& s)
+{
+    size_t idx = 0;
+    return ParseValue(s, idx);
 }

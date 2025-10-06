@@ -2,11 +2,11 @@
 //
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include "Updates.hpp"
 #include "JSON.hpp"
 #include "Logging.hpp"
 #include "Settings.hpp"
 #include "UI.hpp"
+#include "Updates.hpp"
 #include <cstring>
 #include <filesystem>
 #include <iostream>
@@ -77,28 +77,27 @@ void GetLatestVersionName()
         curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &responseCode);
         if (responseCode == 200)
         {
-            JSONObject jsonObject;
-            ParseJSON(readBuffer, &jsonObject);
-            if (!jsonObject.objects.empty())
+            JSON jsonObject = JSON::Parse(readBuffer);
+            if (!jsonObject.GetArray().empty())
             {
                 LogInfo("Successfully fetched releases info");
                 size_t releaseID = 0;
-                while (jsonObject.objects[releaseID].boolPairs["draft"] ||
-                       (jsonObject.objects[releaseID].boolPairs["prerelease"] && !usePrereleases))
+                while (jsonObject[releaseID]["draft"].GetBool() ||
+                       (jsonObject[releaseID]["prerelease"].GetBool() && !usePrereleases))
                 {
                     releaseID++;
-                    if (releaseID >= jsonObject.objects.size())
+                    if (releaseID >= jsonObject.size())
                     {
                         break;
                     }
                 }
-                if (releaseID >= jsonObject.objects.size())
+                if (releaseID >= jsonObject.size())
                 {
                     releaseID = 0;
-                    while (jsonObject.objects[releaseID].boolPairs["draft"])
+                    while (jsonObject[releaseID]["draft"].GetBool())
                     {
                         releaseID++;
-                        if (releaseID >= jsonObject.objects.size())
+                        if (releaseID >= jsonObject.size())
                         {
                             latestVersion = labels["Error: no valid new version found!"];
                             curl_easy_cleanup(curl);
@@ -106,11 +105,11 @@ void GetLatestVersionName()
                         }
                     }
                 }
-                latestVersion = jsonObject.objects[releaseID].stringPairs["tag_name"];
-                releaseNotes = MultiSplit(jsonObject.objects[releaseID].stringPairs["body"], "\\r\\n");
+                latestVersion = jsonObject[releaseID]["tag_name"].GetString();
+                releaseNotes = MultiSplit(jsonObject[releaseID]["body"].GetString(), "\\r\\n");
                 if (releaseNotes.size() <= 1)
                 {
-                    releaseNotes = MultiSplit(jsonObject.objects[releaseID].stringPairs["body"], "\\n");
+                    releaseNotes = MultiSplit(jsonObject[releaseID]["body"].GetString(), "\\n");
                 }
                 if (latestVersion != version) isNewVersion = true;
                 LogInfo("Fetched the newest version name: " + latestVersion);
@@ -196,17 +195,16 @@ std::string GetLatestVersionArchiveURL()
         curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &responseCode);
         if (responseCode == 200)
         {
-            JSONObject jsonObject;
-            ParseJSON(readBuffer, &jsonObject);
-            if (!jsonObject.objects.empty())
+            JSON jsonObject = JSON::Parse(readBuffer);
+            if (!jsonObject.GetArray().empty())
             {
                 LogInfo("Successfully fetched releases info");
                 size_t releaseID = 0;
-                while (jsonObject.objects[releaseID].boolPairs["draft"] ||
-                       (jsonObject.objects[releaseID].boolPairs["prerelease"] && !usePrereleases))
+                while (jsonObject[releaseID]["draft"].GetBool() ||
+                       (jsonObject[releaseID]["prerelease"].GetBool() && !usePrereleases))
                 {
                     releaseID++;
-                    if (releaseID >= jsonObject.objects.size()) return "";
+                    if (releaseID >= jsonObject.size()) return "";
                 }
                 int assetID = -1;
 #ifdef _WIN32
@@ -214,14 +212,11 @@ std::string GetLatestVersionArchiveURL()
 #else
                 std::string releasePrefix = "release-linux-";
 #endif
-                for (size_t i = 0;
-                     i < jsonObject.objects[releaseID].objectPairs["assets"].objects.size(); i++)
+                for (size_t i = 0; i < jsonObject[releaseID]["assets"].size(); i++)
                 {
-                    std::string assetLanguage = ExtractString(jsonObject.objects[releaseID]
-                                                                  .objectPairs["assets"]
-                                                                  .objects[i]
-                                                                  .stringPairs["name"],
-                                                              releasePrefix, ".zip");
+                    std::string assetLanguage =
+                        ExtractString(jsonObject[releaseID]["assets"][i]["name"].GetString(),
+                                      releasePrefix, ".zip");
                     if (assetLanguage == language)
                     {
                         assetID = i;
@@ -231,15 +226,11 @@ std::string GetLatestVersionArchiveURL()
                 if (assetID == -1)
                 {
                     LogError("Current language not found in the response");
-                    for (size_t i = 0;
-                         i < jsonObject.objects[releaseID].objectPairs["assets"].objects.size();
-                         i++)
+                    for (size_t i = 0; i < jsonObject[releaseID]["assets"].size(); i++)
                     {
-                        std::string assetLanguage = ExtractString(jsonObject.objects[releaseID]
-                                                                      .objectPairs["assets"]
-                                                                      .objects[i]
-                                                                      .stringPairs["name"],
-                                                                  releasePrefix, ".zip");
+                        std::string assetLanguage =
+                            ExtractString(jsonObject[releaseID]["assets"][i]["name"].GetString(),
+                                          releasePrefix, ".zip");
                         if (assetLanguage == "en")
                         {
                             assetID = i;
@@ -252,10 +243,7 @@ std::string GetLatestVersionArchiveURL()
                     assetID = 0;
                     LogError("English not found in the response");
                 }
-                return jsonObject.objects[releaseID]
-                    .objectPairs["assets"]
-                    .objects[assetID]
-                    .stringPairs["browser_download_url"];
+                return jsonObject[releaseID]["assets"][assetID]["browser_download_url"].GetString();
             }
             else
             {
