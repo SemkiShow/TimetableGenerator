@@ -254,7 +254,7 @@ std::vector<std::string> GetAllMountPoints()
     return mounts;
 }
 
-std::filesystem::space_info GetDiskInfo(const std::string path)
+std::filesystem::space_info GetDiskInfo(const std::string& path)
 {
     try
     {

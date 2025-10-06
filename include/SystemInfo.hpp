@@ -13,4 +13,4 @@ std::string GetCPU();
 long GetRAMMegabytes();
 std::vector<std::string> GetGPUs();
 std::vector<std::string> GetAllMountPoints();
-std::filesystem::space_info GetDiskInfo(const std::string path);
+std::filesystem::space_info GetDiskInfo(const std::string& path);

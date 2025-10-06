@@ -36,7 +36,13 @@ class JSON
     JSON(const std::string& s) : value(s) {}
     JSON(const array_t& a) : value(a) {}
     JSON(const object_t& o) : value(o) {}
-    JSON(const JSONFormat format) : format(format) {}
+    JSON(const JSONFormat format) : value(nullptr), format(format)
+    {
+        if (format == JSONFormat::Inline)
+            value = array_t{};
+        else
+            value = nullptr;
+    }
 
     JSONFormat format = JSONFormat::Newline;
 
@@ -96,8 +102,16 @@ class JSON
     // Access
     void push_back(const JSON& element)
     {
-        if (!IsArray()) value = array_t{};
-        std::get<array_t>(value).push_back(element);
+        if (IsNull()) value = array_t{};
+        if (!IsArray()) throw std::runtime_error("Cannot push_back to non-array JSON");
+        GetArray().push_back(element);
+    }
+
+    void emplace_back(const JSON& element)
+    {
+        if (IsNull()) value = array_t{};
+        if (!IsArray()) throw std::runtime_error("Cannot emplace_back to non-array JSON");
+        GetArray().emplace_back(element);
     }
 
     size_t size()

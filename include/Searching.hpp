@@ -58,7 +58,7 @@ extern IterationData iterationData;
 extern unsigned int threadsNumber;
 
 std::vector<TimetableLessonRule> GetAllRuleVariants(const TimetableLessonRule timetableLessonRule);
-void ScoreTimetable(Timetable* timetable);
-void BeginSearching(const Timetable* timetable);
+void ScoreTimetable(Timetable& timetable);
+void BeginSearching(const Timetable& timetable);
 void RunASearchIteration();
 void StopSearching();

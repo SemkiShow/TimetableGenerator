@@ -49,7 +49,7 @@ void ShowWizard(bool* isOpen)
         if (ImGui::Button(labels["Generate timetable"].c_str()))
         {
             *isOpen = false;
-            std::thread beginSearchingThread(BeginSearching, &currentTimetable);
+            std::thread beginSearchingThread(BeginSearching, currentTimetable);
             beginSearchingThread.detach();
         }
     }

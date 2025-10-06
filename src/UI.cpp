@@ -438,7 +438,7 @@ void ShowMenuBar()
                 }
                 while (iterationData.threadLock)
                     COMPILER_BARRIER();
-                std::thread beginSearchingThread(BeginSearching, &currentTimetable);
+                std::thread beginSearchingThread(BeginSearching, currentTimetable);
                 beginSearchingThread.detach();
             }
             ImGui::EndMenu();

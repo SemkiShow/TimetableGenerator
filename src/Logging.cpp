@@ -17,7 +17,7 @@ void BeginLogging()
     logFile.open(std::string("logs/") + time + ".log");
 }
 
-void LogInfo(std::string data)
+void LogInfo(const std::string& data)
 {
     time_t now = time(0);
     std::string time = asctime(localtime(&now));
@@ -25,7 +25,7 @@ void LogInfo(std::string data)
     logFile << "[INFO] " << time << ": " << data << '\n';
 }
 
-void LogError(std::string data)
+void LogError(const std::string& data)
 {
     time_t now = time(0);
     std::string time = asctime(localtime(&now));

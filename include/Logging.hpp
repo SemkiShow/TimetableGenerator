@@ -7,6 +7,6 @@
 #include <string>
 
 void BeginLogging();
-void LogInfo(std::string data);
-void LogError(std::string data);
+void LogInfo(const std::string& data);
+void LogError(const std::string& data);
 void EndLogging();

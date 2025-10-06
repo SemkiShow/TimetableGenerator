@@ -159,7 +159,7 @@ void ShowEditClass(bool* isOpen)
         tmpTmpTimetable.classes[currentClassID].timetableLessons.clear();
         tmpTmpTimetable.classes[currentClassID].maxTimetableLessonID = 0;
         ResetVariables();
-        FetchClassLessonsFromSimularClasses(&tmpTmpTimetable, currentClassID);
+        FetchClassLessonsFromSimularClasses(tmpTmpTimetable, currentClassID);
     }
 
     // Classes amount
@@ -453,7 +453,7 @@ void ShowEditClass(bool* isOpen)
         LoadTimetableLessonsFromSelection();
         if (bulkEditClass)
         {
-            ChangeClassesAmount(&tmpTmpTimetable, tmpTmpTimetable.classes[currentClassID].number,
+            ChangeClassesAmount(tmpTmpTimetable, tmpTmpTimetable.classes[currentClassID].number,
                                 bulkClassesAmount);
             for (auto& classPair: tmpTmpTimetable.classes)
             {
@@ -465,7 +465,7 @@ void ShowEditClass(bool* isOpen)
                     classPair.second.teacherID = teacherID;
                 }
             }
-            UpdateClassLetters(&tmpTmpTimetable);
+            UpdateClassLetters(tmpTmpTimetable);
         }
         else
         {
@@ -505,11 +505,11 @@ void ShowClasses(bool* isOpen)
     ImGui::TextColored(
         ImVec4(255, 255, 0, 255), "%s",
         labels["If something went wrong, press the Cancel button to revert all changes"].c_str());
-    if (ImGui::Button(labels["Back"].c_str())) ShiftClasses(&tmpTimetable, -1);
+    if (ImGui::Button(labels["Back"].c_str())) ShiftClasses(tmpTimetable, -1);
     ImGui::SameLine();
     ImGui::Text("%s", std::to_string(tmpTimetable.year).c_str());
     ImGui::SameLine();
-    if (ImGui::Button(labels["Next"].c_str())) ShiftClasses(&tmpTimetable, 1);
+    if (ImGui::Button(labels["Next"].c_str())) ShiftClasses(tmpTimetable, 1);
     ImGui::Separator();
 
     if (ImGui::Button(labels["+"].c_str()))
@@ -526,7 +526,7 @@ void ShowClasses(bool* isOpen)
         tmpTmpTimetable.classes[currentClassID] = Class();
         tmpTmpTimetable.classes[currentClassID].number = "0";
         ResetVariables();
-        FetchClassLessonsFromSimularClasses(&tmpTmpTimetable, currentClassID);
+        FetchClassLessonsFromSimularClasses(tmpTmpTimetable, currentClassID);
         isEditClass = true;
     }
     ImGui::Separator();
@@ -606,7 +606,7 @@ void ShowClasses(bool* isOpen)
                     GetNthUtf8Character(labels["abcdefghijklmnopqrstuvwxyz"], currentClassID);
                 currentClassID = tmpTmpTimetable.maxClassID;
                 ResetVariables();
-                FetchClassLessonsFromSimularClasses(&tmpTmpTimetable, tmpTmpTimetable.maxClassID);
+                FetchClassLessonsFromSimularClasses(tmpTmpTimetable, tmpTmpTimetable.maxClassID);
                 LogInfo("Adding a new class with number " + lastClassNumber + " and ID " +
                         std::to_string(currentClassID));
                 isEditClass = true;

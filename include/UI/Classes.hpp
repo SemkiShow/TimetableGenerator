@@ -28,12 +28,12 @@ extern size_t currentRuleID;
 void ResetClassTeacherValues();
 std::string GetNthUtf8Character(const std::string& utf8String, int index);
 bool CompareTimetableLessons(const TimetableLesson lesson1, const TimetableLesson lesson2);
-void FetchClassLessonsFromSimularClasses(Timetable* timetable, int classID);
-void ChangeClassesAmount(Timetable* timetable, const std::string& classNumber,
+void FetchClassLessonsFromSimularClasses(Timetable& timetable, int classID);
+void ChangeClassesAmount(Timetable& timetable, const std::string& classNumber,
                          const int classesAmount);
-void UpdateClassLetters(Timetable* timetable);
-int GetClassesAmount(Timetable* timetable, const std::string& classNumber);
-void ShiftClasses(Timetable* timetable, const int direction);
+void UpdateClassLetters(Timetable& timetable);
+int GetClassesAmount(Timetable& timetable, const std::string& classNumber);
+void ShiftClasses(Timetable& timetable, const int direction);
 void LoadTimetableLessonsFromSelection();
 
 void ResetCombineLessonsVariables();

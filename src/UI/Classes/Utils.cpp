@@ -85,11 +85,11 @@ bool CompareTimetableLessons(const TimetableLesson lesson1, const TimetableLesso
     return areSame;
 }
 
-void FetchClassLessonsFromSimularClasses(Timetable* timetable, int classID)
+void FetchClassLessonsFromSimularClasses(Timetable& timetable, int classID)
 {
     // Add missing lessons
-    std::string classNumber = timetable->classes[classID].number;
-    for (auto& classPair: timetable->classes)
+    std::string classNumber = timetable.classes[classID].number;
+    for (auto& classPair: timetable.classes)
     {
         if (classPair.first == classID) continue;
         if (classPair.second.number != classNumber) continue;
@@ -97,7 +97,7 @@ void FetchClassLessonsFromSimularClasses(Timetable* timetable, int classID)
         for (auto& lesson1: classPair.second.timetableLessons)
         {
             bool foundMatchingLesson = false;
-            for (auto& lesson2: timetable->classes[classID].timetableLessons)
+            for (auto& lesson2: timetable.classes[classID].timetableLessons)
             {
                 if (CompareTimetableLessons(lesson1.second, lesson2.second))
                 {
@@ -107,9 +107,9 @@ void FetchClassLessonsFromSimularClasses(Timetable* timetable, int classID)
             }
             if (!foundMatchingLesson)
             {
-                timetable->classes[classID].maxTimetableLessonID++;
-                timetable->classes[classID]
-                    .timetableLessons[timetable->classes[classID].maxTimetableLessonID] =
+                timetable.classes[classID].maxTimetableLessonID++;
+                timetable.classes[classID]
+                    .timetableLessons[timetable.classes[classID].maxTimetableLessonID] =
                     lesson1.second;
 
                 // Make added lessons support the class
@@ -135,19 +135,19 @@ void FetchClassLessonsFromSimularClasses(Timetable* timetable, int classID)
     }
 }
 
-void ChangeClassesAmount(Timetable* timetable, const std::string& classNumber,
+void ChangeClassesAmount(Timetable& timetable, const std::string& classNumber,
                          const int classesAmount)
 {
     int classCounter = 0;
-    for (auto it = timetable->classes.begin(); it != timetable->classes.end();)
+    for (auto it = timetable.classes.begin(); it != timetable.classes.end();)
     {
         if (it->second.number == classNumber)
         {
             if (classCounter >= classesAmount && !newClass)
             {
-                timetable->orderedClasses.erase(find(timetable->orderedClasses.begin(),
-                                                     timetable->orderedClasses.end(), it->first));
-                it = timetable->classes.erase(it);
+                timetable.orderedClasses.erase(find(timetable.orderedClasses.begin(),
+                                                     timetable.orderedClasses.end(), it->first));
+                it = timetable.classes.erase(it);
                 continue;
             }
             classCounter++;
@@ -155,32 +155,32 @@ void ChangeClassesAmount(Timetable* timetable, const std::string& classNumber,
         ++it;
     }
     int lastOrderedClassesID = -1;
-    for (size_t i = 0; i < timetable->orderedClasses.size(); i++)
+    for (size_t i = 0; i < timetable.orderedClasses.size(); i++)
     {
-        if (timetable->classes[timetable->orderedClasses[i]].number == classNumber)
+        if (timetable.classes[timetable.orderedClasses[i]].number == classNumber)
         {
             lastOrderedClassesID = i;
         }
     }
     for (int i = 0; i < classesAmount - classCounter; i++)
     {
-        timetable->maxClassID++;
-        timetable->orderedClasses.insert(timetable->orderedClasses.begin() + lastOrderedClassesID +
+        timetable.maxClassID++;
+        timetable.orderedClasses.insert(timetable.orderedClasses.begin() + lastOrderedClassesID +
                                              i + 1,
-                                         timetable->maxClassID);
-        timetable->classes[timetable->maxClassID] = Class();
-        timetable->classes[timetable->maxClassID].number = classNumber;
-        FetchClassLessonsFromSimularClasses(&tmpTmpTimetable, timetable->maxClassID);
+                                         timetable.maxClassID);
+        timetable.classes[timetable.maxClassID] = Class();
+        timetable.classes[timetable.maxClassID].number = classNumber;
+        FetchClassLessonsFromSimularClasses(tmpTmpTimetable, timetable.maxClassID);
     }
 }
 
-void UpdateClassLetters(Timetable* timetable)
+void UpdateClassLetters(Timetable& timetable)
 {
     int letterCounter = 0;
     std::string lastClassNumber = "";
-    for (size_t i = 0; i < timetable->orderedClasses.size(); i++)
+    for (size_t i = 0; i < timetable.orderedClasses.size(); i++)
     {
-        Class& classPair = timetable->classes[timetable->orderedClasses[i]];
+        Class& classPair = timetable.classes[timetable.orderedClasses[i]];
         if (classPair.number != lastClassNumber)
         {
             lastClassNumber = classPair.number;
@@ -191,26 +191,26 @@ void UpdateClassLetters(Timetable* timetable)
     }
 }
 
-int GetClassesAmount(Timetable* timetable, const std::string& classNumber)
+int GetClassesAmount(Timetable& timetable, const std::string& classNumber)
 {
     int output = 0;
-    for (auto& classPair: timetable->classes)
+    for (auto& classPair: timetable.classes)
     {
         if (classPair.second.number == classNumber) output++;
     }
     return output;
 }
 
-void ShiftClass(Timetable* timetable, const int direction,
+void ShiftClass(Timetable& timetable, const int direction,
                 const std::vector<std::string> classNumbers, const size_t i)
 {
     if ((int)i + direction < 0 || i + direction >= classNumbers.size()) return;
 
     // Save class teachers
     std::vector<int> classTeachers;
-    for (size_t j = 0; j < timetable->orderedClasses.size(); j++)
+    for (size_t j = 0; j < timetable.orderedClasses.size(); j++)
     {
-        Class& classPair = timetable->classes[timetable->orderedClasses[j]];
+        Class& classPair = timetable.classes[timetable.orderedClasses[j]];
         if (classPair.number == classNumbers[i])
         {
             classTeachers.push_back(classPair.teacherID);
@@ -224,9 +224,9 @@ void ShiftClass(Timetable* timetable, const int direction,
 
     // Restore class teachers
     int teacherIndexCounter = 0;
-    for (size_t j = 0; j < timetable->orderedClasses.size(); j++)
+    for (size_t j = 0; j < timetable.orderedClasses.size(); j++)
     {
-        Class& classPair = timetable->classes[timetable->orderedClasses[j]];
+        Class& classPair = timetable.classes[timetable.orderedClasses[j]];
         if (classPair.number == classNumbers[i + direction])
         {
             classPair.teacherID = classTeachers[teacherIndexCounter++];
@@ -234,7 +234,7 @@ void ShiftClass(Timetable* timetable, const int direction,
     }
 }
 
-void FixClassTeachers(Timetable* timetable)
+void FixClassTeachers(Timetable& timetable)
 {
     // Get all free teacher IDs
     std::vector<int> freeTeachers;
@@ -242,7 +242,7 @@ void FixClassTeachers(Timetable* timetable)
     {
         freeTeachers.push_back(teacher.first);
     }
-    for (auto& classPair: timetable->classes)
+    for (auto& classPair: timetable.classes)
     {
         if (classPair.second.teacherID == -1) continue;
         auto it = std::find(freeTeachers.begin(), freeTeachers.end(), classPair.second.teacherID);
@@ -251,7 +251,7 @@ void FixClassTeachers(Timetable* timetable)
     }
 
     // Remove all incompatible teachers
-    for (auto& classPair: timetable->classes)
+    for (auto& classPair: timetable.classes)
     {
         if (classPair.second.teacherID == -1) continue;
         bool foundClass = false;
@@ -278,7 +278,7 @@ void FixClassTeachers(Timetable* timetable)
             int& lessonID = currentTimetable.teachers[freeTeachers[i]].lessonIDs[j];
             for (size_t k = 0; k < tmpLessons[lessonID].classIDs.size(); k++)
             {
-                Class& classPair = timetable->classes[tmpLessons[lessonID].classIDs[k]];
+                Class& classPair = timetable.classes[tmpLessons[lessonID].classIDs[k]];
                 if (classPair.teacherID != -1) continue;
                 classPair.teacherID = freeTeachers[i];
                 foundClass = true;
@@ -289,20 +289,20 @@ void FixClassTeachers(Timetable* timetable)
     }
 }
 
-void ShiftClasses(Timetable* timetable, const int direction)
+void ShiftClasses(Timetable& timetable, const int direction)
 {
     // Update the year
-    timetable->year += direction;
+    timetable.year += direction;
 
     // Collect class numbers in order
     std::vector<std::string> classNumbers;
-    if (timetable->orderedClasses.size() > 0)
+    if (timetable.orderedClasses.size() > 0)
     {
-        classNumbers.push_back(timetable->classes[timetable->orderedClasses[0]].number);
+        classNumbers.push_back(timetable.classes[timetable.orderedClasses[0]].number);
     }
-    for (size_t i = 0; i < timetable->orderedClasses.size(); i++)
+    for (size_t i = 0; i < timetable.orderedClasses.size(); i++)
     {
-        auto& classPair = timetable->classes[timetable->orderedClasses[i]];
+        auto& classPair = timetable.classes[timetable.orderedClasses[i]];
         if (classPair.number != classNumbers[classNumbers.size() - 1])
         {
             classNumbers.push_back(classPair.number);

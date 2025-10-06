@@ -135,7 +135,7 @@ void Timetable::Save(const std::string& path)
             {
                 jsonObject["classes"][std::to_string(classPair.first)]["lessons"]
                           [std::to_string(timetableLesson.first)]["lessonTeacherPairs"]
-                              .push_back(JSON(JSONFormat::Inline));
+                              .emplace_back(JSONFormat::Inline);
                 jsonObject["classes"][std::to_string(classPair.first)]["lessons"][std::to_string(
                     timetableLesson.first)]["lessonTeacherPairs"][j]["lessonID"] =
                     timetableLesson.second.lessonTeacherPairs[j].lessonID;
@@ -233,7 +233,7 @@ void MigrateV0(JSON& jsonObject)
             newLesson["lessonTeacherPairs"].format = JSONFormat::Inline;
             for (size_t i = 1; i < lesson.second.size(); i++)
             {
-                newLesson["lessonTeacherPairs"].push_back(JSON(JSONFormat::Inline));
+                newLesson["lessonTeacherPairs"].emplace_back(JSONFormat::Inline);
                 newLesson["lessonTeacherPairs"][i - 1]["lessonID"] = lesson.second[i]["lessonID"];
                 newLesson["lessonTeacherPairs"][i - 1]["teacherID"] = lesson.second[i]["teacherID"];
             }
