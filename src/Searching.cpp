@@ -582,6 +582,17 @@ void BeginSearching(const Timetable& timetable)
         iterationData.errorValues[i] = 0;
     }
 
+    // Empty classes failsafe
+    if (timetable.classes.size() == 0)
+    {
+        std::cout << "The timetable has no classes!\n";
+        LogInfo("The timetable has no classes!");
+        iterationData.isDone = true;
+        iterationData.threadLock = false;
+        generateTimetableStatus = labels["Timetable generating done!"];
+        return;
+    }
+
     // Pre-cache class rule variants
     for (auto& classPair: timetable.classes)
     {

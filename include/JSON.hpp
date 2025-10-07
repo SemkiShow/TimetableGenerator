@@ -36,13 +36,7 @@ class JSON
     JSON(const std::string& s) : value(s) {}
     JSON(const array_t& a) : value(a) {}
     JSON(const object_t& o) : value(o) {}
-    JSON(const JSONFormat format) : value(nullptr), format(format)
-    {
-        if (format == JSONFormat::Inline)
-            value = array_t{};
-        else
-            value = nullptr;
-    }
+    JSON(const JSONFormat format) : value(nullptr), format(format) {}
 
     JSONFormat format = JSONFormat::Newline;
 

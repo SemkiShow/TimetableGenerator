@@ -29,7 +29,9 @@ void Timetable::Save(const std::string& path)
     // Classrooms
     jsonObject["classrooms"] = JSON(JSONFormat::Inline);
     for (auto& classroom: classrooms)
+    {
         jsonObject["classrooms"][std::to_string(classroom.first)] = classroom.second.name;
+    }
 
     // Lessons
     jsonObject["lessons"] = JSON();
