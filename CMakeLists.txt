@@ -1,15 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 project(TimetableGenerator)
 
-if (UNIX)
-    set(GLFW_BUILD_WAYLAND OFF CACHE BOOL "Build GLFW Wayland support")
-    set(GLFW_BUILD_X11 ON CACHE BOOL "Build GLFW X11 support")
-endif()
-
-if(POLICY CMP0135)
-    cmake_policy(SET CMP0135 NEW)
-endif()
-
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -24,7 +15,7 @@ add_compile_options(-Wno-error)
 # raylib
 add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/raylib ${CMAKE_BINARY_DIR}/_deps/raylib-build)
 
-# Imgui
+# imgui
 add_library(imgui)
 file(GLOB imgui-src ${CMAKE_SOURCE_DIR}/thirdparty/imgui/*.cpp ${CMAKE_SOURCE_DIR}/thirdparty/imgui/misc/cpp/*.cpp)
 target_sources(imgui PRIVATE ${imgui-src})
@@ -37,11 +28,11 @@ target_sources(rlimgui PRIVATE ${rlimgui-src})
 target_include_directories(rlimgui PUBLIC ${CMAKE_SOURCE_DIR}/thirdparty/rlImGui)
 target_link_libraries(rlimgui raylib imgui)
 
-# Curl
+# curl
 find_package(CURL QUIET)
 
 if (NOT TARGET CURL::libcurl)
-    # MbedTLS
+    # mbedtls
     set(ENABLE_TESTING OFF CACHE BOOL "" FORCE)
     set(ENABLE_PROGRAMS OFF CACHE BOOL "" FORCE)
     set(MBEDTLS_CONFIG_FILE ${CMAKE_SOURCE_DIR}/include/my_mbedtls_config.h CACHE FILEPATH "" FORCE)
@@ -85,6 +76,7 @@ if (NOT TARGET CURL::libcurl)
             -DCURL_STATICLIB=ON
             -DBUILD_SHARED_LIBS=OFF
             -DBUILD_CURL_EXE=OFF
+            -DCURL_BROTLI=OFF
         DEPENDS mbedtls libpsl
     )
 endif()
@@ -101,9 +93,19 @@ endif()
 # libxlsxwriter
 add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/libxlsxwriter ${CMAKE_BINARY_DIR}/_deps/libxlsxwriter-build)
 
+# zstd
+set(ZSTD_BUILD_STATIC ON CACHE BOOL "" FORCE)
+set(ZSTD_BUILD_SHARED OFF CACHE BOOL "" FORCE)
+set(ZSTD_PROGRAMS OFF CACHE BOOL "" FORCE)
+add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/zstd/build/cmake ${CMAKE_BINARY_DIR}/_deps/zstd-build)
+if(TARGET libzstd_static AND NOT TARGET zstd::libzstd_static)
+    add_library(zstd::libzstd_static ALIAS libzstd_static)
+endif()
+
 # libzip
+set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/libzip ${CMAKE_BINARY_DIR}/_deps/libzip-build)
-add_dependencies(zip zlibstatic)
+add_dependencies(zip zlibstatic libzstd_static)
 
 # utf8cpp
 add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/utfcpp ${CMAKE_BINARY_DIR}/_deps/utfcpp)
