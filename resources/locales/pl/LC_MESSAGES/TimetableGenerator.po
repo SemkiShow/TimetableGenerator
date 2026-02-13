@@ -1,0 +1,769 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-13 17:50+0100\n"
+"PO-Revision-Date: 2026-02-13 18:08+0100\n"
+"Last-Translator: SemkiShow <mgdeveloper123@gmail.com>\n"
+"Language-Team: \n"
+"Language: pl_PL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.8\n"
+"X-Poedit-Basepath: ../../../../src\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: src/UI/Classes/Submenus.cpp:57 src/UI/Classes.cpp:249
+msgid "Combine lessons"
+msgstr "Połącz lekcje"
+
+#: src/UI/Classes/Submenus.cpp:91 src/UI/Classes/Submenus.cpp:217
+#: src/UI/Classes.cpp:442 src/UI/Classes.cpp:659 src/UI/Classrooms.cpp:85
+#: src/UI/Classrooms.cpp:168 src/UI/Lessons.cpp:148 src/UI/Lessons.cpp:249
+#: src/UI/Teachers.cpp:217 src/UI/Teachers.cpp:335 src/UI.cpp:232
+msgid "Ok"
+msgstr "Ok"
+
+#: src/UI/Classes/Submenus.cpp:123 src/UI/Classes/Submenus.cpp:224
+#: src/UI/Classes.cpp:482 src/UI/Classes.cpp:670 src/UI/Classrooms.cpp:106
+#: src/UI/Classrooms.cpp:176 src/UI/Lessons.cpp:168 src/UI/Lessons.cpp:257
+#: src/UI/Teachers.cpp:258 src/UI/Teachers.cpp:343 src/UI.cpp:245
+msgid "Cancel"
+msgstr "Anuluj"
+
+#: src/UI/Classes/Submenus.cpp:163
+msgid "New rule"
+msgstr "Nowa zasada"
+
+#: src/UI/Classes/Submenus.cpp:163
+msgid "Edit rule"
+msgstr "Edytuj zasadę"
+
+#: src/UI/Classes/Submenus.cpp:172
+msgid "preserve order"
+msgstr "zachowaj kolejność"
+
+#: src/UI/Classes/Submenus.cpp:173 src/UI/Classes.cpp:163
+msgid "amount"
+msgstr "ilość"
+
+#: src/UI/Classes/Submenus.cpp:178 src/UI/Classes.cpp:505
+#: src/UI/Classes.cpp:575 src/UI/Classrooms.cpp:119 src/UI/Lessons.cpp:181
+#: src/UI/Teachers.cpp:277
+msgid "+"
+msgstr "+"
+
+#: src/UI/Classes/Submenus.cpp:186 src/UI/Classes.cpp:270
+#: src/UI/Classes.cpp:389 src/UI/Classes.cpp:534 src/UI/Classes.cpp:614
+#: src/UI/Classrooms.cpp:143 src/UI/Lessons.cpp:200 src/UI/Teachers.cpp:295
+msgid "-"
+msgstr "-"
+
+#: src/UI/Classes/Utils.cpp:14
+msgid "none"
+msgstr "brak"
+
+#: src/UI/Classes/Utils.cpp:34 src/UI/Teachers.cpp:33
+msgid "error"
+msgstr "błąd"
+
+#: src/UI/Classes/Utils.cpp:189 src/UI/Classes.cpp:165 src/UI/Classes.cpp:166
+#: src/UI/Classes.cpp:596
+msgid "abcdefghijklmnopqrstuvwxyz"
+msgstr "abcdefghijklmnopqrstuvwxyz"
+
+#: src/UI/Classes.cpp:137
+msgid "New class"
+msgstr "Nowa klasa"
+
+#: src/UI/Classes.cpp:137
+msgid "Edit class"
+msgstr "Edytuj klasę"
+
+#: src/UI/Classes.cpp:148
+msgid ""
+"Warning: you are bulk editing classes!\n"
+"After pressing Ok ALL classes with the number below\n"
+"will be OVERWRITTEN with the data you enter.\n"
+"If you don't want that to happen, press the Cancel button."
+msgstr ""
+"Uwaga: edytujesz wiele klas jednocześnie!\n"
+"Po naciśnięciu OK WSZYSTKIE klasy z podanym numerem\n"
+"ZOSTANĄ NADPISANE wprowadzonymi danymi.\n"
+"Jeśli nie chcesz tego zrobić, naciśnij Anuluj."
+
+#: src/UI/Classes.cpp:152
+msgid "number"
+msgstr "numer"
+
+#: src/UI/Classes.cpp:171
+msgid "letter"
+msgstr "litera"
+
+#: src/UI/Classes.cpp:172
+msgid "teacher"
+msgstr "nauczyciel"
+
+#: src/UI/Classes.cpp:177 src/UI/Teachers.cpp:163
+msgid "available lessons"
+msgstr "dostępne lekcje"
+
+#: src/UI/Classes.cpp:217 src/UI/Classes.cpp:328 src/UI/Lessons.cpp:57
+#: src/UI/Lessons.cpp:119 src/UI/Teachers.cpp:113
+msgid "Deselect all"
+msgstr "Odznacz wszystkie"
+
+#: src/UI/Classes.cpp:217 src/UI/Classes.cpp:329 src/UI/Lessons.cpp:57
+#: src/UI/Lessons.cpp:119 src/UI/Teachers.cpp:113
+msgid "Select all"
+msgstr "Zaznacz wszystkie"
+
+#: src/UI/Classes.cpp:247 src/UI/Teachers.cpp:109
+msgid "lessons"
+msgstr "lekcje"
+
+#: src/UI/Classes.cpp:279 src/UI/Classes.cpp:399 src/UI/Classes.cpp:554
+#: src/UI/Classes.cpp:623 src/UI/Classrooms.cpp:152 src/UI/Lessons.cpp:209
+#: src/UI/Teachers.cpp:304
+msgid "Edit"
+msgstr "Edytuj"
+
+#: src/UI/Classes.cpp:323
+msgid "Warning: no teacher selected for this lesson"
+msgstr "Uwaga: nie wybrano nauczyciela dla tej lekcji"
+
+#: src/UI/Classes.cpp:367
+msgid "Add a lesson rule"
+msgstr "Dodaj zasadę lekcji"
+
+#: src/UI/Classes.cpp:377
+msgid "Rules"
+msgstr "Zasady"
+
+#: src/UI/Classes.cpp:379
+msgid "Preserve order"
+msgstr "Zachowaj kolejność"
+
+#: src/UI/Classes.cpp:381
+msgid "Amount"
+msgstr "Ilość"
+
+#: src/UI/Classes.cpp:431
+msgid "Yes"
+msgstr "Tak"
+
+#: src/UI/Classes.cpp:431
+msgid "No"
+msgstr "Nie"
+
+#: src/UI/Classes.cpp:489 src/UI.cpp:420
+msgid "Classes"
+msgstr "Klasy"
+
+#: src/UI/Classes.cpp:497
+msgid ""
+"Warning: changing the current year can be quite destructive.\n"
+"If something went wrong, press the Cancel button to revert all changes"
+msgstr ""
+"Uwaga: zmiana bieżącego roku może być bardzo destrukcyjna.\n"
+"Jeśli coś poszło nie tak, naciśnij przycisk Anuluj, aby cofnąć wszystkie "
+"zmiany"
+
+#: src/UI/Classes.cpp:498 src/UI/Wizard.cpp:45
+msgid "Back"
+msgstr "Wstecz"
+
+#: src/UI/Classes.cpp:502 src/UI/Wizard.cpp:58
+msgid "Next"
+msgstr "Dalej"
+
+#: src/UI/Classrooms.cpp:20
+msgid "New classroom"
+msgstr "Nowa sala"
+
+#: src/UI/Classrooms.cpp:20
+msgid "Edit classroom"
+msgstr "Edytuj salę"
+
+#: src/UI/Classrooms.cpp:42
+msgid "start number"
+msgstr "numer początkowy"
+
+#: src/UI/Classrooms.cpp:51
+msgid "end number"
+msgstr "numer końcowy"
+
+#: src/UI/Classrooms.cpp:62 src/UI/Classrooms.cpp:80 src/UI/Lessons.cpp:51
+#: src/UI/Teachers.cpp:107
+msgid "name"
+msgstr "nazwa"
+
+#: src/UI/Classrooms.cpp:113 src/UI.cpp:417
+msgid "Classrooms"
+msgstr "Sale lekcyjne"
+
+#: src/UI/Lessons.cpp:44
+msgid "New lesson"
+msgstr "Nowa lekcja"
+
+#: src/UI/Lessons.cpp:44
+msgid "Edit lesson"
+msgstr "Edytuj lekcję"
+
+#: src/UI/Lessons.cpp:53
+msgid "classes"
+msgstr "klasy"
+
+#: src/UI/Lessons.cpp:73
+msgid ""
+"You need to add classes\n"
+"in the Classes menu\n"
+"to select classes for this lesson!"
+msgstr ""
+"Musisz dodać klasy\n"
+"w menu Klasy,\n"
+"aby wybrać klasy dla tej lekcji!"
+
+#: src/UI/Lessons.cpp:133
+msgid ""
+"You need to add classrooms\n"
+"in the Classrooms menu\n"
+"to select classrooms for this lesson!"
+msgstr ""
+"Musisz dodać sale lekcyjne\n"
+"w menu Sale lekcyjne,\n"
+"aby wybrać sale dla tej lekcji!"
+
+#: src/UI/Lessons.cpp:175 src/UI.cpp:418
+msgid "Lessons"
+msgstr "Lekcje"
+
+#: src/UI/Teachers.cpp:25
+msgid "no lesson"
+msgstr "brak lekcji"
+
+#: src/UI/Teachers.cpp:27
+msgid "any lesson"
+msgstr "dowolna lekcja"
+
+#: src/UI/Teachers.cpp:101
+msgid "New teacher"
+msgstr "Nowy nauczyciel"
+
+#: src/UI/Teachers.cpp:101
+msgid "Edit teacher"
+msgstr "Edytuj nauczyciela"
+
+#: src/UI/Teachers.cpp:125
+msgid ""
+"You need to add lessons\n"
+"in the Lessons menu\n"
+"to select lessons for this teacher!"
+msgstr ""
+"Musisz dodać lekcje\n"
+"w menu Lekcje,\n"
+"aby wybrać lekcje dla tego nauczyciela!"
+
+#: src/UI/Teachers.cpp:265 src/UI.cpp:419
+msgid "Teachers"
+msgstr "Nauczyciele"
+
+#: src/UI/Teachers.cpp:271
+msgid "min free periods"
+msgstr "min. ilość okienek"
+
+#: src/UI/Teachers.cpp:273
+msgid "max free periods"
+msgstr "maks. ilość okienek"
+
+#: src/UI/Wizard.cpp:36 src/UI.cpp:416
+msgid "Setup wizard"
+msgstr "Kreator konfiguracji"
+
+#: src/UI/Wizard.cpp:49 src/UI.cpp:275 src/UI.cpp:421
+msgid "Generate timetable"
+msgstr "Generuj plan lekcji"
+
+#: src/Timetable/Exporting.cpp:59
+msgid ""
+"Press the Generate timetable button\n"
+"before exporting the timetable!"
+msgstr ""
+"Naciśnij przycisk Generuj plan lekcji\n"
+"przed eksportowaniem planu!"
+
+#: src/Crashes.cpp:212
+msgid "Crash report"
+msgstr "Raport awarii"
+
+#: src/Crashes.cpp:220
+msgid ""
+"The program has crashed last time it was opened!\n"
+"If you would like to send an anonymous crash report,\n"
+"select the data you want to share\n"
+"(by sending a crash report you can\n"
+"help to make Timetable Generator even better)"
+msgstr ""
+"Program uległ awarii podczas ostatniego uruchomienia!\n"
+"Jeśli chcesz wysłać anonimowy raport awarii,\n"
+"wybierz dane, które chcesz udostępnić\n"
+"(wysyłając raport awarii, możesz\n"
+"pomóc ulepszyć Generator Planów Lekcji)"
+
+#: src/Crashes.cpp:222
+msgid "send logs"
+msgstr "wyślij logi"
+
+#: src/Crashes.cpp:223
+msgid "send timetables"
+msgstr "wyślij plany lekcji"
+
+#: src/Crashes.cpp:224
+msgid "send settings"
+msgstr "wyślij ustawienia"
+
+#: src/Crashes.cpp:225
+msgid "send basic system information"
+msgstr "wyślij podstawowe informacje o systemie"
+
+#: src/Crashes.cpp:227
+msgid "Create crash_report.zip"
+msgstr "Utwórz crash_report.zip"
+
+#: src/Crashes.cpp:235
+msgid ""
+"After pressing Create crash_report.zip\n"
+"email crash_report.zip to mgdeveloper123@gmail.com\n"
+"The email theme should be Timetable Generator crash report\n"
+"You can also provide a crash report description"
+msgstr ""
+"Po naciśnięciu Utwórz crash_report.zip\n"
+"wyślij plik crash_report.zip na adres mgdeveloper123@gmail.com\n"
+"Temat e-maila powinien brzmieć: Generator Planów Lekcji Raport awarii\n"
+"Możesz również dołączyć opis awarii"
+
+#: src/Searching.cpp:434 src/UI.cpp:320
+msgid "Finding additional bonus points..."
+msgstr "Wyszukiwanie dodatkowych punktów bonusowych..."
+
+#: src/Searching.cpp:446 src/UI.cpp:280 src/UI.cpp:282
+msgid "Timetable generating done!"
+msgstr "Generowanie planu zajęć zakończone!"
+
+#: src/Searching.cpp:547 src/UI.cpp:288 src/UI.cpp:426
+msgid "Allocating memory for the timetables..."
+msgstr "Przydzielanie pamięci dla planów zajęć..."
+
+#: src/Searching.cpp:610 src/UI.cpp:315
+msgid "Generating a timetable that matches the requirements..."
+msgstr "Generowanie planu zajęć zgodnego z wymaganiami..."
+
+#: src/Settings.cpp:94
+msgid "Monday"
+msgstr "Poniedziałek"
+
+#: src/Settings.cpp:95
+msgid "Tuesday"
+msgstr "Wtorek"
+
+#: src/Settings.cpp:96
+msgid "Wednesday"
+msgstr "Środa"
+
+#: src/Settings.cpp:97
+msgid "Thursday"
+msgstr "Czwartek"
+
+#: src/Settings.cpp:98
+msgid "Friday"
+msgstr "Piątek"
+
+#: src/Settings.cpp:99
+msgid "Saturday"
+msgstr "Sobota"
+
+#: src/Settings.cpp:100
+msgid "Sunday"
+msgstr "Niedziela"
+
+#: src/Settings.cpp:104
+msgid "dark"
+msgstr "ciemny"
+
+#: src/Settings.cpp:106
+msgid "light"
+msgstr "jasny"
+
+#: src/Settings.cpp:108
+msgid "classic"
+msgstr "klasyczny"
+
+#: src/Settings.cpp:114
+msgid ""
+"Welcome to the TimetableGenerator setup wizard!\n"
+"\n"
+"The first step is to add classrooms.\n"
+"After you are done, press Ok and continue to the next step."
+msgstr ""
+"Witamy w kreatorze Generatora Planów Lekcji!\n"
+"\n"
+"Pierwszy krok to dodanie sal lekcyjnych.\n"
+"Po zakończeniu kliknij OK, aby przejść do następnego kroku."
+
+#: src/Settings.cpp:116
+msgid ""
+"The next step is to add classes.\n"
+"After you are done, press Ok and continue to the next step."
+msgstr ""
+"Następny krok to dodanie klas.\n"
+"Po zakończeniu kliknij OK, aby przejść do następnego kroku."
+
+#: src/Settings.cpp:118
+msgid ""
+"The next step is to add lessons.\n"
+"After you are done, press Ok and continue to the next step."
+msgstr ""
+"Następny krok to dodanie lekcji.\n"
+"Po zakończeniu kliknij OK, aby przejść do następnego kroku."
+
+#: src/Settings.cpp:120
+msgid ""
+"The next step is to add teachers.\n"
+"After you are done, press Ok and continue to the next step."
+msgstr ""
+"Następny krok to dodanie nauczycieli.\n"
+"Po zakończeniu kliknij OK, aby przejść do następnego kroku."
+
+#: src/Settings.cpp:122
+msgid ""
+"The next step is to assign lessons to classes.\n"
+"After you are done, press Ok and continue to the next step."
+msgstr ""
+"Następny krok to przypisanie lekcji do klas.\n"
+"Po zakończeniu kliknij OK, aby przejść do następnego kroku."
+
+#: src/Settings.cpp:124
+msgid ""
+"You are done! Now press the Generate timetable\n"
+"button to begin the timetable finding process!"
+msgstr ""
+"Gotowe! Teraz kliknij przycisk Generuj plan lekcji,\n"
+"aby rozpocząć proces tworzenia planu!"
+
+#: src/UI.cpp:121 src/UI.cpp:411
+msgid "Settings"
+msgstr "Ustawienia"
+
+#: src/UI.cpp:126
+msgid "days per week"
+msgstr "dni w tygodniu"
+
+#: src/UI.cpp:128
+msgid "lessons per day"
+msgstr "lekcje dziennie"
+
+#: src/UI.cpp:130
+msgid "style"
+msgstr "styl"
+
+#: src/UI.cpp:134
+msgid "language"
+msgstr "język"
+
+#: src/UI.cpp:139
+msgid "Developer options"
+msgstr "Opcje deweloperskie"
+
+#: src/UI.cpp:141
+msgid "vsync"
+msgstr "vsync"
+
+#: src/UI.cpp:142
+msgid "merged-font"
+msgstr "scalona-czcionka"
+
+#: src/UI.cpp:143
+msgid "timetable-autosave-interval"
+msgstr "interwał-autozapisu-planu"
+
+#: src/UI.cpp:144
+msgid "font-size"
+msgstr "rozmiar-czcionki"
+
+#: src/UI.cpp:146
+msgid "error-bonus-ratio"
+msgstr "współczynnik-punktów-bonusowych-za-błędy"
+
+#: src/UI.cpp:147
+msgid "timetables-per-generation-step"
+msgstr "krok-planów-na-generację"
+
+#: src/UI.cpp:148
+msgid "min-timetables-per-generation"
+msgstr "min-planów-na-generację"
+
+#: src/UI.cpp:150
+msgid "max-timetables-per-generation"
+msgstr "maks-planów-na-generację"
+
+#: src/UI.cpp:154
+msgid "max-iterations"
+msgstr "maks-iteracji"
+
+#: src/UI.cpp:155
+msgid "additional-bonus-points"
+msgstr "dodatkowe-punkty-bonusowe"
+
+#: src/UI.cpp:156
+msgid "verbose-logging"
+msgstr "szczegółowe-logi"
+
+#: src/UI.cpp:166
+msgid "use-prereleases"
+msgstr "używaj-wersji-testowych"
+
+#: src/UI.cpp:175 src/UI.cpp:442
+msgid "About"
+msgstr "O programie"
+
+#: src/UI.cpp:180
+msgid "TimetableGenerator"
+msgstr "TimetableGenerator"
+
+#: src/UI.cpp:181
+msgid "A tool for creating timetables easily"
+msgstr "Narzędzie do łatwego tworzenia planów lekcji"
+
+#: src/UI.cpp:182
+msgid "Developed by SemkiShow"
+msgstr "Opracowane przez SemkiShow"
+
+#: src/UI.cpp:183
+msgid "Licensed under GPLv3 License"
+msgstr "Licencjonowane na GPLv3"
+
+#: src/UI.cpp:190
+msgid "Updates"
+msgstr "Aktualizacje"
+
+#: src/UI.cpp:195
+msgid "The latest version is"
+msgstr "Najnowsza wersja to"
+
+#: src/UI.cpp:196
+msgid "Your version is"
+msgstr "Twoja wersja to"
+
+#: src/UI.cpp:198
+msgid "There are no new versions available"
+msgstr "Brak dostępnych nowych wersji"
+
+#: src/UI.cpp:199 src/Updates.cpp:140 src/Updates.cpp:142
+msgid "loading..."
+msgstr "ładowanie..."
+
+#: src/UI.cpp:201
+msgid "A new version is available!"
+msgstr "Dostępna jest nowa wersja!"
+
+#: src/UI.cpp:202
+msgid "Release notes"
+msgstr "Informacje o wydaniu"
+
+#: src/UI.cpp:211
+msgid "Update"
+msgstr "Aktualizuj"
+
+#: src/UI.cpp:225
+msgid "New timetable"
+msgstr "Nowy plan lekcji"
+
+#: src/UI.cpp:225
+msgid "Save timetable as"
+msgstr "Zapisz plan jako"
+
+#: src/UI.cpp:230
+msgid ""
+"Enter the timetable name\n"
+"(for example, the name of the school)"
+msgstr ""
+"Wpisz nazwę planu lekcji\n"
+"(na przykład nazwę szkoły)"
+
+#: src/UI.cpp:252
+msgid "Open timetable"
+msgstr "Otwórz plan lekcji"
+
+#: src/UI.cpp:257
+msgid "Select a timetable to open"
+msgstr "Wybierz plan lekcji do otwarcia"
+
+#: src/UI.cpp:296
+msgid "Iteration:"
+msgstr "Iteracja:"
+
+#: src/UI.cpp:297
+msgid "The best score is"
+msgstr "Najlepszy wynik to"
+
+#: src/UI.cpp:300 src/UI.cpp:306
+msgid "The best timetable has"
+msgstr "Najlepszy plan zawiera"
+
+#: src/UI.cpp:303
+msgid "errors"
+msgstr "błędów"
+
+#: src/UI.cpp:309
+msgid "bonus points"
+msgstr "punktów bonusowych"
+
+#: src/UI.cpp:312
+msgid "iterations have passed since last score improvement"
+msgstr "iteracji minęło od ostatniej poprawy wyniku"
+
+#: src/UI.cpp:343 src/UI.cpp:440
+msgid "FAQ"
+msgstr "FAQ"
+
+#: src/UI.cpp:348
+msgid "How do I contact the developer?"
+msgstr "Jak skontaktować się z deweloperem?"
+
+#: src/UI.cpp:350
+msgid "You can contact me by sending an email to mgdeveloper123@gmail.com"
+msgstr ""
+"Możesz skontaktować się ze mną, wysyłając e-mail na adres "
+"mgdeveloper123@gmail.com"
+
+#: src/UI.cpp:353
+msgid "How do I add multiple lessons to one timetable cell?"
+msgstr "Jak dodać kilka lekcji do jednej komórki planu zajęć?"
+
+#: src/UI.cpp:357
+msgid ""
+"To add multiple lessons to one timetable cell, click\n"
+"Combine lessons while editing a class."
+msgstr ""
+"Aby dodać kilka lekcji do jednej komórki planu, kliknij\n"
+"Połącz lekcje podczas edycji klasy."
+
+#: src/UI.cpp:359
+msgid "Select the lessons and teachers to combine and press Ok."
+msgstr "Wybierz lekcje i nauczycieli do połączenia i kliknij OK."
+
+#: src/UI.cpp:361
+msgid "Then set the amount per week for the created combined lesson."
+msgstr ""
+"Następnie ustaw liczbę godzin tygodniowo dla utworzonej lekcji łączonej."
+
+#: src/UI.cpp:372
+msgid "File"
+msgstr "Plik"
+
+#: src/UI.cpp:374
+msgid "New"
+msgstr "Nowy"
+
+#: src/UI.cpp:381
+msgid "Open"
+msgstr "Otwórz"
+
+#: src/UI.cpp:389
+msgid "Save"
+msgstr "Zapisz"
+
+#: src/UI.cpp:394
+msgid "Save As"
+msgstr "Zapisz jako"
+
+#: src/UI.cpp:401
+msgid "Export As"
+msgstr "Eksportuj jako"
+
+#: src/UI.cpp:403
+msgid "Excel"
+msgstr "Excel"
+
+#: src/UI.cpp:438
+msgid "Help"
+msgstr "Pomoc"
+
+#: src/UI.cpp:441
+msgid "Check for updates"
+msgstr "Sprawdź aktualizacje"
+
+#: src/Updates.cpp:54
+msgid "Error: CURL init failed!"
+msgstr "Błąd: inicjalizacja CURL nie powiodła się!"
+
+#: src/Updates.cpp:72
+msgid "Error: network request failed!"
+msgstr "Błąd: żądanie sieciowe nie powiodło się!"
+
+#: src/Updates.cpp:91 src/Updates.cpp:104 src/Updates.cpp:123
+msgid "Error: no valid new version found!"
+msgstr "Błąd: nie znaleziono poprawnej nowej wersji!"
+
+#: src/Updates.cpp:130
+msgid "Error: bad HTTP status!"
+msgstr "Błąd: zły status HTTP!"
+
+#: src/Updates.cpp:391
+msgid "Fetching the latest version URL..."
+msgstr "Pobieranie adresu najnowszej wersji..."
+
+#: src/Updates.cpp:395
+msgid "Failed to get archive URL"
+msgstr "Nie udało się pobrać adresu archiwum"
+
+#: src/Updates.cpp:401
+msgid "Downloading the latest version..."
+msgstr "Pobieranie najnowszej wersji..."
+
+#: src/Updates.cpp:408
+msgid "Failed to download the release!"
+msgstr "Nie udało się pobrać wydania!"
+
+#: src/Updates.cpp:413
+msgid "Unzipping the release..."
+msgstr "Rozpakowywanie wydania..."
+
+#: src/Updates.cpp:420
+msgid "Failed to unzip the release!"
+msgstr "Nie udało się rozpakować wydania!"
+
+#: src/Updates.cpp:433
+msgid "Successfully updated to"
+msgstr "Zaktualizowano pomyślnie do"
+
+#: src/Updates.cpp:434
+msgid "Restart the application to see the new features"
+msgstr "Zrestartuj aplikację, aby zobaczyć nowe funkcje"
+
+#: src/main.cpp:46
+msgid "Timetable Generator"
+msgstr "Generator Planów Lekcji"
+
+#, fuzzy
+#~| msgid ""
+#~| "Warning: changing the current year can be quite destructive.\n"
+#~| "If something went wrong, press the Cancel button to revert all changes"
+#~ msgid "Warning: changing the current year can be quite destructive."
+#~ msgstr ""
+#~ "Uwaga: zmiana bieżącego roku może być bardzo destrukcyjna.\n"
+#~ "Jeśli coś poszło nie tak, naciśnij przycisk Anuluj, aby cofnąć wszystkie "
+#~ "zmiany"
+
+#~ msgid "Enter the timetable name"
+#~ msgstr "Wpisz nazwę planu lekcji"
+
+#~ msgid "The program has crashed last time it was opened!"
+#~ msgstr "Program uległ awarii podczas ostatniego uruchomienia!"

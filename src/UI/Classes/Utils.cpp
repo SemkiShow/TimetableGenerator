@@ -2,16 +2,16 @@
 //
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include "Settings.hpp"
 #include "Timetable.hpp"
+#include "Translations.hpp"
 #include "UI/Classes.hpp"
 #include <algorithm>
-#include <utf8.h>
+#include <utf8/checked.h>
 #include <vector>
 
 void ResetClassTeacherValues()
 {
-    classTeacherValues = labels["none"];
+    classTeacherValues = GetText("none");
     classTeacherValues += '\0';
     classTeacherIDs.clear();
     classTeacherIDs.push_back(-1);
@@ -31,7 +31,7 @@ void ResetClassTeacherValues()
         {
             if (teacher.second.name == "")
             {
-                classTeacherValues += labels["error"];
+                classTeacherValues += GetText("error");
             }
             else
             {
@@ -146,7 +146,7 @@ void ChangeClassesAmount(Timetable& timetable, const std::string& classNumber,
             if (classCounter >= classesAmount && !newClass)
             {
                 timetable.orderedClasses.erase(find(timetable.orderedClasses.begin(),
-                                                     timetable.orderedClasses.end(), it->first));
+                                                    timetable.orderedClasses.end(), it->first));
                 it = timetable.classes.erase(it);
                 continue;
             }
@@ -165,9 +165,8 @@ void ChangeClassesAmount(Timetable& timetable, const std::string& classNumber,
     for (int i = 0; i < classesAmount - classCounter; i++)
     {
         timetable.maxClassID++;
-        timetable.orderedClasses.insert(timetable.orderedClasses.begin() + lastOrderedClassesID +
-                                             i + 1,
-                                         timetable.maxClassID);
+        timetable.orderedClasses.insert(
+            timetable.orderedClasses.begin() + lastOrderedClassesID + i + 1, timetable.maxClassID);
         timetable.classes[timetable.maxClassID] = Class();
         timetable.classes[timetable.maxClassID].number = classNumber;
         FetchClassLessonsFromSimularClasses(tmpTmpTimetable, timetable.maxClassID);
@@ -187,7 +186,7 @@ void UpdateClassLetters(Timetable& timetable)
             letterCounter = 0;
         }
         classPair.letter =
-            GetNthUtf8Character(labels["abcdefghijklmnopqrstuvwxyz"], letterCounter++);
+            GetNthUtf8Character(GetText("abcdefghijklmnopqrstuvwxyz"), letterCounter++);
     }
 }
 
@@ -255,7 +254,8 @@ void FixClassTeachers(Timetable& timetable)
     {
         if (classPair.second.teacherID == -1) continue;
         bool foundClass = false;
-        for (size_t j = 0; j < currentTimetable.teachers[classPair.second.teacherID].lessonIDs.size(); j++)
+        for (size_t j = 0;
+             j < currentTimetable.teachers[classPair.second.teacherID].lessonIDs.size(); j++)
         {
             int& lessonID = currentTimetable.teachers[classPair.second.teacherID].lessonIDs[j];
             for (size_t k = 0; k < tmpLessons[lessonID].classIDs.size(); k++)

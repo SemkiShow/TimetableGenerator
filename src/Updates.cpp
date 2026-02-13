@@ -6,6 +6,7 @@
 #include "JSON.hpp"
 #include "Logging.hpp"
 #include "Settings.hpp"
+#include "Translations.hpp"
 #include "UI.hpp"
 #include <cstring>
 #include <curl/curl.h>
@@ -50,7 +51,7 @@ void GetLatestVersionName()
     {
         std::cerr << "Failed to initialize CURL" << std::endl;
         LogError("Failed to initialize CURL");
-        latestVersion = labels["Error: CURL init failed!"];
+        latestVersion = GetText("Error: CURL init failed!");
         curl_easy_cleanup(curl);
         return;
     }
@@ -68,7 +69,7 @@ void GetLatestVersionName()
     {
         std::cerr << "CURL request failed: " << curl_easy_strerror(res) << std::endl;
         LogError(std::string("CURL request failed: ") + curl_easy_strerror(res));
-        latestVersion = labels["Error: network request failed!"];
+        latestVersion = GetText("Error: network request failed!");
     }
     else
     {
@@ -87,7 +88,9 @@ void GetLatestVersionName()
                     releaseID++;
                     if (releaseID >= jsonObject.size())
                     {
-                        break;
+                        latestVersion = GetText("Error: no valid new version found!");
+                        curl_easy_cleanup(curl);
+                        return;
                     }
                 }
                 if (releaseID >= jsonObject.size())
@@ -98,7 +101,7 @@ void GetLatestVersionName()
                         releaseID++;
                         if (releaseID >= jsonObject.size())
                         {
-                            latestVersion = labels["Error: no valid new version found!"];
+                            latestVersion = GetText("Error: no valid new version found!");
                             curl_easy_cleanup(curl);
                             return;
                         }
@@ -117,14 +120,14 @@ void GetLatestVersionName()
             {
                 std::cerr << "No releases found in JSON response" << std::endl;
                 LogError("No releases found in JSON response");
-                latestVersion = labels["Error: no valid new version found!"];
+                latestVersion = GetText("Error: no valid new version found!");
             }
         }
         else
         {
             std::cerr << "HTTP request failed: Status " << responseCode << std::endl;
             LogError("HTTP request failed: Status " + std::to_string(responseCode));
-            latestVersion = labels["Error: bad HTTP status!"];
+            latestVersion = GetText("Error: bad HTTP status!");
         }
     }
 
@@ -134,9 +137,9 @@ void GetLatestVersionName()
 
 void CheckForUpdates(bool showWindow)
 {
-    latestVersion = labels["loading..."];
+    latestVersion = GetText("loading...");
     releaseNotes.clear();
-    releaseNotes.push_back(labels["loading..."]);
+    releaseNotes.push_back(GetText("loading..."));
     if (showWindow) isNewVersion = true;
     std::thread networkThread(GetLatestVersionName);
     networkThread.detach();
@@ -207,9 +210,11 @@ std::string GetLatestVersionArchiveURL()
                 }
                 int assetID = -1;
 #ifdef _WIN32
-                std::string releasePrefix = "release-windows-";
+                std::string releasePrefix = "release-";
+                std::string systemName = "windows";
 #else
-                std::string releasePrefix = "release-linux-";
+                std::string releasePrefix = "release-";
+                std::string systemName = "linux";
 #endif
                 for (size_t i = 0; i < jsonObject[releaseID]["assets"].size(); i++)
                 {
@@ -240,7 +245,7 @@ std::string GetLatestVersionArchiveURL()
                 if (assetID == -1)
                 {
                     assetID = 0;
-                    LogError("English not found in the response");
+                    LogError("System not found in the response");
                 }
                 return jsonObject[releaseID]["assets"][assetID]["browser_download_url"].GetString();
             }
@@ -383,36 +388,36 @@ void CopyFiles(const std::filesystem::path& src, const std::filesystem::path& de
 
 void UpdateToLatestVersion()
 {
-    downloadStatus = labels["Fetching the latest version URL..."];
+    downloadStatus = GetText("Fetching the latest version URL...");
     std::string archiveURL = GetLatestVersionArchiveURL();
     if (archiveURL.empty())
     {
-        downloadStatus = labels["Failed to get archive URL"];
+        downloadStatus = GetText("Failed to get archive URL");
         std::cerr << "Failed to get archive URL\n";
         LogError("Failed to get archive URL");
         return;
     }
 
-    downloadStatus = labels["Downloading the latest version..."];
+    downloadStatus = GetText("Downloading the latest version...");
     if (!std::filesystem::exists("tmp"))
     {
         std::filesystem::create_directory("tmp");
     }
     if (DownloadFile(archiveURL, "tmp/release.zip") != 0)
     {
-        downloadStatus = labels["Failed to download the release!"];
+        downloadStatus = GetText("Failed to download the release!");
         std::cerr << "Failed to download the release!\n";
         return;
     }
 
-    downloadStatus = labels["Unzipping the release..."];
+    downloadStatus = GetText("Unzipping the release...");
     if (!std::filesystem::exists("tmp/release"))
     {
         std::filesystem::create_directory("tmp/release");
     }
     if (UnzipFile("tmp/release.zip", "tmp/release") != 0)
     {
-        downloadStatus = labels["Failed to unzip the release!"];
+        downloadStatus = GetText("Failed to unzip the release!");
         std::cerr << "Failed to uzip the release!\n";
         return;
     }
@@ -425,8 +430,8 @@ void UpdateToLatestVersion()
     std::filesystem::remove("tmp/settings.txt");
     std::filesystem::remove_all("tmp/release");
 
-    downloadStatus = labels["Successfully updated to"] + " " + latestVersion + "!\n" +
-                     labels["Restart the application to see the new features"];
+    downloadStatus = std::string(GetText("Successfully updated to")) + " " + latestVersion + "!\n" +
+                     GetText("Restart the application to see the new features");
     LogInfo("Successfully updated to " + latestVersion);
 }
 

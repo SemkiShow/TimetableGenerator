@@ -6,6 +6,7 @@
 #include "Crashes.hpp"
 #include "Logging.hpp"
 #include "Timetable.hpp"
+#include "Translations.hpp"
 #include "UI.hpp"
 #include "Updates.hpp"
 #include <algorithm>
@@ -13,13 +14,12 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
-#include <string>
 #include <sstream>
-#include <unordered_map>
+#include <string>
 
 unsigned int daysPerWeek = 5;
 unsigned int lessonsPerDay = 8;
-int style = STYLE_DARK;
+Style style = Style::Dark;
 std::string language = "en";
 bool vsync = true;
 bool mergedFont = false;
@@ -38,11 +38,6 @@ bool usePrereleases = false;
 std::string lastCAUpdate = "";
 
 std::string version = "";
-std::unordered_map<std::string, std::string> labels;
-std::vector<std::string> availableLanguages;
-std::string languageValues;
-int languageID = -1;
-std::string styleValues = "";
 
 std::vector<std::string> Split(std::string input, char delimiter)
 {
@@ -82,58 +77,6 @@ std::string TrimJunk(const std::string& input)
     return (first == input.npos) ? "" : input.substr(first, last - first + 1);
 }
 
-void ReloadLabels()
-{
-    // Read the language file
-    LogInfo("Reloading labels");
-    labels.clear();
-    std::ifstream languageFile("resources/languages/" + language + ".txt");
-    std::ifstream englishFile("resources/languages/en.txt");
-    std::string languageBuffer;
-    std::string englishBuffer;
-    while (true)
-    {
-        if (!std::getline(languageFile, languageBuffer)) break;
-        if (!std::getline(englishFile, englishBuffer)) break;
-        labels[englishBuffer] = languageBuffer;
-    }
-    languageFile.close();
-
-    // Assign translated week days
-    weekDays[0] = labels["Monday"];
-    weekDays[1] = labels["Tuesday"];
-    weekDays[2] = labels["Wednesday"];
-    weekDays[3] = labels["Thursday"];
-    weekDays[4] = labels["Friday"];
-    weekDays[5] = labels["Saturday"];
-    weekDays[6] = labels["Sunday"];
-
-    // Assign translated style values
-    styleValues = "";
-    styleValues += labels["dark"];
-    styleValues += '\0';
-    styleValues += labels["light"];
-    styleValues += '\0';
-    styleValues += labels["classic"];
-    styleValues += '\0';
-    styleValues += '\0';
-
-    // Assign translated wizard texts
-    wizardTexts[0] = labels["Welcome to the TimetableGenerator setup wizard!"] + "\n\n" +
-                     labels["The first step is to setup classrooms."] + "\n" +
-                     labels["After you are done, press Ok and continue to the next step."];
-    wizardTexts[1] = labels["The next step is to add classes."] + "\n" +
-                     labels["After you are done, press Ok and continue to the next step."];
-    wizardTexts[2] = labels["The next step is to add lessons."] + "\n" +
-                     labels["After you are done, press Ok and continue to the next step."];
-    wizardTexts[3] = labels["The next step is to add teachers."] + "\n" +
-                     labels["After you are done, press Ok and continue to the next step."];
-    wizardTexts[4] = labels["The next step is to assign lessons to classes."] + "\n" +
-                     labels["After you are done, press Ok and continue to the next step."];
-    wizardTexts[5] = labels["You are done! Now press the Generate timetable"] + "\n" +
-                     labels["button to begin the timetable finding process!"];
-}
-
 void Save(std::string fileName)
 {
     // Read the file
@@ -143,7 +86,7 @@ void Save(std::string fileName)
     settingsFile << "last-timetable=" << currentTimetable.name << '\n';
     settingsFile << "days-per-week=" << daysPerWeek << '\n';
     settingsFile << "lessons-per-day=" << lessonsPerDay << '\n';
-    settingsFile << "style=" << style << '\n';
+    settingsFile << "style=" << static_cast<int>(style) << '\n';
     settingsFile << "language=" << language << '\n';
     settingsFile << "min-free-periods=" << minFreePeriods << '\n';
     settingsFile << "max-free-periods=" << maxFreePeriods << '\n';
@@ -191,7 +134,7 @@ void Load(std::string fileName)
         }
         if (label == "days-per-week") daysPerWeek = stoi(value);
         if (label == "lessons-per-day") lessonsPerDay = stoi(value);
-        if (label == "style") style = stoi(value);
+        if (label == "style") style = static_cast<Style>(stoi(value));
         if (label == "language") language = value;
         if (label == "min-free-periods") minFreePeriods = stoi(value);
         if (label == "max-free-periods") maxFreePeriods = stoi(value);
@@ -219,22 +162,7 @@ void Load(std::string fileName)
     }
 
     // Load the language
-    ListFiles("resources/languages", &availableLanguages);
-    for (size_t i = 0; i < availableLanguages.size(); i++)
-    {
-        availableLanguages[i] = std::filesystem::path(availableLanguages[i]).stem().string();
-    }
-    std::sort(availableLanguages.begin(), availableLanguages.end());
-    languageValues = "";
-    languageID = -1;
-    for (size_t i = 0; i < availableLanguages.size(); i++)
-    {
-        languageValues += availableLanguages[i];
-        languageValues += '\0';
-        if (availableLanguages[i] == language) languageID = i;
-    }
-    languageValues += '\0';
-    if (languageID == -1) languageID = 0;
+    GetAllLanguages();
     ReloadLabels();
 
     // Update the CA certificate, if necessary (done monthly)

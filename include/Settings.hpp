@@ -5,18 +5,13 @@
 #pragma once
 
 #include <string>
-#include <unordered_map>
 #include <vector>
 
-#define STYLE_DARK 0
-#define STYLE_LIGHT 1
-#define STYLE_CLASSIC 2
-
-#define DEFAULT_FONT_SIZE 16
+enum class Style;
 
 extern unsigned int daysPerWeek;
 extern unsigned int lessonsPerDay;
-extern int style;
+extern Style style;
 extern std::string language;
 extern bool vsync;
 extern bool mergedFont;
@@ -35,10 +30,6 @@ extern bool usePrereleases;
 extern std::string lastCAUpdate;
 
 extern std::string version;
-extern std::unordered_map<std::string, std::string> labels;
-extern std::vector<std::string> availableLanguages;
-extern std::string languageValues;
-extern int languageID;
 extern std::string styleValues;
 
 std::vector<std::string> Split(std::string input, char delimiter = ' ');

@@ -2,13 +2,13 @@
 //
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include "Logging.hpp"
 #include "Searching.hpp"
+#include "Logging.hpp"
 #include "Settings.hpp"
 #include "Timetable.hpp"
+#include "Translations.hpp"
 #include "UI.hpp"
 #include <algorithm>
-#include <curl/curl.h>
 #include <iostream>
 #include <random>
 #include <string>
@@ -431,7 +431,7 @@ void RunASearchIteration()
             iterationData.startBonusPoints =
                 iterationData.timetables[iterationData.bestTimetableIndex].bonusPoints;
         }
-        generateTimetableStatus = labels["Finding additional bonus points..."];
+        generateTimetableStatus = GetText("Finding additional bonus points...");
     }
 
     // Exit if there are the additional bonus points counter is over the limit or the iteratiuon
@@ -443,7 +443,7 @@ void RunASearchIteration()
     {
         iterationData.isDone = true;
         iterationData.threadLock = false;
-        generateTimetableStatus = labels["Timetable generating done!"];
+        generateTimetableStatus = GetText("Timetable generating done!");
         return;
     }
 
@@ -544,7 +544,7 @@ void BeginSearching(const Timetable& timetable)
     // Open the Generate timetable window
     iterationData = IterationData();
     iterationData.isDone = false;
-    generateTimetableStatus = labels["Allocating memory for the timetables..."];
+    generateTimetableStatus = GetText("Allocating memory for the timetables...");
     isGenerateTimetable = true;
     wasGenerateTimetable = true;
     iterationData.iteration = -1;
@@ -589,7 +589,7 @@ void BeginSearching(const Timetable& timetable)
         LogInfo("The timetable has no classes!");
         iterationData.isDone = true;
         iterationData.threadLock = false;
-        generateTimetableStatus = labels["Timetable generating done!"];
+        generateTimetableStatus = GetText("Timetable generating done!");
         return;
     }
 
@@ -607,7 +607,7 @@ void BeginSearching(const Timetable& timetable)
     iterationData.threadLock = false;
 
     // Run the iterations
-    generateTimetableStatus = labels["Generating a timetable that matches the requirements..."];
+    generateTimetableStatus = GetText("Generating a timetable that matches the requirements...");
     while (!iterationData.isDone)
         RunASearchIteration();
 }

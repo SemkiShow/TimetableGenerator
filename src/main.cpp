@@ -6,6 +6,7 @@
 #include "Logging.hpp"
 #include "Settings.hpp"
 // #include "Timetable.hpp"
+#include "Translations.hpp"
 #include "UI.hpp"
 #include "Updates.hpp"
 #include <ctime>
@@ -43,7 +44,7 @@ int main()
 
     // Init raylib
     InitWindow(windowSize[0], windowSize[1],
-               (labels["Timetable Generator"] + " " + version).c_str());
+               (GetText("Timetable Generator") + " " + version).c_str());
     SetExitKey(-1);
     LoadFAQScreenshots();
 

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include "Logging.hpp"
-#include "Settings.hpp"
+#include "Translations.hpp"
 #include "UI.hpp"
 #include <cctype>
 #include <imgui.h>
@@ -17,7 +17,7 @@ int classroomsStartNumber, classroomsEndNumber;
 bool isEditClassroom = false;
 void ShowEditClassroom(bool* isOpen)
 {
-    if (!ImGui::Begin((newClassroom ? labels["New classroom"] : labels["Edit classroom"]).c_str(),
+    if (!ImGui::Begin((newClassroom ? gettext("New classroom") : gettext("Edit classroom")),
                       isOpen))
     {
         ImGui::End();
@@ -40,7 +40,7 @@ void ShowEditClassroom(bool* isOpen)
             }
             if (isNameANumber)
             {
-                if (ImGui::InputInt(labels["start number"].c_str(), &classroomsStartNumber))
+                if (ImGui::InputInt(gettext("start number"), &classroomsStartNumber))
                 {
                     LogInfo("Changed classroomsStartNumber to " +
                             std::to_string(classroomsStartNumber) + " in classroom with ID " +
@@ -49,7 +49,7 @@ void ShowEditClassroom(bool* isOpen)
                         std::to_string(classroomsStartNumber);
                 }
                 if (classroomsStartNumber < 0) classroomsStartNumber = 0;
-                ImGui::InputInt(labels["end number"].c_str(), &classroomsEndNumber);
+                ImGui::InputInt(gettext("end number"), &classroomsEndNumber);
                 if (classroomsEndNumber < 0) classroomsEndNumber = 0;
                 if (classroomsEndNumber < classroomsStartNumber)
                     classroomsEndNumber = classroomsStartNumber;
@@ -60,7 +60,7 @@ void ShowEditClassroom(bool* isOpen)
         }
         if (classroomsStartNumber == classroomsEndNumber)
         {
-            if (ImGui::InputText(labels["name"].c_str(),
+            if (ImGui::InputText(gettext("name"),
                                  &tmpTmpTimetable.classrooms[currentClassroomID].name))
             {
                 LogInfo("Changed classroom name to " +
@@ -79,13 +79,12 @@ void ShowEditClassroom(bool* isOpen)
     }
     else
     {
-        ImGui::InputText(labels["name"].c_str(),
-                         &tmpTmpTimetable.classrooms[currentClassroomID].name);
+        ImGui::InputText(gettext("name"), &tmpTmpTimetable.classrooms[currentClassroomID].name);
     }
     ImGui::Separator();
 
     // Ok and Cancel
-    if (ImGui::Button(labels["Ok"].c_str()))
+    if (ImGui::Button(gettext("Ok")))
     {
         LogInfo("Pressed Ok while editing a classroom with ID " +
                 std::to_string(currentClassroomID));
@@ -106,20 +105,20 @@ void ShowEditClassroom(bool* isOpen)
         *isOpen = false;
     }
     ImGui::SameLine();
-    if (ImGui::Button(labels["Cancel"].c_str())) *isOpen = false;
+    if (ImGui::Button(gettext("Cancel"))) *isOpen = false;
     ImGui::End();
 }
 
 bool isClassrooms = false;
 void ShowClassrooms(bool* isOpen)
 {
-    if (!ImGui::Begin(labels["Classrooms"].c_str(), isOpen))
+    if (!ImGui::Begin(gettext("Classrooms"), isOpen))
     {
         ImGui::End();
         return;
     }
 
-    if (ImGui::Button(labels["+"].c_str()))
+    if (ImGui::Button(gettext("+")))
     {
         newClassroom = true;
         tmpTmpTimetable.classrooms = tmpTimetable.classrooms;
@@ -143,7 +142,7 @@ void ShowClassrooms(bool* isOpen)
     {
         ImGui::PushID(it->first);
 
-        if (ImGui::Button(labels["-"].c_str()))
+        if (ImGui::Button(gettext("-")))
         {
             LogInfo("Removed a classroom with ID " + std::to_string(it->first));
             ImGui::PopID();
@@ -152,7 +151,7 @@ void ShowClassrooms(bool* isOpen)
         }
         ImGui::SameLine();
 
-        if (ImGui::Button(labels["Edit"].c_str()))
+        if (ImGui::Button(gettext("Edit")))
         {
             newClassroom = false;
             currentClassroomID = it->first;
@@ -168,7 +167,7 @@ void ShowClassrooms(bool* isOpen)
     ImGui::Separator();
 
     // Ok and Cancel
-    if (ImGui::Button(labels["Ok"].c_str()))
+    if (ImGui::Button(gettext("Ok")))
     {
         LogInfo("Pressed Ok in the classrooms menu");
         currentTimetable.classrooms = tmpTimetable.classrooms;
@@ -176,6 +175,6 @@ void ShowClassrooms(bool* isOpen)
         *isOpen = false;
     }
     ImGui::SameLine();
-    if (ImGui::Button(labels["Cancel"].c_str())) *isOpen = false;
+    if (ImGui::Button(gettext("Cancel"))) *isOpen = false;
     ImGui::End();
 }

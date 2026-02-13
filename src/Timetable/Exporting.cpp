@@ -5,13 +5,14 @@
 #include "Logging.hpp"
 #include "Settings.hpp"
 #include "Timetable.hpp"
+#include "Translations.hpp"
 #include "UI.hpp"
 #include <cmath>
 #include <filesystem>
 #include <iostream>
 #include <string>
 #include <unordered_map>
-#include <xlsxwriter.h>
+#include <workbook.h>
 
 bool printError = false;
 
@@ -55,8 +56,8 @@ void PrintXlsxError(lxw_workbook* workbook, lxw_worksheet* worksheet, int cellWi
     format_set_font_color(errorFormat, LXW_COLOR_RED);
     format_set_text_wrap(errorFormat);
 
-    std::string errorMessage = labels["Press the Generate timetable button"] + '\n' +
-                               labels["before exporting the timetable!"];
+    std::string errorMessage =
+        GetText("Press the Generate timetable button\nbefore exporting the timetable!");
     worksheet_merge_range(worksheet, 2, 1, lessonsPerDay + 1, daysPerWeek * cellWidth,
                           errorMessage.c_str(), errorFormat);
 }
@@ -64,7 +65,7 @@ void PrintXlsxError(lxw_workbook* workbook, lxw_worksheet* worksheet, int cellWi
 void Timetable::ExportClassesAsXlsx()
 {
     LogInfo("Exporting classes of timetables/" + name + ".json");
-    std::string fileName = "timetables/" + labels["Classes"] + "_" + name + ".xlsx";
+    std::string fileName = "timetables/" + GetText("Classes") + "_" + name + ".xlsx";
     lxw_workbook* workbook = workbook_new(fileName.c_str());
 
     lxw_format* headingFormat = workbook_add_format(workbook);
@@ -238,7 +239,7 @@ std::unordered_map<int, std::vector<TeacherData>> GetTeacherData(Timetable& time
 void Timetable::ExportTeachersAsXlsx()
 {
     LogInfo("Exporting teachers of timetables/" + name + ".json");
-    std::string fileName = "timetables/" + labels["Teachers"] + "_" + name + ".xlsx";
+    std::string fileName = "timetables/" + GetText("Teachers") + "_" + name + ".xlsx";
     lxw_workbook* workbook = workbook_new(fileName.c_str());
 
     lxw_format* headingFormat = workbook_add_format(workbook);
@@ -368,7 +369,7 @@ std::unordered_map<int, std::vector<ClassroomData>> GetClassroomData(Timetable& 
 void Timetable::ExportClassroomsAsXlsx()
 {
     LogInfo("Exporting classrooms of timetables/" + name + ".json");
-    std::string fileName = "timetables/" + labels["Classrooms"] + "_" + name + ".xlsx";
+    std::string fileName = "timetables/" + GetText("Classrooms") + "_" + name + ".xlsx";
     lxw_workbook* workbook = workbook_new(fileName.c_str());
 
     lxw_format* headingFormat = workbook_add_format(workbook);

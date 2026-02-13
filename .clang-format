@@ -6,8 +6,11 @@ PointerAlignment: Left
 
 BreakBeforeBraces: Allman
 AllowShortIfStatementsOnASingleLine: true
+AllowShortLoopsOnASingleLine: true
 BreakBeforeBinaryOperators: None
 AllowAllParametersOfDeclarationOnNextLine: false
 AllowAllArgumentsOnNextLine: false
 BreakStringLiterals: false
 SpaceBeforeRangeBasedForLoopColon: false
+InsertNewlineAtEOF: true
+AlwaysBreakTemplateDeclarations: Yes

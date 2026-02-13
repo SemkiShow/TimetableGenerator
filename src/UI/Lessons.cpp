@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include "Logging.hpp"
-#include "Settings.hpp"
+#include "Translations.hpp"
 #include "UI.hpp"
 #include <imgui.h>
 #include <misc/cpp/imgui_stdlib.h>
@@ -41,20 +41,21 @@ static void ResetVariables()
 bool isEditLesson = false;
 void ShowEditLesson(bool* isOpen)
 {
-    if (!ImGui::Begin((newLesson ? labels["New lesson"] : labels["Edit lesson"]).c_str(), isOpen))
+    if (!ImGui::Begin((newLesson ? gettext("New lesson") : gettext("Edit lesson")), isOpen))
     {
         ImGui::End();
         return;
     }
 
     // Basic lesson data
-    ImGui::InputText(labels["name"].c_str(), &tmpTmpTimetable.lessons[currentLessonID].name);
+    ImGui::InputText(gettext("name"), &tmpTmpTimetable.lessons[currentLessonID].name);
     ImGui::Columns(2);
-    ImGui::Text("%s", labels["classes"].c_str());
+    ImGui::Text("%s", gettext("classes"));
 
     // Deselect/select all classes
     if (ImGui::Checkbox(
-            (allLessonClasses ? labels["Deselect all"] + "##1" : labels["Select all"] + "##1")
+            (std::string(allLessonClasses ? gettext("Deselect all") : gettext("Select all")) +
+             "##1")
                 .c_str(),
             &allLessonClasses))
     {
@@ -69,10 +70,10 @@ void ShowEditLesson(bool* isOpen)
     // No classes warning
     if (currentTimetable.classes.size() == 0)
     {
-        ImGui::TextColored(ImVec4(255, 0, 0, 255), "%s", labels["You need to add classes"].c_str());
-        ImGui::TextColored(ImVec4(255, 0, 0, 255), "%s", labels["in the Classes menu"].c_str());
-        ImGui::TextColored(ImVec4(255, 0, 0, 255), "%s",
-                           labels["to select classes for this lesson!"].c_str());
+        ImGui::TextColored(
+            ImVec4(255, 0, 0, 255), "%s",
+            gettext(
+                "You need to add classes\nin the Classes menu\nto select classes for this lesson!"));
     }
 
     // Classes
@@ -118,7 +119,8 @@ void ShowEditLesson(bool* isOpen)
     // Deselect/select all classrooms
     ImGui::Text("classrooms");
     if (ImGui::Checkbox(
-            (allLessonClassrooms ? labels["Deselect all"] + "##2" : labels["Select all"] + "##2")
+            (std::string(allLessonClassrooms ? gettext("Deselect all") : gettext("Select all")) +
+             "##2")
                 .c_str(),
             &allLessonClassrooms))
     {
@@ -130,11 +132,10 @@ void ShowEditLesson(bool* isOpen)
     // No classrooms warning
     if (currentTimetable.classrooms.size() == 0)
     {
-        ImGui::TextColored(ImVec4(255, 0, 0, 255), "%s",
-                           labels["You need to add classrooms"].c_str());
-        ImGui::TextColored(ImVec4(255, 0, 0, 255), "%s", labels["in the Classrooms menu"].c_str());
-        ImGui::TextColored(ImVec4(255, 0, 0, 255), "%s",
-                           labels["to select classrooms for this lesson!"].c_str());
+        ImGui::TextColored(
+            ImVec4(255, 0, 0, 255), "%s",
+            gettext(
+                "You need to add classrooms\nin the Classrooms menu\nto select classrooms for this lesson!"));
     }
 
     // Classrooms
@@ -149,7 +150,7 @@ void ShowEditLesson(bool* isOpen)
     ImGui::Columns(1);
 
     // Ok and Cancel
-    if (ImGui::Button(labels["Ok"].c_str()))
+    if (ImGui::Button(gettext("Ok")))
     {
         LogInfo("Clicked Ok while editing a lesson with ID " + std::to_string(currentLessonID));
         tmpTmpTimetable.lessons[currentLessonID].classIDs.clear();
@@ -169,20 +170,20 @@ void ShowEditLesson(bool* isOpen)
         *isOpen = false;
     }
     ImGui::SameLine();
-    if (ImGui::Button(labels["Cancel"].c_str())) *isOpen = false;
+    if (ImGui::Button(gettext("Cancel"))) *isOpen = false;
     ImGui::End();
 }
 
 bool isLessons = false;
 void ShowLessons(bool* isOpen)
 {
-    if (!ImGui::Begin(labels["Lessons"].c_str(), isOpen))
+    if (!ImGui::Begin(gettext("Lessons"), isOpen))
     {
         ImGui::End();
         return;
     }
 
-    if (ImGui::Button(labels["+"].c_str()))
+    if (ImGui::Button(gettext("+")))
     {
         newLesson = true;
         tmpTmpTimetable.lessons = tmpTimetable.lessons;
@@ -201,7 +202,7 @@ void ShowLessons(bool* isOpen)
     {
         ImGui::PushID(it->first);
 
-        if (ImGui::Button(labels["-"].c_str()))
+        if (ImGui::Button(gettext("-")))
         {
             LogInfo("Removed a lesson with ID " + std::to_string(it->first));
             ImGui::PopID();
@@ -210,7 +211,7 @@ void ShowLessons(bool* isOpen)
         }
         ImGui::SameLine();
 
-        if (ImGui::Button(labels["Edit"].c_str()))
+        if (ImGui::Button(gettext("Edit")))
         {
             newLesson = false;
             tmpTmpTimetable.lessons = tmpTimetable.lessons;
@@ -250,7 +251,7 @@ void ShowLessons(bool* isOpen)
     ImGui::Separator();
 
     // Ok and Cancel
-    if (ImGui::Button(labels["Ok"].c_str()))
+    if (ImGui::Button(gettext("Ok")))
     {
         LogInfo("Clicked Ok in the lessons menu");
         currentTimetable.lessons = tmpTimetable.lessons;
@@ -258,6 +259,6 @@ void ShowLessons(bool* isOpen)
         *isOpen = false;
     }
     ImGui::SameLine();
-    if (ImGui::Button(labels["Cancel"].c_str())) *isOpen = false;
+    if (ImGui::Button(gettext("Cancel"))) *isOpen = false;
     ImGui::End();
 }

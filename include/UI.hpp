@@ -8,12 +8,22 @@
 #include <map>
 #include <string>
 
+enum class Style
+{
+    Dark,
+    Light,
+    Classic
+};
+
+#define DEFAULT_FONT_SIZE 16
+
 #define WIZARD_STEPS 6
 
 extern int menuOffset;
 extern int windowSize[2];
 extern std::string weekDays[7];
 extern std::string wizardTexts[WIZARD_STEPS];
+extern std::string styleValues;
 
 extern bool wasGenerateTimetable;
 extern std::string generateTimetableStatus;

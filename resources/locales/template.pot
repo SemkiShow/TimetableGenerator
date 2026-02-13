@@ -1,0 +1,702 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-13 19:21+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/UI/Classes/Submenus.cpp:57 src/UI/Classes.cpp:250
+msgid "Combine lessons"
+msgstr ""
+
+#: src/UI/Classes/Submenus.cpp:91 src/UI/Classes/Submenus.cpp:217
+#: src/UI/Classes.cpp:444 src/UI/Classes.cpp:662 src/UI/Classrooms.cpp:87
+#: src/UI/Classrooms.cpp:170 src/UI/Lessons.cpp:153 src/UI/Lessons.cpp:254
+#: src/UI/Teachers.cpp:223 src/UI/Teachers.cpp:341 src/UI.cpp:249
+msgid "Ok"
+msgstr ""
+
+#: src/UI/Classes/Submenus.cpp:123 src/UI/Classes/Submenus.cpp:224
+#: src/UI/Classes.cpp:484 src/UI/Classes.cpp:673 src/UI/Classrooms.cpp:108
+#: src/UI/Classrooms.cpp:178 src/UI/Lessons.cpp:173 src/UI/Lessons.cpp:262
+#: src/UI/Teachers.cpp:264 src/UI/Teachers.cpp:349 src/UI.cpp:262
+msgid "Cancel"
+msgstr ""
+
+#: src/UI/Classes/Submenus.cpp:163
+msgid "New rule"
+msgstr ""
+
+#: src/UI/Classes/Submenus.cpp:163
+msgid "Edit rule"
+msgstr ""
+
+#: src/UI/Classes/Submenus.cpp:172
+msgid "preserve order"
+msgstr ""
+
+#: src/UI/Classes/Submenus.cpp:173 src/UI/Classes.cpp:164
+msgid "amount"
+msgstr ""
+
+#: src/UI/Classes/Submenus.cpp:178 src/UI/Classes.cpp:508
+#: src/UI/Classes.cpp:578 src/UI/Classrooms.cpp:121 src/UI/Lessons.cpp:186
+#: src/UI/Teachers.cpp:283
+msgid "+"
+msgstr ""
+
+#: src/UI/Classes/Submenus.cpp:186 src/UI/Classes.cpp:271
+#: src/UI/Classes.cpp:391 src/UI/Classes.cpp:537 src/UI/Classes.cpp:617
+#: src/UI/Classrooms.cpp:145 src/UI/Lessons.cpp:205 src/UI/Teachers.cpp:301
+msgid "-"
+msgstr ""
+
+#: src/UI/Classes/Utils.cpp:14
+msgid "none"
+msgstr ""
+
+#: src/UI/Classes/Utils.cpp:34 src/UI/Teachers.cpp:34
+msgid "error"
+msgstr ""
+
+#: src/UI/Classes/Utils.cpp:189 src/UI/Classes.cpp:166 src/UI/Classes.cpp:167
+#: src/UI/Classes.cpp:599
+msgid "abcdefghijklmnopqrstuvwxyz"
+msgstr ""
+
+#: src/UI/Classes.cpp:137
+msgid "New class"
+msgstr ""
+
+#: src/UI/Classes.cpp:137
+msgid "Edit class"
+msgstr ""
+
+#: src/UI/Classes.cpp:149
+msgid ""
+"Warning: you are bulk editing classes!\n"
+"After pressing Ok ALL classes with the number below\n"
+"will be OVERWRITTEN with the data you enter.\n"
+"If you don't want that to happen, press the Cancel button."
+msgstr ""
+
+#: src/UI/Classes.cpp:153
+msgid "number"
+msgstr ""
+
+#: src/UI/Classes.cpp:172
+msgid "letter"
+msgstr ""
+
+#: src/UI/Classes.cpp:173
+msgid "teacher"
+msgstr ""
+
+#: src/UI/Classes.cpp:178 src/UI/Teachers.cpp:169
+msgid "available lessons"
+msgstr ""
+
+#: src/UI/Classes.cpp:217 src/UI/Classes.cpp:330 src/UI/Lessons.cpp:57
+#: src/UI/Lessons.cpp:122 src/UI/Teachers.cpp:114
+msgid "Deselect all"
+msgstr ""
+
+#: src/UI/Classes.cpp:218 src/UI/Classes.cpp:331 src/UI/Lessons.cpp:57
+#: src/UI/Lessons.cpp:122 src/UI/Teachers.cpp:114
+msgid "Select all"
+msgstr ""
+
+#: src/UI/Classes.cpp:248 src/UI/Teachers.cpp:110
+msgid "lessons"
+msgstr ""
+
+#: src/UI/Classes.cpp:280 src/UI/Classes.cpp:401 src/UI/Classes.cpp:557
+#: src/UI/Classes.cpp:626 src/UI/Classrooms.cpp:154 src/UI/Lessons.cpp:214
+#: src/UI/Teachers.cpp:310
+msgid "Edit"
+msgstr ""
+
+#: src/UI/Classes.cpp:324
+msgid "Warning: no teacher selected for this lesson"
+msgstr ""
+
+#: src/UI/Classes.cpp:369
+msgid "Add a lesson rule"
+msgstr ""
+
+#: src/UI/Classes.cpp:379
+msgid "Rules"
+msgstr ""
+
+#: src/UI/Classes.cpp:381
+msgid "Preserve order"
+msgstr ""
+
+#: src/UI/Classes.cpp:383
+msgid "Amount"
+msgstr ""
+
+#: src/UI/Classes.cpp:433
+msgid "Yes"
+msgstr ""
+
+#: src/UI/Classes.cpp:433
+msgid "No"
+msgstr ""
+
+#: src/UI/Classes.cpp:491 src/Timetable/Exporting.cpp:68 src/UI.cpp:440
+msgid "Classes"
+msgstr ""
+
+#: src/UI/Classes.cpp:500
+msgid ""
+"Warning: changing the current year can be quite destructive.\n"
+"If something went wrong, press the Cancel button to revert all changes"
+msgstr ""
+
+#: src/UI/Classes.cpp:501 src/UI/Wizard.cpp:45
+msgid "Back"
+msgstr ""
+
+#: src/UI/Classes.cpp:505 src/UI/Wizard.cpp:58
+msgid "Next"
+msgstr ""
+
+#: src/UI/Classrooms.cpp:20
+msgid "New classroom"
+msgstr ""
+
+#: src/UI/Classrooms.cpp:20
+msgid "Edit classroom"
+msgstr ""
+
+#: src/UI/Classrooms.cpp:43
+msgid "start number"
+msgstr ""
+
+#: src/UI/Classrooms.cpp:52
+msgid "end number"
+msgstr ""
+
+#: src/UI/Classrooms.cpp:63 src/UI/Classrooms.cpp:82 src/UI/Lessons.cpp:51
+#: src/UI/Teachers.cpp:108
+msgid "name"
+msgstr ""
+
+#: src/UI/Classrooms.cpp:115 src/Timetable/Exporting.cpp:372 src/UI.cpp:437
+msgid "Classrooms"
+msgstr ""
+
+#: src/UI/Lessons.cpp:44
+msgid "New lesson"
+msgstr ""
+
+#: src/UI/Lessons.cpp:44
+msgid "Edit lesson"
+msgstr ""
+
+#: src/UI/Lessons.cpp:53
+msgid "classes"
+msgstr ""
+
+#: src/UI/Lessons.cpp:76
+msgid ""
+"You need to add classes\n"
+"in the Classes menu\n"
+"to select classes for this lesson!"
+msgstr ""
+
+#: src/UI/Lessons.cpp:138
+msgid ""
+"You need to add classrooms\n"
+"in the Classrooms menu\n"
+"to select classrooms for this lesson!"
+msgstr ""
+
+#: src/UI/Lessons.cpp:180 src/UI.cpp:438
+msgid "Lessons"
+msgstr ""
+
+#: src/UI/Teachers.cpp:26
+msgid "no lesson"
+msgstr ""
+
+#: src/UI/Teachers.cpp:28
+msgid "any lesson"
+msgstr ""
+
+#: src/UI/Teachers.cpp:102
+msgid "New teacher"
+msgstr ""
+
+#: src/UI/Teachers.cpp:102
+msgid "Edit teacher"
+msgstr ""
+
+#: src/UI/Teachers.cpp:131
+msgid ""
+"You need to add lessons\n"
+"in the Lessons menu\n"
+"to select lessons for this teacher!"
+msgstr ""
+
+#: src/UI/Teachers.cpp:271 src/Timetable/Exporting.cpp:242 src/UI.cpp:439
+msgid "Teachers"
+msgstr ""
+
+#: src/UI/Teachers.cpp:277
+msgid "min free periods"
+msgstr ""
+
+#: src/UI/Teachers.cpp:279
+msgid "max free periods"
+msgstr ""
+
+#: src/UI/Wizard.cpp:15
+msgid ""
+"Welcome to the TimetableGenerator setup wizard!\n"
+"\n"
+"The first step is to add classrooms.\n"
+"After you are done, press Ok and continue to the next step."
+msgstr ""
+
+#: src/UI/Wizard.cpp:16
+msgid ""
+"The next step is to add classes.\n"
+"After you are done, press Ok and continue to the next step."
+msgstr ""
+
+#: src/UI/Wizard.cpp:17
+msgid ""
+"The next step is to add lessons.\n"
+"After you are done, press Ok and continue to the next step."
+msgstr ""
+
+#: src/UI/Wizard.cpp:18
+msgid ""
+"The next step is to add teachers.\n"
+"After you are done, press Ok and continue to the next step."
+msgstr ""
+
+#: src/UI/Wizard.cpp:19
+msgid ""
+"The next step is to assign lessons to classes.\n"
+"After you are done, press Ok and continue to the next step."
+msgstr ""
+
+#: src/UI/Wizard.cpp:20
+msgid ""
+"You are done! Now press the Generate timetable\n"
+"button to begin the timetable finding process!"
+msgstr ""
+
+#: src/UI/Wizard.cpp:36 src/UI.cpp:436
+msgid "Setup wizard"
+msgstr ""
+
+#: src/UI/Wizard.cpp:49 src/UI.cpp:292 src/UI.cpp:441
+msgid "Generate timetable"
+msgstr ""
+
+#: src/Timetable/Exporting.cpp:60
+msgid ""
+"Press the Generate timetable button\n"
+"before exporting the timetable!"
+msgstr ""
+
+#: src/Crashes.cpp:212
+msgid "Crash report"
+msgstr ""
+
+#: src/Crashes.cpp:221
+msgid ""
+"The program has crashed last time it was opened!\n"
+"If you would like to send an anonymous crash report,\n"
+"select the data you want to share\n"
+"(by sending a crash report you can\n"
+"help to make Timetable Generator even better)"
+msgstr ""
+
+#: src/Crashes.cpp:223
+msgid "send logs"
+msgstr ""
+
+#: src/Crashes.cpp:224
+msgid "send timetables"
+msgstr ""
+
+#: src/Crashes.cpp:225
+msgid "send settings"
+msgstr ""
+
+#: src/Crashes.cpp:226
+msgid "send basic system information"
+msgstr ""
+
+#: src/Crashes.cpp:228
+msgid "Create crash_report.zip"
+msgstr ""
+
+#: src/Crashes.cpp:237
+msgid ""
+"After pressing Create crash_report.zip\n"
+"email crash_report.zip to mgdeveloper123@gmail.com\n"
+"The email theme should be Timetable Generator crash report\n"
+"You can also provide a crash report description"
+msgstr ""
+
+#: src/Searching.cpp:434 src/UI.cpp:338
+msgid "Finding additional bonus points..."
+msgstr ""
+
+#: src/Searching.cpp:446 src/Searching.cpp:592 src/UI.cpp:297 src/UI.cpp:299
+msgid "Timetable generating done!"
+msgstr ""
+
+#: src/Searching.cpp:547 src/UI.cpp:305 src/UI.cpp:446
+msgid "Allocating memory for the timetables..."
+msgstr ""
+
+#: src/Searching.cpp:610 src/UI.cpp:333
+msgid "Generating a timetable that matches the requirements..."
+msgstr ""
+
+#: src/UI.cpp:133 src/UI.cpp:431
+msgid "Settings"
+msgstr ""
+
+#: src/UI.cpp:138
+msgid "days per week"
+msgstr ""
+
+#: src/UI.cpp:140
+msgid "lessons per day"
+msgstr ""
+
+#: src/UI.cpp:143
+msgid "style"
+msgstr ""
+
+#: src/UI.cpp:148
+msgid "language"
+msgstr ""
+
+#: src/UI.cpp:153
+msgid "Developer options"
+msgstr ""
+
+#: src/UI.cpp:155
+msgid "vsync"
+msgstr ""
+
+#: src/UI.cpp:156
+msgid "merged-font"
+msgstr ""
+
+#: src/UI.cpp:157
+msgid "timetable-autosave-interval"
+msgstr ""
+
+#: src/UI.cpp:159
+msgid "font-size"
+msgstr ""
+
+#: src/UI.cpp:161
+msgid "error-bonus-ratio"
+msgstr ""
+
+#: src/UI.cpp:162
+msgid "timetables-per-generation-step"
+msgstr ""
+
+#: src/UI.cpp:164
+msgid "min-timetables-per-generation"
+msgstr ""
+
+#: src/UI.cpp:166
+msgid "max-timetables-per-generation"
+msgstr ""
+
+#: src/UI.cpp:170
+msgid "max-iterations"
+msgstr ""
+
+#: src/UI.cpp:171
+msgid "additional-bonus-points"
+msgstr ""
+
+#: src/UI.cpp:172
+msgid "verbose-logging"
+msgstr ""
+
+#: src/UI.cpp:181
+msgid "use-prereleases"
+msgstr ""
+
+#: src/UI.cpp:190 src/UI.cpp:460
+msgid "About"
+msgstr ""
+
+#: src/UI.cpp:195
+msgid "TimetableGenerator"
+msgstr ""
+
+#: src/UI.cpp:196
+msgid "A tool for creating timetables easily"
+msgstr ""
+
+#: src/UI.cpp:197
+msgid "Developed by SemkiShow"
+msgstr ""
+
+#: src/UI.cpp:198
+msgid "Licensed under GPLv3 License"
+msgstr ""
+
+#: src/UI.cpp:205
+msgid "Updates"
+msgstr ""
+
+#: src/UI.cpp:211
+msgid "The latest version is"
+msgstr ""
+
+#: src/UI.cpp:212
+msgid "Your version is"
+msgstr ""
+
+#: src/UI.cpp:214
+msgid "There are no new versions available"
+msgstr ""
+
+#: src/UI.cpp:215 src/Updates.cpp:140 src/Updates.cpp:142
+msgid "loading..."
+msgstr ""
+
+#: src/UI.cpp:217
+msgid "A new version is available!"
+msgstr ""
+
+#: src/UI.cpp:218
+msgid "Release notes"
+msgstr ""
+
+#: src/UI.cpp:227
+msgid "Update"
+msgstr ""
+
+#: src/UI.cpp:241
+msgid "New timetable"
+msgstr ""
+
+#: src/UI.cpp:241
+msgid "Save timetable as"
+msgstr ""
+
+#: src/UI.cpp:247
+msgid ""
+"Enter the timetable name\n"
+"(for example, the name of the school)"
+msgstr ""
+
+#: src/UI.cpp:269
+msgid "Open timetable"
+msgstr ""
+
+#: src/UI.cpp:274
+msgid "Select a timetable to open"
+msgstr ""
+
+#: src/UI.cpp:311
+msgid "Iteration:"
+msgstr ""
+
+#: src/UI.cpp:314
+msgid "The best score is"
+msgstr ""
+
+#: src/UI.cpp:317 src/UI.cpp:323
+msgid "The best timetable has"
+msgstr ""
+
+#: src/UI.cpp:320 src/UI.cpp:344
+msgid "errors"
+msgstr ""
+
+#: src/UI.cpp:326
+msgid "bonus points"
+msgstr ""
+
+#: src/UI.cpp:329
+msgid "iterations have passed since last score improvement"
+msgstr ""
+
+#: src/UI.cpp:361 src/UI.cpp:458
+msgid "FAQ"
+msgstr ""
+
+#: src/UI.cpp:366
+msgid "How do I contact the developer?"
+msgstr ""
+
+#: src/UI.cpp:369
+msgid "You can contact me by sending an email to mgdeveloper123@gmail.com"
+msgstr ""
+
+#: src/UI.cpp:372
+msgid "How do I add multiple lessons to one timetable cell?"
+msgstr ""
+
+#: src/UI.cpp:377
+msgid ""
+"To add multiple lessons to one timetable cell, click\n"
+"Combine lessons while editing a class."
+msgstr ""
+
+#: src/UI.cpp:379
+msgid "Select the lessons and teachers to combine and press Ok."
+msgstr ""
+
+#: src/UI.cpp:381
+msgid "Then set the amount per week for the created combined lesson."
+msgstr ""
+
+#: src/UI.cpp:392
+msgid "File"
+msgstr ""
+
+#: src/UI.cpp:394
+msgid "New"
+msgstr ""
+
+#: src/UI.cpp:401
+msgid "Open"
+msgstr ""
+
+#: src/UI.cpp:409
+msgid "Save"
+msgstr ""
+
+#: src/UI.cpp:414
+msgid "Save As"
+msgstr ""
+
+#: src/UI.cpp:421
+msgid "Export As"
+msgstr ""
+
+#: src/UI.cpp:423
+msgid "Excel"
+msgstr ""
+
+#: src/UI.cpp:456
+msgid "Help"
+msgstr ""
+
+#: src/UI.cpp:459
+msgid "Check for updates"
+msgstr ""
+
+#: src/Updates.cpp:54
+msgid "Error: CURL init failed!"
+msgstr ""
+
+#: src/Updates.cpp:72
+msgid "Error: network request failed!"
+msgstr ""
+
+#: src/Updates.cpp:91 src/Updates.cpp:104 src/Updates.cpp:123
+msgid "Error: no valid new version found!"
+msgstr ""
+
+#: src/Updates.cpp:130
+msgid "Error: bad HTTP status!"
+msgstr ""
+
+#: src/Updates.cpp:391
+msgid "Fetching the latest version URL..."
+msgstr ""
+
+#: src/Updates.cpp:395
+msgid "Failed to get archive URL"
+msgstr ""
+
+#: src/Updates.cpp:401
+msgid "Downloading the latest version..."
+msgstr ""
+
+#: src/Updates.cpp:408
+msgid "Failed to download the release!"
+msgstr ""
+
+#: src/Updates.cpp:413
+msgid "Unzipping the release..."
+msgstr ""
+
+#: src/Updates.cpp:420
+msgid "Failed to unzip the release!"
+msgstr ""
+
+#: src/Updates.cpp:433
+msgid "Successfully updated to"
+msgstr ""
+
+#: src/Updates.cpp:434
+msgid "Restart the application to see the new features"
+msgstr ""
+
+#: src/main.cpp:47
+msgid "Timetable Generator"
+msgstr ""
+
+#: src/Translations.cpp:58
+msgid "Monday"
+msgstr ""
+
+#: src/Translations.cpp:59
+msgid "Tuesday"
+msgstr ""
+
+#: src/Translations.cpp:60
+msgid "Wednesday"
+msgstr ""
+
+#: src/Translations.cpp:61
+msgid "Thursday"
+msgstr ""
+
+#: src/Translations.cpp:62
+msgid "Friday"
+msgstr ""
+
+#: src/Translations.cpp:63
+msgid "Saturday"
+msgstr ""
+
+#: src/Translations.cpp:64
+msgid "Sunday"
+msgstr ""
+
+#: src/Translations.cpp:68
+msgid "dark"
+msgstr ""
+
+#: src/Translations.cpp:70
+msgid "light"
+msgstr ""
+
+#: src/Translations.cpp:72
+msgid "classic"
+msgstr ""

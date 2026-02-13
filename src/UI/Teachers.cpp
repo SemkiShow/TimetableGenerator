@@ -4,6 +4,7 @@
 
 #include "Logging.hpp"
 #include "Settings.hpp"
+#include "Translations.hpp"
 #include "UI.hpp"
 #include <imgui.h>
 #include <misc/cpp/imgui_stdlib.h>
@@ -22,15 +23,15 @@ std::string teacherLessonValues = "";
 void ResetTeacherLessonValues()
 {
     teacherLessonValues = "";
-    teacherLessonValues += labels["no lesson"];
+    teacherLessonValues += gettext("no lesson");
     teacherLessonValues += '\0';
-    teacherLessonValues += labels["any lesson"];
+    teacherLessonValues += gettext("any lesson");
     teacherLessonValues += '\0';
     for (auto& lesson: currentTimetable.lessons)
     {
         if (!teacherLessons[lesson.first]) continue;
         if (lesson.second.name == "")
-            teacherLessonValues += labels["error"];
+            teacherLessonValues += gettext("error");
         else
             teacherLessonValues += lesson.second.name;
         teacherLessonValues += '\0';
@@ -98,20 +99,20 @@ static void ResetVariables()
 bool isEditTeacher = false;
 void ShowEditTeacher(bool* isOpen)
 {
-    if (!ImGui::Begin((newTeacher ? labels["New teacher"] : labels["Edit teacher"]).c_str(),
-                      isOpen))
+    if (!ImGui::Begin((newTeacher ? gettext("New teacher") : gettext("Edit teacher")), isOpen))
     {
         ImGui::End();
         return;
     }
 
-    ImGui::InputText(labels["name"].c_str(), &tmpTmpTimetable.teachers[currentTeacherID].name);
+    ImGui::InputText(gettext("name"), &tmpTmpTimetable.teachers[currentTeacherID].name);
     ImGui::Separator();
-    ImGui::Text("%s", labels["lessons"].c_str());
+    ImGui::Text("%s", gettext("lessons"));
 
     // Deselect/select all lessons
     if (ImGui::Checkbox(
-            (allTeacherLessons ? labels["Deselect all"] + "##1" : labels["Select all"] + "##1")
+            (std::string(allTeacherLessons ? gettext("Deselect all") : gettext("Select all")) +
+             "##1")
                 .c_str(),
             &allTeacherLessons))
     {
@@ -124,10 +125,10 @@ void ShowEditTeacher(bool* isOpen)
     // No lessons warning
     if (currentTimetable.lessons.size() == 0)
     {
-        ImGui::TextColored(ImVec4(255, 0, 0, 255), "%s", labels["You need to add lessons"].c_str());
-        ImGui::TextColored(ImVec4(255, 0, 0, 255), "%s", labels["in the Lessons menu"].c_str());
-        ImGui::TextColored(ImVec4(255, 0, 0, 255), "%s",
-                           labels["to select lessons for this teacher!"].c_str());
+        ImGui::TextColored(
+            ImVec4(255, 0, 0, 255), "%s",
+            gettext(
+                "You need to add lessons\nin the Lessons menu\nto select lessons for this teacher!"));
     }
 
     // Lesons
@@ -165,7 +166,7 @@ void ShowEditTeacher(bool* isOpen)
     ImGui::Separator();
 
     // Available lessons
-    ImGui::Text("%s", labels["available lessons"].c_str());
+    ImGui::Text("%s", gettext("available lessons"));
     ImGui::Columns(daysPerWeek + 1);
     ImGui::LabelText("##1", "%s", "");
     ImGui::LabelText("##2", "%s", "");
@@ -219,7 +220,7 @@ void ShowEditTeacher(bool* isOpen)
     ImGui::Columns(1);
 
     // Ok and Cancel
-    if (ImGui::Button(labels["Ok"].c_str()))
+    if (ImGui::Button(gettext("Ok")))
     {
         LogInfo("Clicked Ok while editing a teacher with ID " + std::to_string(currentTeacherID));
         tmpTmpTimetable.teachers[currentTeacherID].lessonIDs.clear();
@@ -260,26 +261,26 @@ void ShowEditTeacher(bool* isOpen)
         *isOpen = false;
     }
     ImGui::SameLine();
-    if (ImGui::Button(labels["Cancel"].c_str())) *isOpen = false;
+    if (ImGui::Button(gettext("Cancel"))) *isOpen = false;
     ImGui::End();
 }
 
 bool isTeachers = false;
 void ShowTeachers(bool* isOpen)
 {
-    if (!ImGui::Begin(labels["Teachers"].c_str(), isOpen))
+    if (!ImGui::Begin(gettext("Teachers"), isOpen))
     {
         ImGui::End();
         return;
     }
 
-    ImGui::InputInt(labels["min free periods"].c_str(), &minFreePeriods);
+    ImGui::InputInt(gettext("min free periods"), &minFreePeriods);
     if (minFreePeriods < 0) minFreePeriods = 0;
-    ImGui::InputInt(labels["max free periods"].c_str(), &maxFreePeriods);
+    ImGui::InputInt(gettext("max free periods"), &maxFreePeriods);
     if (maxFreePeriods < 0) maxFreePeriods = 0;
     if (maxFreePeriods < minFreePeriods) maxFreePeriods = minFreePeriods;
 
-    if (ImGui::Button(labels["+"].c_str()))
+    if (ImGui::Button(gettext("+")))
     {
         newTeacher = true;
         tmpTmpTimetable.teachers = tmpTimetable.teachers;
@@ -297,7 +298,7 @@ void ShowTeachers(bool* isOpen)
     for (auto it = tmpTimetable.teachers.begin(); it != tmpTimetable.teachers.end();)
     {
         ImGui::PushID(it->first);
-        if (ImGui::Button(labels["-"].c_str()))
+        if (ImGui::Button(gettext("-")))
         {
             LogInfo("Removed a teacher with ID " + std::to_string(it->first));
             ImGui::PopID();
@@ -306,7 +307,7 @@ void ShowTeachers(bool* isOpen)
         }
         ImGui::SameLine();
 
-        if (ImGui::Button(labels["Edit"].c_str()))
+        if (ImGui::Button(gettext("Edit")))
         {
             newTeacher = false;
             tmpTmpTimetable.teachers = tmpTimetable.teachers;
@@ -337,7 +338,7 @@ void ShowTeachers(bool* isOpen)
     ImGui::Separator();
 
     // Ok and Cancel
-    if (ImGui::Button(labels["Ok"].c_str()))
+    if (ImGui::Button(gettext("Ok")))
     {
         LogInfo("Clicked Ok in the teachers menu");
         currentTimetable.teachers = tmpTimetable.teachers;
@@ -345,6 +346,6 @@ void ShowTeachers(bool* isOpen)
         *isOpen = false;
     }
     ImGui::SameLine();
-    if (ImGui::Button(labels["Cancel"].c_str())) *isOpen = false;
+    if (ImGui::Button(gettext("Cancel"))) *isOpen = false;
     ImGui::End();
 }

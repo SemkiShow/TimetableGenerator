@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include "Logging.hpp"
-#include "Settings.hpp"
 #include "Timetable.hpp"
+#include "Translations.hpp"
 #include "UI.hpp"
 #include "UI/Classes.hpp"
 #include <climits>
@@ -54,7 +54,7 @@ void ResetCombineLessonsVariables()
 
 void ShowCombineLessons(bool* isOpen)
 {
-    if (!ImGui::Begin(labels["Combine lessons"].c_str(), isOpen))
+    if (!ImGui::Begin(gettext("Combine lessons"), isOpen))
     {
         ImGui::End();
         return;
@@ -88,7 +88,7 @@ void ShowCombineLessons(bool* isOpen)
     ImGui::Columns(1);
 
     // Ok and Cancel
-    if (ImGui::Button(labels["Ok"].c_str()))
+    if (ImGui::Button(gettext("Ok")))
     {
         LogInfo("Pressed the Ok button in combine lessons of class with ID " +
                 std::to_string(currentClassID));
@@ -120,7 +120,7 @@ void ShowCombineLessons(bool* isOpen)
         *isOpen = false;
     }
     ImGui::SameLine();
-    if (ImGui::Button(labels["Cancel"].c_str()))
+    if (ImGui::Button(gettext("Cancel")))
     {
         if (newCombinedLesson)
             tmpTmpTimetable.classes[currentClassID].timetableLessons.erase(currentLessonID);
@@ -160,7 +160,7 @@ void ResetRulesVariables()
 bool isRules = false;
 void ShowRules(bool* isOpen)
 {
-    if (!ImGui::Begin((newRule ? labels["New rule"] : labels["Edit rule"]).c_str(), isOpen))
+    if (!ImGui::Begin((newRule ? gettext("New rule") : gettext("Edit rule")), isOpen))
     {
         ImGui::End();
         return;
@@ -169,13 +169,13 @@ void ShowRules(bool* isOpen)
     TimetableLessonRule& timetableLessonRule =
         tmpTmpTimetable.classes[currentClassID].timetableLessonRules[currentRuleID];
 
-    ImGui::Checkbox(labels["preserve order"].c_str(), &timetableLessonRule.preserveOrder);
-    ImGui::InputInt(labels["amount"].c_str(), &timetableLessonRule.amount);
+    ImGui::Checkbox(gettext("preserve order"), &timetableLessonRule.preserveOrder);
+    ImGui::InputInt(gettext("amount"), &timetableLessonRule.amount);
     if (timetableLessonRule.amount < 1) timetableLessonRule.amount = 1;
     if (timetableLessonRule.amount > minTimetableLessonAmount)
         timetableLessonRule.amount = minTimetableLessonAmount;
 
-    if (ImGui::Button(labels["+"].c_str()))
+    if (ImGui::Button(gettext("+")))
     {
         timetableLessonRule.timetableLessonIDs.push_back(-1);
     }
@@ -183,7 +183,7 @@ void ShowRules(bool* isOpen)
     for (size_t i = 0; i < timetableLessonRule.timetableLessonIDs.size(); i++)
     {
         ImGui::PushID(i);
-        if (ImGui::Button(labels["-"].c_str()))
+        if (ImGui::Button(gettext("-")))
         {
             timetableLessonRule.timetableLessonIDs.erase(
                 timetableLessonRule.timetableLessonIDs.begin() + i);
@@ -214,14 +214,14 @@ void ShowRules(bool* isOpen)
     }
 
     // Ok and Cancel
-    if (ImGui::Button(labels["Ok"].c_str()))
+    if (ImGui::Button(gettext("Ok")))
     {
         LogInfo("Pressed the Ok button in rules of class with ID " +
                 std::to_string(currentClassID));
         *isOpen = false;
     }
     ImGui::SameLine();
-    if (ImGui::Button(labels["Cancel"].c_str()))
+    if (ImGui::Button(gettext("Cancel")))
     {
         if (newRule)
         {

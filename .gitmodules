@@ -1,33 +1,40 @@
 [submodule "thirdparty/raylib"]
 	path = thirdparty/raylib
 	url = https://github.com/raysan5/raylib
+	shallow = true
 [submodule "thirdparty/rlImGui"]
 	path = thirdparty/rlImGui
 	url = https://github.com/raylib-extras/rlImGui
+	shallow = true
 [submodule "thirdparty/curl"]
 	path = thirdparty/curl
 	url = https://github.com/curl/curl
+	shallow = true
 [submodule "thirdparty/libxlsxwriter"]
 	path = thirdparty/libxlsxwriter
 	url = https://github.com/jmcnamara/libxlsxwriter
-[submodule "thirdparty/libpsl"]
-	path = thirdparty/libpsl
-	url = https://github.com/rockdaboot/libpsl
+	shallow = true
 [submodule "thirdparty/libzip"]
 	path = thirdparty/libzip
 	url = https://github.com/nih-at/libzip
+	shallow = true
 [submodule "thirdparty/mbedtls"]
 	path = thirdparty/mbedtls
 	url = https://github.com/Mbed-TLS/mbedtls
+	shallow = true
 [submodule "thirdparty/zlib"]
 	path = thirdparty/zlib
 	url = https://github.com/madler/zlib
+	shallow = true
 [submodule "thirdparty/imgui"]
 	path = thirdparty/imgui
 	url = https://github.com/ocornut/imgui
+	shallow = true
 [submodule "thirdparty/utfcpp"]
 	path = thirdparty/utfcpp
 	url = https://github.com/nemtrif/utfcpp
-[submodule "thirdparty/zstd"]
-	path = thirdparty/zstd
-	url = https://github.com/facebook/zstd.git
+	shallow = true
+[submodule "thirdparty/libintl-lite"]
+	path = thirdparty/libintl-lite
+	url = https://github.com/j-jorge/libintl-lite
+	shallow = true

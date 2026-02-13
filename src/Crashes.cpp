@@ -209,33 +209,32 @@ void OpenCrashReport()
 bool isCrashReport = false;
 void ShowCrashReport(bool* isOpen)
 {
-    if (!ImGui::Begin(labels["Crash report"].c_str(), isOpen))
+    if (!ImGui::Begin(gettext("Crash report"), isOpen))
     {
         ImGui::End();
         return;
     }
 
-    ImGui::Text("%s", labels["The program has crashed last time it was opened!"].c_str());
-    ImGui::Text("%s", labels["If you would like to send an anonymous crash report,"].c_str());
-    ImGui::Text("%s", labels["select the data you want to share"].c_str());
-    ImGui::Text("%s", labels["(by sending a crash report you can"].c_str());
-    ImGui::Text("%s", labels["help to make Timetable Generator even better)"].c_str());
+    ImGui::Text(
+        "%s",
+        gettext(
+            "The program has crashed last time it was opened!\nIf you would like to send an anonymous crash report,\nselect the data you want to share\n(by sending a crash report you can\nhelp to make Timetable Generator even better)"));
 
-    ImGui::Checkbox(labels["send logs"].c_str(), &sendLogs);
-    ImGui::Checkbox(labels["send timetables"].c_str(), &sendTimetables);
-    ImGui::Checkbox(labels["send settings"].c_str(), &sendSettings);
-    ImGui::Checkbox(labels["send basic system information"].c_str(), &sendSystemInfo);
+    ImGui::Checkbox(gettext("send logs"), &sendLogs);
+    ImGui::Checkbox(gettext("send timetables"), &sendTimetables);
+    ImGui::Checkbox(gettext("send settings"), &sendSettings);
+    ImGui::Checkbox(gettext("send basic system information"), &sendSystemInfo);
 
-    if (ImGui::Button(labels["Create crash_report.zip"].c_str()))
+    if (ImGui::Button(gettext("Create crash_report.zip")))
     {
         CreateCrashReport();
         OpenInFileManager(".");
     }
 
-    ImGui::Text("%s", labels["After pressing Create crash_report.zip"].c_str());
-    ImGui::Text("%s", labels["email crash_report.zip to mgdeveloper123@gmail.com"].c_str());
-    ImGui::Text("%s", labels["The email theme should be Timetable Generator crash report"].c_str());
-    ImGui::Text("%s", labels["You can also provide a crash report description"].c_str());
+    ImGui::Text(
+        "%s",
+        gettext(
+            "After pressing Create crash_report.zip\nemail crash_report.zip to mgdeveloper123@gmail.com\nThe email theme should be Timetable Generator crash report\nYou can also provide a crash report description"));
 
     ImGui::End();
 }

@@ -1,0 +1,749 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-13 17:50+0100\n"
+"PO-Revision-Date: 2026-02-13 18:08+0100\n"
+"Last-Translator: SemkiShow <mgdeveloper123@gmail.com>\n"
+"Language-Team: \n"
+"Language: be_BY\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.8\n"
+"X-Poedit-Basepath: ../../../../src\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: src/UI/Classes/Submenus.cpp:57 src/UI/Classes.cpp:249
+msgid "Combine lessons"
+msgstr "Аб’яднаць урокі"
+
+#: src/UI/Classes/Submenus.cpp:91 src/UI/Classes/Submenus.cpp:217
+#: src/UI/Classes.cpp:442 src/UI/Classes.cpp:659 src/UI/Classrooms.cpp:85
+#: src/UI/Classrooms.cpp:168 src/UI/Lessons.cpp:148 src/UI/Lessons.cpp:249
+#: src/UI/Teachers.cpp:217 src/UI/Teachers.cpp:335 src/UI.cpp:232
+msgid "Ok"
+msgstr "Ок"
+
+#: src/UI/Classes/Submenus.cpp:123 src/UI/Classes/Submenus.cpp:224
+#: src/UI/Classes.cpp:482 src/UI/Classes.cpp:670 src/UI/Classrooms.cpp:106
+#: src/UI/Classrooms.cpp:176 src/UI/Lessons.cpp:168 src/UI/Lessons.cpp:257
+#: src/UI/Teachers.cpp:258 src/UI/Teachers.cpp:343 src/UI.cpp:245
+msgid "Cancel"
+msgstr "Адмена"
+
+#: src/UI/Classes/Submenus.cpp:163
+msgid "New rule"
+msgstr "Новае правіла"
+
+#: src/UI/Classes/Submenus.cpp:163
+msgid "Edit rule"
+msgstr "Рэдагаваць правіла"
+
+#: src/UI/Classes/Submenus.cpp:172
+msgid "preserve order"
+msgstr "захаваць парадак"
+
+#: src/UI/Classes/Submenus.cpp:173 src/UI/Classes.cpp:163
+msgid "amount"
+msgstr "колькасць"
+
+#: src/UI/Classes/Submenus.cpp:178 src/UI/Classes.cpp:505
+#: src/UI/Classes.cpp:575 src/UI/Classrooms.cpp:119 src/UI/Lessons.cpp:181
+#: src/UI/Teachers.cpp:277
+msgid "+"
+msgstr "+"
+
+#: src/UI/Classes/Submenus.cpp:186 src/UI/Classes.cpp:270
+#: src/UI/Classes.cpp:389 src/UI/Classes.cpp:534 src/UI/Classes.cpp:614
+#: src/UI/Classrooms.cpp:143 src/UI/Lessons.cpp:200 src/UI/Teachers.cpp:295
+msgid "-"
+msgstr "-"
+
+#: src/UI/Classes/Utils.cpp:14
+msgid "none"
+msgstr "няма"
+
+#: src/UI/Classes/Utils.cpp:34 src/UI/Teachers.cpp:33
+msgid "error"
+msgstr "памылка"
+
+#: src/UI/Classes/Utils.cpp:189 src/UI/Classes.cpp:165 src/UI/Classes.cpp:166
+#: src/UI/Classes.cpp:596
+msgid "abcdefghijklmnopqrstuvwxyz"
+msgstr "абвгдежзіклмнопрстуфхцчш"
+
+#: src/UI/Classes.cpp:137
+msgid "New class"
+msgstr "Новы клас"
+
+#: src/UI/Classes.cpp:137
+msgid "Edit class"
+msgstr "Рэдагаваць клас"
+
+#: src/UI/Classes.cpp:148
+msgid ""
+"Warning: you are bulk editing classes!\n"
+"After pressing Ok ALL classes with the number below\n"
+"will be OVERWRITTEN with the data you enter.\n"
+"If you don't want that to happen, press the Cancel button."
+msgstr ""
+"Увага: вы масава рэдагуеце класы!\n"
+"Пасля націскання Ок УСЕ класы з указаным нумарам\n"
+"БУДУЦЬ ЗАМЕНЕНЫ на ўведзеныя дадзеныя.\n"
+"Калі вы не жадаеце гэтага, націсніце кнопку Адмена."
+
+#: src/UI/Classes.cpp:152
+msgid "number"
+msgstr "нумар"
+
+#: src/UI/Classes.cpp:171
+msgid "letter"
+msgstr "літара"
+
+#: src/UI/Classes.cpp:172
+msgid "teacher"
+msgstr "настаўнік"
+
+#: src/UI/Classes.cpp:177 src/UI/Teachers.cpp:163
+msgid "available lessons"
+msgstr "даступныя ўрокі"
+
+#: src/UI/Classes.cpp:217 src/UI/Classes.cpp:328 src/UI/Lessons.cpp:57
+#: src/UI/Lessons.cpp:119 src/UI/Teachers.cpp:113
+msgid "Deselect all"
+msgstr "Зняць вылучэнне са ўсіх"
+
+#: src/UI/Classes.cpp:217 src/UI/Classes.cpp:329 src/UI/Lessons.cpp:57
+#: src/UI/Lessons.cpp:119 src/UI/Teachers.cpp:113
+msgid "Select all"
+msgstr "Выбраць усе"
+
+#: src/UI/Classes.cpp:247 src/UI/Teachers.cpp:109
+msgid "lessons"
+msgstr "урокі"
+
+#: src/UI/Classes.cpp:279 src/UI/Classes.cpp:399 src/UI/Classes.cpp:554
+#: src/UI/Classes.cpp:623 src/UI/Classrooms.cpp:152 src/UI/Lessons.cpp:209
+#: src/UI/Teachers.cpp:304
+msgid "Edit"
+msgstr "Рэдагаваць"
+
+#: src/UI/Classes.cpp:323
+msgid "Warning: no teacher selected for this lesson"
+msgstr "Папярэджанне: для гэтага ўрока не абраны настаўнік"
+
+#: src/UI/Classes.cpp:367
+msgid "Add a lesson rule"
+msgstr "Дадаць правіла ўрока"
+
+#: src/UI/Classes.cpp:377
+msgid "Rules"
+msgstr "Правілы"
+
+#: src/UI/Classes.cpp:379
+msgid "Preserve order"
+msgstr "Захаваць парадак"
+
+#: src/UI/Classes.cpp:381
+msgid "Amount"
+msgstr "Колькасць"
+
+#: src/UI/Classes.cpp:431
+msgid "Yes"
+msgstr "Так"
+
+#: src/UI/Classes.cpp:431
+msgid "No"
+msgstr "Не"
+
+#: src/UI/Classes.cpp:489 src/UI.cpp:420
+msgid "Classes"
+msgstr "Класы"
+
+#: src/UI/Classes.cpp:497
+msgid ""
+"Warning: changing the current year can be quite destructive.\n"
+"If something went wrong, press the Cancel button to revert all changes"
+msgstr ""
+"Папярэджанне: змена бягучага года можа быць вельмі разбуральнай.\n"
+"Калі нешта пайшло не так, націсніце кнопку Скасаваць, каб вярнуць усе змены"
+
+#: src/UI/Classes.cpp:498 src/UI/Wizard.cpp:45
+msgid "Back"
+msgstr "Назад"
+
+#: src/UI/Classes.cpp:502 src/UI/Wizard.cpp:58
+msgid "Next"
+msgstr "Далей"
+
+#: src/UI/Classrooms.cpp:20
+msgid "New classroom"
+msgstr "Новы кабінет"
+
+#: src/UI/Classrooms.cpp:20
+msgid "Edit classroom"
+msgstr "Рэдагаваць кабінет"
+
+#: src/UI/Classrooms.cpp:42
+msgid "start number"
+msgstr "пачатковы нумар"
+
+#: src/UI/Classrooms.cpp:51
+msgid "end number"
+msgstr "канчатковы нумар"
+
+#: src/UI/Classrooms.cpp:62 src/UI/Classrooms.cpp:80 src/UI/Lessons.cpp:51
+#: src/UI/Teachers.cpp:107
+msgid "name"
+msgstr "назва"
+
+#: src/UI/Classrooms.cpp:113 src/UI.cpp:417
+msgid "Classrooms"
+msgstr "Кабінеты"
+
+#: src/UI/Lessons.cpp:44
+msgid "New lesson"
+msgstr "Новы ўрок"
+
+#: src/UI/Lessons.cpp:44
+msgid "Edit lesson"
+msgstr "Рэдагаваць ўрок"
+
+#: src/UI/Lessons.cpp:53
+msgid "classes"
+msgstr "класы"
+
+#: src/UI/Lessons.cpp:73
+msgid ""
+"You need to add classes\n"
+"in the Classes menu\n"
+"to select classes for this lesson!"
+msgstr ""
+"Неабходна дадаць класы\n"
+"у меню Класы\n"
+"каб выбраць класы для гэтага ўрока!"
+
+#: src/UI/Lessons.cpp:133
+msgid ""
+"You need to add classrooms\n"
+"in the Classrooms menu\n"
+"to select classrooms for this lesson!"
+msgstr ""
+"Неабходна дадаць кабінеты\n"
+"у меню Кабінеты\n"
+"каб выбраць кабінеты для гэтага ўрока!"
+
+#: src/UI/Lessons.cpp:175 src/UI.cpp:418
+msgid "Lessons"
+msgstr "Урокі"
+
+#: src/UI/Teachers.cpp:25
+msgid "no lesson"
+msgstr "няма ўрока"
+
+#: src/UI/Teachers.cpp:27
+msgid "any lesson"
+msgstr "любы ўрок"
+
+#: src/UI/Teachers.cpp:101
+msgid "New teacher"
+msgstr "Новы настаўнік"
+
+#: src/UI/Teachers.cpp:101
+msgid "Edit teacher"
+msgstr "Рэдагаваць настаўніка"
+
+#: src/UI/Teachers.cpp:125
+msgid ""
+"You need to add lessons\n"
+"in the Lessons menu\n"
+"to select lessons for this teacher!"
+msgstr ""
+"Неабходна дадаць урокі\n"
+"у меню Урокі\n"
+"каб выбраць урокі для гэтага настаўніка!"
+
+#: src/UI/Teachers.cpp:265 src/UI.cpp:419
+msgid "Teachers"
+msgstr "Настаўнікі"
+
+#: src/UI/Teachers.cpp:271
+msgid "min free periods"
+msgstr "мін. вольных вокнаў"
+
+#: src/UI/Teachers.cpp:273
+msgid "max free periods"
+msgstr "макс. вольных вокнаў"
+
+#: src/UI/Wizard.cpp:36 src/UI.cpp:416
+msgid "Setup wizard"
+msgstr "Майстар налад"
+
+#: src/UI/Wizard.cpp:49 src/UI.cpp:275 src/UI.cpp:421
+msgid "Generate timetable"
+msgstr "Сгенераваць расклад"
+
+#: src/Timetable/Exporting.cpp:59
+msgid ""
+"Press the Generate timetable button\n"
+"before exporting the timetable!"
+msgstr ""
+"Націсніце кнопку Сгенераваць расклад\n"
+"перад экспартам раскладу!"
+
+#: src/Crashes.cpp:212
+msgid "Crash report"
+msgstr "Справаздача пра збой"
+
+#: src/Crashes.cpp:220
+msgid ""
+"The program has crashed last time it was opened!\n"
+"If you would like to send an anonymous crash report,\n"
+"select the data you want to share\n"
+"(by sending a crash report you can\n"
+"help to make Timetable Generator even better)"
+msgstr ""
+"Праграма аварыйна завяршыла працу падчас апошняга запуску!\n"
+"Калі вы хочаце адправіць ананімную справаздачу пра збой,\n"
+"абярыце даныя, якія вы жадаеце падзяліць\n"
+"(адпраўляючы справаздачу пра збой, вы дапамагаеце\n"
+"зрабіць Генератар Раскладаў яшчэ лепшым)"
+
+#: src/Crashes.cpp:222
+msgid "send logs"
+msgstr "адправіць запісы"
+
+#: src/Crashes.cpp:223
+msgid "send timetables"
+msgstr "адправіць расклады"
+
+#: src/Crashes.cpp:224
+msgid "send settings"
+msgstr "адправіць налады"
+
+#: src/Crashes.cpp:225
+msgid "send basic system information"
+msgstr "адправіць базавую інфармацыю пра сістэму"
+
+#: src/Crashes.cpp:227
+msgid "Create crash_report.zip"
+msgstr "Стварыць crash_report.zip"
+
+#: src/Crashes.cpp:235
+msgid ""
+"After pressing Create crash_report.zip\n"
+"email crash_report.zip to mgdeveloper123@gmail.com\n"
+"The email theme should be Timetable Generator crash report\n"
+"You can also provide a crash report description"
+msgstr ""
+"Пасля націскання «Стварыць crash_report.zip»\n"
+"адпраўце файл crash_report.zip на mgdeveloper123@gmail.com\n"
+"Тэма ліста павінна быць: Генератар Раскладу Справаздача пра збой\n"
+"Вы таксама можаце дадаць апісанне збою"
+
+#: src/Searching.cpp:434 src/UI.cpp:320
+msgid "Finding additional bonus points..."
+msgstr "Пошук дадатковых бонусных балаў..."
+
+#: src/Searching.cpp:446 src/UI.cpp:280 src/UI.cpp:282
+msgid "Timetable generating done!"
+msgstr "Генерацыя раскладу завершана!"
+
+#: src/Searching.cpp:547 src/UI.cpp:288 src/UI.cpp:426
+msgid "Allocating memory for the timetables..."
+msgstr "Выдзяленне памяці для раскладаў..."
+
+#: src/Searching.cpp:610 src/UI.cpp:315
+msgid "Generating a timetable that matches the requirements..."
+msgstr "Генерацыя раскладу, які адпавядае патрабаванням..."
+
+#: src/Settings.cpp:94
+msgid "Monday"
+msgstr "Панядзелак"
+
+#: src/Settings.cpp:95
+msgid "Tuesday"
+msgstr "Аўторак"
+
+#: src/Settings.cpp:96
+msgid "Wednesday"
+msgstr "Серада"
+
+#: src/Settings.cpp:97
+msgid "Thursday"
+msgstr "Чацвер"
+
+#: src/Settings.cpp:98
+msgid "Friday"
+msgstr "Пятніца"
+
+#: src/Settings.cpp:99
+msgid "Saturday"
+msgstr "Субота"
+
+#: src/Settings.cpp:100
+msgid "Sunday"
+msgstr "Нядзеля"
+
+#: src/Settings.cpp:104
+msgid "dark"
+msgstr "цёмны"
+
+#: src/Settings.cpp:106
+msgid "light"
+msgstr "светлы"
+
+#: src/Settings.cpp:108
+msgid "classic"
+msgstr "класічны"
+
+#: src/Settings.cpp:114
+msgid ""
+"Welcome to the TimetableGenerator setup wizard!\n"
+"\n"
+"The first step is to add classrooms.\n"
+"After you are done, press Ok and continue to the next step."
+msgstr ""
+"Вітаем у майстры налад Генератара Раскладаў!\n"
+"\n"
+"Першы крок — дадаць кабінеты.\n"
+"Пасля завяршэння націсніце Ок, каб перайсці да наступнага кроку."
+
+#: src/Settings.cpp:116
+msgid ""
+"The next step is to add classes.\n"
+"After you are done, press Ok and continue to the next step."
+msgstr ""
+"Наступны крок — дадаць класы.\n"
+"Пасля завяршэння націсніце Ок, каб перайсці да наступнага кроку."
+
+#: src/Settings.cpp:118
+msgid ""
+"The next step is to add lessons.\n"
+"After you are done, press Ok and continue to the next step."
+msgstr ""
+"Наступны крок — дадаць урокі.\n"
+"Пасля завяршэння націсніце Ок, каб перайсці да наступнага кроку."
+
+#: src/Settings.cpp:120
+msgid ""
+"The next step is to add teachers.\n"
+"After you are done, press Ok and continue to the next step."
+msgstr ""
+"Наступны крок — дадаць настаўнікаў.\n"
+"Пасля завяршэння націсніце Ок, каб перайсці да наступнага кроку."
+
+#: src/Settings.cpp:122
+msgid ""
+"The next step is to assign lessons to classes.\n"
+"After you are done, press Ok and continue to the next step."
+msgstr ""
+"Наступны крок — прызначыць урокі класам.\n"
+"Пасля завяршэння націсніце Ок, каб перайсці да наступнага кроку."
+
+#: src/Settings.cpp:124
+msgid ""
+"You are done! Now press the Generate timetable\n"
+"button to begin the timetable finding process!"
+msgstr ""
+"Гатова! Цяпер націсніце кнопку Сгенераваць расклад\n"
+"каб пачаць працэс падбору раскладу!"
+
+#: src/UI.cpp:121 src/UI.cpp:411
+msgid "Settings"
+msgstr "Налады"
+
+#: src/UI.cpp:126
+msgid "days per week"
+msgstr "дзён у тыдзень"
+
+#: src/UI.cpp:128
+msgid "lessons per day"
+msgstr "урокаў у дзень"
+
+#: src/UI.cpp:130
+msgid "style"
+msgstr "стыль"
+
+#: src/UI.cpp:134
+msgid "language"
+msgstr "мова"
+
+#: src/UI.cpp:139
+msgid "Developer options"
+msgstr "Параметры распрацоўніка"
+
+#: src/UI.cpp:141
+msgid "vsync"
+msgstr "vsync"
+
+#: src/UI.cpp:142
+msgid "merged-font"
+msgstr "аб’яднаны-шрыфт"
+
+#: src/UI.cpp:143
+msgid "timetable-autosave-interval"
+msgstr "інтэрвал-аўтазахавання-раскладу"
+
+#: src/UI.cpp:144
+msgid "font-size"
+msgstr "памер-шрыфта"
+
+#: src/UI.cpp:146
+msgid "error-bonus-ratio"
+msgstr "каэфіцыент-бонуса-за-памылкі"
+
+#: src/UI.cpp:147
+msgid "timetables-per-generation-step"
+msgstr "крок-раскладаў-на-генерацыю"
+
+#: src/UI.cpp:148
+msgid "min-timetables-per-generation"
+msgstr "мін-раскладаў-на-генерацыю"
+
+#: src/UI.cpp:150
+msgid "max-timetables-per-generation"
+msgstr "макс-раскладаў-на-генерацыю"
+
+#: src/UI.cpp:154
+msgid "max-iterations"
+msgstr "макс-ітэрацый"
+
+#: src/UI.cpp:155
+msgid "additional-bonus-points"
+msgstr "дадатковыя-бонусныя-балы"
+
+#: src/UI.cpp:156
+msgid "verbose-logging"
+msgstr "падрабязнае-лагаванне"
+
+#: src/UI.cpp:166
+msgid "use-prereleases"
+msgstr "выкарыстоўваць-прадвыпускі"
+
+#: src/UI.cpp:175 src/UI.cpp:442
+msgid "About"
+msgstr "Пра праграму"
+
+#: src/UI.cpp:180
+msgid "TimetableGenerator"
+msgstr "TimetableGenerator"
+
+#: src/UI.cpp:181
+msgid "A tool for creating timetables easily"
+msgstr "Інструмент для простага стварэння раскладаў"
+
+#: src/UI.cpp:182
+msgid "Developed by SemkiShow"
+msgstr "Распрацавана SemkiShow"
+
+#: src/UI.cpp:183
+msgid "Licensed under GPLv3 License"
+msgstr "Ліцэнзавана па ліцэнзіі GPLv3"
+
+#: src/UI.cpp:190
+msgid "Updates"
+msgstr "Абнаўленні"
+
+#: src/UI.cpp:195
+msgid "The latest version is"
+msgstr "Апошняя версія"
+
+#: src/UI.cpp:196
+msgid "Your version is"
+msgstr "Ваша версія"
+
+#: src/UI.cpp:198
+msgid "There are no new versions available"
+msgstr "Новых версій няма"
+
+#: src/UI.cpp:199 src/Updates.cpp:140 src/Updates.cpp:142
+msgid "loading..."
+msgstr "загрузка..."
+
+#: src/UI.cpp:201
+msgid "A new version is available!"
+msgstr "Даступная новая версія!"
+
+#: src/UI.cpp:202
+msgid "Release notes"
+msgstr "Заўвагі да рэлізу"
+
+#: src/UI.cpp:211
+msgid "Update"
+msgstr "Абнавіць"
+
+#: src/UI.cpp:225
+msgid "New timetable"
+msgstr "Новы расклад"
+
+#: src/UI.cpp:225
+msgid "Save timetable as"
+msgstr "Захаваць расклад як"
+
+#: src/UI.cpp:230
+msgid ""
+"Enter the timetable name\n"
+"(for example, the name of the school)"
+msgstr ""
+"Увядзіце назву раскладу\n"
+"(напрыклад, назву школы)"
+
+#: src/UI.cpp:252
+msgid "Open timetable"
+msgstr "Адкрыць расклад"
+
+#: src/UI.cpp:257
+msgid "Select a timetable to open"
+msgstr "Абярыце расклад для адкрыцця"
+
+#: src/UI.cpp:296
+msgid "Iteration:"
+msgstr "Ітэрацыя:"
+
+#: src/UI.cpp:297
+msgid "The best score is"
+msgstr "Лепшы вынік —"
+
+#: src/UI.cpp:300 src/UI.cpp:306
+msgid "The best timetable has"
+msgstr "Лепшы расклад змяшчае"
+
+#: src/UI.cpp:303
+msgid "errors"
+msgstr "памылак"
+
+#: src/UI.cpp:309
+msgid "bonus points"
+msgstr "бонусных балаў"
+
+#: src/UI.cpp:312
+msgid "iterations have passed since last score improvement"
+msgstr "ітэрацый з часу апошняга паляпшэння"
+
+#: src/UI.cpp:343 src/UI.cpp:440
+msgid "FAQ"
+msgstr "FAQ"
+
+#: src/UI.cpp:348
+msgid "How do I contact the developer?"
+msgstr "Як звязацца з распрацоўшчыкам?"
+
+#: src/UI.cpp:350
+msgid "You can contact me by sending an email to mgdeveloper123@gmail.com"
+msgstr "Вы можаце звязацца са мной, даслаўшы ліст на адрас mgdeveloper123@gmail.com"
+
+#: src/UI.cpp:353
+msgid "How do I add multiple lessons to one timetable cell?"
+msgstr "Як дадаць некалькі ўрокаў у адну ячэйку раскладу?"
+
+#: src/UI.cpp:357
+msgid ""
+"To add multiple lessons to one timetable cell, click\n"
+"Combine lessons while editing a class."
+msgstr ""
+"Каб дадаць некалькі ўрокаў у адну ячэйку, націсніце\n"
+"Аб’яднаць урокі падчас рэдагавання класа."
+
+#: src/UI.cpp:359
+msgid "Select the lessons and teachers to combine and press Ok."
+msgstr "Выберыце ўрокі і настаўнікаў для аб’яднання і націсніце OK."
+
+#: src/UI.cpp:361
+msgid "Then set the amount per week for the created combined lesson."
+msgstr "Потым задайце колькасць заняткаў у тыдзень для створанага аб’яднанага ўрока."
+
+#: src/UI.cpp:372
+msgid "File"
+msgstr "Файл"
+
+#: src/UI.cpp:374
+msgid "New"
+msgstr "Новы"
+
+#: src/UI.cpp:381
+msgid "Open"
+msgstr "Адкрыць"
+
+#: src/UI.cpp:389
+msgid "Save"
+msgstr "Захаваць"
+
+#: src/UI.cpp:394
+msgid "Save As"
+msgstr "Захаваць як"
+
+#: src/UI.cpp:401
+msgid "Export As"
+msgstr "Экспартаваць як"
+
+#: src/UI.cpp:403
+msgid "Excel"
+msgstr "Excel"
+
+#: src/UI.cpp:438
+msgid "Help"
+msgstr "Дапамога"
+
+#: src/UI.cpp:441
+msgid "Check for updates"
+msgstr "Праверыць абнаўленні"
+
+#: src/Updates.cpp:54
+msgid "Error: CURL init failed!"
+msgstr "Памылка: ініцыялізацыя CURL не ўдалася!"
+
+#: src/Updates.cpp:72
+msgid "Error: network request failed!"
+msgstr "Памылка: сеткавы запыт не ўдалы!"
+
+#: src/Updates.cpp:91 src/Updates.cpp:104 src/Updates.cpp:123
+msgid "Error: no valid new version found!"
+msgstr "Памылка: не знойдзена сапраўднай новай версіі!"
+
+#: src/Updates.cpp:130
+msgid "Error: bad HTTP status!"
+msgstr "Памылка: няправільны статус HTTP!"
+
+#: src/Updates.cpp:391
+msgid "Fetching the latest version URL..."
+msgstr "Атрыманне URL апошняй версіі..."
+
+#: src/Updates.cpp:395
+msgid "Failed to get archive URL"
+msgstr "Не ўдалося атрымаць URL архіва"
+
+#: src/Updates.cpp:401
+msgid "Downloading the latest version..."
+msgstr "Спампоўка апошняй версіі..."
+
+#: src/Updates.cpp:408
+msgid "Failed to download the release!"
+msgstr "Не ўдалося спампаваць рэліз!"
+
+#: src/Updates.cpp:413
+msgid "Unzipping the release..."
+msgstr "Распакоўка рэлізу..."
+
+#: src/Updates.cpp:420
+msgid "Failed to unzip the release!"
+msgstr "Не ўдалося распакаваць рэліз!"
+
+#: src/Updates.cpp:433
+msgid "Successfully updated to"
+msgstr "Паспяхова абноўлена да"
+
+#: src/Updates.cpp:434
+msgid "Restart the application to see the new features"
+msgstr "Перазапусціце праграму, каб убачыць новыя функцыі"
+
+#: src/main.cpp:46
+msgid "Timetable Generator"
+msgstr "Генератар Раскладаў"
