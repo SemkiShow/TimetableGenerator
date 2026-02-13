@@ -13,7 +13,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_compile_options(-Wno-error)
 
 # raylib
-add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/raylib ${CMAKE_BINARY_DIR}/_deps/raylib-build)
+add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/raylib ${CMAKE_BINARY_DIR}/_deps/raylib-build SYSTEM)
 
 # imgui
 add_library(imgui)
@@ -28,61 +28,28 @@ target_sources(rlimgui PRIVATE ${rlimgui-src})
 target_include_directories(rlimgui PUBLIC ${CMAKE_SOURCE_DIR}/thirdparty/rlImGui)
 target_link_libraries(rlimgui raylib imgui)
 
-# curl
 find_package(CURL QUIET)
-
 if (NOT TARGET CURL::libcurl)
     # mbedtls
     set(ENABLE_TESTING OFF CACHE BOOL "" FORCE)
     set(ENABLE_PROGRAMS OFF CACHE BOOL "" FORCE)
     set(MBEDTLS_CONFIG_FILE ${CMAKE_SOURCE_DIR}/include/my_mbedtls_config.h CACHE FILEPATH "" FORCE)
-    add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/mbedtls ${CMAKE_BINARY_DIR}/_deps/mbedtls-build)
+    add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/mbedtls ${CMAKE_BINARY_DIR}/_deps/mbedtls-build SYSTEM)
     set(MBEDTLS_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/thirdparty/mbedtls/include CACHE PATH "" FORCE)
     set(MBEDTLS_LIBRARY ${CMAKE_BINARY_DIR}/_deps/mbedtls-build/library/libmbedtls.a CACHE FILEPATH "" FORCE)
     set(MBEDX509_LIBRARY ${CMAKE_BINARY_DIR}/_deps/mbedtls-build/library/libmbedx509.a CACHE FILEPATH "" FORCE)
     set(MBEDCRYPTO_LIBRARY ${CMAKE_BINARY_DIR}/_deps/mbedtls-build/library/libmbedcrypto.a CACHE FILEPATH "" FORCE)
 
-    # libpsl
-    set(LIBPSL_INSTALL_DIR ${CMAKE_BINARY_DIR}/_deps/libpsl-install)
-    file(COPY ${CMAKE_SOURCE_DIR}/thirdparty/libpsl DESTINATION ${CMAKE_BINARY_DIR}/_deps)
-    ExternalProject_Add(
-        libpsl
-        SOURCE_DIR ${CMAKE_BINARY_DIR}/_deps/libpsl
-        PREFIX ${CMAKE_BINARY_DIR}/_deps/libpsl
-        CONFIGURE_COMMAND curl -o list/public_suffix_list.dat https://publicsuffix.org/list/public_suffix_list.dat &&
-            ./autogen.sh && ./configure --prefix=${LIBPSL_INSTALL_DIR} --disable-runtime --disable-shared --enable-static $<$<AND:$<BOOL:${CMAKE_CROSSCOMPILING}>,$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>>:--host=x86_64-w64-mingw32>
-        BUILD_COMMAND make -j
-        INSTALL_COMMAND make install
-        BUILD_IN_SOURCE 1
-    )
-
-    set(LIBCURL_INSTALL_DIR ${CMAKE_BINARY_DIR}/_deps/libcurl-install)
-    ExternalProject_Add(
-        libcurl
-        SOURCE_DIR ${CMAKE_SOURCE_DIR}/thirdparty/curl
-        BINARY_DIR ${CMAKE_BINARY_DIR}/_deps/libcurl-build
-        PREFIX ${CMAKE_BINARY_DIR}/_deps/libcurl
-        CMAKE_ARGS
-            -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-            -DCMAKE_INSTALL_PREFIX=${LIBCURL_INSTALL_DIR}
-            -DCURL_USE_MBEDTLS=ON
-            -DMBEDTLS_INCLUDE_DIR=${CMAKE_SOURCE_DIR}/thirdparty/mbedtls/include
-            -DMBEDTLS_LIBRARY=${CMAKE_BINARY_DIR}/_deps/mbedtls-build/library/libmbedtls.a
-            -DMBEDX509_LIBRARY=${CMAKE_BINARY_DIR}/_deps/mbedtls-build/library/libmbedx509.a
-            -DMBEDCRYPTO_LIBRARY=${CMAKE_BINARY_DIR}/_deps/mbedtls-build/library/libmbedcrypto.a
-            -DCURL_USE_LIBPSL=ON
-            -DLIBPSL_INCLUDE_DIR=${LIBPSL_INSTALL_DIR}/include
-            -DLIBPSL_LIBRARY=${LIBPSL_INSTALL_DIR}/lib/libpsl.a
-            -DCURL_STATICLIB=ON
-            -DBUILD_SHARED_LIBS=OFF
-            -DBUILD_CURL_EXE=OFF
-            -DCURL_BROTLI=OFF
-        DEPENDS mbedtls libpsl
-    )
+    # curl
+    set(BUILD_CURL_EXE OFF CACHE BOOL "" FORCE)
+    set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+    set(CURL_USE_MBEDTLS ON CACHE BOOL "" FORCE)
+    set(CURL_USE_LIBPSL OFF CACHE BOOL "" FORCE)
+    add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/curl ${CMAKE_BINARY_DIR}/_deps/curl-build SYSTEM)
 endif()
 
 # zlib
-add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/zlib ${CMAKE_BINARY_DIR}/_deps/zlib-build)
+add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/zlib ${CMAKE_BINARY_DIR}/_deps/zlib-build SYSTEM)
 set(ZLIB_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/thirdparty/zlib;${CMAKE_BINARY_DIR}/_deps/zlib-build" CACHE PATH "" FORCE)
 if (WIN32)
     set(ZLIB_LIBRARY ${CMAKE_BINARY_DIR}/_deps/zlib-build/libzlibstatic.a CACHE FILEPATH "" FORCE)
@@ -91,46 +58,31 @@ else()
 endif()
 
 # libxlsxwriter
-add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/libxlsxwriter ${CMAKE_BINARY_DIR}/_deps/libxlsxwriter-build)
-
-# zstd
-set(ZSTD_BUILD_STATIC ON CACHE BOOL "" FORCE)
-set(ZSTD_BUILD_SHARED OFF CACHE BOOL "" FORCE)
-set(ZSTD_PROGRAMS OFF CACHE BOOL "" FORCE)
-add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/zstd/build/cmake ${CMAKE_BINARY_DIR}/_deps/zstd-build)
-if(TARGET libzstd_static AND NOT TARGET zstd::libzstd_static)
-    add_library(zstd::libzstd_static ALIAS libzstd_static)
-endif()
+add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/libxlsxwriter ${CMAKE_BINARY_DIR}/_deps/libxlsxwriter-build SYSTEM)
 
 # libzip
+set(BUILD_TOOLS OFF CACHE BOOL "" FORCE)
 set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/libzip ${CMAKE_BINARY_DIR}/_deps/libzip-build)
-add_dependencies(zip zlibstatic libzstd_static)
+set(BUILD_DOC OFF CACHE BOOL "" FORCE)
+set(ENABLE_BZIP2 OFF CACHE BOOL "" FORCE)
+set(ENABLE_ZSTD OFF CACHE BOOL "" FORCE)
+add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/libzip ${CMAKE_BINARY_DIR}/_deps/libzip-build SYSTEM)
 
 # utf8cpp
-add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/utfcpp ${CMAKE_BINARY_DIR}/_deps/utfcpp)
+add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/utfcpp ${CMAKE_BINARY_DIR}/_deps/utfcpp SYSTEM)
 
-add_compile_options(-Wall -Wextra)
 file(GLOB_RECURSE SOURCES src/*.cpp)
 add_executable(${PROJECT_NAME} ${SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE include/)
-target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
+target_compile_options(${PROJECT_NAME} PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/W4>
+    $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>:-Wall -Wextra>
+)
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-target_link_libraries(${PROJECT_NAME} PRIVATE raylib imgui rlimgui zlibstatic xlsxwriter zip utf8cpp)
-if (NOT TARGET CURL::libcurl)
-    add_dependencies(${PROJECT_NAME} libpsl libcurl)
-    target_include_directories(${PROJECT_NAME} PRIVATE
-        ${LIBCURL_INSTALL_DIR}/include
-        ${LIBPSL_INSTALL_DIR}/include
-    )
-    target_link_directories(${PROJECT_NAME} PRIVATE ${LIBCURL_INSTALL_DIR}/lib ${LIBCURL_INSTALL_DIR}/lib64)
-    target_link_directories(${PROJECT_NAME} PRIVATE ${LIBPSL_INSTALL_DIR}/lib)
-    target_link_libraries(${PROJECT_NAME} PRIVATE curl mbedtls psl)
-else()
-    target_link_libraries(${PROJECT_NAME} PRIVATE CURL::libcurl)
-endif()
+target_link_libraries(${PROJECT_NAME} PRIVATE raylib imgui rlimgui CURL::libcurl xlsxwriter zip utf8cpp)
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} PRIVATE ws2_32 crypt32 secur32 user32 advapi32 wldap32 bcrypt)
+    set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE $<CONFIG:Release>)
 else()
     target_link_libraries(${PROJECT_NAME} PRIVATE pthread dl)
 endif()

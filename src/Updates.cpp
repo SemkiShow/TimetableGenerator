@@ -2,18 +2,17 @@
 //
 // SPDX-License-Identifier: GPL-3.0-only
 
+#include "Updates.hpp"
 #include "JSON.hpp"
 #include "Logging.hpp"
 #include "Settings.hpp"
 #include "UI.hpp"
-#include "Updates.hpp"
 #include <cstring>
+#include <curl/curl.h>
 #include <filesystem>
 #include <iostream>
 #include <string>
 #include <thread>
-#define CURL_STATICLIB
-#include <curl/curl.h>
 #include <zip.h>
 
 std::string latestVersion = "";
