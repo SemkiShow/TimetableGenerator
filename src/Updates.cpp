@@ -208,46 +208,7 @@ std::string GetLatestVersionArchiveURL()
                     releaseID++;
                     if (releaseID >= jsonObject.size()) return "";
                 }
-                int assetID = -1;
-#ifdef _WIN32
-                std::string releasePrefix = "release-";
-                std::string systemName = "windows";
-#else
-                std::string releasePrefix = "release-";
-                std::string systemName = "linux";
-#endif
-                for (size_t i = 0; i < jsonObject[releaseID]["assets"].size(); i++)
-                {
-                    std::string assetLanguage =
-                        ExtractString(jsonObject[releaseID]["assets"][i]["name"].GetString(),
-                                      releasePrefix, ".zip");
-                    if (assetLanguage == language)
-                    {
-                        assetID = i;
-                        break;
-                    }
-                }
-                if (assetID == -1)
-                {
-                    LogError("Current language not found in the response");
-                    for (size_t i = 0; i < jsonObject[releaseID]["assets"].size(); i++)
-                    {
-                        std::string assetLanguage =
-                            ExtractString(jsonObject[releaseID]["assets"][i]["name"].GetString(),
-                                          releasePrefix, ".zip");
-                        if (assetLanguage == "en")
-                        {
-                            assetID = i;
-                            break;
-                        }
-                    }
-                }
-                if (assetID == -1)
-                {
-                    assetID = 0;
-                    LogError("System not found in the response");
-                }
-                return jsonObject[releaseID]["assets"][assetID]["browser_download_url"].GetString();
+                return jsonObject[releaseID]["assets"][0]["browser_download_url"].GetString();
             }
             else
             {
@@ -437,15 +398,8 @@ void UpdateToLatestVersion()
 
 void UpdateCACertificate()
 {
-    if (!std::filesystem::exists("tmp"))
-    {
-        std::filesystem::create_directory("tmp");
-    }
+    if (!std::filesystem::exists("tmp")) std::filesystem::create_directory("tmp");
     DownloadFile("https://curl.se/ca/cacert.pem", "tmp/cacert.pem");
-    if (std::filesystem::exists("resources/cacert.pem"))
-    {
-        std::filesystem::remove("resources/cacert.pem");
-    }
     std::filesystem::copy_file("tmp/cacert.pem", "resources/cacert.pem",
                                std::filesystem::copy_options::overwrite_existing);
     std::filesystem::remove("tmp/cacert.pem");

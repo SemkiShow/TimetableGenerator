@@ -235,9 +235,11 @@ void MigrateV0(Json& jsonObject)
             newLesson["lessonTeacherPairs"].format = JsonFormat::Inline;
             for (size_t i = 1; i < lesson.second.size(); i++)
             {
-                newLesson["lessonTeacherPairs"].emplace_back(JsonFormat::Inline);
-                newLesson["lessonTeacherPairs"][i - 1]["lessonID"] = lesson.second[i]["lessonID"];
-                newLesson["lessonTeacherPairs"][i - 1]["teacherID"] = lesson.second[i]["teacherID"];
+                Json pair;
+                pair.format = JsonFormat::Inline;
+                pair["lessonID"] = lesson.second[i]["lessonID"];
+                pair["teacherID"] = lesson.second[i]["teacherID"];
+                newLesson["lessonTeacherPairs"].emplace_back(std::move(pair));
             }
         }
     }
