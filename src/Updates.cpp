@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include "Updates.hpp"
-#include "JSON.hpp"
+#include "Json.hpp"
 #include "Logging.hpp"
 #include "Settings.hpp"
 #include "Translations.hpp"
@@ -77,7 +77,7 @@ void GetLatestVersionName()
         curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &responseCode);
         if (responseCode == 200)
         {
-            JSON jsonObject = JSON::Parse(readBuffer);
+            Json jsonObject = Json::Parse(readBuffer);
             if (!jsonObject.GetArray().empty())
             {
                 LogInfo("Successfully fetched releases info");
@@ -118,8 +118,8 @@ void GetLatestVersionName()
             }
             else
             {
-                std::cerr << "No releases found in JSON response" << std::endl;
-                LogError("No releases found in JSON response");
+                std::cerr << "No releases found in Json response" << std::endl;
+                LogError("No releases found in Json response");
                 latestVersion = GetText("Error: no valid new version found!");
             }
         }
@@ -197,7 +197,7 @@ std::string GetLatestVersionArchiveURL()
         curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &responseCode);
         if (responseCode == 200)
         {
-            JSON jsonObject = JSON::Parse(readBuffer);
+            Json jsonObject = Json::Parse(readBuffer);
             if (!jsonObject.GetArray().empty())
             {
                 LogInfo("Successfully fetched releases info");
@@ -251,8 +251,8 @@ std::string GetLatestVersionArchiveURL()
             }
             else
             {
-                std::cerr << "No releases found in JSON response" << std::endl;
-                LogError("No releases found in JSON response");
+                std::cerr << "No releases found in Json response" << std::endl;
+                LogError("No releases found in Json response");
             }
         }
         else

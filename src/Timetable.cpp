@@ -2,10 +2,10 @@
 //
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include "JSON.hpp"
+#include "Timetable.hpp"
+#include "Json.hpp"
 #include "Logging.hpp"
 #include "Settings.hpp"
-#include "Timetable.hpp"
 #include <filesystem>
 #include <iostream>
 
@@ -18,7 +18,7 @@ void Timetable::Save(const std::string& path)
     LogInfo("Saving timetable at " + path);
     if (name == "") return;
 
-    JSON jsonObject;
+    Json jsonObject;
 
     // Version
     jsonObject["version"] = version;
@@ -27,24 +27,24 @@ void Timetable::Save(const std::string& path)
     jsonObject["year"] = year;
 
     // Classrooms
-    jsonObject["classrooms"] = JSON(JSONFormat::Inline);
+    jsonObject["classrooms"] = Json(JsonFormat::Inline);
     for (auto& classroom: classrooms)
     {
         jsonObject["classrooms"][std::to_string(classroom.first)] = classroom.second.name;
     }
 
     // Lessons
-    jsonObject["lessons"] = JSON();
+    jsonObject["lessons"] = Json();
     for (auto& lesson: lessons)
     {
-        jsonObject["lessons"][std::to_string(lesson.first)] = JSON();
+        jsonObject["lessons"][std::to_string(lesson.first)] = Json();
 
         // Lesson name
         jsonObject["lessons"][std::to_string(lesson.first)]["name"] = lesson.second.name;
 
         // Class names
-        jsonObject["lessons"][std::to_string(lesson.first)]["classIDs"] = JSON::array_t();
-        jsonObject["lessons"][std::to_string(lesson.first)]["classIDs"].format = JSONFormat::Inline;
+        jsonObject["lessons"][std::to_string(lesson.first)]["classIDs"] = Json::array_t();
+        jsonObject["lessons"][std::to_string(lesson.first)]["classIDs"].format = JsonFormat::Inline;
         for (size_t i = 0; i < lesson.second.classIDs.size(); i++)
         {
             jsonObject["lessons"][std::to_string(lesson.first)]["classIDs"].push_back(
@@ -52,9 +52,9 @@ void Timetable::Save(const std::string& path)
         }
 
         // Classrooms
-        jsonObject["lessons"][std::to_string(lesson.first)]["classroomIDs"] = JSON::array_t();
+        jsonObject["lessons"][std::to_string(lesson.first)]["classroomIDs"] = Json::array_t();
         jsonObject["lessons"][std::to_string(lesson.first)]["classroomIDs"].format =
-            JSONFormat::Inline;
+            JsonFormat::Inline;
         for (size_t i = 0; i < lesson.second.classroomIDs.size(); i++)
         {
             jsonObject["lessons"][std::to_string(lesson.first)]["classroomIDs"].push_back(
@@ -63,32 +63,32 @@ void Timetable::Save(const std::string& path)
     }
 
     // Teachers
-    jsonObject["teachers"] = JSON();
+    jsonObject["teachers"] = Json();
     for (auto& teacher: teachers)
     {
         // Teacher
-        jsonObject["teachers"][std::to_string(teacher.first)] = JSON();
+        jsonObject["teachers"][std::to_string(teacher.first)] = Json();
 
         // Teacher name
         jsonObject["teachers"][std::to_string(teacher.first)]["name"] = teacher.second.name;
 
         // Lessons
-        jsonObject["teachers"][std::to_string(teacher.first)]["lessonIDs"] = JSON::array_t();
+        jsonObject["teachers"][std::to_string(teacher.first)]["lessonIDs"] = Json::array_t();
         jsonObject["teachers"][std::to_string(teacher.first)]["lessonIDs"].format =
-            JSONFormat::Inline;
+            JsonFormat::Inline;
         for (size_t i = 0; i < teacher.second.lessonIDs.size(); i++)
             jsonObject["teachers"][std::to_string(teacher.first)]["lessonIDs"].push_back(
                 teacher.second.lessonIDs[i]);
 
         // Work days
-        jsonObject["teachers"][std::to_string(teacher.first)]["workDays"] = JSON::array_t();
+        jsonObject["teachers"][std::to_string(teacher.first)]["workDays"] = Json::array_t();
         teacher.second.workDays.resize(daysPerWeek);
         for (size_t i = 0; i < daysPerWeek; i++)
         {
             jsonObject["teachers"][std::to_string(teacher.first)]["workDays"].push_back(
-                JSON::array_t());
+                Json::array_t());
             jsonObject["teachers"][std::to_string(teacher.first)]["workDays"][i].format =
-                JSONFormat::Inline;
+                JsonFormat::Inline;
             // Lesson number
             for (size_t j = 0; j < teacher.second.workDays[i].lessonIDs.size(); j++)
             {
@@ -99,11 +99,11 @@ void Timetable::Save(const std::string& path)
     }
 
     // Classes
-    jsonObject["classes"] = JSON();
+    jsonObject["classes"] = Json();
     for (auto& classPair: classes)
     {
         // Class
-        jsonObject["classes"][std::to_string(classPair.first)] = JSON();
+        jsonObject["classes"][std::to_string(classPair.first)] = Json();
 
         // Class number and letter
         jsonObject["classes"][std::to_string(classPair.first)]["number"] = classPair.second.number;
@@ -114,30 +114,30 @@ void Timetable::Save(const std::string& path)
             classPair.second.teacherID;
 
         // Lessons
-        jsonObject["classes"][std::to_string(classPair.first)]["lessons"] = JSON();
+        jsonObject["classes"][std::to_string(classPair.first)]["lessons"] = Json();
         for (auto& timetableLesson: classPair.second.timetableLessons)
         {
             jsonObject["classes"][std::to_string(classPair.first)]["lessons"]
-                      [std::to_string(timetableLesson.first)] = JSON::array_t();
+                      [std::to_string(timetableLesson.first)] = Json::array_t();
             jsonObject["classes"][std::to_string(classPair.first)]["lessons"]
                       [std::to_string(timetableLesson.first)]
-                          .format = JSONFormat::Inline;
+                          .format = JsonFormat::Inline;
             jsonObject["classes"][std::to_string(classPair.first)]["lessons"]
-                      [std::to_string(timetableLesson.first)] = JSON(JSONFormat::Inline);
+                      [std::to_string(timetableLesson.first)] = Json(JsonFormat::Inline);
             jsonObject["classes"][std::to_string(classPair.first)]["lessons"]
                       [std::to_string(timetableLesson.first)]["amount"] =
                           timetableLesson.second.amount;
             jsonObject["classes"][std::to_string(classPair.first)]["lessons"]
                       [std::to_string(timetableLesson.first)]["lessonTeacherPairs"] =
-                          JSON::array_t();
+                          Json::array_t();
             jsonObject["classes"][std::to_string(classPair.first)]["lessons"]
                       [std::to_string(timetableLesson.first)]["lessonTeacherPairs"]
-                          .format = JSONFormat::Inline;
+                          .format = JsonFormat::Inline;
             for (size_t j = 0; j < timetableLesson.second.lessonTeacherPairs.size(); j++)
             {
                 jsonObject["classes"][std::to_string(classPair.first)]["lessons"]
                           [std::to_string(timetableLesson.first)]["lessonTeacherPairs"]
-                              .emplace_back(JSONFormat::Inline);
+                              .emplace_back(JsonFormat::Inline);
                 jsonObject["classes"][std::to_string(classPair.first)]["lessons"][std::to_string(
                     timetableLesson.first)]["lessonTeacherPairs"][j]["lessonID"] =
                     timetableLesson.second.lessonTeacherPairs[j].lessonID;
@@ -148,10 +148,10 @@ void Timetable::Save(const std::string& path)
         }
 
         // Lesson numbers
-        jsonObject["classes"][std::to_string(classPair.first)]["lessonNumbers"] = JSON::array_t();
+        jsonObject["classes"][std::to_string(classPair.first)]["lessonNumbers"] = Json::array_t();
 
         // Days
-        jsonObject["classes"][std::to_string(classPair.first)]["days"] = JSON::array_t();
+        jsonObject["classes"][std::to_string(classPair.first)]["days"] = Json::array_t();
 
         classPair.second.days.resize(daysPerWeek);
         for (size_t i = 0; i < daysPerWeek; i++)
@@ -159,9 +159,9 @@ void Timetable::Save(const std::string& path)
             classPair.second.days[i].lessons.resize(lessonsPerDay);
             // Lesson numbers
             jsonObject["classes"][std::to_string(classPair.first)]["lessonNumbers"].push_back(
-                JSON::array_t());
+                Json::array_t());
             jsonObject["classes"][std::to_string(classPair.first)]["lessonNumbers"][i].format =
-                JSONFormat::Inline;
+                JsonFormat::Inline;
             for (size_t j = 0; j < classPair.second.days[i].lessons.size(); j++)
             {
                 jsonObject["classes"][std::to_string(classPair.first)]["lessonNumbers"][i]
@@ -170,18 +170,18 @@ void Timetable::Save(const std::string& path)
 
             // Days
             jsonObject["classes"][std::to_string(classPair.first)]["days"].push_back(
-                JSON::array_t());
+                Json::array_t());
             for (size_t j = 0; j < classPair.second.days[i].classroomLessonPairs.size(); j++)
             {
                 jsonObject["classes"][std::to_string(classPair.first)]["days"][i].push_back(
-                    JSON(JSONFormat::Inline));
+                    Json(JsonFormat::Inline));
                 jsonObject["classes"][std::to_string(classPair.first)]["days"][i][j]
                           ["timetableLessonID"] =
                               classPair.second.days[i].classroomLessonPairs[j].timetableLessonID;
                 jsonObject["classes"][std::to_string(classPair.first)]["days"][i][j]
-                          ["classroomIDs"] = JSON::array_t();
+                          ["classroomIDs"] = Json::array_t();
                 jsonObject["classes"][std::to_string(classPair.first)]["days"][i][j]["classroomIDs"]
-                    .format = JSONFormat::Inline;
+                    .format = JsonFormat::Inline;
                 for (size_t k = 0;
                      k < classPair.second.days[i].classroomLessonPairs[j].classroomIDs.size(); k++)
                 {
@@ -195,20 +195,20 @@ void Timetable::Save(const std::string& path)
 
         // Timetable lesson rules
         jsonObject["classes"][std::to_string(classPair.first)]["timetableLessonRules"] =
-            JSON::array_t();
+            Json::array_t();
         for (size_t i = 0; i < classPair.second.timetableLessonRules.size(); i++)
         {
             jsonObject["classes"][std::to_string(classPair.first)]["timetableLessonRules"]
-                .push_back(JSON());
+                .push_back(Json());
             jsonObject["classes"][std::to_string(classPair.first)]["timetableLessonRules"][i]
                       ["preserveOrder"] = classPair.second.timetableLessonRules[i].preserveOrder;
             jsonObject["classes"][std::to_string(classPair.first)]["timetableLessonRules"][i]
                       ["amount"] = classPair.second.timetableLessonRules[i].amount;
             jsonObject["classes"][std::to_string(classPair.first)]["timetableLessonRules"][i]
-                      ["timetableLessonIDs"] = JSON::array_t();
+                      ["timetableLessonIDs"] = Json::array_t();
             jsonObject["classes"][std::to_string(classPair.first)]["timetableLessonRules"][i]
                       ["timetableLessonIDs"]
-                          .format = JSONFormat::Inline;
+                          .format = JsonFormat::Inline;
             for (size_t j = 0;
                  j < classPair.second.timetableLessonRules[i].timetableLessonIDs.size(); j++)
             {
@@ -222,20 +222,20 @@ void Timetable::Save(const std::string& path)
     jsonObject.Save(path);
 }
 
-void MigrateV0(JSON& jsonObject)
+void MigrateV0(Json& jsonObject)
 {
-    JSON newJson = jsonObject;
+    Json newJson = jsonObject;
     for (auto& classPair: jsonObject["classes"].GetObject())
     {
         for (auto& lesson: classPair.second["lessons"].GetObject())
         {
             auto& newLesson = newJson["classes"][classPair.first]["lessons"][lesson.first];
-            newLesson["amount"] = lesson.second[(size_t)0];
-            newLesson["lessonTeacherPairs"] = JSON::array_t();
-            newLesson["lessonTeacherPairs"].format = JSONFormat::Inline;
+            newLesson["amount"] = lesson.second[0];
+            newLesson["lessonTeacherPairs"] = Json::array_t();
+            newLesson["lessonTeacherPairs"].format = JsonFormat::Inline;
             for (size_t i = 1; i < lesson.second.size(); i++)
             {
-                newLesson["lessonTeacherPairs"].emplace_back(JSONFormat::Inline);
+                newLesson["lessonTeacherPairs"].emplace_back(JsonFormat::Inline);
                 newLesson["lessonTeacherPairs"][i - 1]["lessonID"] = lesson.second[i]["lessonID"];
                 newLesson["lessonTeacherPairs"][i - 1]["teacherID"] = lesson.second[i]["teacherID"];
             }
@@ -247,7 +247,7 @@ void MigrateV0(JSON& jsonObject)
 void Timetable::Load(const std::string& path)
 {
     LogInfo("Loading timetable at " + path);
-    JSON jsonObject = JSON::Load(path);
+    Json jsonObject = Json::Load(path);
 
     *this = Timetable();
     if (jsonObject["version"].IsNull())
@@ -422,8 +422,7 @@ void Timetable::GenerateRandomTimetable()
     for (size_t i = 0; i < 15; i++)
     {
         lessons[i] = Lesson();
-        for (size_t j = 0; j < 7; j++)
-            lessons[i].name += 'a' + rand() % 26;
+        for (size_t j = 0; j < 7; j++) lessons[i].name += 'a' + rand() % 26;
         for (size_t j = 0; j < 4; j++)
         {
             auto it = classrooms.begin();
@@ -436,8 +435,7 @@ void Timetable::GenerateRandomTimetable()
     for (size_t i = 0; i < 5; i++)
     {
         teachers[i] = Teacher();
-        for (size_t j = 0; j < 7; j++)
-            teachers[i].name += 'a' + rand() % 26;
+        for (size_t j = 0; j < 7; j++) teachers[i].name += 'a' + rand() % 26;
         for (size_t j = 0; j < 3; j++)
         {
             auto it = lessons.begin();

@@ -2,21 +2,50 @@
 //
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include "JSON.hpp"
+#include "Json.hpp"
+#include <charconv>
 #include <climits>
 #include <fstream>
 #include <iostream>
-#include <sstream>
 
-inline std::string Indentation(size_t level) { return std::string(level, '\t'); }
+void Indentation(std::string& buf, size_t level) { buf.append(4 * level, ' '); }
 
-void JSON::SkipWhitespace(const std::string& s, size_t& idx)
+void StdToString(std::string& buf, int val)
 {
-    while (idx < s.size() && isspace(s[idx]))
-        ++idx;
+    char tmp[64];
+    auto [ptr, ec] = std::to_chars(tmp, tmp + 64, val);
+    buf.append(tmp, ptr - tmp);
 }
 
-JSON JSON::ParseValue(const std::string& s, size_t& idx)
+void StdToString(std::string& buf, double val)
+{
+    char tmp[64];
+    auto [ptr, ec] = std::to_chars(tmp, tmp + 64, val);
+    buf.append(tmp, ptr - tmp);
+}
+
+int Stoi(std::string_view s)
+{
+    int val;
+    auto [ptr, ec] = std::from_chars(s.data(), s.data() + s.size(), val);
+    if (ec == std::errc()) return val;
+    throw std::runtime_error("Failed to convert " + std::string(s));
+}
+
+double Stod(std::string_view s)
+{
+    double val;
+    auto [ptr, ec] = std::from_chars(s.data(), s.data() + s.size(), val);
+    if (ec == std::errc()) return val;
+    throw std::runtime_error("Failed to convert " + std::string(s));
+}
+
+void Json::SkipWhitespace(const std::string& s, size_t& idx)
+{
+    while (idx < s.size() && isspace(s[idx])) ++idx;
+}
+
+Json Json::ParseValue(const std::string& s, size_t& idx)
 {
     SkipWhitespace(s, idx);
     if (idx >= s.size()) throw std::runtime_error("Unexpected end of input");
@@ -28,23 +57,23 @@ JSON JSON::ParseValue(const std::string& s, size_t& idx)
     if (s.compare(idx, 4, "true") == 0)
     {
         idx += 4;
-        return JSON(true);
+        return Json(true);
     }
     if (s.compare(idx, 5, "false") == 0)
     {
         idx += 5;
-        return JSON(false);
+        return Json(false);
     }
     if (s.compare(idx, 4, "null") == 0)
     {
         idx += 4;
-        return JSON(nullptr);
+        return Json(nullptr);
     }
 
     throw std::runtime_error(std::string("Unexpected token: ") + s[idx]);
 }
 
-JSON JSON::ParseObject(const std::string& s, size_t& idx)
+Json Json::ParseObject(const std::string& s, size_t& idx)
 {
     ++idx; // skip '{'
     object_t obj;
@@ -63,8 +92,7 @@ JSON JSON::ParseObject(const std::string& s, size_t& idx)
         SkipWhitespace(s, idx);
         if (s[idx] != ':') throw std::runtime_error("Expected ':' after key");
         ++idx;
-        JSON val = ParseValue(s, idx);
-        obj[key] = val;
+        obj[std::move(key)] = ParseValue(s, idx);
         SkipWhitespace(s, idx);
         if (s[idx] == '}')
         {
@@ -74,10 +102,10 @@ JSON JSON::ParseObject(const std::string& s, size_t& idx)
         if (s[idx] != ',') throw std::runtime_error("Expected ',' or '}'");
         ++idx;
     }
-    return JSON(obj);
+    return Json(obj);
 }
 
-JSON JSON::ParseArray(const std::string& s, size_t& idx)
+Json Json::ParseArray(const std::string& s, size_t& idx)
 {
     ++idx; // skip '['
     array_t arr;
@@ -90,8 +118,7 @@ JSON JSON::ParseArray(const std::string& s, size_t& idx)
 
     while (true)
     {
-        JSON val = ParseValue(s, idx);
-        arr.push_back(val);
+        arr.push_back(ParseValue(s, idx));
         SkipWhitespace(s, idx);
         if (s[idx] == ']')
         {
@@ -101,10 +128,10 @@ JSON JSON::ParseArray(const std::string& s, size_t& idx)
         if (s[idx] != ',') throw std::runtime_error("Expected ',' or ']'");
         ++idx;
     }
-    return JSON(arr);
+    return Json(arr);
 }
 
-JSON JSON::ParseString(const std::string& s, size_t& idx)
+Json Json::ParseString(const std::string& s, size_t& idx)
 {
     ++idx; // skip '"'
     std::string str;
@@ -153,10 +180,10 @@ JSON JSON::ParseString(const std::string& s, size_t& idx)
             str.push_back(s[idx]);
         ++idx;
     }
-    return JSON(str);
+    return Json(str);
 }
 
-JSON JSON::ParseNumber(const std::string& s, size_t& idx)
+Json Json::ParseNumber(std::string_view s, size_t& idx)
 {
     size_t start = idx;
     if (s[idx] == '-' || s[idx] == '+') ++idx;
@@ -183,8 +210,7 @@ JSON JSON::ParseNumber(const std::string& s, size_t& idx)
             if (idx < s.size() && (s[idx] == '+' || s[idx] == '-')) ++idx;
             if (idx >= s.size() || !isdigit(s[idx]))
                 throw std::runtime_error("Invalid number: exponent missing digits");
-            while (idx < s.size() && isdigit(s[idx]))
-                ++idx;
+            while (idx < s.size() && isdigit(s[idx])) ++idx;
         }
         else
         {
@@ -192,24 +218,24 @@ JSON JSON::ParseNumber(const std::string& s, size_t& idx)
         }
     }
 
-    std::string numStr = s.substr(start, idx - start);
+    std::string_view numStr = s.substr(start, idx - start);
 
     try
     {
         if (isDouble)
         {
-            // If it has decimal point or exponent → store as double
-            double d = std::stod(numStr);
-            return JSON(d);
+            // If it has decimal point or exponent - store as double
+            double d = Stod(numStr);
+            return Json(d);
         }
         else
         {
             // Try parsing as int first
-            long long n = std::stoll(numStr);
+            int n = Stoi(numStr);
             if (n >= INT_MIN && n <= INT_MAX)
-                return JSON(static_cast<int>(n)); // store as int if fits
+                return Json(n); // store as int if fits
             else
-                return JSON(static_cast<double>(n)); // store as double if too big
+                return Json(static_cast<double>(n)); // store as double if too big
         }
     }
     catch (const std::exception& e)
@@ -218,9 +244,8 @@ JSON JSON::ParseNumber(const std::string& s, size_t& idx)
     }
 }
 
-std::string JSON::EscapeString(const std::string& s)
+void Json::EscapeString(std::string& out, const std::string& s)
 {
-    std::string out;
     for (char c: s)
     {
         switch (c)
@@ -251,75 +276,94 @@ std::string JSON::EscapeString(const std::string& s)
             break;
         }
     }
-    return out;
 }
 
-std::string JSON::ToString(size_t level) const
+void Json::ToString(std::string& buf, size_t level) const
 {
-    std::ostringstream oss;
     if (IsNull())
-        oss << "null";
+        buf += "null";
     else if (IsBool())
-        oss << (std::get<bool>(value) ? "true" : "false");
+        buf += (std::get<bool>(value) ? "true" : "false");
     else if (IsInt())
-        oss << std::get<int>(value);
+        StdToString(buf, std::get<int>(value));
     else if (IsDouble())
-        oss << std::get<double>(value);
+        StdToString(buf, std::get<double>(value));
     else if (IsString())
-        oss << "\"" << EscapeString(std::get<std::string>(value)) << "\"";
+    {
+        buf += "\"";
+        EscapeString(buf, std::get<std::string>(value));
+        buf += "\"";
+    }
     else if (IsArray())
     {
         const auto& arr = std::get<array_t>(value);
-        oss << "[";
-        if (format == JSONFormat::Newline) oss << '\n';
+        buf += "[";
+        if (format == JsonFormat::Newline) buf += '\n';
         for (size_t i = 0; i < arr.size(); ++i)
         {
-            if (format == JSONFormat::Newline) oss << Indentation(level + 1);
-            oss << arr[i].ToString(level + 1);
-            if (i < arr.size() - 1) oss << ", ";
-            if (format == JSONFormat::Newline) oss << '\n';
+            if (format == JsonFormat::Newline) Indentation(buf, level + 1);
+            arr[i].ToString(buf, level + 1);
+            if (i < arr.size() - 1) buf += ", ";
+            if (format == JsonFormat::Newline) buf += '\n';
         }
-        if (format == JSONFormat::Newline) oss << Indentation(level);
-        oss << "]";
+        if (format == JsonFormat::Newline) Indentation(buf, level);
+        buf += "]";
     }
     else if (IsObject())
     {
         const auto& obj = std::get<object_t>(value);
-        oss << "{";
-        if (format == JSONFormat::Newline) oss << '\n';
+        buf += "{";
+        if (format == JsonFormat::Newline) buf += '\n';
         size_t count = 0;
         for (const auto& [k, v]: obj)
         {
-            if (format == JSONFormat::Newline) oss << Indentation(level + 1);
-            oss << "\"" << EscapeString(k) << "\": " << v.ToString(level + 1);
-            if (count++ < obj.size() - 1) oss << ", ";
-            if (format == JSONFormat::Newline) oss << '\n';
+            if (format == JsonFormat::Newline) Indentation(buf, level + 1);
+            buf += "\"";
+            EscapeString(buf, k);
+            buf += "\": ";
+            v.ToString(buf, level + 1);
+            if (count++ < obj.size() - 1) buf += ", ";
+            if (format == JsonFormat::Newline) buf += '\n';
         }
-        if (format == JSONFormat::Newline) oss << Indentation(level);
-        oss << "}";
+        if (format == JsonFormat::Newline) Indentation(buf, level);
+        buf += "}";
     }
-    return oss.str();
 }
 
-void JSON::Save(const std::string& path)
+std::string Json::ToString(size_t level) const
+{
+    std::string str;
+    str.reserve(4 * 1024 * 1024);
+    ToString(str, level);
+    return str;
+}
+
+void Json::Save(const std::filesystem::path& path)
 {
     std::ofstream f(path);
-    if (!f) throw std::runtime_error("Cannot open file: " + path);
+    if (!f) throw std::runtime_error("Cannot open file: " + path.string());
     f << ToString();
     f.close();
 }
 
-JSON JSON::Load(const std::string& path)
+Json Json::Load(const std::filesystem::path& path)
 {
-    std::ifstream f(path);
-    if (!f) throw std::runtime_error("Cannot open file: " + path);
-    std::stringstream ss;
-    ss << f.rdbuf();
-    f.close();
-    return Parse(ss.str());
+    std::ifstream f(path, std::ios::binary);
+    if (!f) throw std::runtime_error("Cannot open file: " + path.string());
+
+    std::streamsize size = std::filesystem::file_size(path);
+    if (size <= 0) return Json();
+
+    std::string s(size, '\0');
+    if (f.read(s.data(), size))
+    {
+        return Parse(s);
+    }
+
+    throw std::runtime_error("Failed to read file: " + path.string());
 }
 
-JSON JSON::Parse(const std::string& s)
+Json Json::Parse(const std::string& s)
 {
     size_t idx = 0;
     return ParseValue(s, idx);

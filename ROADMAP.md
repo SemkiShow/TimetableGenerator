@@ -5,7 +5,7 @@
 - [x] Switch to .po files for translations
 - [ ] Refactor UI
 - [ ] Refactor Timetable
-- [ ] Refactor the reast of the codebase
+- [ ] Refactor the rest of the codebase
 - [ ] Doxygen documentation
 - [ ] Unit tests
 - [ ] Switch to RayUI?
