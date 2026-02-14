@@ -3,9 +3,10 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include "SystemInfo.hpp"
+#include "Logging.hpp"
+#include <fstream>
 #include <iostream>
 #include <string>
-#include <fstream>
 
 #if defined(_WIN32)
 #include <comdef.h>
@@ -207,7 +208,7 @@ std::vector<std::string> GetGPUs()
     FILE* pipe = popen("lspci | grep -iE \"vga|3d controller\"", "r");
     if (!pipe)
     {
-        std::cerr << "Failed to run the GPU searching command\n";
+        LogError("Failed to run the GPU searching command");
     }
 
     char buffer[256];

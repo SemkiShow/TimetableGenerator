@@ -11,7 +11,6 @@
 #include <cstring>
 #include <curl/curl.h>
 #include <filesystem>
-#include <iostream>
 #include <string>
 #include <thread>
 #include <zip.h>
@@ -49,7 +48,6 @@ void GetLatestVersionName()
     CURL* curl = curl_easy_init();
     if (!curl)
     {
-        std::cerr << "Failed to initialize CURL" << std::endl;
         LogError("Failed to initialize CURL");
         latestVersion = GetText("Error: CURL init failed!");
         curl_easy_cleanup(curl);
@@ -67,7 +65,6 @@ void GetLatestVersionName()
     CURLcode res = curl_easy_perform(curl);
     if (res != CURLE_OK)
     {
-        std::cerr << "CURL request failed: " << curl_easy_strerror(res) << std::endl;
         LogError(std::string("CURL request failed: ") + curl_easy_strerror(res));
         latestVersion = GetText("Error: network request failed!");
     }
@@ -118,14 +115,12 @@ void GetLatestVersionName()
             }
             else
             {
-                std::cerr << "No releases found in Json response" << std::endl;
                 LogError("No releases found in Json response");
                 latestVersion = GetText("Error: no valid new version found!");
             }
         }
         else
         {
-            std::cerr << "HTTP request failed: Status " << responseCode << std::endl;
             LogError("HTTP request failed: Status " + std::to_string(responseCode));
             latestVersion = GetText("Error: bad HTTP status!");
         }
@@ -151,7 +146,7 @@ std::string ExtractString(const std::string& input, const std::string& prefix,
     size_t start = input.find(prefix);
     if (start == std::string::npos)
     {
-        std::cerr << "Prefix not found\n";
+        LogError("Prefix not found");
         return "";
     }
     start += prefix.length();
@@ -159,7 +154,7 @@ std::string ExtractString(const std::string& input, const std::string& prefix,
     size_t end = input.rfind(suffix);
     if (end == std::string::npos || end < start)
     {
-        std::cerr << "Suffix not found or invalid\n";
+        LogError("Suffix not found or invalid");
         return "";
     }
 
@@ -172,7 +167,6 @@ std::string GetLatestVersionArchiveURL()
     CURL* curl = curl_easy_init();
     if (!curl)
     {
-        std::cerr << "Failed to initialize CURL" << std::endl;
         LogError("Failed to initialize CURL");
         return "";
     }
@@ -188,7 +182,6 @@ std::string GetLatestVersionArchiveURL()
     CURLcode res = curl_easy_perform(curl);
     if (res != CURLE_OK)
     {
-        std::cerr << "CURL request failed: " << curl_easy_strerror(res) << std::endl;
         LogError(std::string("CURL request failed: ") + curl_easy_strerror(res));
     }
     else
@@ -212,13 +205,11 @@ std::string GetLatestVersionArchiveURL()
             }
             else
             {
-                std::cerr << "No releases found in Json response" << std::endl;
                 LogError("No releases found in Json response");
             }
         }
         else
         {
-            std::cerr << "HTTP request failed: Status " << responseCode << std::endl;
             LogError("HTTP request failed: Status " + std::to_string(responseCode));
         }
     }
@@ -264,7 +255,6 @@ int UnzipFile(const std::string& zipPath, const std::string& extractDir)
     zip* archive = zip_open(zipPath.c_str(), ZIP_RDONLY, &err);
     if (!archive)
     {
-        std::cerr << "Failed to open zip archive: " << zipPath << std::endl;
         LogError("Failed to open zip archive: " + zipPath);
         return 1;
     }
@@ -276,7 +266,6 @@ int UnzipFile(const std::string& zipPath, const std::string& extractDir)
         const char* name = zip_get_name(archive, i, 0);
         if (!name)
         {
-            std::cerr << "Failed to get entry name for index " << i << std::endl;
             LogError("Failed to get entry name for index " + std::to_string(i));
             zip_close(archive);
             return 1;
@@ -295,7 +284,6 @@ int UnzipFile(const std::string& zipPath, const std::string& extractDir)
             zip_file* zfile = zip_fopen_index(archive, i, 0);
             if (!zfile)
             {
-                std::cerr << "Failed to open file inside zip: " << name << std::endl;
                 LogError(std::string("Failed to open file inside zip: ") + name);
                 zip_close(archive);
                 return 1;
@@ -304,7 +292,6 @@ int UnzipFile(const std::string& zipPath, const std::string& extractDir)
             FILE* outfile = fopen(outPath.c_str(), "wb");
             if (!outfile)
             {
-                std::cerr << "Failed to create output file: " << outPath << std::endl;
                 LogError("Failed to create output file: " + outPath);
                 zip_fclose(zfile);
                 zip_close(archive);
@@ -354,7 +341,6 @@ void UpdateToLatestVersion()
     if (archiveURL.empty())
     {
         downloadStatus = GetText("Failed to get archive URL");
-        std::cerr << "Failed to get archive URL\n";
         LogError("Failed to get archive URL");
         return;
     }
@@ -367,7 +353,7 @@ void UpdateToLatestVersion()
     if (DownloadFile(archiveURL, "tmp/release.zip") != 0)
     {
         downloadStatus = GetText("Failed to download the release!");
-        std::cerr << "Failed to download the release!\n";
+        LogError("Failed to download the release!");
         return;
     }
 
@@ -379,7 +365,7 @@ void UpdateToLatestVersion()
     if (UnzipFile("tmp/release.zip", "tmp/release") != 0)
     {
         downloadStatus = GetText("Failed to unzip the release!");
-        std::cerr << "Failed to uzip the release!\n";
+        LogError("Failed to uzip the release!");
         return;
     }
     std::filesystem::copy_file("settings.txt", "tmp/settings.txt",
@@ -403,6 +389,5 @@ void UpdateCACertificate()
     std::filesystem::copy_file("tmp/cacert.pem", "resources/cacert.pem",
                                std::filesystem::copy_options::overwrite_existing);
     std::filesystem::remove("tmp/cacert.pem");
-    std::cout << "Updated the CA certificate\n";
     LogInfo("Updated the CA certificate");
 }

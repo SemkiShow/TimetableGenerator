@@ -83,7 +83,7 @@ void Load(std::string fileName)
     {
         if (Split(buf, '=').size() < 2)
         {
-            std::cout << "Error: invalid settings.txt!\n";
+            LogError("Invalid settings.txt!");
             continue;
         }
         label = TrimJunk(Split(buf, '=')[0]);

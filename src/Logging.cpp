@@ -5,6 +5,7 @@
 #include "Logging.hpp"
 #include <ctime>
 #include <fstream>
+#include <iostream>
 #include <string>
 
 std::ofstream logFile;
@@ -23,6 +24,7 @@ void LogInfo(const std::string& data)
     std::string time = asctime(localtime(&now));
     if (!time.empty() && time.back() == '\n') time.pop_back();
     logFile << "[INFO] " << time << ": " << data << '\n';
+    std::cout << "[INFO] " << data << '\n';
 }
 
 void LogError(const std::string& data)
@@ -31,6 +33,7 @@ void LogError(const std::string& data)
     std::string time = asctime(localtime(&now));
     if (!time.empty() && time.back() == '\n') time.pop_back();
     logFile << "[ERROR] " << time << ": " << data << '\n';
+    std::cout << "[ERROR] " << data << '\n';
 }
 
 void EndLogging() { logFile.close(); }

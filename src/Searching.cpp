@@ -54,7 +54,7 @@ void RandomizeTimetable(Timetable& timetable)
 {
     if (!IsTimetableCorrect(timetable))
     {
-        std::cerr << "Error: the timetable is incorrect!\n";
+        LogError("The timetable is incorrect!");
         return;
     }
     for (auto& classPair: timetable.classes)
@@ -119,7 +119,7 @@ void SwapRandomTimetableLessons(Timetable& timetable)
     while (true)
     {
         // Get class Id
-        if (timetable.orderedClasses.empty()) std::cerr << "The timetable's classes are empty!\n";
+        if (timetable.orderedClasses.empty()) LogError("The timetable's classes are empty!");
         classIndex = classDistribution(rng);
         classId = timetable.orderedClasses[classIndex];
 
@@ -202,7 +202,7 @@ void MutateTimetableClassroom(Timetable& timetable)
     while (true)
     {
         // Get class Id
-        if (timetable.orderedClasses.empty()) std::cerr << "The timetable's classes are empty!\n";
+        if (timetable.orderedClasses.empty()) LogError("The timetable's classes are empty!");
         int classIndex = classDistribution(rng);
         int classId = timetable.orderedClasses[classIndex];
 
@@ -449,18 +449,9 @@ void RunASearchIteration()
     std::thread* threads = new std::thread[threadsNumber];
 
     // Output debug info
-    std::cout << "\x1b[34mIteration " << iterationData.iteration++ << "\x1b[0m. ";
-    std::cout << "The best score is " << iterationData.allTimeBestScore << ". ";
-    std::cout << "The best timetable has "
-              << iterationData.timetables[iterationData.bestTimetableIndex].errors << " errors. ";
-    std::cout << "The best timetable has "
-              << iterationData.timetables[iterationData.bestTimetableIndex].bonusPoints
-              << " bonus points. ";
-    std::cout << iterationData.iterationsPerChange
-              << " iterations have passed since last score improvement. ";
     if (iterationData.iteration % 10 == 0)
     {
-        LogInfo("Iteration: " + std::to_string(iterationData.iteration));
+        LogInfo("\x1b[34mIteration: " + std::to_string(iterationData.iteration) + "\x1b[0m");
         LogInfo("The best score is " + std::to_string(iterationData.allTimeBestScore));
         LogInfo("The best timetable has " +
                 std::to_string(iterationData.timetables[iterationData.bestTimetableIndex].errors) +
@@ -536,7 +527,6 @@ void BeginSearching(const Timetable& timetable)
 {
     // Print debug info
     LogInfo("Starting to search for the perfect timetable");
-    std::cout << "Initializing timetables...\n";
 
     // Open the Generate timetable window
     iterationData = IterationData();
@@ -582,7 +572,6 @@ void BeginSearching(const Timetable& timetable)
     // Empty classes failsafe
     if (timetable.classes.size() == 0)
     {
-        std::cout << "The timetable has no classes!\n";
         LogInfo("The timetable has no classes!");
         iterationData.isDone = true;
         iterationData.threadLock = false;

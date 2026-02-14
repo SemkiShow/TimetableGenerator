@@ -30,7 +30,6 @@ int ZipFile(zip_t* archive, std::string path)
     std::ifstream file(path, std::ios::binary);
     if (!fileStream)
     {
-        std::cerr << "Failed to open file " << path << "!\n";
         LogError("Failed to open file " + path);
         return 1;
     }
@@ -44,8 +43,6 @@ int ZipFile(zip_t* archive, std::string path)
     zip_source_t* source = zip_source_buffer(archive, buffer, fileContents.size(), 1);
     if (source == nullptr)
     {
-        std::cerr << "Failed to create crash report zip source: " << zip_strerror(archive)
-                  << std::endl;
         LogError(std::string("Failed to create crash report zip source: ") + zip_strerror(archive));
         return 1;
     }
@@ -53,8 +50,6 @@ int ZipFile(zip_t* archive, std::string path)
     // Add the source as a new file entry
     if (zip_file_add(archive, path.c_str(), source, ZIP_FL_OVERWRITE) < 0)
     {
-        std::cerr << "Failed to add file to crash report zip: " << zip_strerror(archive)
-                  << std::endl;
         LogError(std::string("Failed to add file to crash report zip: ") + zip_strerror(archive));
         zip_source_free(source);
         return 1;
@@ -135,8 +130,6 @@ int ZipSystemInfo(zip_t* archive)
     zip_source_t* source = zip_source_buffer(archive, buffer, systemInfo.size(), 1);
     if (source == nullptr)
     {
-        std::cerr << "Failed to create crash report zip source: " << zip_strerror(archive)
-                  << std::endl;
         LogError(std::string("Failed to create crash report zip source: ") + zip_strerror(archive));
         return 1;
     }
@@ -144,8 +137,6 @@ int ZipSystemInfo(zip_t* archive)
     // Add the source as a new file entry
     if (zip_file_add(archive, "system_info.txt", source, ZIP_FL_OVERWRITE) < 0)
     {
-        std::cerr << "Failed to add file to crash report zip: " << zip_strerror(archive)
-                  << std::endl;
         LogError(std::string("Failed to add file to crash report zip: ") + zip_strerror(archive));
         zip_source_free(source);
         return 1;
@@ -164,8 +155,6 @@ int CreateCrashReport()
     {
         zip_error_t ziperror;
         zip_error_init_with_code(&ziperror, error);
-        std::cerr << "Failed to create crash report zip archive: " << zip_error_strerror(&ziperror)
-                  << std::endl;
         LogError(std::string("Failed to create crash report zip archive: ") +
                  zip_error_strerror(&ziperror));
         zip_error_fini(&ziperror);
@@ -181,13 +170,10 @@ int CreateCrashReport()
     // Close the archive to write changes
     if (zip_close(archive) < 0)
     {
-        std::cerr << "Failed to close crash report zip archive: " << zip_strerror(archive)
-                  << std::endl;
         LogError(std::string("Failed to close crash report zip archive: ") + zip_strerror(archive));
         return 1;
     }
 
-    std::cout << "Crash report zip file created successfully!" << std::endl;
     LogInfo("Crash report zip file created successfully!");
     return 0;
 }

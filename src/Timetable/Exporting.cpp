@@ -436,6 +436,5 @@ void Timetable::ExportAsXlsx()
     ExportTeachersAsXlsx();
     ExportClassroomsAsXlsx();
 
-    std::cout << "Exported templates/" << name << " as timetables/*_" << name << ".xlsx\n";
     LogInfo("Exported templates/" + name + " as timetables/*_" + name + ".xlsx");
 }

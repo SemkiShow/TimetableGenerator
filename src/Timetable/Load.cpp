@@ -6,7 +6,6 @@
 #include "Logging.hpp"
 #include "Timetable.hpp"
 #include "Utils.hpp"
-#include <iostream>
 
 void MigrateV0(Json& json)
 {
@@ -318,8 +317,8 @@ void Timetable::Load(const std::filesystem::path& path)
             {
                 orderedClasses.push_back(it->first);
                 it = tmpClasses.erase(it);
-                std::cout << "Adding items to the orderedClasses list... " << tmpClasses.size()
-                          << " items left\n";
+                LogInfo("Adding items to the orderedClasses list... " +
+                        std::to_string(tmpClasses.size()) + " items left");
                 continue;
             }
             ++it;
