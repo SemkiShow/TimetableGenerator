@@ -5,7 +5,7 @@
 #include "Utils.hpp"
 #include <algorithm>
 #include <filesystem>
-#include <utf8/checked.h>
+#include <raylib.h>
 
 std::vector<std::string> Split(std::string input, char delimiter)
 {
@@ -48,14 +48,21 @@ std::string TrimJunk(const std::string& input)
 
 std::string GetNthUtf8Character(const std::string& utf8String, int index)
 {
-    auto it = utf8String.begin();
-    auto end = utf8String.end();
+    const char* ptr = utf8String.c_str();
+    int bytesProcessed = 0;
+    int codepointCount = 0;
+    int codepointSize = 0;
 
-    for (int i = 0; i < index && it != end; ++i) utf8::next(it, end);
+    while (ptr[bytesProcessed] != '\0' && codepointCount < index)
+    {
+        GetCodepointNext(&ptr[bytesProcessed], &codepointSize);
+        bytesProcessed += codepointSize;
+        codepointCount++;
+    }
 
-    if (it == end) return "";
+    // Return early if out of bounds
+    if (ptr[bytesProcessed] == '\0') return "";
 
-    auto charStart = it;
-    utf8::next(it, end);
-    return std::string(charStart, it);
+    int resultCodepoint = GetCodepointNext(&ptr[bytesProcessed], &codepointSize);
+    return std::string(CodepointToUTF8(resultCodepoint, &codepointSize));
 }

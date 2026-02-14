@@ -30,10 +30,6 @@
 	path = thirdparty/imgui
 	url = https://github.com/ocornut/imgui
 	shallow = true
-[submodule "thirdparty/utfcpp"]
-	path = thirdparty/utfcpp
-	url = https://github.com/nemtrif/utfcpp
-	shallow = true
 [submodule "thirdparty/libintl-lite"]
 	path = thirdparty/libintl-lite
 	url = https://github.com/j-jorge/libintl-lite

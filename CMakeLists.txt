@@ -4,8 +4,6 @@ project(TimetableGenerator)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-include(ExternalProject)
-
 # Generate compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -68,9 +66,6 @@ set(ENABLE_BZIP2 OFF CACHE BOOL "" FORCE)
 set(ENABLE_ZSTD OFF CACHE BOOL "" FORCE)
 add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/libzip ${CMAKE_BINARY_DIR}/_deps/libzip-build SYSTEM)
 
-# utf8cpp
-add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/utfcpp ${CMAKE_BINARY_DIR}/_deps/utfcpp SYSTEM)
-
 # libintl-lite
 add_subdirectory(thirdparty/libintl-lite ${CMAKE_BINARY_DIR}/_deps/libintl-lite-build)
 
@@ -82,7 +77,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE
     $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>:-Wall -Wextra>
 )
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-target_link_libraries(${PROJECT_NAME} PRIVATE raylib imgui rlimgui CURL::libcurl xlsxwriter zip utf8cpp intl)
+target_link_libraries(${PROJECT_NAME} PRIVATE raylib imgui rlimgui CURL::libcurl xlsxwriter zip intl)
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} PRIVATE ws2_32 crypt32 secur32 user32 advapi32 wldap32 bcrypt)
     set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE $<CONFIG:Release>)

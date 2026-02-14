@@ -143,7 +143,7 @@ Json Class::ToJson()
     // Lessons
     for (auto& timetableLesson: timetableLessons)
     {
-        json["lessons"].emplace_back(timetableLesson.second.ToJson());
+        json["lessons"][std::to_string(timetableLesson.first)] = timetableLesson.second.ToJson();
     }
 
     // Lesson numbers
