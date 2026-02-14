@@ -4,10 +4,12 @@
 
 - [x] Switch to .po files for translations
 - [ ] Refactor UI
-- [ ] Refactor Timetable
+- [x] Refactor Timetable
 - [ ] Refactor the rest of the codebase
 - [ ] Doxygen documentation
 - [ ] Unit tests
 - [ ] Switch to RayUI?
 - [ ] Automatic crash report sending
 - [ ] Use JsonFormat for json
+- [ ] Exporting to HTML
+- [ ] Exporting to some image format

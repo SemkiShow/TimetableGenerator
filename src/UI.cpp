@@ -11,6 +11,7 @@
 #include "Timetable.hpp"
 #include "Translations.hpp"
 #include "Updates.hpp"
+#include "Utils.hpp"
 #include <cmath>
 #include <filesystem>
 #include <imgui.h>
@@ -77,8 +78,7 @@ void LoadStyle()
 
 void LoadFAQScreenshots()
 {
-    std::vector<std::string> faqScreenshotFiles;
-    ListFiles("resources/faq-screenshots", &faqScreenshotFiles);
+    auto faqScreenshotFiles = ListFiles("resources/faq-screenshots");
     for (auto& texture: faqScreenshots) UnloadTexture(texture);
     for (size_t i = 0; i < faqScreenshotFiles.size(); i++)
     {
@@ -90,7 +90,7 @@ void OpenClassrooms()
 {
     LogInfo("Opening classrooms");
     tmpTimetable.classrooms = currentTimetable.classrooms;
-    tmpTimetable.maxClassroomID = currentTimetable.maxClassroomID;
+    tmpTimetable.maxClassroomId = currentTimetable.maxClassroomId;
     isClassrooms = true;
 }
 
@@ -98,7 +98,7 @@ void OpenLessons()
 {
     LogInfo("Opening lessons");
     tmpTimetable.lessons = currentTimetable.lessons;
-    tmpTimetable.maxLessonID = currentTimetable.maxLessonID;
+    tmpTimetable.maxLessonId = currentTimetable.maxLessonId;
     isLessons = true;
 }
 
@@ -106,7 +106,7 @@ void OpenTeachers()
 {
     LogInfo("Opening teachers");
     tmpTimetable.teachers = currentTimetable.teachers;
-    tmpTimetable.maxTeacherID = currentTimetable.maxTeacherID;
+    tmpTimetable.maxTeacherId = currentTimetable.maxTeacherId;
     isTeachers = true;
 }
 
@@ -114,7 +114,7 @@ void OpenClasses()
 {
     LogInfo("Opening classes");
     tmpTimetable.classes = currentTimetable.classes;
-    tmpTimetable.maxClassID = currentTimetable.maxClassID;
+    tmpTimetable.maxClassId = currentTimetable.maxClassId;
     tmpTimetable.orderedClasses = currentTimetable.orderedClasses;
     tmpLessons = currentTimetable.lessons;
     tmpTimetable.year = currentTimetable.year;
@@ -401,7 +401,7 @@ void ShowMenuBar()
             if (ImGui::MenuItem(gettext("Open")))
             {
                 LogInfo("Opening a timetable");
-                ListFiles("templates/", &timetableFiles);
+                timetableFiles = ListFiles("templates/");
                 for (size_t i = 0; i < timetableFiles.size(); i++)
                     timetableFiles[i] = std::filesystem::path(timetableFiles[i]).stem().string();
                 isOpenTimetable = true;

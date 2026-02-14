@@ -9,26 +9,25 @@
 #include <unordered_map>
 #include <vector>
 
-extern int currentClassID;
+extern int currentClassId;
 extern bool newClass;
 extern int classTeacherIndex;
 extern std::unordered_map<std::string, bool> classLessons;
 extern std::unordered_map<std::string, int> classLessonAmounts;
 extern std::unordered_map<std::string, bool> classLessonTeachers;
 extern std::string classTeacherValues;
-extern std::vector<int> classTeacherIDs;
+extern std::vector<int> classTeacherIds;
 extern std::map<int, Lesson> tmpLessons;
 extern std::map<int, Lesson> tmpTmpLessons;
 
-extern int currentLessonID;
+extern int currentLessonId;
 extern bool newCombinedLesson;
 extern bool newRule;
-extern size_t currentRuleID;
+extern size_t currentRuleId;
 
 void ResetClassTeacherValues();
-std::string GetNthUtf8Character(const std::string& utf8String, int index);
 bool CompareTimetableLessons(const TimetableLesson lesson1, const TimetableLesson lesson2);
-void FetchClassLessonsFromSimularClasses(Timetable& timetable, int classID);
+void FetchClassLessonsFromSimularClasses(Timetable& timetable, int classId);
 void ChangeClassesAmount(Timetable& timetable, const std::string& classNumber,
                          const int classesAmount);
 void UpdateClassLetters(Timetable& timetable);

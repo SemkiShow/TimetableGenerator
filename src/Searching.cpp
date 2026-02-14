@@ -21,8 +21,7 @@ IterationData iterationData = IterationData();
 int GetLessonsAmount(const std::map<int, TimetableLesson> timetableLessons)
 {
     int output = 0;
-    for (auto& lesson: timetableLessons)
-        output += lesson.second.amount;
+    for (auto& lesson: timetableLessons) output += lesson.second.amount;
     return output;
 }
 
@@ -60,13 +59,13 @@ void RandomizeTimetable(Timetable& timetable)
     }
     for (auto& classPair: timetable.classes)
     {
-        std::vector<int> timetableLessonIDs;
+        std::vector<int> timetableLessonIds;
         for (auto& lesson: classPair.second.timetableLessons)
         {
             for (int i = 0; i < lesson.second.amount; i++)
-                timetableLessonIDs.push_back(lesson.first);
+                timetableLessonIds.push_back(lesson.first);
         }
-        std::shuffle(timetableLessonIDs.begin(), timetableLessonIDs.end(), rng);
+        std::shuffle(timetableLessonIds.begin(), timetableLessonIds.end(), rng);
         size_t counter = 0;
         classPair.second.days.resize(iterationData.daysPerWeek);
         for (size_t i = 0; i < iterationData.daysPerWeek; i++)
@@ -77,34 +76,34 @@ void RandomizeTimetable(Timetable& timetable)
                 classPair.second.days[i].classroomLessonPairs.push_back(ClassroomLessonPair());
                 if (classPair.second.days[i].lessons[j])
                 {
-                    if (counter < timetableLessonIDs.size())
+                    if (counter < timetableLessonIds.size())
                     {
-                        classPair.second.days[i].classroomLessonPairs[j].timetableLessonID =
-                            timetableLessonIDs[counter];
+                        classPair.second.days[i].classroomLessonPairs[j].timetableLessonId =
+                            timetableLessonIds[counter];
                         for (size_t k = 0;
-                             k < classPair.second.timetableLessons[timetableLessonIDs[counter]]
+                             k < classPair.second.timetableLessons[timetableLessonIds[counter]]
                                      .lessonTeacherPairs.size();
                              k++)
                         {
-                            int lessonID =
-                                classPair.second.timetableLessons[timetableLessonIDs[counter]]
+                            int lessonId =
+                                classPair.second.timetableLessons[timetableLessonIds[counter]]
                                     .lessonTeacherPairs[k]
-                                    .lessonID;
-                            int classroomID =
-                                timetable.lessons[lessonID]
-                                    .classroomIDs[rand() %
-                                                  timetable.lessons[lessonID].classroomIDs.size()];
-                            classPair.second.days[i].classroomLessonPairs[j].classroomIDs.push_back(
-                                classroomID);
+                                    .lessonId;
+                            int classroomId =
+                                timetable.lessons[lessonId]
+                                    .classroomIds[rand() %
+                                                  timetable.lessons[lessonId].classroomIds.size()];
+                            classPair.second.days[i].classroomLessonPairs[j].classroomIds.push_back(
+                                classroomId);
                         }
                         counter++;
                     }
                     else
-                        classPair.second.days[i].classroomLessonPairs[j].timetableLessonID =
+                        classPair.second.days[i].classroomLessonPairs[j].timetableLessonId =
                             ANY_LESSON;
                 }
                 else
-                    classPair.second.days[i].classroomLessonPairs[j].timetableLessonID = NO_LESSON;
+                    classPair.second.days[i].classroomLessonPairs[j].timetableLessonId = NO_LESSON;
             }
         }
     }
@@ -116,46 +115,46 @@ void SwapRandomTimetableLessons(Timetable& timetable)
     std::uniform_int_distribution<int> dayDistribution(0, iterationData.daysPerWeek - 1);
     std::uniform_int_distribution<int> lesson1Distribution;
     std::uniform_int_distribution<int> lesson2Distribution;
-    int classID, classIndex, lesson1Day, lesson2Day, lesson1Index, lesson2Index;
+    int classId, classIndex, lesson1Day, lesson2Day, lesson1Index, lesson2Index;
     while (true)
     {
-        // Get class ID
+        // Get class Id
         if (timetable.orderedClasses.empty()) std::cerr << "The timetable's classes are empty!\n";
         classIndex = classDistribution(rng);
-        classID = timetable.orderedClasses[classIndex];
+        classId = timetable.orderedClasses[classIndex];
 
-        // Get day ID
+        // Get day Id
         lesson1Day = dayDistribution(rng);
         lesson2Day = dayDistribution(rng);
 
-        // Get ClassroomLessonPair ID
-        if (timetable.classes[classID].days[lesson1Day].classroomLessonPairs.empty() ||
-            timetable.classes[classID].days[lesson2Day].classroomLessonPairs.empty())
+        // Get ClassroomLessonPair Id
+        if (timetable.classes[classId].days[lesson1Day].classroomLessonPairs.empty() ||
+            timetable.classes[classId].days[lesson2Day].classroomLessonPairs.empty())
             continue;
         lesson1Distribution = std::uniform_int_distribution<int>(
-            0, timetable.classes[classID].days[lesson1Day].classroomLessonPairs.size() - 1);
+            0, timetable.classes[classId].days[lesson1Day].classroomLessonPairs.size() - 1);
         lesson2Distribution = std::uniform_int_distribution<int>(
-            0, timetable.classes[classID].days[lesson2Day].classroomLessonPairs.size() - 1);
+            0, timetable.classes[classId].days[lesson2Day].classroomLessonPairs.size() - 1);
         lesson1Index = lesson1Distribution(rng);
         lesson2Index = lesson2Distribution(rng);
 
         // Exit if found a valid lesson
-        if (timetable.classes[classID]
+        if (timetable.classes[classId]
                     .days[lesson1Day]
                     .classroomLessonPairs[lesson1Index]
-                    .timetableLessonID >= ANY_LESSON &&
-            timetable.classes[classID]
+                    .timetableLessonId >= ANY_LESSON &&
+            timetable.classes[classId]
                     .days[lesson2Day]
                     .classroomLessonPairs[lesson2Index]
-                    .timetableLessonID >= ANY_LESSON)
+                    .timetableLessonId >= ANY_LESSON)
             break;
     }
     // Swap 2 timetable lessons in the same class
     ClassroomLessonPair buf =
-        timetable.classes[classID].days[lesson2Day].classroomLessonPairs[lesson2Index];
-    timetable.classes[classID].days[lesson2Day].classroomLessonPairs[lesson2Index] =
-        timetable.classes[classID].days[lesson1Day].classroomLessonPairs[lesson1Index];
-    timetable.classes[classID].days[lesson1Day].classroomLessonPairs[lesson1Index] = buf;
+        timetable.classes[classId].days[lesson2Day].classroomLessonPairs[lesson2Index];
+    timetable.classes[classId].days[lesson2Day].classroomLessonPairs[lesson2Index] =
+        timetable.classes[classId].days[lesson1Day].classroomLessonPairs[lesson1Index];
+    timetable.classes[classId].days[lesson1Day].classroomLessonPairs[lesson1Index] = buf;
 }
 
 double EvaluateFitness(const Timetable& timetable)
@@ -168,16 +167,16 @@ Timetable TournamentSelection(const Timetable* population)
     size_t tournamentSize = 7;
     auto populationDistribution =
         std::uniform_int_distribution<int>(0, iterationData.timetablesPerGeneration - 1);
-    int bestID = populationDistribution(rng);
+    int bestId = populationDistribution(rng);
 
     for (size_t i = 0; i < tournamentSize; i++)
     {
-        int challengerID = populationDistribution(rng);
-        if (EvaluateFitness(population[challengerID]) > EvaluateFitness(population[bestID]))
-            bestID = challengerID;
+        int challengerId = populationDistribution(rng);
+        if (EvaluateFitness(population[challengerId]) > EvaluateFitness(population[bestId]))
+            bestId = challengerId;
     }
 
-    return population[bestID];
+    return population[bestId];
 }
 
 Timetable Crossover(const Timetable& parent1, const Timetable& parent2)
@@ -202,73 +201,73 @@ void MutateTimetableClassroom(Timetable& timetable)
     std::uniform_int_distribution<int> lessonTeacherPairDistribution;
     while (true)
     {
-        // Get class ID
+        // Get class Id
         if (timetable.orderedClasses.empty()) std::cerr << "The timetable's classes are empty!\n";
         int classIndex = classDistribution(rng);
-        int classID = timetable.orderedClasses[classIndex];
+        int classId = timetable.orderedClasses[classIndex];
 
-        // Get day ID
-        int dayID = dayDistribution(rng);
+        // Get day Id
+        int dayId = dayDistribution(rng);
 
-        // Get ClassroomLessonPair ID
-        if (timetable.classes[classID].days[dayID].classroomLessonPairs.empty()) continue;
+        // Get ClassroomLessonPair Id
+        if (timetable.classes[classId].days[dayId].classroomLessonPairs.empty()) continue;
         lessonDistribution = std::uniform_int_distribution<int>(
-            0, timetable.classes[classID].days[dayID].classroomLessonPairs.size() - 1);
-        int classroomLessonPairID = lessonDistribution(rng);
+            0, timetable.classes[classId].days[dayId].classroomLessonPairs.size() - 1);
+        int classroomLessonPairId = lessonDistribution(rng);
 
-        // Get classroom ID
-        if (timetable.classes[classID]
-                .days[dayID]
-                .classroomLessonPairs[classroomLessonPairID]
-                .classroomIDs.empty())
+        // Get classroom Id
+        if (timetable.classes[classId]
+                .days[dayId]
+                .classroomLessonPairs[classroomLessonPairId]
+                .classroomIds.empty())
             continue;
         classroomDistribution = std::uniform_int_distribution<int>(
-            0, timetable.classes[classID]
-                       .days[dayID]
-                       .classroomLessonPairs[classroomLessonPairID]
-                       .classroomIDs.size() -
+            0, timetable.classes[classId]
+                       .days[dayId]
+                       .classroomLessonPairs[classroomLessonPairId]
+                       .classroomIds.size() -
                    1);
-        int classroomID = classroomDistribution(rng);
+        int classroomId = classroomDistribution(rng);
 
-        // Get timetable lesson ID
-        if (timetable.classes[classID]
-                .days[dayID]
-                .classroomLessonPairs[classroomLessonPairID]
-                .timetableLessonID < 0)
+        // Get timetable lesson Id
+        if (timetable.classes[classId]
+                .days[dayId]
+                .classroomLessonPairs[classroomLessonPairId]
+                .timetableLessonId < 0)
             continue;
-        int timetableLessonID = timetable.classes[classID]
-                                    .days[dayID]
-                                    .classroomLessonPairs[classroomLessonPairID]
-                                    .timetableLessonID;
-        if (timetableLessonID < 0) continue;
+        int timetableLessonId = timetable.classes[classId]
+                                    .days[dayId]
+                                    .classroomLessonPairs[classroomLessonPairId]
+                                    .timetableLessonId;
+        if (timetableLessonId < 0) continue;
 
-        // Get LessonTeacherPair ID
-        if (timetable.classes[classID]
-                .timetableLessons[timetableLessonID]
+        // Get LessonTeacherPair Id
+        if (timetable.classes[classId]
+                .timetableLessons[timetableLessonId]
                 .lessonTeacherPairs.empty())
             continue;
         lessonTeacherPairDistribution =
-            std::uniform_int_distribution<int>(0, timetable.classes[classID]
-                                                          .timetableLessons[timetableLessonID]
+            std::uniform_int_distribution<int>(0, timetable.classes[classId]
+                                                          .timetableLessons[timetableLessonId]
                                                           .lessonTeacherPairs.size() -
                                                       1);
-        int lessonTeacherPairID = lessonTeacherPairDistribution(rng);
+        int lessonTeacherPairId = lessonTeacherPairDistribution(rng);
 
-        // Generate a lessonID
-        int lessonID = timetable.classes[classID]
-                           .timetableLessons[timetableLessonID]
-                           .lessonTeacherPairs[lessonTeacherPairID]
-                           .lessonID;
-        if (timetable.lessons[lessonID].classroomIDs.empty()) continue;
+        // Generate a lessonId
+        int lessonId = timetable.classes[classId]
+                           .timetableLessons[timetableLessonId]
+                           .lessonTeacherPairs[lessonTeacherPairId]
+                           .lessonId;
+        if (timetable.lessons[lessonId].classroomIds.empty()) continue;
 
-        // Generate and replace a new classroom ID
+        // Generate and replace a new classroom Id
         classroomDistribution = std::uniform_int_distribution<int>(
-            0, timetable.lessons[lessonID].classroomIDs.size() - 1);
-        int newClassroomID = timetable.lessons[lessonID].classroomIDs[classroomDistribution(rng)];
-        timetable.classes[classID]
-            .days[dayID]
-            .classroomLessonPairs[classroomLessonPairID]
-            .classroomIDs[classroomID] = newClassroomID;
+            0, timetable.lessons[lessonId].classroomIds.size() - 1);
+        int newClassroomId = timetable.lessons[lessonId].classroomIds[classroomDistribution(rng)];
+        timetable.classes[classId]
+            .days[dayId]
+            .classroomLessonPairs[classroomLessonPairId]
+            .classroomIds[classroomId] = newClassroomId;
         return;
     }
 }
@@ -287,10 +286,10 @@ void MutateTimetable(Timetable& timetable)
     }
 }
 
-void GeneticAlgorithm(int threadID, Timetable* population, Timetable* newPopulation)
+void GeneticAlgorithm(int threadId, Timetable* population, Timetable* newPopulation)
 {
-    for (size_t i = threadID * iterationData.timetablesPerGeneration / threadsNumber;
-         i < (threadID + 1) * iterationData.timetablesPerGeneration / threadsNumber; i++)
+    for (size_t i = threadId * iterationData.timetablesPerGeneration / threadsNumber;
+         i < (threadId + 1) * iterationData.timetablesPerGeneration / threadsNumber; i++)
     {
         Timetable parent1 = TournamentSelection(population);
         Timetable parent2 = TournamentSelection(population);
@@ -417,8 +416,7 @@ void InjectRandomImmigrants(Timetable* population)
 void RunASearchIteration()
 {
     // Wait for another thread
-    while (iterationData.threadLock)
-        COMPILER_BARRIER();
+    while (iterationData.threadLock) COMPILER_BARRIER();
 
     // Make a thread lock
     iterationData.threadLock = true;
@@ -491,8 +489,7 @@ void RunASearchIteration()
     for (size_t i = 0; i < threadsNumber; i++)
         threads[i] =
             std::thread(GeneticAlgorithm, i, iterationData.timetables, iterationData.newPopulation);
-    for (size_t i = 0; i < threadsNumber; i++)
-        threads[i].join();
+    for (size_t i = 0; i < threadsNumber; i++) threads[i].join();
 
     // Get the best timetable from the current generation
     iterationData.bestTimetableIndex = GetBestTimetableIndex(iterationData.timetables);
@@ -608,8 +605,7 @@ void BeginSearching(const Timetable& timetable)
 
     // Run the iterations
     generateTimetableStatus = GetText("Generating a timetable that matches the requirements...");
-    while (!iterationData.isDone)
-        RunASearchIteration();
+    while (!iterationData.isDone) RunASearchIteration();
 }
 
 void StopSearching()

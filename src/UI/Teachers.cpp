@@ -11,7 +11,7 @@
 #include <string>
 #include <unordered_map>
 
-int currentTeacherID = 0;
+int currentTeacherId = 0;
 bool newTeacher = false;
 bool allTeacherLessons = true;
 std::unordered_map<int, bool> teacherLessons;
@@ -50,29 +50,29 @@ static void ResetVariables()
     teacherLessons.clear();
     for (auto& lesson: currentTimetable.lessons)
         teacherLessons[lesson.first] = false;
-    for (size_t i = 0; i < tmpTmpTimetable.teachers[currentTeacherID].lessonIDs.size(); i++)
-        teacherLessons[tmpTmpTimetable.teachers[currentTeacherID].lessonIDs[i]] = true;
+    for (size_t i = 0; i < tmpTmpTimetable.teachers[currentTeacherId].lessonIds.size(); i++)
+        teacherLessons[tmpTmpTimetable.teachers[currentTeacherId].lessonIds[i]] = true;
     availableTeacherLessons.clear();
     for (size_t i = 0; i < daysPerWeek; i++)
     {
         for (size_t j = 0; j < lessonsPerDay; j++)
             availableTeacherLessons[i * lessonsPerDay + j] = 1;
     }
-    tmpTmpTimetable.teachers[currentTeacherID].workDays.resize(daysPerWeek);
+    tmpTmpTimetable.teachers[currentTeacherId].workDays.resize(daysPerWeek);
     for (size_t i = 0; i < daysPerWeek; i++)
     {
         for (size_t j = 0;
-             j < tmpTmpTimetable.teachers[currentTeacherID].workDays[i].lessonIDs.size(); j++)
+             j < tmpTmpTimetable.teachers[currentTeacherId].workDays[i].lessonIds.size(); j++)
         {
-            int lessonID = tmpTmpTimetable.teachers[currentTeacherID].workDays[i].lessonIDs[j];
-            if (lessonID == ANY_LESSON || lessonID == NO_LESSON)
-                availableTeacherLessons[i * lessonsPerDay + j] = lessonID + 3;
+            int lessonId = tmpTmpTimetable.teachers[currentTeacherId].workDays[i].lessonIds[j];
+            if (lessonId == ANY_LESSON || lessonId == NO_LESSON)
+                availableTeacherLessons[i * lessonsPerDay + j] = lessonId + 3;
             else
             {
                 int counter = 2;
                 for (auto& lesson: currentTimetable.lessons)
                 {
-                    if (lessonID == lesson.first)
+                    if (lessonId == lesson.first)
                     {
                         availableTeacherLessons[i * lessonsPerDay + j] = counter;
                         break;
@@ -84,12 +84,12 @@ static void ResetVariables()
     }
     if (newTeacher)
     {
-        tmpTmpTimetable.teachers[currentTeacherID].workDays.resize(daysPerWeek);
+        tmpTmpTimetable.teachers[currentTeacherId].workDays.resize(daysPerWeek);
         for (size_t i = 0; i < daysPerWeek; i++)
         {
-            tmpTmpTimetable.teachers[currentTeacherID].workDays[i].lessonIDs.resize(lessonsPerDay);
+            tmpTmpTimetable.teachers[currentTeacherId].workDays[i].lessonIds.resize(lessonsPerDay);
             for (size_t j = 0; j < lessonsPerDay; j++)
-                tmpTmpTimetable.teachers[currentTeacherID].workDays[i].lessonIDs.push_back(1);
+                tmpTmpTimetable.teachers[currentTeacherId].workDays[i].lessonIds.push_back(1);
         }
     }
 
@@ -105,7 +105,7 @@ void ShowEditTeacher(bool* isOpen)
         return;
     }
 
-    ImGui::InputText(gettext("name"), &tmpTmpTimetable.teachers[currentTeacherID].name);
+    ImGui::InputText(gettext("name"), &tmpTmpTimetable.teachers[currentTeacherId].name);
     ImGui::Separator();
     ImGui::Text("%s", gettext("lessons"));
 
@@ -116,8 +116,8 @@ void ShowEditTeacher(bool* isOpen)
                 .c_str(),
             &allTeacherLessons))
     {
-        LogInfo("Clicked allTeacherLessons in a teacher with ID " +
-                std::to_string(currentTeacherID));
+        LogInfo("Clicked allTeacherLessons in a teacher with Id " +
+                std::to_string(currentTeacherId));
         for (auto& lesson: currentTimetable.lessons)
             teacherLessons[lesson.first] = allTeacherLessons;
     }
@@ -133,34 +133,34 @@ void ShowEditTeacher(bool* isOpen)
 
     // Lesons
     ImGui::Columns(3);
-    int pushID = 0;
+    int pushId = 0;
     for (auto& lesson: currentTimetable.lessons)
     {
-        ImGui::PushID(pushID);
+        ImGui::PushID(pushId);
         if (ImGui::Checkbox(lesson.second.name.c_str(), &teacherLessons[lesson.first]))
         {
             ResetTeacherLessonValues();
         }
         ImGui::NextColumn();
         std::string classNames = "";
-        for (size_t j = 0; j < lesson.second.classIDs.size(); j++)
+        for (size_t j = 0; j < lesson.second.classIds.size(); j++)
         {
-            classNames += currentTimetable.classes[lesson.second.classIDs[j]].number;
-            classNames += currentTimetable.classes[lesson.second.classIDs[j]].letter;
-            if (j < lesson.second.classIDs.size() - 1) classNames += ' ';
+            classNames += currentTimetable.classes[lesson.second.classIds[j]].number;
+            classNames += currentTimetable.classes[lesson.second.classIds[j]].letter;
+            if (j < lesson.second.classIds.size() - 1) classNames += ' ';
         }
         ImGui::Text("%s", classNames.c_str());
         ImGui::NextColumn();
         std::string lessonClassrooms = "";
-        for (size_t j = 0; j < lesson.second.classroomIDs.size(); j++)
+        for (size_t j = 0; j < lesson.second.classroomIds.size(); j++)
         {
-            lessonClassrooms += currentTimetable.classrooms[lesson.second.classroomIDs[j]].name;
-            if (j < lesson.second.classroomIDs.size() - 1) lessonClassrooms += ' ';
+            lessonClassrooms += currentTimetable.classrooms[lesson.second.classroomIds[j]].name;
+            if (j < lesson.second.classroomIds.size() - 1) lessonClassrooms += ' ';
         }
         ImGui::Text("%s", lessonClassrooms.c_str());
         ImGui::NextColumn();
         ImGui::PopID();
-        pushID++;
+        pushId++;
     }
     ImGui::Columns(1);
     ImGui::Separator();
@@ -173,12 +173,12 @@ void ShowEditTeacher(bool* isOpen)
     allAvailableTeacherLessonsHorizontal.resize(lessonsPerDay, 1);
     for (size_t i = 0; i < lessonsPerDay; i++)
     {
-        ImGui::PushID(pushID);
+        ImGui::PushID(pushId);
         if (ImGui::Combo(std::to_string(i).c_str(), &allAvailableTeacherLessonsHorizontal[i],
                          teacherLessonValues.c_str()))
         {
-            LogInfo("Clicked allAvailableTeacherLessonsHorizontal in a teacher with ID " +
-                    std::to_string(currentTeacherID));
+            LogInfo("Clicked allAvailableTeacherLessonsHorizontal in a teacher with Id " +
+                    std::to_string(currentTeacherId));
             for (size_t j = 0; j < daysPerWeek; j++)
             {
                 availableTeacherLessons[j * lessonsPerDay + i] =
@@ -186,7 +186,7 @@ void ShowEditTeacher(bool* isOpen)
             }
         }
         ImGui::PopID();
-        pushID++;
+        pushId++;
     }
     ImGui::NextColumn();
     allAvailableTeacherLessonsVertical.resize(daysPerWeek, 1);
@@ -196,24 +196,24 @@ void ShowEditTeacher(bool* isOpen)
         while (weekDay >= 7)
             weekDay -= 7;
         ImGui::Text("%s", weekDays[weekDay].c_str());
-        ImGui::PushID(pushID);
+        ImGui::PushID(pushId);
         if (ImGui::Combo("", &allAvailableTeacherLessonsVertical[i], teacherLessonValues.c_str()))
         {
-            LogInfo("Clicked allAvailableTeacherLessonsVertical in a teacher with ID " +
-                    std::to_string(currentTeacherID));
+            LogInfo("Clicked allAvailableTeacherLessonsVertical in a teacher with Id " +
+                    std::to_string(currentTeacherId));
             for (size_t j = 0; j < lessonsPerDay; j++)
                 availableTeacherLessons[i * lessonsPerDay + j] =
                     allAvailableTeacherLessonsVertical[i];
         }
         ImGui::PopID();
-        pushID++;
+        pushId++;
         for (size_t j = 0; j < lessonsPerDay; j++)
         {
-            ImGui::PushID(pushID);
+            ImGui::PushID(pushId);
             ImGui::Combo("", &availableTeacherLessons[i * lessonsPerDay + j],
                          teacherLessonValues.c_str());
             ImGui::PopID();
-            pushID++;
+            pushId++;
         }
         ImGui::NextColumn();
     }
@@ -222,22 +222,22 @@ void ShowEditTeacher(bool* isOpen)
     // Ok and Cancel
     if (ImGui::Button(gettext("Ok")))
     {
-        LogInfo("Clicked Ok while editing a teacher with ID " + std::to_string(currentTeacherID));
-        tmpTmpTimetable.teachers[currentTeacherID].lessonIDs.clear();
+        LogInfo("Clicked Ok while editing a teacher with Id " + std::to_string(currentTeacherId));
+        tmpTmpTimetable.teachers[currentTeacherId].lessonIds.clear();
         for (auto& lesson: currentTimetable.lessons)
         {
             if (teacherLessons[lesson.first])
-                tmpTmpTimetable.teachers[currentTeacherID].lessonIDs.push_back(lesson.first);
+                tmpTmpTimetable.teachers[currentTeacherId].lessonIds.push_back(lesson.first);
         }
-        tmpTmpTimetable.teachers[currentTeacherID].workDays.resize(daysPerWeek);
+        tmpTmpTimetable.teachers[currentTeacherId].workDays.resize(daysPerWeek);
         for (size_t i = 0; i < daysPerWeek; i++)
         {
-            tmpTmpTimetable.teachers[currentTeacherID].workDays[i].lessonIDs.clear();
+            tmpTmpTimetable.teachers[currentTeacherId].workDays[i].lessonIds.clear();
             for (size_t j = 0; j < lessonsPerDay; j++)
             {
                 if (availableTeacherLessons[i * lessonsPerDay + j] == 0 ||
                     availableTeacherLessons[i * lessonsPerDay + j] == 1)
-                    tmpTmpTimetable.teachers[currentTeacherID].workDays[i].lessonIDs.push_back(
+                    tmpTmpTimetable.teachers[currentTeacherId].workDays[i].lessonIds.push_back(
                         availableTeacherLessons[i * lessonsPerDay + j] - 3);
                 else
                 {
@@ -246,9 +246,9 @@ void ShowEditTeacher(bool* isOpen)
                     {
                         if (availableTeacherLessons[i * lessonsPerDay + j] <= 0)
                         {
-                            tmpTmpTimetable.teachers[currentTeacherID]
+                            tmpTmpTimetable.teachers[currentTeacherId]
                                 .workDays[i]
-                                .lessonIDs.push_back(lesson.first);
+                                .lessonIds.push_back(lesson.first);
                             break;
                         }
                         availableTeacherLessons[i * lessonsPerDay + j]--;
@@ -257,7 +257,7 @@ void ShowEditTeacher(bool* isOpen)
             }
         }
         tmpTimetable.teachers = tmpTmpTimetable.teachers;
-        tmpTimetable.maxTeacherID = tmpTmpTimetable.maxTeacherID;
+        tmpTimetable.maxTeacherId = tmpTmpTimetable.maxTeacherId;
         *isOpen = false;
     }
     ImGui::SameLine();
@@ -284,11 +284,11 @@ void ShowTeachers(bool* isOpen)
     {
         newTeacher = true;
         tmpTmpTimetable.teachers = tmpTimetable.teachers;
-        tmpTmpTimetable.maxTeacherID = tmpTimetable.maxTeacherID;
-        tmpTmpTimetable.maxTeacherID++;
-        tmpTmpTimetable.teachers[tmpTmpTimetable.maxTeacherID] = Teacher();
-        currentTeacherID = tmpTmpTimetable.maxTeacherID;
-        LogInfo("Adding a new teacher with ID " + std::to_string(currentTeacherID));
+        tmpTmpTimetable.maxTeacherId = tmpTimetable.maxTeacherId;
+        tmpTmpTimetable.maxTeacherId++;
+        tmpTmpTimetable.teachers[tmpTmpTimetable.maxTeacherId] = Teacher();
+        currentTeacherId = tmpTmpTimetable.maxTeacherId;
+        LogInfo("Adding a new teacher with Id " + std::to_string(currentTeacherId));
         ResetVariables();
         isEditTeacher = true;
     }
@@ -300,7 +300,7 @@ void ShowTeachers(bool* isOpen)
         ImGui::PushID(it->first);
         if (ImGui::Button(gettext("-")))
         {
-            LogInfo("Removed a teacher with ID " + std::to_string(it->first));
+            LogInfo("Removed a teacher with Id " + std::to_string(it->first));
             ImGui::PopID();
             it = tmpTimetable.teachers.erase(it);
             continue;
@@ -311,9 +311,9 @@ void ShowTeachers(bool* isOpen)
         {
             newTeacher = false;
             tmpTmpTimetable.teachers = tmpTimetable.teachers;
-            tmpTmpTimetable.maxTeacherID = tmpTimetable.maxTeacherID;
-            currentTeacherID = it->first;
-            LogInfo("Editing a teacher with ID " + std::to_string(currentTeacherID));
+            tmpTmpTimetable.maxTeacherId = tmpTimetable.maxTeacherId;
+            currentTeacherId = it->first;
+            LogInfo("Editing a teacher with Id " + std::to_string(currentTeacherId));
             ResetVariables();
             isEditTeacher = true;
         }
@@ -323,11 +323,11 @@ void ShowTeachers(bool* isOpen)
         ImGui::NextColumn();
 
         std::string lessonNames = "";
-        for (size_t j = 0; j < tmpTimetable.teachers[it->first].lessonIDs.size(); j++)
+        for (size_t j = 0; j < tmpTimetable.teachers[it->first].lessonIds.size(); j++)
         {
             lessonNames +=
-                currentTimetable.lessons[tmpTimetable.teachers[it->first].lessonIDs[j]].name;
-            if (j < tmpTimetable.teachers[it->first].lessonIDs.size() - 1) lessonNames += ' ';
+                currentTimetable.lessons[tmpTimetable.teachers[it->first].lessonIds[j]].name;
+            if (j < tmpTimetable.teachers[it->first].lessonIds.size() - 1) lessonNames += ' ';
         }
         ImGui::Text("%s", lessonNames.c_str());
         ImGui::NextColumn();
@@ -342,7 +342,7 @@ void ShowTeachers(bool* isOpen)
     {
         LogInfo("Clicked Ok in the teachers menu");
         currentTimetable.teachers = tmpTimetable.teachers;
-        currentTimetable.maxTeacherID = tmpTimetable.maxTeacherID;
+        currentTimetable.maxTeacherId = tmpTimetable.maxTeacherId;
         *isOpen = false;
     }
     ImGui::SameLine();

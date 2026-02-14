@@ -9,7 +9,7 @@
 #include "Translations.hpp"
 #include "UI.hpp"
 #include "Updates.hpp"
-#include <algorithm>
+#include "Utils.hpp"
 #include <ctime>
 #include <filesystem>
 #include <fstream>
@@ -38,44 +38,6 @@ bool usePrereleases = false;
 std::string lastCAUpdate = "";
 
 std::string version = "";
-
-std::vector<std::string> Split(std::string input, char delimiter)
-{
-    std::vector<std::string> output;
-    output.push_back("");
-    int index = 0;
-    for (size_t i = 0; i < input.size(); i++)
-    {
-        if (input[i] == delimiter)
-        {
-            index++;
-            output.push_back("");
-            continue;
-        }
-        output[index] += input[i];
-    }
-    return output;
-}
-
-void ListFiles(const std::string& path, std::vector<std::string>* files)
-{
-    files->clear();
-    for (const auto& entry: std::filesystem::directory_iterator(path))
-    {
-        if (std::filesystem::is_regular_file(entry.path()))
-        {
-            files->push_back(entry.path().string());
-        }
-    }
-    std::sort(files->begin(), files->end());
-}
-
-std::string TrimJunk(const std::string& input)
-{
-    auto first = input.find_first_not_of("\t\n\r\f\v");
-    auto last = input.find_last_not_of("\t\n\r\f\v");
-    return (first == input.npos) ? "" : input.substr(first, last - first + 1);
-}
 
 void Save(std::string fileName)
 {

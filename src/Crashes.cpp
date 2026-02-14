@@ -4,15 +4,15 @@
 
 #include "Crashes.hpp"
 #include "Logging.hpp"
-#include "Settings.hpp"
 #include "System.hpp"
 #include "SystemInfo.hpp"
-#include "raylib.h"
+#include "Utils.hpp"
 #include <cmath>
 #include <filesystem>
 #include <fstream>
 #include <imgui.h>
 #include <iostream>
+#include <raylib.h>
 #include <string>
 #include <zip.h>
 
@@ -36,8 +36,7 @@ int ZipFile(zip_t* archive, std::string path)
     }
     std::string fileContents = "";
     std::string buf = "";
-    while (std::getline(fileStream, buf))
-        fileContents += buf + "\n";
+    while (std::getline(fileStream, buf)) fileContents += buf + "\n";
     char* buffer = new char[fileContents.size()];
     memcpy(buffer, fileContents.data(), fileContents.size());
 
@@ -66,8 +65,7 @@ int ZipFile(zip_t* archive, std::string path)
 
 void ZipLogs(zip_t* archive)
 {
-    std::vector<std::string> logFiles;
-    ListFiles("logs/", &logFiles);
+    auto logFiles = ListFiles("logs/");
     for (size_t i = 0; i < logFiles.size(); i++)
     {
         ZipFile(archive, logFiles[i]);
@@ -77,16 +75,14 @@ void ZipLogs(zip_t* archive)
 void ZipTimetables(zip_t* archive)
 {
     // Zip templates
-    std::vector<std::string> templateFiles;
-    ListFiles("templates/", &templateFiles);
+    auto templateFiles = ListFiles("templates/");
     for (size_t i = 0; i < templateFiles.size(); i++)
     {
         ZipFile(archive, templateFiles[i]);
     }
 
     // Zip timetables
-    std::vector<std::string> timetableFiles;
-    ListFiles("timetables/", &timetableFiles);
+    auto timetableFiles = ListFiles("timetables/");
     for (size_t i = 0; i < timetableFiles.size(); i++)
     {
         ZipFile(archive, timetableFiles[i]);

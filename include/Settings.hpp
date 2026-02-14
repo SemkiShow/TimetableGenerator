@@ -5,7 +5,6 @@
 #pragma once
 
 #include <string>
-#include <vector>
 
 enum class Style;
 
@@ -30,11 +29,6 @@ extern bool usePrereleases;
 extern std::string lastCAUpdate;
 
 extern std::string version;
-extern std::string styleValues;
 
-std::vector<std::string> Split(std::string input, char delimiter = ' ');
-void ListFiles(const std::string& path, std::vector<std::string>* files);
-std::string TrimJunk(const std::string& input);
-void ReloadLabels();
 void Save(std::string fileName);
 void Load(std::string fileName);

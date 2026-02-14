@@ -11,7 +11,7 @@
 #include <string>
 
 bool newClassroom = false;
-int currentClassroomID = 0;
+int currentClassroomId = 0;
 int classroomsStartNumber, classroomsEndNumber;
 
 bool isEditClassroom = false;
@@ -30,9 +30,9 @@ void ShowEditClassroom(bool* isOpen)
         try
         {
             bool isNameANumber = true;
-            for (size_t i = 0; i < tmpTmpTimetable.classrooms[currentClassroomID].name.size(); i++)
+            for (size_t i = 0; i < tmpTmpTimetable.classrooms[currentClassroomId].name.size(); i++)
             {
-                if (!std::isdigit(tmpTmpTimetable.classrooms[currentClassroomID].name[i]))
+                if (!std::isdigit(tmpTmpTimetable.classrooms[currentClassroomId].name[i]))
                 {
                     isNameANumber = false;
                     break;
@@ -43,9 +43,9 @@ void ShowEditClassroom(bool* isOpen)
                 if (ImGui::InputInt(gettext("start number"), &classroomsStartNumber))
                 {
                     LogInfo("Changed classroomsStartNumber to " +
-                            std::to_string(classroomsStartNumber) + " in classroom with ID " +
-                            std::to_string(currentClassroomID));
-                    tmpTmpTimetable.classrooms[currentClassroomID].name =
+                            std::to_string(classroomsStartNumber) + " in classroom with Id " +
+                            std::to_string(currentClassroomId));
+                    tmpTmpTimetable.classrooms[currentClassroomId].name =
                         std::to_string(classroomsStartNumber);
                 }
                 if (classroomsStartNumber < 0) classroomsStartNumber = 0;
@@ -61,15 +61,15 @@ void ShowEditClassroom(bool* isOpen)
         if (classroomsStartNumber == classroomsEndNumber)
         {
             if (ImGui::InputText(gettext("name"),
-                                 &tmpTmpTimetable.classrooms[currentClassroomID].name))
+                                 &tmpTmpTimetable.classrooms[currentClassroomId].name))
             {
                 LogInfo("Changed classroom name to " +
-                        tmpTmpTimetable.classrooms[currentClassroomID].name +
-                        " in classroom with ID " + std::to_string(currentClassroomID));
+                        tmpTmpTimetable.classrooms[currentClassroomId].name +
+                        " in classroom with Id " + std::to_string(currentClassroomId));
                 try
                 {
                     classroomsStartNumber = classroomsEndNumber =
-                        stoi(tmpTmpTimetable.classrooms[currentClassroomID].name);
+                        stoi(tmpTmpTimetable.classrooms[currentClassroomId].name);
                 }
                 catch (const std::exception&)
                 {
@@ -79,25 +79,25 @@ void ShowEditClassroom(bool* isOpen)
     }
     else
     {
-        ImGui::InputText(gettext("name"), &tmpTmpTimetable.classrooms[currentClassroomID].name);
+        ImGui::InputText(gettext("name"), &tmpTmpTimetable.classrooms[currentClassroomId].name);
     }
     ImGui::Separator();
 
     // Ok and Cancel
     if (ImGui::Button(gettext("Ok")))
     {
-        LogInfo("Pressed Ok while editing a classroom with ID " +
-                std::to_string(currentClassroomID));
+        LogInfo("Pressed Ok while editing a classroom with Id " +
+                std::to_string(currentClassroomId));
         if (newClassroom)
         {
             if (classroomsStartNumber != classroomsEndNumber)
             {
                 for (int i = classroomsStartNumber; i <= classroomsEndNumber; i++)
                 {
-                    tmpTmpTimetable.classrooms[tmpTmpTimetable.maxClassroomID] = Classroom();
-                    tmpTmpTimetable.classrooms[tmpTmpTimetable.maxClassroomID].name =
+                    tmpTmpTimetable.classrooms[tmpTmpTimetable.maxClassroomId] = Classroom();
+                    tmpTmpTimetable.classrooms[tmpTmpTimetable.maxClassroomId].name =
                         std::to_string(i);
-                    tmpTmpTimetable.maxClassroomID++;
+                    tmpTmpTimetable.maxClassroomId++;
                 }
             }
         }
@@ -122,19 +122,19 @@ void ShowClassrooms(bool* isOpen)
     {
         newClassroom = true;
         tmpTmpTimetable.classrooms = tmpTimetable.classrooms;
-        tmpTmpTimetable.maxClassroomID = tmpTimetable.maxClassroomID;
+        tmpTmpTimetable.maxClassroomId = tmpTimetable.maxClassroomId;
         try
         {
             classroomsStartNumber = classroomsEndNumber =
-                stoi(tmpTmpTimetable.classrooms[tmpTmpTimetable.maxClassroomID].name) + 1;
-            tmpTmpTimetable.classrooms[tmpTmpTimetable.maxClassroomID + 1].name =
-                std::to_string(stoi(tmpTimetable.classrooms[tmpTimetable.maxClassroomID].name) + 1);
+                stoi(tmpTmpTimetable.classrooms[tmpTmpTimetable.maxClassroomId].name) + 1;
+            tmpTmpTimetable.classrooms[tmpTmpTimetable.maxClassroomId + 1].name =
+                std::to_string(stoi(tmpTimetable.classrooms[tmpTimetable.maxClassroomId].name) + 1);
         }
         catch (const std::exception&)
         {
         }
-        currentClassroomID = tmpTmpTimetable.maxClassroomID + 1;
-        LogInfo("Adding a new classroom with ID " + std::to_string(currentClassroomID));
+        currentClassroomId = tmpTmpTimetable.maxClassroomId + 1;
+        LogInfo("Adding a new classroom with Id " + std::to_string(currentClassroomId));
         isEditClassroom = true;
     }
 
@@ -144,7 +144,7 @@ void ShowClassrooms(bool* isOpen)
 
         if (ImGui::Button(gettext("-")))
         {
-            LogInfo("Removed a classroom with ID " + std::to_string(it->first));
+            LogInfo("Removed a classroom with Id " + std::to_string(it->first));
             ImGui::PopID();
             it = tmpTimetable.classrooms.erase(it);
             continue;
@@ -154,8 +154,8 @@ void ShowClassrooms(bool* isOpen)
         if (ImGui::Button(gettext("Edit")))
         {
             newClassroom = false;
-            currentClassroomID = it->first;
-            LogInfo("Editing a classroom with ID " + std::to_string(currentClassroomID));
+            currentClassroomId = it->first;
+            LogInfo("Editing a classroom with Id " + std::to_string(currentClassroomId));
             isEditClassroom = true;
         }
         ImGui::SameLine();
@@ -171,7 +171,7 @@ void ShowClassrooms(bool* isOpen)
     {
         LogInfo("Pressed Ok in the classrooms menu");
         currentTimetable.classrooms = tmpTimetable.classrooms;
-        currentTimetable.maxClassroomID = tmpTimetable.maxClassroomID;
+        currentTimetable.maxClassroomId = tmpTimetable.maxClassroomId;
         *isOpen = false;
     }
     ImGui::SameLine();
