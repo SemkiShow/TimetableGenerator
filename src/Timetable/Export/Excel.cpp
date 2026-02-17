@@ -82,7 +82,7 @@ void Timetable::ExportClassesAsXlsx()
 
     for (auto& classPair: classes)
     {
-        LogInfo("Exporting class with Id " + std::to_string(classPair.first));
+        LogInfo("Exporting class with id " + std::to_string(classPair.first));
         // Find longest combined lesson
         int longestCombinedLesson = 1;
         for (auto& lesson: classPair.second.timetableLessons)
@@ -255,7 +255,7 @@ void Timetable::ExportTeachersAsXlsx()
 
     for (auto& teacher: teachers)
     {
-        LogInfo("Exporting teacher with Id " + std::to_string(teacher.first));
+        LogInfo("Exporting teacher with id " + std::to_string(teacher.first));
         lxw_worksheet* worksheet = workbook_add_worksheet(workbook, teacher.second.name.c_str());
 
         // Write teacher name
@@ -384,7 +384,7 @@ void Timetable::ExportClassroomsAsXlsx()
 
     for (auto& classroom: classrooms)
     {
-        LogInfo("Exporting classroom with Id " + std::to_string(classroom.first));
+        LogInfo("Exporting classroom with id " + std::to_string(classroom.first));
         lxw_worksheet* worksheet = workbook_add_worksheet(workbook, classroom.second.name.c_str());
 
         // Write classroom name

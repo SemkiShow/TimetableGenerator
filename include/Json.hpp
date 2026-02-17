@@ -98,12 +98,18 @@ class Json
 
     array_t& GetArray()
     {
+#ifndef JSON_STRICT_ERRORS
+        if (IsNull()) value = array_t{};
+#endif
         if (!IsArray()) throw std::runtime_error("JSONValue is not an array");
         return std::get<array_t>(value);
     }
 
     object_t& GetObject()
     {
+#ifndef JSON_STRICT_ERRORS
+        if (IsNull()) value = object_t{};
+#endif
         if (!IsObject()) throw std::runtime_error("JSONValue is not an object");
         return std::get<object_t>(value);
     }
@@ -123,21 +129,27 @@ class Json
     // Access
     void push_back(const Json& element)
     {
+#ifndef JSON_STRICT_ERRORS
         if (IsNull()) value = array_t{};
+#endif
         if (!IsArray()) throw std::runtime_error("Cannot push_back to non-array Json");
         GetArray().push_back(element);
     }
 
     void emplace_back(const Json& element)
     {
+#ifndef JSON_STRICT_ERRORS
         if (IsNull()) value = array_t{};
+#endif
         if (!IsArray()) throw std::runtime_error("Cannot emplace_back to non-array Json");
         GetArray().emplace_back(element);
     }
 
     Json& back()
     {
+#ifndef JSON_STRICT_ERRORS
         if (IsNull()) value = array_t{};
+#endif
         if (!IsArray()) throw std::runtime_error("Cannot push_back to non-array Json");
         return GetArray().back();
     }

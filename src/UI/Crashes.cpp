@@ -1,27 +1,20 @@
-// SPDX-FileCopyrightText: 2025 SemkiShow
+// SPDX-FileCopyrightText: 2026 SemkiShow
 //
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include "Crashes.hpp"
+#include "UI/Crashes.hpp"
 #include "Logging.hpp"
 #include "System.hpp"
 #include "SystemInfo.hpp"
+#include "Translations.hpp"
 #include "Utils.hpp"
 #include <cmath>
-#include <filesystem>
 #include <fstream>
 #include <imgui.h>
-#include <iostream>
 #include <raylib.h>
-#include <string>
 #include <zip.h>
 
-bool hasCrashed = false;
-
-bool sendLogs = true;
-bool sendTimetables = true;
-bool sendSettings = true;
-bool sendSystemInfo = true;
+std::shared_ptr<CrashesMenu> crashesMenu;
 
 int ZipFile(zip_t* archive, std::string path)
 {
@@ -145,7 +138,7 @@ int ZipSystemInfo(zip_t* archive)
     return 0;
 }
 
-int CreateCrashReport()
+int CrashesMenu::CreateCrashReport()
 {
     int error = 0;
 
@@ -178,20 +171,9 @@ int CreateCrashReport()
     return 0;
 }
 
-void OpenCrashReport()
+void CrashesMenu::Draw()
 {
-    sendLogs = true;
-    sendTimetables = true;
-    sendSettings = true;
-    sendSystemInfo = true;
-
-    isCrashReport = true;
-}
-
-bool isCrashReport = false;
-void ShowCrashReport(bool* isOpen)
-{
-    if (!ImGui::Begin(gettext("Crash report"), isOpen))
+    if (!ImGui::Begin(gettext("Crash report"), &visible))
     {
         ImGui::End();
         return;

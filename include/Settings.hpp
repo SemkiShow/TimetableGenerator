@@ -27,6 +27,7 @@ extern int additionalBonusPoints;
 extern bool verboseLogging;
 extern bool usePrereleases;
 extern std::string lastCAUpdate;
+extern bool hasCrashed;
 
 extern std::string version;
 

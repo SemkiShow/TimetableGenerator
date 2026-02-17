@@ -47,12 +47,12 @@ void MigrateV1(Json& json)
     }
 
     // Classes
-    for (auto& group: json["classes"].GetObject())
+    for (auto& classPair: json["classes"].GetObject())
     {
-        group.second["teacherId"] = group.second["teacherID"];
+        classPair.second["teacherId"] = classPair.second["teacherID"];
 
         // Lessons
-        for (auto& lesson: group.second["lessons"].GetObject())
+        for (auto& lesson: classPair.second["lessons"].GetObject())
         {
             for (auto& lessonTeacherPair: lesson.second["lessonTeacherPairs"].GetArray())
             {
@@ -62,7 +62,7 @@ void MigrateV1(Json& json)
         }
 
         // Days
-        for (auto& day: group.second["days"].GetArray())
+        for (auto& day: classPair.second["days"].GetArray())
         {
             for (auto& classroomLessonPair: day.GetArray())
             {
@@ -72,7 +72,7 @@ void MigrateV1(Json& json)
         }
 
         // Timetable lesson rules
-        for (auto& rule: group.second["timetableLessonRules"].GetArray())
+        for (auto& rule: classPair.second["timetableLessonRules"].GetArray())
         {
             rule["timetableLessonIds"] = rule["timetableLessonIDs"];
         }
@@ -199,41 +199,42 @@ TimetableLessonRule TimetableLessonRule::LoadJson(Json& json)
 
 Class Class::LoadJson(Json& json)
 {
-    Class group;
+    Class classPair;
 
-    group.number = json["number"].GetString();
-    group.letter = json["letter"].GetString();
-    group.teacherId = json["teacherId"].GetInt();
+    classPair.number = json["number"].GetString();
+    classPair.letter = json["letter"].GetString();
+    classPair.teacherId = json["teacherId"].GetInt();
 
     // Lessons
     for (auto& lesson: json["lessons"].GetObject())
     {
         int lessonId = stoi(lesson.first);
-        group.maxTimetableLessonId = std::max(group.maxTimetableLessonId, lessonId);
-        group.timetableLessons[lessonId] = TimetableLesson::LoadJson(lesson.second);
+        classPair.maxTimetableLessonId = std::max(classPair.maxTimetableLessonId, lessonId);
+        classPair.timetableLessons[lessonId] = TimetableLesson::LoadJson(lesson.second);
     }
 
     // Days
     for (auto& day: json["days"].GetArray())
     {
-        group.days.emplace_back(Day::LoadJson(day));
+        classPair.days.emplace_back(Day::LoadJson(day));
     }
     for (size_t i = 0; i < json["lessonNumbers"].size(); i++)
     {
-        while (i >= group.days.size()) group.days.emplace_back();
+        while (i >= classPair.days.size()) classPair.days.emplace_back();
         for (size_t j = 0; j < json["lessonNumbers"][i].size(); j++)
         {
-            group.days[i].lessons.push_back(json["lessonNumbers"][i][j].GetBool());
+            classPair.days[i].lessons.push_back(json["lessonNumbers"][i][j].GetBool());
         }
     }
 
     // Timetable lesson rules
     for (auto& timetableLessonRule: json["timetableLessonRules"].GetArray())
     {
-        group.timetableLessonRules.push_back(TimetableLessonRule::LoadJson(timetableLessonRule));
+        classPair.timetableLessonRules.push_back(
+            TimetableLessonRule::LoadJson(timetableLessonRule));
     }
 
-    return group;
+    return classPair;
 }
 
 void Timetable::Load(const std::filesystem::path& path)
@@ -324,6 +325,4 @@ void Timetable::Load(const std::filesystem::path& path)
             ++it;
         }
     }
-
-    if (this == &currentTimetable) tmpTmpTimetable = tmpTimetable = currentTimetable;
 }

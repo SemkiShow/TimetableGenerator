@@ -93,6 +93,7 @@ Json TimetableLesson::ToJson()
 Json ClassroomLessonPair::ToJson()
 {
     Json json;
+    json.format = JsonFormat::Inline;
 
     json["timetableLessonId"] = timetableLessonId;
     json["classroomIds"].format = JsonFormat::Inline;

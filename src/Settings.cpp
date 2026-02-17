@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include "Settings.hpp"
-#include "Crashes.hpp"
 #include "Logging.hpp"
 #include "Timetable.hpp"
 #include "Translations.hpp"
@@ -22,7 +21,7 @@ unsigned int lessonsPerDay = 8;
 Style style = Style::Dark;
 std::string language = "en";
 bool vsync = true;
-bool mergedFont = false;
+bool mergedFont = true;
 int timetableAutosaveInterval = 60;
 int fontSize = DEFAULT_FONT_SIZE;
 int minFreePeriods = 0;
@@ -36,6 +35,7 @@ int additionalBonusPoints = 1;
 bool verboseLogging = false;
 bool usePrereleases = false;
 std::string lastCAUpdate = "";
+bool hasCrashed = false;
 
 std::string version = "";
 
@@ -128,22 +128,13 @@ void Load(std::string fileName)
     ReloadLabels();
 
     // Update the CA certificate, if necessary (done monthly)
-    if (lastCAUpdate == "")
+    struct tm parsedTm;
+    std::istringstream ss(lastCAUpdate);
+    ss >> std::get_time(&parsedTm, "%a %b %d %H:%M:%S %Y");
+    time_t reconstructedTime = mktime(&parsedTm);
+    if (reconstructedTime < 0 || difftime(time(0), reconstructedTime) > 60 * 60 * 24 * 30)
     {
-        time_t now = time(0);
-        lastCAUpdate = asctime(localtime(&now));
         UpdateCACertificate();
-    }
-    else
-    {
-        struct tm parsedTm;
-        std::istringstream ss(lastCAUpdate);
-        ss >> std::get_time(&parsedTm, "%a %b %d %H:%M:%S %Y");
-        time_t reconstructedTime = mktime(&parsedTm);
-        if (difftime(time(0), reconstructedTime) > 60 * 60 * 24 * 30)
-        {
-            UpdateCACertificate();
-        }
     }
 
     // Read the version

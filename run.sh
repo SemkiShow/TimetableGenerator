@@ -46,7 +46,7 @@ fi
 
 # Help info
 if [ "$1" == "--help" ]; then
-    echo "Usage: ./run.sh [OPTION]..."
+    echo "Usage: $0 [OPTION]..."
     echo "Compile and run $executable_name"
     echo ""
     echo "With no OPTION, compile and run the release build"

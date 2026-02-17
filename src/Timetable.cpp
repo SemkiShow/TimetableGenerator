@@ -5,5 +5,3 @@
 #include "Timetable.hpp"
 
 Timetable currentTimetable;
-Timetable tmpTimetable;
-Timetable tmpTmpTimetable;

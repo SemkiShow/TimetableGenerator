@@ -6,7 +6,7 @@
 #include "Logging.hpp"
 #include "Settings.hpp"
 #include "UI.hpp"
-#include <libintl.h>
+#include "UI/Settings.hpp"
 
 std::vector<std::string> availableLanguages;
 std::string languageValues;
@@ -22,6 +22,7 @@ void SetLanguage(const std::string& domain, const std::filesystem::path& localeP
 #else
     setenv("LANGUAGE", language.c_str(), 1);
 #endif
+    closeAllLoadedMessageCatalogs();
     bindtextdomain(domain.c_str(), localePath.string().c_str());
     textdomain(domain.c_str());
 }
@@ -52,6 +53,7 @@ void ReloadLabels()
 {
     // Read the language file
     LogInfo("Reloading labels");
+    LogInfo("Current language: " + language);
     SetLanguage("TimetableGenerator", "resources/locales", language);
 
     // Assign translated week days
@@ -64,12 +66,5 @@ void ReloadLabels()
     weekDays[6] = GetText("Sunday");
 
     // Assign translated style values
-    styleValues = "";
-    styleValues += GetText("dark");
-    styleValues += '\0';
-    styleValues += GetText("light");
-    styleValues += '\0';
-    styleValues += GetText("classic");
-    styleValues += '\0';
-    styleValues += '\0';
+    settingsMenu->ReloadLabels();
 }

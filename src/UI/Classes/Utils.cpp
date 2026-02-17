@@ -2,59 +2,14 @@
 //
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include "Utils.hpp"
+#include "UI/Classes/Utils.hpp"
 #include "Timetable.hpp"
 #include "Translations.hpp"
-#include "UI/Classes.hpp"
+#include "Utils.hpp"
 #include <algorithm>
 #include <vector>
 
-void ResetClassTeacherValues()
-{
-    classTeacherValues = GetText("none");
-    classTeacherValues += '\0';
-    classTeacherIds.clear();
-    classTeacherIds.push_back(-1);
-    for (auto& teacher: currentTimetable.teachers)
-    {
-        bool isTeacherTaken = false;
-        for (auto& classPair: tmpTmpTimetable.classes)
-        {
-            if (classPair.second.teacherId == teacher.first && classPair.first != currentClassId)
-            {
-                isTeacherTaken = true;
-                break;
-            }
-        }
-
-        if (!isTeacherTaken)
-        {
-            if (teacher.second.name == "")
-            {
-                classTeacherValues += GetText("error");
-            }
-            else
-            {
-                classTeacherValues += teacher.second.name;
-            }
-            classTeacherIds.push_back(teacher.first);
-            classTeacherValues += '\0';
-        }
-    }
-    classTeacherValues += '\0';
-
-    classTeacherIndex = 0;
-    for (size_t i = 0; i < classTeacherIds.size(); i++)
-    {
-        if (tmpTmpTimetable.classes[currentClassId].teacherId == classTeacherIds[i])
-        {
-            classTeacherIndex = i;
-            break;
-        }
-    }
-}
-
-bool CompareTimetableLessons(const TimetableLesson lesson1, const TimetableLesson lesson2)
+bool operator==(const TimetableLesson& lesson1, const TimetableLesson& lesson2)
 {
     bool areSame = lesson1.lessonTeacherPairs.size() == lesson2.lessonTeacherPairs.size();
     if (!areSame) return false;
@@ -84,7 +39,7 @@ void FetchClassLessonsFromSimularClasses(Timetable& timetable, int classId)
             bool foundMatchingLesson = false;
             for (auto& lesson2: timetable.classes[classId].timetableLessons)
             {
-                if (CompareTimetableLessons(lesson1.second, lesson2.second))
+                if (lesson1.second == lesson2.second)
                 {
                     foundMatchingLesson = true;
                     break;
@@ -102,9 +57,9 @@ void FetchClassLessonsFromSimularClasses(Timetable& timetable, int classId)
                 {
                     bool foundMatchingClassId = false;
                     int lessonId = lesson1.second.lessonTeacherPairs[i].lessonId;
-                    for (size_t j = 0; j < tmpTmpLessons[lessonId].classIds.size(); j++)
+                    for (size_t j = 0; j < timetable.lessons[lessonId].classIds.size(); j++)
                     {
-                        if (tmpTmpLessons[lessonId].classIds[j] == classId)
+                        if (timetable.lessons[lessonId].classIds[j] == classId)
                         {
                             foundMatchingClassId = true;
                             break;
@@ -112,7 +67,7 @@ void FetchClassLessonsFromSimularClasses(Timetable& timetable, int classId)
                     }
                     if (!foundMatchingClassId)
                     {
-                        tmpTmpLessons[lessonId].classIds.push_back(classId);
+                        timetable.lessons[lessonId].classIds.push_back(classId);
                     }
                 }
             }
@@ -120,15 +75,15 @@ void FetchClassLessonsFromSimularClasses(Timetable& timetable, int classId)
     }
 }
 
-void ChangeClassesAmount(Timetable& timetable, const std::string& classNumber,
-                         const int classesAmount)
+void ChangeClassesAmount(Timetable& timetable, const std::string& classNumber, int classesAmount)
 {
+    // Remove extra classes
     int classCounter = 0;
     for (auto it = timetable.classes.begin(); it != timetable.classes.end();)
     {
         if (it->second.number == classNumber)
         {
-            if (classCounter >= classesAmount && !newClass)
+            if (classCounter >= classesAmount)
             {
                 timetable.orderedClasses.erase(find(timetable.orderedClasses.begin(),
                                                     timetable.orderedClasses.end(), it->first));
@@ -139,6 +94,8 @@ void ChangeClassesAmount(Timetable& timetable, const std::string& classNumber,
         }
         ++it;
     }
+
+    // Find the last id
     int lastOrderedClassesId = -1;
     for (size_t i = 0; i < timetable.orderedClasses.size(); i++)
     {
@@ -147,6 +104,8 @@ void ChangeClassesAmount(Timetable& timetable, const std::string& classNumber,
             lastOrderedClassesId = i;
         }
     }
+
+    // Add missing classes
     for (int i = 0; i < classesAmount - classCounter; i++)
     {
         timetable.maxClassId++;
@@ -154,7 +113,7 @@ void ChangeClassesAmount(Timetable& timetable, const std::string& classNumber,
             timetable.orderedClasses.begin() + lastOrderedClassesId + i + 1, timetable.maxClassId);
         timetable.classes[timetable.maxClassId] = Class();
         timetable.classes[timetable.maxClassId].number = classNumber;
-        FetchClassLessonsFromSimularClasses(tmpTmpTimetable, timetable.maxClassId);
+        FetchClassLessonsFromSimularClasses(timetable, timetable.maxClassId);
     }
 }
 
@@ -185,10 +144,10 @@ int GetClassesAmount(Timetable& timetable, const std::string& classNumber)
     return output;
 }
 
-void ShiftClass(Timetable& timetable, const int direction,
-                const std::vector<std::string> classNumbers, const size_t i)
+void ShiftClass(Timetable& timetable, int direction, const std::vector<std::string>& classNumbers,
+                int i)
 {
-    if ((int)i + direction < 0 || i + direction >= classNumbers.size()) return;
+    if (i + direction < 0 || i + direction >= (int)classNumbers.size()) return;
 
     // Save class teachers
     std::vector<int> classTeachers;
@@ -243,9 +202,9 @@ void FixClassTeachers(Timetable& timetable)
              j < currentTimetable.teachers[classPair.second.teacherId].lessonIds.size(); j++)
         {
             int& lessonId = currentTimetable.teachers[classPair.second.teacherId].lessonIds[j];
-            for (size_t k = 0; k < tmpLessons[lessonId].classIds.size(); k++)
+            for (size_t k = 0; k < timetable.lessons[lessonId].classIds.size(); k++)
             {
-                if (classPair.first != tmpLessons[lessonId].classIds[k]) continue;
+                if (classPair.first != timetable.lessons[lessonId].classIds[k]) continue;
                 foundClass = true;
                 break;
             }
@@ -261,9 +220,9 @@ void FixClassTeachers(Timetable& timetable)
         for (size_t j = 0; j < currentTimetable.teachers[freeTeachers[i]].lessonIds.size(); j++)
         {
             int& lessonId = currentTimetable.teachers[freeTeachers[i]].lessonIds[j];
-            for (size_t k = 0; k < tmpLessons[lessonId].classIds.size(); k++)
+            for (size_t k = 0; k < timetable.lessons[lessonId].classIds.size(); k++)
             {
-                Class& classPair = timetable.classes[tmpLessons[lessonId].classIds[k]];
+                Class& classPair = timetable.classes[timetable.lessons[lessonId].classIds[k]];
                 if (classPair.teacherId != -1) continue;
                 classPair.teacherId = freeTeachers[i];
                 foundClass = true;
@@ -317,46 +276,46 @@ void ShiftClasses(Timetable& timetable, const int direction)
     FixClassTeachers(timetable);
 }
 
-void LoadTimetableLessonsFromSelection()
+void LoadTimetableLessonsFromSelection(Timetable& timetable, int classId,
+                                       std::unordered_map<std::string, bool>& lessons,
+                                       std::unordered_map<std::string, int>& lessonAmounts,
+                                       std::unordered_map<std::string, bool>& lessonTeachers)
 {
-    for (auto it = tmpTmpTimetable.classes[currentClassId].timetableLessons.begin();
-         it != tmpTmpTimetable.classes[currentClassId].timetableLessons.end();)
+    for (auto it = timetable.classes[classId].timetableLessons.begin();
+         it != timetable.classes[classId].timetableLessons.end();)
     {
         if (it->second.lessonTeacherPairs.size() <= 1)
         {
-            it = tmpTmpTimetable.classes[currentClassId].timetableLessons.erase(it);
+            it = timetable.classes[classId].timetableLessons.erase(it);
             continue;
         }
         ++it;
     }
     int timetableLessonCounter = 0;
     std::map<int, TimetableLesson> timetableLessons;
-    for (auto lesson: tmpTmpTimetable.classes[currentClassId].timetableLessons)
+    for (auto lesson: timetable.classes[classId].timetableLessons)
     {
         timetableLessons[timetableLessonCounter++] = lesson.second;
     }
-    tmpTmpTimetable.classes[currentClassId].timetableLessons = timetableLessons;
-    tmpTmpTimetable.classes[currentClassId].maxTimetableLessonId = timetableLessonCounter - 1;
-    for (auto& lesson: tmpLessons)
+    timetable.classes[classId].timetableLessons = timetableLessons;
+    timetable.classes[classId].maxTimetableLessonId = timetableLessonCounter - 1;
+    for (auto& lesson: timetable.lessons)
     {
-        if (!classLessons[std::to_string(lesson.first) + "0"]) continue;
+        if (!lessons[std::to_string(lesson.first) + "0"]) continue;
         for (auto& teacher: currentTimetable.teachers)
         {
-            if (!classLessonTeachers[std::to_string(lesson.first) + teacher.second.name + "0"])
-                continue;
-            if (!classLessonTeachers[std::to_string(lesson.first) + teacher.second.name + "1"])
-                continue;
-            if (classLessonAmounts[std::to_string(lesson.first) + teacher.second.name] == 0)
-                continue;
-            tmpTmpTimetable.classes[currentClassId].maxTimetableLessonId++;
-            tmpTmpTimetable.classes[currentClassId]
-                .timetableLessons[tmpTmpTimetable.classes[currentClassId].maxTimetableLessonId] =
+            if (!lessonTeachers[std::to_string(lesson.first) + teacher.second.name + "0"]) continue;
+            if (!lessonTeachers[std::to_string(lesson.first) + teacher.second.name + "1"]) continue;
+            if (lessonAmounts[std::to_string(lesson.first) + teacher.second.name] == 0) continue;
+            timetable.classes[classId].maxTimetableLessonId++;
+            timetable.classes[classId]
+                .timetableLessons[timetable.classes[classId].maxTimetableLessonId] =
                 TimetableLesson();
             TimetableLesson& timetableLesson =
-                tmpTmpTimetable.classes[currentClassId]
-                    .timetableLessons[tmpTmpTimetable.classes[currentClassId].maxTimetableLessonId];
+                timetable.classes[classId]
+                    .timetableLessons[timetable.classes[classId].maxTimetableLessonId];
             timetableLesson.amount =
-                classLessonAmounts[std::to_string(lesson.first) + teacher.second.name];
+                lessonAmounts[std::to_string(lesson.first) + teacher.second.name];
             timetableLesson.lessonTeacherPairs.push_back(LessonTeacherPair());
             timetableLesson.lessonTeacherPairs[0].lessonId = lesson.first;
             timetableLesson.lessonTeacherPairs[0].teacherId = teacher.first;

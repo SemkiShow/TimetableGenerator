@@ -7,7 +7,7 @@
 #include "Settings.hpp"
 #include "Timetable.hpp"
 #include "Translations.hpp"
-#include "UI.hpp"
+#include "UI/Timetable/Generate.hpp"
 #include <algorithm>
 #include <iostream>
 #include <random>
@@ -371,8 +371,8 @@ void GetBestSpecies(Timetable* timetables, Timetable* population, Timetable* new
         }
     }
 
-    std::cout << "Selected " << iterationData.timetablesPerGeneration - counter << "/"
-              << iterationData.timetablesPerGeneration << " random timetables. ";
+    LogInfo("Selected " + std::to_string(iterationData.timetablesPerGeneration - counter) + "/" +
+            std::to_string(iterationData.timetablesPerGeneration) + " random timetables");
 }
 
 int GetBestTimetableIndex(const Timetable* timetables)
@@ -429,7 +429,7 @@ void RunASearchIteration()
             iterationData.startBonusPoints =
                 iterationData.timetables[iterationData.bestTimetableIndex].bonusPoints;
         }
-        generateTimetableStatus = GetText("Finding additional bonus points...");
+        generateTimetableMenu->SetStatus(GetText("Finding additional bonus points..."));
     }
 
     // Exit if there are the additional bonus points counter is over the limit or the iteratiuon
@@ -441,7 +441,7 @@ void RunASearchIteration()
     {
         iterationData.isDone = true;
         iterationData.threadLock = false;
-        generateTimetableStatus = GetText("Timetable generating done!");
+        generateTimetableMenu->SetStatus(GetText("Timetable generating done!"));
         return;
     }
 
@@ -531,9 +531,9 @@ void BeginSearching(const Timetable& timetable)
     // Open the Generate timetable window
     iterationData = IterationData();
     iterationData.isDone = false;
-    generateTimetableStatus = GetText("Allocating memory for the timetables...");
-    isGenerateTimetable = true;
-    wasGenerateTimetable = true;
+    generateTimetableMenu->SetStatus(GetText("Allocating memory for the timetables..."));
+    generateTimetableMenu->Open();
+    // wasGenerateTimetable = true;
     iterationData.iteration = -1;
     iterationData.threadLock = true;
 
@@ -575,7 +575,7 @@ void BeginSearching(const Timetable& timetable)
         LogInfo("The timetable has no classes!");
         iterationData.isDone = true;
         iterationData.threadLock = false;
-        generateTimetableStatus = GetText("Timetable generating done!");
+        generateTimetableMenu->SetStatus(GetText("Timetable generating done!"));
         return;
     }
 
@@ -593,7 +593,8 @@ void BeginSearching(const Timetable& timetable)
     iterationData.threadLock = false;
 
     // Run the iterations
-    generateTimetableStatus = GetText("Generating a timetable that matches the requirements...");
+    generateTimetableMenu->SetStatus(
+        GetText("Generating a timetable that matches the requirements..."));
     while (!iterationData.isDone) RunASearchIteration();
 }
 

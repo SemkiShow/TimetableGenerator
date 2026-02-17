@@ -143,25 +143,25 @@ TimetableLessonRule TimetableLessonRule::GetRandom()
 
 Class Class::GetRandom(Timetable& timetable, int classId)
 {
-    Class group;
+    Class classPair;
 
-    group.number = rand() % classesCount;
-    group.letter = 'a' + rand() % 26;
-    group.teacherId = rand() % teachersCount;
+    classPair.number = rand() % classesCount;
+    classPair.letter = 'a' + rand() % 26;
+    classPair.teacherId = rand() % teachersCount;
 
     // Lessons
     for (size_t i = 0; i < timetableLessonsCount; i++)
     {
-        group.timetableLessons[i] = TimetableLesson::GetRandom();
+        classPair.timetableLessons[i] = TimetableLesson::GetRandom();
     }
 
     // Days
     for (size_t i = 0; i < daysPerWeek; i++)
     {
-        group.days.emplace_back(Day::GetRandom(timetable, classId));
+        classPair.days.emplace_back(Day::GetRandom(timetable, classId));
     }
 
-    return group;
+    return classPair;
 }
 
 Timetable Timetable::GetRandom()

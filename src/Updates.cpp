@@ -7,7 +7,7 @@
 #include "Logging.hpp"
 #include "Settings.hpp"
 #include "Translations.hpp"
-#include "UI.hpp"
+#include "UI/NewVersion.hpp"
 #include <cstring>
 #include <curl/curl.h>
 #include <filesystem>
@@ -110,7 +110,7 @@ void GetLatestVersionName()
                 {
                     releaseNotes = MultiSplit(jsonObject[releaseID]["body"].GetString(), "\\n");
                 }
-                if (latestVersion != version) isNewVersion = true;
+                if (latestVersion != version) newVersionMenu->Open();
                 LogInfo("Fetched the newest version name: " + latestVersion);
             }
             else
@@ -135,7 +135,7 @@ void CheckForUpdates(bool showWindow)
     latestVersion = GetText("loading...");
     releaseNotes.clear();
     releaseNotes.push_back(GetText("loading..."));
-    if (showWindow) isNewVersion = true;
+    if (showWindow) newVersionMenu->Open();
     std::thread networkThread(GetLatestVersionName);
     networkThread.detach();
 }
@@ -225,7 +225,7 @@ size_t WriteFileCallback(void* ptr, size_t size, size_t nmemb, void* stream)
 
 int DownloadFile(const std::string& url, const std::string& outputPath)
 {
-    LogInfo("Downloading the latest release");
+    LogInfo("Downloading the file " + url);
     FILE* file = fopen(outputPath.c_str(), "wb");
     if (!file) return 1;
 
@@ -385,9 +385,17 @@ void UpdateToLatestVersion()
 void UpdateCACertificate()
 {
     if (!std::filesystem::exists("tmp")) std::filesystem::create_directory("tmp");
-    DownloadFile("https://curl.se/ca/cacert.pem", "tmp/cacert.pem");
+    if (DownloadFile("https://curl.se/ca/cacert.pem", "tmp/cacert.pem") != 0)
+    {
+        LogError("Failed to update the CA certificate!");
+        return;
+    }
     std::filesystem::copy_file("tmp/cacert.pem", "resources/cacert.pem",
                                std::filesystem::copy_options::overwrite_existing);
     std::filesystem::remove("tmp/cacert.pem");
+
+    // Update lastCAUpdate
+    time_t now = time(0);
+    lastCAUpdate = asctime(localtime(&now));
     LogInfo("Updated the CA certificate");
 }

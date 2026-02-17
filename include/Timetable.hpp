@@ -152,5 +152,3 @@ class Timetable
 };
 
 extern Timetable currentTimetable;
-extern Timetable tmpTimetable;
-extern Timetable tmpTmpTimetable;

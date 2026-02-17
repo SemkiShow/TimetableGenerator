@@ -2,12 +2,12 @@
 //
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include "Crashes.hpp"
 #include "Logging.hpp"
 #include "Settings.hpp"
 // #include "Timetable.hpp"
 #include "Translations.hpp"
 #include "UI.hpp"
+#include "UI/Crashes.hpp"
 #include "Updates.hpp"
 #include <ctime>
 #include <imgui.h>
@@ -29,8 +29,9 @@ int main()
     // SaveTimetable("timetables/load.json", &timetableLoad);
 
     // Load settings
+    InitUI();
     Load("settings.txt");
-    if (hasCrashed) OpenCrashReport();
+    if (hasCrashed) crashesMenu->Open();
     hasCrashed = true;
     Save("settings.txt");
     CheckForUpdates(false);
@@ -43,10 +44,11 @@ int main()
     SetConfigFlags(flags);
 
     // Init raylib
-    InitWindow(windowSize[0], windowSize[1],
+    InitWindow(windowSize.x, windowSize.y,
                (GetText("Timetable Generator") + " " + version).c_str());
     SetExitKey(-1);
-    LoadFAQScreenshots();
+
+    LoadResources();
 
     // Init imgui
     rlImGuiSetup(true);
@@ -67,6 +69,7 @@ int main()
     Save("settings.txt");
     EndLogging();
     rlImGuiShutdown();
+    FreeResources();
     CloseWindow();
 
     return 0;
