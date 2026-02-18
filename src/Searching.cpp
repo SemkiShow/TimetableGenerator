@@ -14,9 +14,10 @@
 #include <string>
 #include <thread>
 
-static thread_local std::mt19937 rng(std::random_device{}());
-unsigned int threadsNumber = std::max(std::thread::hardware_concurrency(), (unsigned int)1);
-IterationData iterationData = IterationData();
+std::random_device dev;
+static thread_local std::mt19937 rng(dev());
+unsigned int threadsNumber = std::max(1u, std::thread::hardware_concurrency());
+IterationData iterationData;
 
 int GetLessonsAmount(const std::map<int, TimetableLesson> timetableLessons)
 {
@@ -447,6 +448,8 @@ void RunASearchIteration()
 
     // Init the threads
     std::thread* threads = new std::thread[threadsNumber];
+
+    iterationData.iteration++;
 
     // Output debug info
     if (iterationData.iteration % 10 == 0)
