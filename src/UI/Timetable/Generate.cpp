@@ -61,7 +61,7 @@ void GenerateTimetableMenu::Draw()
         else if (status == gettext("Finding additional bonus points..."))
         {
             progressPercentage = (iterationData.maxBonusPoints - iterationData.startBonusPoints) *
-                                 1.0f / additionalBonusPoints;
+                                 1.0f / settings.additionalBonusPoints;
         }
         ImGui::ProgressBar(pow(progressPercentage, 2));
         ImGui::PlotLines(gettext("errors"), iterationData.errorValues,

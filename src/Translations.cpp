@@ -43,7 +43,7 @@ void GetAllLanguages()
     {
         languageValues += availableLanguages[i];
         languageValues += '\0';
-        if (std::string(availableLanguages[i]) == language) languageId = i;
+        if (std::string(availableLanguages[i]) == settings.language) languageId = i;
     }
     languageValues += '\0';
     if (languageId == -1) languageId = 0;
@@ -53,8 +53,8 @@ void ReloadLabels()
 {
     // Read the language file
     LogInfo("Reloading labels");
-    LogInfo("Current language: " + language);
-    SetLanguage("TimetableGenerator", "resources/locales", language);
+    LogInfo("Current language: " + settings.language);
+    SetLanguage("TimetableGenerator", "resources/locales", settings.language);
 
     // Assign translated week days
     weekDays[0] = GetText("Monday");

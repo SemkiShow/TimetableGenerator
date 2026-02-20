@@ -6,45 +6,24 @@
 #include "Logging.hpp"
 #include "Timetable.hpp"
 #include "Translations.hpp"
-#include "UI.hpp"
 #include "Updates.hpp"
 #include "Utils.hpp"
 #include <ctime>
-#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
 
-unsigned int daysPerWeek = 5;
-unsigned int lessonsPerDay = 8;
-Style style = Style::Dark;
-std::string language = "en";
-bool vsync = true;
-bool mergedFont = true;
-int timetableAutosaveInterval = 60;
-int fontSize = DEFAULT_FONT_SIZE;
-int minFreePeriods = 0;
-int maxFreePeriods = 0;
-float errorBonusRatio = 10.0f;
-int timetablesPerGenerationStep = 10;
-int minTimetablesPerGeneration = 100;
-int maxTimetablesPerGeneration = 5000;
-int maxIterations = -1;
-int additionalBonusPoints = 1;
-bool verboseLogging = false;
-bool usePrereleases = false;
-std::string lastCAUpdate = "";
-bool hasCrashed = false;
+Settings settings;
 
 std::string version = "";
 
-void Save(std::string fileName)
+void Settings::Save()
 {
     // Read the file
     LogInfo("Saving settings");
     std::fstream settingsFile;
-    settingsFile.open(fileName, std::ios::out);
+    settingsFile.open("settings.txt", std::ios::out);
     settingsFile << "last-timetable=" << currentTimetable.name << '\n';
     settingsFile << "days-per-week=" << daysPerWeek << '\n';
     settingsFile << "lessons-per-day=" << lessonsPerDay << '\n';
@@ -72,12 +51,12 @@ void Save(std::string fileName)
     currentTimetable.Save("templates/" + currentTimetable.name + ".json");
 }
 
-void Load(std::string fileName)
+void Settings::Load()
 {
     // Read the file
     LogInfo("Loading settings");
     std::fstream settingsFile;
-    settingsFile.open(fileName, std::ios::in);
+    settingsFile.open("settings.txt", std::ios::in);
     std::string buf, label, value;
     while (std::getline(settingsFile, buf))
     {

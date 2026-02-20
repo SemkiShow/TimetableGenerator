@@ -30,15 +30,15 @@ int main()
 
     // Load settings
     InitUI();
-    Load("settings.txt");
-    if (hasCrashed) crashesMenu->Open();
-    hasCrashed = true;
-    Save("settings.txt");
+    settings.Load();
+    if (settings.hasCrashed) crashesMenu->Open();
+    settings.hasCrashed = true;
+    settings.Save();
     CheckForUpdates(false);
 
     // Set raylib config flags
     int flags = 0;
-    if (vsync) flags |= FLAG_VSYNC_HINT;
+    if (settings.vsync) flags |= FLAG_VSYNC_HINT;
     flags |= FLAG_WINDOW_HIGHDPI;
     flags |= FLAG_WINDOW_RESIZABLE;
     SetConfigFlags(flags);
@@ -65,8 +65,8 @@ int main()
     }
 
     // Save settings and close the program
-    hasCrashed = false;
-    Save("settings.txt");
+    settings.hasCrashed = false;
+    settings.Save();
     EndLogging();
     rlImGuiShutdown();
     FreeResources();

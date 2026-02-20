@@ -126,7 +126,7 @@ void GetTeacherCollisionErrors(Timetable& timetable)
                     else
                     {
                         timetable.errors++;
-                        if (verboseLogging)
+                        if (settings.verboseLogging)
                         {
                             std::cout << "Teacher collision error. ";
                         }
@@ -169,7 +169,7 @@ void GetClassroomCollisionErrors(Timetable& timetable)
                     else
                     {
                         timetable.errors++;
-                        if (verboseLogging)
+                        if (settings.verboseLogging)
                         {
                             std::cout << "Classroom collision error. ";
                         }
@@ -213,7 +213,7 @@ void GetLessonCollisionErrors(Timetable& timetable)
             {
                 timetable.errors +=
                     totalLessonIntersections[lesson.first] - (lesson.second.amount - classDays);
-                if (verboseLogging)
+                if (settings.verboseLogging)
                 {
                     std::cout << "Lesson collision error. ";
                 }
@@ -241,7 +241,7 @@ void GetTemplateMatchErrors(Timetable& timetable,
                 else if (teacherLesson != classLesson)
                 {
                     timetable.errors++;
-                    if (verboseLogging)
+                    if (settings.verboseLogging)
                     {
                         std::cout << "Template match error. ";
                     }
@@ -285,18 +285,18 @@ void GetFreePeriodErrors(Timetable& timetable,
                 if (teacherLesson < 0) teacherFreePeriods[teacher.first]++;
             }
         }
-        if (teacherFreePeriods[teacher.first] < minFreePeriods)
+        if (teacherFreePeriods[teacher.first] < settings.minFreePeriods)
         {
-            timetable.errors += minFreePeriods - teacherFreePeriods[teacher.first];
-            if (verboseLogging)
+            timetable.errors += settings.minFreePeriods - teacherFreePeriods[teacher.first];
+            if (settings.verboseLogging)
             {
                 std::cout << "Too little teacher free periods error. ";
             }
         }
-        if (teacherFreePeriods[teacher.first] > maxFreePeriods)
+        if (teacherFreePeriods[teacher.first] > settings.maxFreePeriods)
         {
-            timetable.errors += teacherFreePeriods[teacher.first] - maxFreePeriods;
-            if (verboseLogging)
+            timetable.errors += teacherFreePeriods[teacher.first] - settings.maxFreePeriods;
+            if (settings.verboseLogging)
             {
                 std::cout << "Too many teacher free periods error. ";
             }
@@ -338,7 +338,7 @@ void GetLessonGapErrors(Timetable& timetable)
                 if (timetableLessonId < 0)
                 {
                     timetable.errors++;
-                    if (verboseLogging)
+                    if (settings.verboseLogging)
                     {
                         std::cout << "Lesson gap error. ";
                     }
@@ -425,7 +425,7 @@ void GetTimetableLessonRulesErrors(Timetable& timetable)
                 totalRuleAmount > ruleVariants[0].amount)
             {
                 timetable.errors++;
-                if (verboseLogging)
+                if (settings.verboseLogging)
                 {
                     std::cout << "Class rule error. ";
                 }

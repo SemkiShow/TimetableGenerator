@@ -43,9 +43,9 @@ std::string weekDays[7] = {"Monday", "Tuesday",  "Wednesday", "Thursday",
 
 double timetableAutosaveTimer = GetTime();
 
-bool lastVsync = vsync;
-bool lastMergedFont = mergedFont;
-int lastFontSize = fontSize;
+bool lastVsync = settings.vsync;
+bool lastMergedFont = settings.mergedFont;
+int lastFontSize = settings.fontSize;
 
 std::shared_ptr<Application> app;
 
@@ -64,7 +64,7 @@ void LoadFonts()
     LogInfo("Loading fonts");
     ImGuiIO& io = ImGui::GetIO();
     io.Fonts->Clear();
-    io.Fonts->AddFontFromFileTTF("resources/fonts/ProggyClean.ttf", (float)fontSize);
+    io.Fonts->AddFontFromFileTTF("resources/fonts/ProggyClean.ttf", settings.fontSize);
     ImFontGlyphRangesBuilder builder;
     builder.AddRanges(io.Fonts->GetGlyphRangesCyrillic());
     builder.AddRanges(io.Fonts->GetGlyphRangesVietnamese());
@@ -72,17 +72,17 @@ void LoadFonts()
     ImVector<ImWchar> glyphRanges;
     builder.BuildRanges(&glyphRanges);
     ImFontConfig fontConfig;
-    fontConfig.MergeMode = mergedFont;
+    fontConfig.MergeMode = settings.mergedFont;
     fontConfig.PixelSnapH = true;
-    io.Fonts->AddFontFromFileTTF("resources/fonts/DroidSansMono.ttf", (float)fontSize, &fontConfig,
-                                 glyphRanges.Data);
+    io.Fonts->AddFontFromFileTTF("resources/fonts/DroidSansMono.ttf", settings.fontSize,
+                                 &fontConfig, glyphRanges.Data);
     io.Fonts->Build();
 }
 
 void LoadStyle()
 {
     LogInfo("Loading style");
-    switch (style)
+    switch (settings.style)
     {
     case Style::Dark:
         ImGui::StyleColorsDark();
@@ -251,11 +251,11 @@ void DrawMenuBar()
 void DrawFrame()
 {
     // Begin imgui drawing
-    if (lastMergedFont != mergedFont || lastFontSize != fontSize)
+    if (lastMergedFont != settings.mergedFont || lastFontSize != settings.fontSize)
     {
-        lastMergedFont = mergedFont;
-        fontSize = std::max(5, fontSize);
-        lastFontSize = fontSize;
+        lastMergedFont = settings.mergedFont;
+        settings.fontSize = std::max(5, settings.fontSize);
+        lastFontSize = settings.fontSize;
         LoadFonts();
     }
     ImGuiIO& io = ImGui::GetIO();
@@ -266,8 +266,8 @@ void DrawFrame()
     BeginDrawing();
 
     // Change the background color based on the style
-    if (style == Style::Dark || style == Style::Dark) ClearBackground(BLACK);
-    if (style == Style::Light) ClearBackground(WHITE);
+    if (settings.style == Style::Dark || settings.style == Style::Dark) ClearBackground(BLACK);
+    if (settings.style == Style::Light) ClearBackground(WHITE);
 
     rlImGuiBegin();
 
@@ -277,17 +277,17 @@ void DrawFrame()
     app->Draw();
 
     // Autosave the timetable
-    if (GetTime() - timetableAutosaveTimer > timetableAutosaveInterval)
+    if (GetTime() - timetableAutosaveTimer > settings.timetableAutosaveInterval)
     {
         timetableAutosaveTimer = GetTime();
         currentTimetable.Save("templates/" + currentTimetable.name + ".json");
     }
 
     // Change vsync state
-    if (lastVsync != vsync)
+    if (lastVsync != settings.vsync)
     {
-        lastVsync = vsync;
-        if (!vsync)
+        lastVsync = settings.vsync;
+        if (!settings.vsync)
             ClearWindowState(FLAG_VSYNC_HINT);
         else
             SetWindowState(FLAG_VSYNC_HINT);

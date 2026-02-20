@@ -42,16 +42,17 @@ void EditClassMenu::Open(Timetable* prevTimetable, bool newClass, int classId, b
     LogInfo("Resetting class variables");
 
     allAvailableLessonsVertical.clear();
-    allAvailableLessonsVertical.resize(daysPerWeek, true);
+    allAvailableLessonsVertical.resize(settings.daysPerWeek, true);
     allAvailableLessonsHorizontal.clear();
-    allAvailableLessonsHorizontal.resize(lessonsPerDay, true);
+    allAvailableLessonsHorizontal.resize(settings.lessonsPerDay, true);
 
-    timetable.classes[classId].days.resize(daysPerWeek);
-    for (size_t i = 0; i < daysPerWeek; i++)
+    timetable.classes[classId].days.resize(settings.daysPerWeek);
+    for (size_t i = 0; i < settings.daysPerWeek; i++)
     {
-        if (timetable.classes[classId].days[i].lessons.size() < lessonsPerDay)
+        if (timetable.classes[classId].days[i].lessons.size() < settings.lessonsPerDay)
         {
-            int iterations = lessonsPerDay - timetable.classes[classId].days[i].lessons.size();
+            int iterations =
+                settings.lessonsPerDay - timetable.classes[classId].days[i].lessons.size();
             for (int j = 0; j < iterations; j++)
                 timetable.classes[classId].days[i].lessons.push_back(newClass);
         }
@@ -225,13 +226,13 @@ void EditClassMenu::Draw()
     // Class available lessons
     ImGui::Text("%s", gettext("available lessons"));
     ImGui::Separator();
-    ImGui::Columns(daysPerWeek + 1);
+    ImGui::Columns(settings.daysPerWeek + 1);
     ImGui::LabelText("##1", "%s", "");
     ImGui::LabelText("##2", "%s", "");
     int pushId = 3;
-    allAvailableLessonsHorizontal.resize(lessonsPerDay, true);
-    timetable.classes[classId].days.resize(daysPerWeek);
-    for (size_t i = 0; i < lessonsPerDay; i++)
+    allAvailableLessonsHorizontal.resize(settings.lessonsPerDay, true);
+    timetable.classes[classId].days.resize(settings.daysPerWeek);
+    for (size_t i = 0; i < settings.lessonsPerDay; i++)
     {
         ImGui::PushID(pushId++);
         bool availableClassLessonsHorizontal = allAvailableLessonsHorizontal[i];
@@ -240,9 +241,9 @@ void EditClassMenu::Draw()
             LogInfo("Clicked allAvailableLessonsHorizontal number  " + std::to_string(i) +
                     " in class with id " + std::to_string(classId));
             allAvailableLessonsHorizontal[i] = availableClassLessonsHorizontal;
-            for (size_t j = 0; j < daysPerWeek; j++)
+            for (size_t j = 0; j < settings.daysPerWeek; j++)
             {
-                timetable.classes[classId].days[j].lessons.resize(lessonsPerDay);
+                timetable.classes[classId].days[j].lessons.resize(settings.lessonsPerDay);
                 timetable.classes[classId].days[j].lessons[i] = allAvailableLessonsHorizontal[i];
             }
         }
@@ -250,11 +251,11 @@ void EditClassMenu::Draw()
         pushId++;
     }
     ImGui::NextColumn();
-    allAvailableLessonsVertical.resize(daysPerWeek, false);
-    timetable.classes[classId].days.resize(daysPerWeek);
-    for (size_t i = 0; i < daysPerWeek; i++)
+    allAvailableLessonsVertical.resize(settings.daysPerWeek, false);
+    timetable.classes[classId].days.resize(settings.daysPerWeek);
+    for (size_t i = 0; i < settings.daysPerWeek; i++)
     {
-        timetable.classes[classId].days[i].lessons.resize(lessonsPerDay);
+        timetable.classes[classId].days[i].lessons.resize(settings.lessonsPerDay);
         int weekDay = i;
         while (weekDay >= 7) weekDay -= 7;
         ImGui::Text("%s", weekDays[weekDay].c_str());
@@ -267,11 +268,11 @@ void EditClassMenu::Draw()
             LogInfo("Clicked allAvailableLessonsVertical number  " + std::to_string(i) +
                     " in class with id " + std::to_string(classId));
             allAvailableLessonsVertical[i] = availableClassLessonsVertical;
-            for (size_t j = 0; j < lessonsPerDay; j++)
+            for (size_t j = 0; j < settings.lessonsPerDay; j++)
                 timetable.classes[classId].days[i].lessons[j] = allAvailableLessonsVertical[i];
         }
         ImGui::PopID();
-        for (size_t j = 0; j < lessonsPerDay; j++)
+        for (size_t j = 0; j < settings.lessonsPerDay; j++)
         {
             ImGui::PushID(pushId++);
             bool isLessonAvailable = timetable.classes[classId].days[i].lessons[j];

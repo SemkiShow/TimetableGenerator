@@ -45,29 +45,30 @@ void EditTeacherMenu::Open(Timetable* prevTimetable, bool newTeacher, int teache
     allLessons = false;
 
     allAvailableLessonsVertical.clear();
-    allAvailableLessonsVertical.resize(daysPerWeek, 1);
+    allAvailableLessonsVertical.resize(settings.daysPerWeek, 1);
 
     allAvailableLessonsHorizontal.clear();
-    allAvailableLessonsHorizontal.resize(lessonsPerDay, 1);
+    allAvailableLessonsHorizontal.resize(settings.lessonsPerDay, 1);
 
     lessons.clear();
     for (auto& lesson: currentTimetable.lessons) lessons[lesson.first] = false;
     for (auto& lessonId: timetable.teachers[teacherId].lessonIds) lessons[lessonId] = true;
 
     availableLessons.clear();
-    for (size_t i = 0; i < daysPerWeek; i++)
+    for (size_t i = 0; i < settings.daysPerWeek; i++)
     {
-        for (size_t j = 0; j < lessonsPerDay; j++) availableLessons[i * lessonsPerDay + j] = 1;
+        for (size_t j = 0; j < settings.lessonsPerDay; j++)
+            availableLessons[i * settings.lessonsPerDay + j] = 1;
     }
 
-    timetable.teachers[teacherId].workDays.resize(daysPerWeek);
-    for (size_t i = 0; i < daysPerWeek; i++)
+    timetable.teachers[teacherId].workDays.resize(settings.daysPerWeek);
+    for (size_t i = 0; i < settings.daysPerWeek; i++)
     {
         for (size_t j = 0; j < timetable.teachers[teacherId].workDays[i].lessonIds.size(); j++)
         {
             int lessonId = timetable.teachers[teacherId].workDays[i].lessonIds[j];
             if (lessonId == ANY_LESSON || lessonId == NO_LESSON)
-                availableLessons[i * lessonsPerDay + j] = lessonId + 3;
+                availableLessons[i * settings.lessonsPerDay + j] = lessonId + 3;
             else
             {
                 int counter = 2;
@@ -75,7 +76,7 @@ void EditTeacherMenu::Open(Timetable* prevTimetable, bool newTeacher, int teache
                 {
                     if (lessonId == lesson.first)
                     {
-                        availableLessons[i * lessonsPerDay + j] = counter;
+                        availableLessons[i * settings.lessonsPerDay + j] = counter;
                         break;
                     }
                     counter++;
@@ -85,11 +86,11 @@ void EditTeacherMenu::Open(Timetable* prevTimetable, bool newTeacher, int teache
     }
     if (newTeacher)
     {
-        timetable.teachers[teacherId].workDays.resize(daysPerWeek);
-        for (size_t i = 0; i < daysPerWeek; i++)
+        timetable.teachers[teacherId].workDays.resize(settings.daysPerWeek);
+        for (size_t i = 0; i < settings.daysPerWeek; i++)
         {
-            timetable.teachers[teacherId].workDays[i].lessonIds.resize(lessonsPerDay);
-            for (size_t j = 0; j < lessonsPerDay; j++)
+            timetable.teachers[teacherId].workDays[i].lessonIds.resize(settings.lessonsPerDay);
+            for (size_t j = 0; j < settings.lessonsPerDay; j++)
                 timetable.teachers[teacherId].workDays[i].lessonIds.push_back(1);
         }
     }
@@ -166,11 +167,11 @@ void EditTeacherMenu::Draw()
 
     // Available lessons
     ImGui::Text("%s", gettext("available lessons"));
-    ImGui::Columns(daysPerWeek + 1);
+    ImGui::Columns(settings.daysPerWeek + 1);
     ImGui::LabelText("##1", "%s", "");
     ImGui::LabelText("##2", "%s", "");
-    allAvailableLessonsHorizontal.resize(lessonsPerDay, 1);
-    for (size_t i = 0; i < lessonsPerDay; i++)
+    allAvailableLessonsHorizontal.resize(settings.lessonsPerDay, 1);
+    for (size_t i = 0; i < settings.lessonsPerDay; i++)
     {
         ImGui::PushID(pushId);
         if (ImGui::Combo(std::to_string(i).c_str(), &allAvailableLessonsHorizontal[i],
@@ -178,17 +179,17 @@ void EditTeacherMenu::Draw()
         {
             LogInfo("Clicked allAvailableLessonsHorizontal in a teacher with id " +
                     std::to_string(teacherId));
-            for (size_t j = 0; j < daysPerWeek; j++)
+            for (size_t j = 0; j < settings.daysPerWeek; j++)
             {
-                availableLessons[j * lessonsPerDay + i] = allAvailableLessonsHorizontal[i];
+                availableLessons[j * settings.lessonsPerDay + i] = allAvailableLessonsHorizontal[i];
             }
         }
         ImGui::PopID();
         pushId++;
     }
     ImGui::NextColumn();
-    allAvailableLessonsVertical.resize(daysPerWeek, 1);
-    for (size_t i = 0; i < daysPerWeek; i++)
+    allAvailableLessonsVertical.resize(settings.daysPerWeek, 1);
+    for (size_t i = 0; i < settings.daysPerWeek; i++)
     {
         int weekDay = i;
         while (weekDay >= 7) weekDay -= 7;
@@ -198,15 +199,16 @@ void EditTeacherMenu::Draw()
         {
             LogInfo("Clicked allAvailableLessonsVertical in a teacher with id " +
                     std::to_string(teacherId));
-            for (size_t j = 0; j < lessonsPerDay; j++)
-                availableLessons[i * lessonsPerDay + j] = allAvailableLessonsVertical[i];
+            for (size_t j = 0; j < settings.lessonsPerDay; j++)
+                availableLessons[i * settings.lessonsPerDay + j] = allAvailableLessonsVertical[i];
         }
         ImGui::PopID();
         pushId++;
-        for (size_t j = 0; j < lessonsPerDay; j++)
+        for (size_t j = 0; j < settings.lessonsPerDay; j++)
         {
             ImGui::PushID(pushId);
-            ImGui::Combo("", &availableLessons[i * lessonsPerDay + j], lessonValues.c_str());
+            ImGui::Combo("", &availableLessons[i * settings.lessonsPerDay + j],
+                         lessonValues.c_str());
             ImGui::PopID();
             pushId++;
         }
@@ -224,28 +226,28 @@ void EditTeacherMenu::Draw()
             if (lessons[lesson.first])
                 timetable.teachers[teacherId].lessonIds.push_back(lesson.first);
         }
-        timetable.teachers[teacherId].workDays.resize(daysPerWeek);
-        for (size_t i = 0; i < daysPerWeek; i++)
+        timetable.teachers[teacherId].workDays.resize(settings.daysPerWeek);
+        for (size_t i = 0; i < settings.daysPerWeek; i++)
         {
             timetable.teachers[teacherId].workDays[i].lessonIds.clear();
-            for (size_t j = 0; j < lessonsPerDay; j++)
+            for (size_t j = 0; j < settings.lessonsPerDay; j++)
             {
-                if (availableLessons[i * lessonsPerDay + j] == 0 ||
-                    availableLessons[i * lessonsPerDay + j] == 1)
+                if (availableLessons[i * settings.lessonsPerDay + j] == 0 ||
+                    availableLessons[i * settings.lessonsPerDay + j] == 1)
                     timetable.teachers[teacherId].workDays[i].lessonIds.push_back(
-                        availableLessons[i * lessonsPerDay + j] - 3);
+                        availableLessons[i * settings.lessonsPerDay + j] - 3);
                 else
                 {
-                    availableLessons[i * lessonsPerDay + j] -= 2;
+                    availableLessons[i * settings.lessonsPerDay + j] -= 2;
                     for (auto& lesson: currentTimetable.lessons)
                     {
-                        if (availableLessons[i * lessonsPerDay + j] <= 0)
+                        if (availableLessons[i * settings.lessonsPerDay + j] <= 0)
                         {
                             timetable.teachers[teacherId].workDays[i].lessonIds.push_back(
                                 lesson.first);
                             break;
                         }
-                        availableLessons[i * lessonsPerDay + j]--;
+                        availableLessons[i * settings.lessonsPerDay + j]--;
                     }
                 }
             }

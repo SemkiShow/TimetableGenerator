@@ -14,3 +14,5 @@
 - [ ] Exporting to HTML
 - [ ] Exporting to some image format
 - [ ] Change the way to make multiple lessons in one cell to groups (a more logical and flexible solution)
+- [ ] Scoring on the GPU
+- [ ] Toggle scoring functions in settings

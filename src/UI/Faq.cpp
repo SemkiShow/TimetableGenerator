@@ -15,8 +15,8 @@ std::vector<Texture> faqScreenshots;
 void DrawImage(const Texture& texture)
 {
     ImGui::Image(static_cast<ImTextureID>(texture.id),
-                 ImVec2(texture.width * 1.0f * fontSize / DEFAULT_FONT_SIZE,
-                        texture.height * 1.0f * fontSize / DEFAULT_FONT_SIZE));
+                 ImVec2(texture.width * 1.0f * settings.fontSize / DEFAULT_FONT_SIZE,
+                        texture.height * 1.0f * settings.fontSize / DEFAULT_FONT_SIZE));
 }
 
 void FaqMenu::Draw()

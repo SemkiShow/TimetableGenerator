@@ -80,7 +80,7 @@ void GetLatestVersionName()
                 LogInfo("Successfully fetched releases info");
                 size_t releaseID = 0;
                 while (jsonObject[releaseID]["draft"].GetBool() ||
-                       (jsonObject[releaseID]["prerelease"].GetBool() && !usePrereleases))
+                       (jsonObject[releaseID]["prerelease"].GetBool() && !settings.usePrereleases))
                 {
                     releaseID++;
                     if (releaseID >= jsonObject.size())
@@ -196,7 +196,7 @@ std::string GetLatestVersionArchiveURL()
                 LogInfo("Successfully fetched releases info");
                 size_t releaseID = 0;
                 while (jsonObject[releaseID]["draft"].GetBool() ||
-                       (jsonObject[releaseID]["prerelease"].GetBool() && !usePrereleases))
+                       (jsonObject[releaseID]["prerelease"].GetBool() && !settings.usePrereleases))
                 {
                     releaseID++;
                     if (releaseID >= jsonObject.size()) return "";
@@ -396,6 +396,6 @@ void UpdateCACertificate()
 
     // Update lastCAUpdate
     time_t now = time(0);
-    lastCAUpdate = asctime(localtime(&now));
+    settings.lastCAUpdate = asctime(localtime(&now));
     LogInfo("Updated the CA certificate");
 }

@@ -4,32 +4,38 @@
 
 #pragma once
 
+#include "UI.hpp"
 #include <string>
 
 enum class Style;
 
-extern unsigned int daysPerWeek;
-extern unsigned int lessonsPerDay;
-extern Style style;
-extern std::string language;
-extern bool vsync;
-extern bool mergedFont;
-extern int timetableAutosaveInterval;
-extern int fontSize;
-extern int minFreePeriods;
-extern int maxFreePeriods;
-extern float errorBonusRatio;
-extern int timetablesPerGenerationStep;
-extern int minTimetablesPerGeneration;
-extern int maxTimetablesPerGeneration;
-extern int maxIterations;
-extern int additionalBonusPoints;
-extern bool verboseLogging;
-extern bool usePrereleases;
-extern std::string lastCAUpdate;
-extern bool hasCrashed;
+struct Settings
+{
+    unsigned int daysPerWeek = 5;
+    unsigned int lessonsPerDay = 8;
+    Style style = Style::Dark;
+    std::string language = "en";
+    bool vsync = true;
+    bool mergedFont = true;
+    int timetableAutosaveInterval = 60;
+    int fontSize = DEFAULT_FONT_SIZE;
+    int minFreePeriods = 0;
+    int maxFreePeriods = 0;
+    float errorBonusRatio = 10.0f;
+    int timetablesPerGenerationStep = 10;
+    int minTimetablesPerGeneration = 100;
+    int maxTimetablesPerGeneration = 5000;
+    int maxIterations = -1;
+    int additionalBonusPoints = 1;
+    bool verboseLogging = false;
+    bool usePrereleases = false;
+    std::string lastCAUpdate = "";
+    bool hasCrashed = false;
+
+    void Save();
+    void Load();
+};
+
+extern Settings settings;
 
 extern std::string version;
-
-void Save(std::string fileName);
-void Load(std::string fileName);

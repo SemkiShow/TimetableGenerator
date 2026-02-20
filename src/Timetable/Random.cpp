@@ -15,7 +15,7 @@ WorkDay WorkDay::GetRandom()
 {
     WorkDay workDay;
 
-    for (size_t i = 0; i < lessonsPerDay; i++)
+    for (size_t i = 0; i < settings.lessonsPerDay; i++)
     {
         workDay.lessonIds.push_back(rand() % lessonsCount);
     }
@@ -76,7 +76,7 @@ Teacher Teacher::GetRandom()
     {
         teacher.lessonIds.push_back(rand() % lessonsCount);
     }
-    for (size_t i = 0; i < daysPerWeek; i++)
+    for (size_t i = 0; i < settings.daysPerWeek; i++)
     {
         teacher.workDays.emplace_back(WorkDay::GetRandom());
     }
@@ -125,7 +125,7 @@ Day Day::GetRandom(Timetable& timetable, int classId)
 {
     Day day;
 
-    for (size_t i = 0; i < lessonsPerDay; i++)
+    for (size_t i = 0; i < settings.lessonsPerDay; i++)
     {
         day.lessons.push_back(rand() % 2);
         day.classroomLessonPairs.push_back(ClassroomLessonPair::GetRandom(timetable, classId));
@@ -156,7 +156,7 @@ Class Class::GetRandom(Timetable& timetable, int classId)
     }
 
     // Days
-    for (size_t i = 0; i < daysPerWeek; i++)
+    for (size_t i = 0; i < settings.daysPerWeek; i++)
     {
         classPair.days.emplace_back(Day::GetRandom(timetable, classId));
     }

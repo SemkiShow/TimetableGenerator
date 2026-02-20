@@ -160,12 +160,12 @@ void SwapRandomTimetableLessons(Timetable& timetable)
 
 double EvaluateFitness(const Timetable& timetable)
 {
-    return timetable.bonusPoints - (timetable.errors * errorBonusRatio);
+    return timetable.bonusPoints - (timetable.errors * settings.errorBonusRatio);
 }
 
 Timetable TournamentSelection(const Timetable* population)
 {
-    size_t tournamentSize = 7;
+    const size_t tournamentSize = 7;
     auto populationDistribution =
         std::uniform_int_distribution<int>(0, iterationData.timetablesPerGeneration - 1);
     int bestId = populationDistribution(rng);
@@ -297,7 +297,7 @@ void GeneticAlgorithm(int threadId, Timetable* population, Timetable* newPopulat
 
         Timetable child = Crossover(parent1, parent2);
         MutateTimetable(child);
-        if (verboseLogging)
+        if (settings.verboseLogging)
         {
             std::cout << "\x1b[32mScoring timetable " << i << "\x1b[0m. ";
         }
@@ -307,7 +307,7 @@ void GeneticAlgorithm(int threadId, Timetable* population, Timetable* newPopulat
 }
 
 void GetBestSpecies(Timetable* timetables, Timetable* population, Timetable* newPopulation,
-                    int* minErrors)
+                    int& minErrors)
 {
     double averageFitness = 0;
     for (int i = 0; i < iterationData.timetablesPerGeneration; i++)
@@ -323,9 +323,9 @@ void GetBestSpecies(Timetable* timetables, Timetable* population, Timetable* new
     for (int i = 0; i < iterationData.timetablesPerGeneration; i++)
     {
         if (counter >= iterationData.timetablesPerGeneration) break;
-        if (newPopulation[i].errors < *minErrors) *minErrors = newPopulation[i].errors;
+        if (newPopulation[i].errors < minErrors) minErrors = newPopulation[i].errors;
         if (EvaluateFitness(newPopulation[i]) >= averageFitness &&
-            newPopulation[i].errors <= *minErrors)
+            newPopulation[i].errors <= minErrors)
             timetables[counter++] = newPopulation[i];
     }
 
@@ -333,9 +333,9 @@ void GetBestSpecies(Timetable* timetables, Timetable* population, Timetable* new
     for (int i = 0; i < iterationData.timetablesPerGeneration; i++)
     {
         if (counter >= iterationData.timetablesPerGeneration) break;
-        if (newPopulation[i].errors < *minErrors) *minErrors = newPopulation[i].errors;
+        if (newPopulation[i].errors < minErrors) minErrors = newPopulation[i].errors;
         if (EvaluateFitness(newPopulation[i]) >= averageFitness &&
-            newPopulation[i].errors > *minErrors)
+            newPopulation[i].errors > minErrors)
             timetables[counter++] = newPopulation[i];
     }
 
@@ -343,8 +343,8 @@ void GetBestSpecies(Timetable* timetables, Timetable* population, Timetable* new
     for (int i = 0; i < iterationData.timetablesPerGeneration; i++)
     {
         if (counter >= iterationData.timetablesPerGeneration) break;
-        if (population[i].errors < *minErrors) *minErrors = population[i].errors;
-        if (EvaluateFitness(population[i]) >= averageFitness && population[i].errors <= *minErrors)
+        if (population[i].errors < minErrors) minErrors = population[i].errors;
+        if (EvaluateFitness(population[i]) >= averageFitness && population[i].errors <= minErrors)
             timetables[counter++] = population[i];
     }
 
@@ -352,8 +352,8 @@ void GetBestSpecies(Timetable* timetables, Timetable* population, Timetable* new
     for (int i = 0; i < iterationData.timetablesPerGeneration; i++)
     {
         if (counter >= iterationData.timetablesPerGeneration) break;
-        if (population[i].errors < *minErrors) *minErrors = population[i].errors;
-        if (EvaluateFitness(population[i]) >= averageFitness && population[i].errors > *minErrors)
+        if (population[i].errors < minErrors) minErrors = population[i].errors;
+        if (EvaluateFitness(population[i]) >= averageFitness && population[i].errors > minErrors)
             timetables[counter++] = population[i];
     }
 
@@ -437,8 +437,8 @@ void RunASearchIteration()
     // count is over the limit
     if (iterationData.timetables[iterationData.bestTimetableIndex].bonusPoints -
                 iterationData.startBonusPoints >=
-            additionalBonusPoints ||
-        (maxIterations != -1 && iterationData.iteration >= maxIterations))
+            settings.additionalBonusPoints ||
+        (settings.maxIterations != -1 && iterationData.iteration >= settings.maxIterations))
     {
         iterationData.isDone = true;
         iterationData.threadLock = false;
@@ -468,10 +468,10 @@ void RunASearchIteration()
     }
 
     // Change timetables per generation dynamically
-    iterationData.timetablesPerGeneration =
-        std::min(iterationData.maxTimetablesPerGeneration,
-                 std::max(iterationData.minTimetablesPerGeneration,
-                          (iterationData.iterationsPerChange + 1) * timetablesPerGenerationStep));
+    iterationData.timetablesPerGeneration = std::min(
+        iterationData.maxTimetablesPerGeneration,
+        std::max(iterationData.minTimetablesPerGeneration,
+                 (iterationData.iterationsPerChange + 1) * settings.timetablesPerGenerationStep));
 
     // Inject random immigrants
     if (iterationData.iteration % 10 == 0)
@@ -499,7 +499,7 @@ void RunASearchIteration()
     for (int i = 0; i < iterationData.timetablesPerGeneration; i++)
         iterationData.population[i] = iterationData.timetables[i];
     GetBestSpecies(iterationData.timetables, iterationData.population, iterationData.newPopulation,
-                   &iterationData.minErrors);
+                   iterationData.minErrors);
 
     // Change allTimeBestScore if current best score is better
     std::cout << '\n';
@@ -541,10 +541,10 @@ void BeginSearching(const Timetable& timetable)
     iterationData.threadLock = true;
 
     // Make a copy of settings
-    iterationData.daysPerWeek = daysPerWeek;
-    iterationData.lessonsPerDay = lessonsPerDay;
-    iterationData.minTimetablesPerGeneration = minTimetablesPerGeneration;
-    iterationData.maxTimetablesPerGeneration = maxTimetablesPerGeneration;
+    iterationData.daysPerWeek = settings.daysPerWeek;
+    iterationData.lessonsPerDay = settings.lessonsPerDay;
+    iterationData.minTimetablesPerGeneration = settings.minTimetablesPerGeneration;
+    iterationData.maxTimetablesPerGeneration = settings.maxTimetablesPerGeneration;
 
     // Initialize a starting population
     iterationData.timetables = new Timetable[iterationData.maxTimetablesPerGeneration];

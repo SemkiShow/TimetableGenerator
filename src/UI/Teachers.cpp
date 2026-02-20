@@ -20,11 +20,12 @@ void TeachersMenu::Draw()
         return;
     }
 
-    ImGui::InputInt(gettext("min free periods"), &minFreePeriods);
-    if (minFreePeriods < 0) minFreePeriods = 0;
-    ImGui::InputInt(gettext("max free periods"), &maxFreePeriods);
-    if (maxFreePeriods < 0) maxFreePeriods = 0;
-    if (maxFreePeriods < minFreePeriods) maxFreePeriods = minFreePeriods;
+    ImGui::InputInt(gettext("min free periods"), &settings.minFreePeriods);
+    if (settings.minFreePeriods < 0) settings.minFreePeriods = 0;
+    ImGui::InputInt(gettext("max free periods"), &settings.maxFreePeriods);
+    if (settings.maxFreePeriods < 0) settings.maxFreePeriods = 0;
+    if (settings.maxFreePeriods < settings.minFreePeriods)
+        settings.maxFreePeriods = settings.minFreePeriods;
 
     if (ImGui::Button(gettext("+")))
     {
