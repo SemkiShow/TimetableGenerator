@@ -49,13 +49,11 @@ struct IterationData
     int maxTimetablesPerGeneration = 5000;
 
     // Timetables used for searching
-    Timetable* timetables = nullptr;
-    Timetable* population = nullptr;
-    Timetable* newPopulation = nullptr;
+    std::vector<Timetable> timetables, population, newPopulation;
 };
 
 extern IterationData iterationData;
-extern unsigned int threadsNumber;
+extern size_t threadsNumber;
 
 std::vector<TimetableLessonRule> GetAllRuleVariants(const TimetableLessonRule timetableLessonRule);
 void ScoreTimetable(Timetable& timetable);

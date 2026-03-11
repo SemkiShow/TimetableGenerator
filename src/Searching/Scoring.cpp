@@ -2,11 +2,11 @@
 //
 // SPDX-License-Identifier: GPL-3.0-only
 
+#include "Logging.hpp"
 #include "Searching.hpp"
 #include "Settings.hpp"
 #include "Timetable.hpp"
 #include <algorithm>
-#include <iostream>
 #include <set>
 #include <unordered_map>
 #include <vector>
@@ -126,10 +126,7 @@ void GetTeacherCollisionErrors(Timetable& timetable)
                     else
                     {
                         timetable.errors++;
-                        if (settings.verboseLogging)
-                        {
-                            std::cout << "Teacher collision error. ";
-                        }
+                        if (settings.verboseLogging) LogInfo("Teacher collision error");
                     }
                 }
             }
@@ -169,10 +166,7 @@ void GetClassroomCollisionErrors(Timetable& timetable)
                     else
                     {
                         timetable.errors++;
-                        if (settings.verboseLogging)
-                        {
-                            std::cout << "Classroom collision error. ";
-                        }
+                        if (settings.verboseLogging) LogInfo("Classroom collision error");
                     }
                 }
             }
@@ -213,10 +207,7 @@ void GetLessonCollisionErrors(Timetable& timetable)
             {
                 timetable.errors +=
                     totalLessonIntersections[lesson.first] - (lesson.second.amount - classDays);
-                if (settings.verboseLogging)
-                {
-                    std::cout << "Lesson collision error. ";
-                }
+                if (settings.verboseLogging) LogInfo("Lesson collision error");
             }
         }
     }
@@ -241,10 +232,7 @@ void GetTemplateMatchErrors(Timetable& timetable,
                 else if (teacherLesson != classLesson)
                 {
                     timetable.errors++;
-                    if (settings.verboseLogging)
-                    {
-                        std::cout << "Template match error. ";
-                    }
+                    if (settings.verboseLogging) LogInfo("Template match error");
                 }
             }
         }
@@ -288,18 +276,12 @@ void GetFreePeriodErrors(Timetable& timetable,
         if (teacherFreePeriods[teacher.first] < settings.minFreePeriods)
         {
             timetable.errors += settings.minFreePeriods - teacherFreePeriods[teacher.first];
-            if (settings.verboseLogging)
-            {
-                std::cout << "Too little teacher free periods error. ";
-            }
+            if (settings.verboseLogging) LogInfo("Too little teacher free periods error");
         }
         if (teacherFreePeriods[teacher.first] > settings.maxFreePeriods)
         {
             timetable.errors += teacherFreePeriods[teacher.first] - settings.maxFreePeriods;
-            if (settings.verboseLogging)
-            {
-                std::cout << "Too many teacher free periods error. ";
-            }
+            if (settings.verboseLogging) LogInfo("Too many teacher free periods error");
         }
     }
 }
@@ -338,10 +320,7 @@ void GetLessonGapErrors(Timetable& timetable)
                 if (timetableLessonId < 0)
                 {
                     timetable.errors++;
-                    if (settings.verboseLogging)
-                    {
-                        std::cout << "Lesson gap error. ";
-                    }
+                    if (settings.verboseLogging) LogInfo("Lesson gap error");
                 }
             }
         }
@@ -425,10 +404,7 @@ void GetTimetableLessonRulesErrors(Timetable& timetable)
                 totalRuleAmount > ruleVariants[0].amount)
             {
                 timetable.errors++;
-                if (settings.verboseLogging)
-                {
-                    std::cout << "Class rule error. ";
-                }
+                if (settings.verboseLogging) LogInfo("Class rule error");
             }
         }
     }

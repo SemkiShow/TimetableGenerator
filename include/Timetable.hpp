@@ -144,11 +144,6 @@ class Timetable
     void Load(const std::filesystem::path& path);
     static Timetable GetRandom();
     void ExportAsXlsx();
-
-  private:
-    void ExportClassesAsXlsx();
-    void ExportTeachersAsXlsx();
-    void ExportClassroomsAsXlsx();
 };
 
-extern Timetable currentTimetable;
+inline Timetable currentTimetable;

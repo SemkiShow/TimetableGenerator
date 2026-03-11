@@ -224,7 +224,7 @@ void DrawMenuBar()
         if (ImGui::MenuItem(gettext("Classes"))) classesMenu->Open();
         if (ImGui::MenuItem(gettext("Generate timetable")))
         {
-            if (iterationData.timetables != nullptr)
+            if (!iterationData.isDone)
             {
                 iterationData.isDone = true;
                 generateTimetableMenu->SetStatus(

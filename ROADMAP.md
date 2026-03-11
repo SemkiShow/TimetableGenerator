@@ -8,7 +8,7 @@
 - [ ] Refactor the rest of the codebase
 - [ ] Doxygen documentation
 - [ ] Unit tests
-- [ ] Switch to RayUI?
+- [ ] Switch to RayUI or Qt?
 - [ ] Automatic crash report sending
 - [ ] Use JsonFormat for json
 - [ ] Exporting to HTML

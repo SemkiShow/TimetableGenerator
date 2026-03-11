@@ -9,14 +9,13 @@
 #include "Translations.hpp"
 #include "UI/Timetable/Generate.hpp"
 #include <algorithm>
-#include <iostream>
 #include <random>
 #include <string>
 #include <thread>
 
 std::random_device dev;
 static thread_local std::mt19937 rng(dev());
-unsigned int threadsNumber = std::max(1u, std::thread::hardware_concurrency());
+size_t threadsNumber = std::max(1u, std::thread::hardware_concurrency());
 IterationData iterationData;
 
 int GetLessonsAmount(const std::map<int, TimetableLesson> timetableLessons)
@@ -163,7 +162,7 @@ double EvaluateFitness(const Timetable& timetable)
     return timetable.bonusPoints - (timetable.errors * settings.errorBonusRatio);
 }
 
-Timetable TournamentSelection(const Timetable* population)
+Timetable TournamentSelection(const std::vector<Timetable>& population)
 {
     const size_t tournamentSize = 7;
     auto populationDistribution =
@@ -287,7 +286,8 @@ void MutateTimetable(Timetable& timetable)
     }
 }
 
-void GeneticAlgorithm(int threadId, Timetable* population, Timetable* newPopulation)
+void GeneticAlgorithm(int threadId, std::vector<Timetable>& population,
+                      std::vector<Timetable>& newPopulation)
 {
     for (size_t i = threadId * iterationData.timetablesPerGeneration / threadsNumber;
          i < (threadId + 1) * iterationData.timetablesPerGeneration / threadsNumber; i++)
@@ -299,15 +299,15 @@ void GeneticAlgorithm(int threadId, Timetable* population, Timetable* newPopulat
         MutateTimetable(child);
         if (settings.verboseLogging)
         {
-            std::cout << "\x1b[32mScoring timetable " << i << "\x1b[0m. ";
+            LogInfo("\x1b[32mScoring timetable " + std::to_string(i) + "\x1b[0m");
         }
         ScoreTimetable(child);
         newPopulation[i] = child;
     }
 }
 
-void GetBestSpecies(Timetable* timetables, Timetable* population, Timetable* newPopulation,
-                    int& minErrors)
+void GetBestSpecies(std::vector<Timetable>& timetables, std::vector<Timetable>& population,
+                    std::vector<Timetable>& newPopulation, int& minErrors)
 {
     double averageFitness = 0;
     for (int i = 0; i < iterationData.timetablesPerGeneration; i++)
@@ -372,11 +372,14 @@ void GetBestSpecies(Timetable* timetables, Timetable* population, Timetable* new
         }
     }
 
-    LogInfo("Selected " + std::to_string(iterationData.timetablesPerGeneration - counter) + "/" +
-            std::to_string(iterationData.timetablesPerGeneration) + " random timetables");
+    if (iterationData.iteration % 10 == 0)
+    {
+        LogInfo("Selected " + std::to_string(iterationData.timetablesPerGeneration - counter) +
+                "/" + std::to_string(iterationData.timetablesPerGeneration) + " random timetables");
+    }
 }
 
-int GetBestTimetableIndex(const Timetable* timetables)
+int GetBestTimetableIndex(const std::vector<Timetable>& timetables)
 {
     double bestTimetableScore = INT_MIN;
     int bestTimetableIndex = 0;
@@ -399,7 +402,7 @@ int GetBestTimetableIndex(const Timetable* timetables)
     return bestTimetableIndex;
 }
 
-void InjectRandomImmigrants(Timetable* population)
+void InjectRandomImmigrants(std::vector<Timetable>& population)
 {
     for (int i = 0;
          i < std::uniform_int_distribution<int>(0, iterationData.timetablesPerGeneration / 10)(rng);
@@ -447,7 +450,7 @@ void RunASearchIteration()
     }
 
     // Init the threads
-    std::thread* threads = new std::thread[threadsNumber];
+    std::vector<std::thread> threads(threadsNumber);
 
     iterationData.iteration++;
 
@@ -481,8 +484,10 @@ void RunASearchIteration()
 
     // Run worker threads
     for (size_t i = 0; i < threadsNumber; i++)
-        threads[i] =
-            std::thread(GeneticAlgorithm, i, iterationData.timetables, iterationData.newPopulation);
+    {
+        threads[i] = std::thread(GeneticAlgorithm, i, std::ref(iterationData.timetables),
+                                 std::ref(iterationData.newPopulation));
+    }
     for (size_t i = 0; i < threadsNumber; i++) threads[i].join();
 
     // Get the best timetable from the current generation
@@ -502,7 +507,6 @@ void RunASearchIteration()
                    iterationData.minErrors);
 
     // Change allTimeBestScore if current best score is better
-    std::cout << '\n';
     if (iterationData.bestScore > iterationData.allTimeBestScore)
         iterationData.allTimeBestScore = iterationData.bestScore;
     if (iterationData.lastAllTimeBestScore == iterationData.allTimeBestScore)
@@ -518,9 +522,6 @@ void RunASearchIteration()
         iterationData.errorValues[i] = iterationData.errorValues[i + 1];
     }
     iterationData.errorValues[iterationData.errorValuesPoints - 1] = iterationData.minErrors;
-
-    // Free threads
-    delete[] threads;
 
     // Release the thread lock
     iterationData.threadLock = false;
@@ -547,9 +548,9 @@ void BeginSearching(const Timetable& timetable)
     iterationData.maxTimetablesPerGeneration = settings.maxTimetablesPerGeneration;
 
     // Initialize a starting population
-    iterationData.timetables = new Timetable[iterationData.maxTimetablesPerGeneration];
-    iterationData.population = new Timetable[iterationData.maxTimetablesPerGeneration];
-    iterationData.newPopulation = new Timetable[iterationData.maxTimetablesPerGeneration];
+    iterationData.timetables.resize(iterationData.maxTimetablesPerGeneration);
+    iterationData.population.resize(iterationData.maxTimetablesPerGeneration);
+    iterationData.newPopulation.resize(iterationData.maxTimetablesPerGeneration);
     iterationData.timetablesPerGeneration = iterationData.maxTimetablesPerGeneration;
     for (int i = 0; i < iterationData.maxTimetablesPerGeneration; i++)
     {
@@ -609,10 +610,7 @@ void StopSearching()
             std::to_string(iterationData.timetables[iterationData.bestTimetableIndex].bonusPoints) +
             " bonus points");
     iterationData.timetables[0].Save("timetables/" + iterationData.timetables[0].name + ".json");
-    delete[] iterationData.timetables;
-    delete[] iterationData.population;
-    delete[] iterationData.newPopulation;
-    iterationData.timetables = nullptr;
-    iterationData.population = nullptr;
-    iterationData.newPopulation = nullptr;
+    iterationData.timetables.clear();
+    iterationData.population.clear();
+    iterationData.newPopulation.clear();
 }

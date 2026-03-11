@@ -15,7 +15,10 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/raylib ${CMAKE_BINARY_DIR}/_deps
 
 # imgui
 add_library(imgui)
-file(GLOB imgui-src ${CMAKE_SOURCE_DIR}/thirdparty/imgui/*.cpp ${CMAKE_SOURCE_DIR}/thirdparty/imgui/misc/cpp/*.cpp)
+file(GLOB imgui-src
+    ${CMAKE_SOURCE_DIR}/thirdparty/imgui/*.cpp
+    ${CMAKE_SOURCE_DIR}/thirdparty/imgui/misc/cpp/*.cpp
+)
 target_sources(imgui PRIVATE ${imgui-src})
 target_include_directories(imgui PUBLIC ${CMAKE_SOURCE_DIR}/thirdparty/imgui)
 
@@ -55,6 +58,7 @@ else()
 endif()
 
 # libxlsxwriter
+set(OPENSSL_CRYPTO_LIBRARY "" CACHE PATH "" FORCE)
 add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/libxlsxwriter ${CMAKE_BINARY_DIR}/_deps/libxlsxwriter-build SYSTEM)
 
 # libzip
