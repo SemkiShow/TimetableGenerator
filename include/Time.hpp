@@ -11,7 +11,6 @@
 #include <ctime>
 #include <string>
 
-// NOLINTBEGIN
 struct Time
 {
     Time() = default;
@@ -46,7 +45,6 @@ struct Time
     int minute = 0;
     int second = 0;
 };
-// NOLINTEND
 
 Time GetCurrentTime();
 

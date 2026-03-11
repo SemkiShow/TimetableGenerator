@@ -10,7 +10,7 @@ Time GetCurrentTime()
 {
     auto now = std::chrono::system_clock::now();
     auto timeTNow = std::chrono::system_clock::to_time_t(now);
-    tm tm; // NOLINT(readability-identifier-length)
+    tm tm;
 #ifdef _WIN32
     localtime_s(&tm, &timeTNow);
 #else
@@ -21,16 +21,15 @@ Time GetCurrentTime()
 
 std::string GetTimeString(const Time& time)
 {
-    tm tm = time.ToTm(); // NOLINT(readability-identifier-length)
+    tm tm = time.ToTm();
     std::ostringstream oss;
     oss << std::put_time(&tm, "%Y-%m-%d %H:%M:%S");
     return oss.str();
 }
 
-// NOLINTBEGIN(readability-magic-numbers)
 static bool IsTimeCorrect(const std::string& timeString)
 {
-    const auto& s = timeString; // NOLINT(readability-identifier-length)
+    const auto& s = timeString;
 
     // Check size
     if (s.size() < 19) return false;
@@ -67,7 +66,7 @@ static bool IsTimeCorrect(const std::string& timeString)
 
 Time ExtractTime(const std::string& timeString)
 {
-    const auto& s = timeString; // NOLINT(readability-identifier-length)
+    const auto& s = timeString;
     Time time;
 
     if (!IsTimeCorrect(s)) return time;
@@ -81,4 +80,3 @@ Time ExtractTime(const std::string& timeString)
 
     return time;
 }
-// NOLINTEND(readability-magic-numbers)
