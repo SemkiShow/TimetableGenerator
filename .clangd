@@ -1,0 +1,10 @@
+Completion:
+  HeaderInsertion: Never
+CompileFlags:
+  CompilationDatabase: build/
+Diagnostics:
+  UnusedIncludes: Strict
+  MissingIncludes: Strict
+  Includes:
+    AnalyzeAngledIncludes: true
+

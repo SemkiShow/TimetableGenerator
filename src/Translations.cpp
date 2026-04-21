@@ -7,6 +7,12 @@
 #include "Settings.hpp"
 #include "UI.hpp"
 #include "UI/Settings.hpp"
+#include <cstddef>
+#include <filesystem>
+#include <libintl.h>
+#include <stdlib.h>
+#include <string>
+#include <vector>
 
 std::vector<std::string> availableLanguages;
 std::string languageValues;

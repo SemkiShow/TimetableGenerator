@@ -7,7 +7,9 @@
 #include "Settings.hpp"
 #include "Translations.hpp"
 #include "UI.hpp"
+#include <algorithm>
 #include <imgui.h>
+#include <memory>
 #include <thread>
 
 std::shared_ptr<SettingsMenu> settingsMenu;

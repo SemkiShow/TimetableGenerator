@@ -7,7 +7,9 @@
 #include "Translations.hpp"
 #include "UI.hpp"
 #include <imgui.h>
+#include <memory>
 #include <raylib.h>
+#include <vector>
 
 std::shared_ptr<FaqMenu> faqMenu;
 std::vector<Texture> faqScreenshots;

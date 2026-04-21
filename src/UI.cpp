@@ -30,8 +30,12 @@
 #include "UI/Wizard.hpp"
 #include "Updates.hpp"
 #include "Utils.hpp"
+#include "Widgets/Application.hpp"
+#include <algorithm>
+#include <cstddef>
 #include <filesystem>
 #include <imgui.h>
+#include <memory>
 #include <raylib.h>
 #include <rlImGui.h>
 #include <string>

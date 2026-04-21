@@ -8,12 +8,17 @@
 #include "Settings.hpp"
 #include "Translations.hpp"
 #include "UI/NewVersion.hpp"
+#include <cstdio>
 #include <cstring>
+#include <ctime>
 #include <curl/curl.h>
+#include <curl/easy.h>
 #include <filesystem>
 #include <string>
 #include <thread>
+#include <vector>
 #include <zip.h>
+#include <zipconf.h>
 
 std::string latestVersion = "";
 std::vector<std::string> releaseNotes;

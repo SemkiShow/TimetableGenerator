@@ -6,8 +6,14 @@
 #include "Logging.hpp"
 #include "Timetable.hpp"
 #include "Translations.hpp"
+#include "Widgets/Window.hpp"
+#include <cctype>
+#include <cstddef>
+#include <exception>
 #include <imgui.h>
+#include <memory>
 #include <misc/cpp/imgui_stdlib.h>
+#include <string>
 
 std::shared_ptr<EditClassroomMenu> editClassroomMenu;
 

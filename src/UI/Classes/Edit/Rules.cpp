@@ -4,9 +4,17 @@
 
 #include "UI/Classes/Edit/Rules.hpp"
 #include "Logging.hpp"
+#include "Timetable.hpp"
 #include "Translations.hpp"
 #include "UI/Classes/Utils.hpp"
+#include "Widgets/Window.hpp"
+#include <algorithm>
+#include <climits>
+#include <cstddef>
 #include <imgui.h>
+#include <memory>
+#include <string>
+#include <unordered_map>
 
 std::shared_ptr<RulesMenu> rulesMenu;
 

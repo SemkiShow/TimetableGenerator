@@ -6,7 +6,9 @@
 #include "Logging.hpp"
 #include "Translations.hpp"
 #include "UI/Classrooms/Edit.hpp"
+#include <exception>
 #include <imgui.h>
+#include <memory>
 #include <string>
 
 std::shared_ptr<ClassroomsMenu> classroomsMenu;

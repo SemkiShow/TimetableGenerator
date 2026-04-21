@@ -5,10 +5,15 @@
 #include "UI/Teachers/Edit.hpp"
 #include "Logging.hpp"
 #include "Settings.hpp"
+#include "Timetable.hpp"
 #include "Translations.hpp"
 #include "UI.hpp"
+#include "Widgets/Window.hpp"
+#include <cstddef>
 #include <imgui.h>
+#include <memory>
 #include <misc/cpp/imgui_stdlib.h>
+#include <string>
 
 std::shared_ptr<EditTeacherMenu> editTeacherMenu;
 

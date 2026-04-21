@@ -7,7 +7,13 @@
 #include "Timetable.hpp"
 #include "Translations.hpp"
 #include "Utils.hpp"
+#include "Widgets/Window.hpp"
+#include <cstddef>
+#include <filesystem>
 #include <imgui.h>
+#include <memory>
+#include <string>
+#include <vector>
 
 std::shared_ptr<OpenTimetableMenu> openTimetableMenu;
 

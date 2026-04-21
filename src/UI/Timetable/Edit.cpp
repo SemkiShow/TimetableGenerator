@@ -8,6 +8,7 @@
 #include "Translations.hpp"
 #include "UI/Wizard.hpp"
 #include <imgui.h>
+#include <memory>
 #include <misc/cpp/imgui_stdlib.h>
 
 std::shared_ptr<NewTimetableMenu> newTimetableMenu;

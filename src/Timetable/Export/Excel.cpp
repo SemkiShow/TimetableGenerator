@@ -8,10 +8,14 @@
 #include "Translations.hpp"
 #include "UI.hpp"
 #include <cmath>
+#include <cstddef>
 #include <filesystem>
+#include <format.h>
 #include <string>
 #include <unordered_map>
+#include <vector>
 #include <workbook.h>
+#include <worksheet.h>
 
 bool printError = false;
 

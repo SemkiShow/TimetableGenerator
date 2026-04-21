@@ -7,6 +7,7 @@
 #include "Settings.hpp"
 #include "Timetable.hpp"
 #include <algorithm>
+#include <cstddef>
 #include <set>
 #include <unordered_map>
 #include <vector>

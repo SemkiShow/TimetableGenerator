@@ -6,6 +6,12 @@
 #include "Logging.hpp"
 #include "Timetable.hpp"
 #include "Utils.hpp"
+#include <algorithm>
+#include <cstddef>
+#include <ctime>
+#include <filesystem>
+#include <string>
+#include <utility>
 
 void MigrateV0(Json& json)
 {

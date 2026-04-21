@@ -7,7 +7,9 @@
 #include "Settings.hpp"
 #include "Translations.hpp"
 #include "UI/Teachers/Edit.hpp"
+#include <cstddef>
 #include <imgui.h>
+#include <memory>
 #include <string>
 
 std::shared_ptr<TeachersMenu> teachersMenu;

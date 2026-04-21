@@ -9,9 +9,17 @@
 #include "Translations.hpp"
 #include "Utils.hpp"
 #include <cmath>
+#include <cstddef>
+#include <cstdio>
+#include <cstring>
+#include <filesystem>
 #include <fstream>
 #include <imgui.h>
+#include <ios>
+#include <memory>
 #include <raylib.h>
+#include <string>
+#include <vector>
 #include <zip.h>
 
 std::shared_ptr<CrashesMenu> crashesMenu;

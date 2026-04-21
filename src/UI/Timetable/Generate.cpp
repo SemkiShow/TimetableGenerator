@@ -6,8 +6,12 @@
 #include "Searching.hpp"
 #include "Settings.hpp"
 #include "Translations.hpp"
+#include <cfloat>
 #include <cmath>
+#include <cstddef>
 #include <imgui.h>
+#include <memory>
+#include <string>
 #include <thread>
 
 std::shared_ptr<GenerateTimetableMenu> generateTimetableMenu;

@@ -3,10 +3,19 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include "Json.hpp"
+#include <cctype>
 #include <charconv>
 #include <climits>
+#include <cstddef>
+#include <exception>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <stdexcept>
+#include <string>
+#include <string_view>
+#include <system_error>
+#include <utility>
 
 void Indentation(std::string& buf, size_t level) { buf.append(4 * level, ' '); }
 

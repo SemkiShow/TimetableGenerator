@@ -11,6 +11,8 @@
 #include "Timetable.hpp"
 #include "Widgets/Window.hpp"
 #include <climits>
+#include <memory>
+#include <string>
 #include <unordered_map>
 
 class RulesMenu : public Window

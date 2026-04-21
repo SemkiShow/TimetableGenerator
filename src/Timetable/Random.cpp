@@ -4,6 +4,8 @@
 
 #include "Settings.hpp"
 #include "Timetable.hpp"
+#include <cstddef>
+#include <cstdlib>
 
 const size_t classroomsCount = 10;
 const size_t lessonsCount = 15;

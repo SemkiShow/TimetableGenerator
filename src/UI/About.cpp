@@ -6,6 +6,7 @@
 #include "Settings.hpp"
 #include "Translations.hpp"
 #include <imgui.h>
+#include <memory>
 
 std::shared_ptr<AboutMenu> aboutMenu;
 

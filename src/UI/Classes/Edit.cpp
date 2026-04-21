@@ -5,14 +5,20 @@
 #include "UI/Classes/Edit.hpp"
 #include "Logging.hpp"
 #include "Settings.hpp"
+#include "Timetable.hpp"
 #include "Translations.hpp"
 #include "UI.hpp"
 #include "UI/Classes/Edit/CombineLessons.hpp"
 #include "UI/Classes/Edit/Rules.hpp"
 #include "UI/Classes/Utils.hpp"
 #include "Utils.hpp"
+#include "Widgets/Window.hpp"
+#include <algorithm>
+#include <cstddef>
 #include <imgui.h>
+#include <memory>
 #include <misc/cpp/imgui_stdlib.h>
+#include <string>
 
 std::shared_ptr<EditClassMenu> editClassMenu;
 

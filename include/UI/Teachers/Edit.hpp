@@ -11,7 +11,9 @@
 #include "Timetable.hpp"
 #include "Widgets/Window.hpp"
 #include <memory>
+#include <string>
 #include <unordered_map>
+#include <vector>
 
 class EditTeacherMenu : public Window
 {

@@ -4,9 +4,14 @@
 
 #include "SystemInfo.hpp"
 #include "Logging.hpp"
+#include <cstdio>
+#include <exception>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <stdio.h>
 #include <string>
+#include <vector>
 
 #if defined(_WIN32)
 #include <comdef.h>

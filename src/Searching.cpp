@@ -9,9 +9,15 @@
 #include "Translations.hpp"
 #include "UI/Timetable/Generate.hpp"
 #include <algorithm>
+#include <climits>
+#include <cstddef>
+#include <cstdlib>
+#include <functional>
+#include <map>
 #include <random>
 #include <string>
 #include <thread>
+#include <vector>
 
 std::random_device dev;
 static thread_local std::mt19937 rng(dev());

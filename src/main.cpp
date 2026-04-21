@@ -9,6 +9,7 @@
 #include "UI.hpp"
 #include "UI/Crashes.hpp"
 #include "Updates.hpp"
+#include <cstdlib>
 #include <ctime>
 #include <imgui.h>
 #include <raylib.h>

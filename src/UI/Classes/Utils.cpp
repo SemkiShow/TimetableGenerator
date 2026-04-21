@@ -7,6 +7,10 @@
 #include "Translations.hpp"
 #include "Utils.hpp"
 #include <algorithm>
+#include <cstddef>
+#include <map>
+#include <string>
+#include <unordered_map>
 #include <vector>
 
 bool operator==(const TimetableLesson& lesson1, const TimetableLesson& lesson2)

@@ -5,6 +5,7 @@
 #pragma once
 
 #include "Widgets/Application.hpp"
+#include <memory>
 #include <string>
 
 struct Vector2;

@@ -5,15 +5,19 @@
 #include "UI/Wizard.hpp"
 #include "Logging.hpp"
 #include "Searching.hpp"
+#include "Timetable.hpp"
 #include "Translations.hpp"
 #include "UI/Classes.hpp"
 #include "UI/Classrooms.hpp"
 #include "UI/Lessons.hpp"
 #include "UI/Teachers.hpp"
+#include "Widgets/Window.hpp"
 #include <functional>
 #include <imgui.h>
+#include <memory>
 #include <string>
 #include <thread>
+#include <vector>
 
 const int wizardSteps = 6;
 

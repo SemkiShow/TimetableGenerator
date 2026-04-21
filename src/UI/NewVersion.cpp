@@ -7,6 +7,8 @@
 #include "Translations.hpp"
 #include "Updates.hpp"
 #include <imgui.h>
+#include <memory>
+#include <string>
 #include <thread>
 
 std::shared_ptr<NewVersionMenu> newVersionMenu;

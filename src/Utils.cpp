@@ -4,8 +4,11 @@
 
 #include "Utils.hpp"
 #include <algorithm>
+#include <cstddef>
 #include <filesystem>
 #include <raylib.h>
+#include <string>
+#include <vector>
 
 std::vector<std::string> Split(std::string input, char delimiter)
 {

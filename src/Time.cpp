@@ -3,8 +3,12 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include "Time.hpp"
+#include <cctype>
 #include <chrono>
+#include <ctime>
 #include <iomanip>
+#include <sstream>
+#include <string>
 
 Time GetCurrentTime()
 {

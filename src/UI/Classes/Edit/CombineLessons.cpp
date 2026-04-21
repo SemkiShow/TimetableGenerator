@@ -4,8 +4,14 @@
 
 #include "UI/Classes/Edit/CombineLessons.hpp"
 #include "Logging.hpp"
+#include "Timetable.hpp"
 #include "Translations.hpp"
+#include "Widgets/Window.hpp"
+#include <cstddef>
 #include <imgui.h>
+#include <memory>
+#include <string>
+#include <unordered_map>
 
 std::shared_ptr<CombineLessonsMenu> combineLessonsMenu;
 

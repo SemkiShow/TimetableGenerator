@@ -5,8 +5,10 @@
 #pragma once
 
 #include "Timetable.hpp"
+#include <cstddef>
 #include <limits.h>
 #include <unordered_map>
+#include <vector>
 
 // Preventing g++ from aggressively optimizing this loop, which frees
 // timetables before the search iteration finishes, which leads to a segmentation fault
@@ -41,8 +43,8 @@ struct IterationData
     const static size_t errorValuesPoints = 1000;
     float errorValues[errorValuesPoints];
 
-    // Settings copy (I can't use the real settings data, because
-    // if settings are changed while searching for a timetable, the program crashes)
+    // Settings copy (I can't use the real settings data, because if settings are changed while
+    // searching for a timetable, the program crashes)
     unsigned int daysPerWeek = 5;
     unsigned int lessonsPerDay = 8;
     int minTimetablesPerGeneration = 100;

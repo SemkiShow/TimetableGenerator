@@ -9,7 +9,10 @@
 #include "UI/Classes/Edit.hpp"
 #include "UI/Classes/Utils.hpp"
 #include <algorithm>
+#include <cstddef>
 #include <imgui.h>
+#include <memory>
+#include <string>
 
 std::shared_ptr<ClassesMenu> classesMenu;
 

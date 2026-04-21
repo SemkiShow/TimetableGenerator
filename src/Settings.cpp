@@ -10,6 +10,7 @@
 #include "Utils.hpp"
 #include <ctime>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -22,8 +23,7 @@ void Settings::Save()
 {
     // Read the file
     LogInfo("Saving settings");
-    std::fstream settingsFile;
-    settingsFile.open("settings.txt", std::ios::out);
+    std::ofstream settingsFile("settings.txt");
     settingsFile << "last-timetable=" << currentTimetable.name << '\n';
     settingsFile << "days-per-week=" << daysPerWeek << '\n';
     settingsFile << "lessons-per-day=" << lessonsPerDay << '\n';
@@ -55,8 +55,7 @@ void Settings::Load()
 {
     // Read the file
     LogInfo("Loading settings");
-    std::fstream settingsFile;
-    settingsFile.open("settings.txt", std::ios::in);
+    std::ifstream settingsFile("settings.txt");
     std::string buf, label, value;
     while (std::getline(settingsFile, buf))
     {

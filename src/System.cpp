@@ -4,6 +4,7 @@
 
 #include "System.hpp"
 #include <cstdlib>
+#include <string>
 
 void OpenInFileManager(const std::string& path)
 {

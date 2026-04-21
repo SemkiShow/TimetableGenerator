@@ -9,6 +9,7 @@
 #pragma once
 
 #include "Timetable.hpp"
+#include <string>
 #include <unordered_map>
 
 void FetchClassLessonsFromSimularClasses(Timetable& timetable, int classId);

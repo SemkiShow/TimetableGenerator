@@ -5,6 +5,9 @@
 #include "Json.hpp"
 #include "Logging.hpp"
 #include "Timetable.hpp"
+#include <cstddef>
+#include <filesystem>
+#include <string>
 
 Json WorkDay::ToJson()
 {
