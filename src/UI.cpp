@@ -228,15 +228,6 @@ void DrawMenuBar()
         if (ImGui::MenuItem(gettext("Classes"))) classesMenu->Open();
         if (ImGui::MenuItem(gettext("Generate timetable")))
         {
-            if (!iterationData.isDone)
-            {
-                iterationData.isDone = true;
-                generateTimetableMenu->SetStatus(
-                    GetText("Allocating memory for the timetables..."));
-                while (iterationData.threadLock) COMPILER_BARRIER();
-                StopSearching();
-            }
-            while (iterationData.threadLock) COMPILER_BARRIER();
             std::thread beginSearchingThread(BeginSearching, currentTimetable);
             beginSearchingThread.detach();
         }

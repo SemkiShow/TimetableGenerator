@@ -7,7 +7,7 @@
 - [x] Refactor Timetable
 - [ ] Refactor the rest of the codebase
   - [ ] Use JsonFormat
-  - [ ] Use std::mutex
+  - [x] Use std::mutex
   - [ ] Add .clang-tidy
   - [ ] Figure something out with changing daysPerWeek or lessonsPerDay deleting user data
 - [ ] Doxygen documentation

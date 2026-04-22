@@ -10,7 +10,6 @@
 #include <algorithm>
 #include <imgui.h>
 #include <memory>
-#include <thread>
 
 std::shared_ptr<SettingsMenu> settingsMenu;
 
@@ -70,13 +69,7 @@ void SettingsMenu::Draw()
                          100);
         if (ImGui::Checkbox(gettext("verbose-logging"), &settings.verboseLogging))
         {
-            while (iterationData.threadLock) COMPILER_BARRIER();
-            iterationData.threadLock = true;
-            if (settings.verboseLogging)
-                threadsNumber = 1;
-            else
-                threadsNumber = std::max(1u, std::thread::hardware_concurrency());
-            iterationData.threadLock = false;
+            ToggleVerboseLoggingThreads();
         }
         ImGui::Checkbox(gettext("use-prereleases"), &settings.usePrereleases);
         ImGui::TreePop();

@@ -9,11 +9,13 @@
 #include "Translations.hpp"
 #include "UI/Timetable/Generate.hpp"
 #include <algorithm>
+#include <chrono>
 #include <climits>
 #include <cstddef>
 #include <cstdlib>
 #include <functional>
 #include <map>
+#include <mutex>
 #include <random>
 #include <string>
 #include <thread>
@@ -23,6 +25,7 @@ std::random_device dev;
 static thread_local std::mt19937 rng(dev());
 size_t threadsNumber = std::max(1u, std::thread::hardware_concurrency());
 IterationData iterationData;
+static std::mutex iterationMutex;
 
 int GetLessonsAmount(const std::map<int, TimetableLesson> timetableLessons)
 {
@@ -425,11 +428,8 @@ void InjectRandomImmigrants(std::vector<Timetable>& population)
 
 void RunASearchIteration()
 {
-    // Wait for another thread
-    while (iterationData.threadLock) COMPILER_BARRIER();
-
-    // Make a thread lock
-    iterationData.threadLock = true;
+    // Lock the mutex
+    std::lock_guard<std::mutex> lock(iterationMutex);
 
     // Change the status is a timetable with 0 errors is found
     if (iterationData.timetables[iterationData.bestTimetableIndex].errors == 0)
@@ -450,7 +450,6 @@ void RunASearchIteration()
         (settings.maxIterations != -1 && iterationData.iteration >= settings.maxIterations))
     {
         iterationData.isDone = true;
-        iterationData.threadLock = false;
         generateTimetableMenu->SetStatus(GetText("Timetable generating done!"));
         return;
     }
@@ -528,24 +527,27 @@ void RunASearchIteration()
         iterationData.errorValues[i] = iterationData.errorValues[i + 1];
     }
     iterationData.errorValues[iterationData.errorValuesPoints - 1] = iterationData.minErrors;
-
-    // Release the thread lock
-    iterationData.threadLock = false;
 }
 
 void BeginSearching(const Timetable& timetable)
 {
+    // Lock the mutex
+    // This has to be done manually, because RunASearchIteration() uses the same mutex, which causes
+    // a deadlock, because the mutex isn't unlocked before running the function
+    iterationMutex.lock();
+
     // Print debug info
     LogInfo("Starting to search for the perfect timetable");
 
+    // Stop the previous search proces, if present
+    if (!iterationData.isDone) StopSearching();
+
     // Open the Generate timetable window
-    iterationData = IterationData();
+    iterationData = {};
     iterationData.isDone = false;
     generateTimetableMenu->SetStatus(GetText("Allocating memory for the timetables..."));
     generateTimetableMenu->Open();
     // wasGenerateTimetable = true;
-    iterationData.iteration = -1;
-    iterationData.threadLock = true;
 
     // Make a copy of settings
     iterationData.daysPerWeek = settings.daysPerWeek;
@@ -584,7 +586,6 @@ void BeginSearching(const Timetable& timetable)
     {
         LogInfo("The timetable has no classes!");
         iterationData.isDone = true;
-        iterationData.threadLock = false;
         generateTimetableMenu->SetStatus(GetText("Timetable generating done!"));
         return;
     }
@@ -599,24 +600,44 @@ void BeginSearching(const Timetable& timetable)
         }
     }
 
-    // Release the thread lock
-    iterationData.threadLock = false;
+    // Unlock the mutex
+    iterationMutex.unlock();
 
     // Run the iterations
     generateTimetableMenu->SetStatus(
         GetText("Generating a timetable that matches the requirements..."));
-    while (!iterationData.isDone) RunASearchIteration();
+    while (!iterationData.isDone)
+    {
+        RunASearchIteration();
+        // Avoid always locking iterationMutex
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
 }
 
 void StopSearching()
 {
+    // Lock the mutex
+    std::lock_guard<std::mutex> lock(iterationMutex);
+
     LogInfo("Finished searching. The final timetable has " +
             std::to_string(iterationData.timetables[iterationData.bestTimetableIndex].errors) +
             " errors and " +
             std::to_string(iterationData.timetables[iterationData.bestTimetableIndex].bonusPoints) +
             " bonus points");
+    iterationData.isDone = true;
     iterationData.timetables[0].Save("timetables/" + iterationData.timetables[0].name + ".json");
     iterationData.timetables.clear();
     iterationData.population.clear();
     iterationData.newPopulation.clear();
+}
+
+void ToggleVerboseLoggingThreads()
+{
+    // Lock the mutex
+    std::lock_guard<std::mutex> lock(iterationMutex);
+
+    if (settings.verboseLogging)
+        threadsNumber = 1;
+    else
+        threadsNumber = std::max(1u, std::thread::hardware_concurrency());
 }

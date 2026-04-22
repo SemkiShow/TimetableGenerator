@@ -80,8 +80,6 @@ void GenerateTimetableMenu::PostDraw()
     // Stop searching for a timetable if the Generate timetable window is closed
     if (!IsVisible())
     {
-        iterationData.isDone = true;
-        while (iterationData.threadLock) COMPILER_BARRIER();
         std::thread stopSearchingThread(StopSearching);
         stopSearchingThread.detach();
     }

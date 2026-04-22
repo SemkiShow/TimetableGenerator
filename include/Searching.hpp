@@ -10,18 +10,6 @@
 #include <unordered_map>
 #include <vector>
 
-// Preventing g++ from aggressively optimizing this loop, which frees
-// timetables before the search iteration finishes, which leads to a segmentation fault
-#if defined(__GNUC__) || defined(__clang__)
-#define COMPILER_BARRIER() asm volatile("" ::: "memory")
-#elif defined(_MSC_VER)
-#include <intrin.h>
-#pragma intrinsic(_ReadWriteBarrier)
-#define COMPILER_BARRIER() _ReadWriteBarrier()
-#else
-#error "Unsupported compiler"
-#endif
-
 struct IterationData
 {
     // Iteration-specific data
@@ -36,7 +24,6 @@ struct IterationData
     int allTimeBestScore = bestScore;
     int timetablesPerGeneration = -1;
     bool isDone = true;
-    bool threadLock = false;
     int startBonusPoints = INT_MAX;
     int maxBonusPoints = INT_MIN;
     std::unordered_map<int, std::vector<std::vector<TimetableLessonRule>>> classRuleVariants;
@@ -62,3 +49,4 @@ void ScoreTimetable(Timetable& timetable);
 void BeginSearching(const Timetable& timetable);
 void RunASearchIteration();
 void StopSearching();
+void ToggleVerboseLoggingThreads();
