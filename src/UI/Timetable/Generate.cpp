@@ -37,25 +37,16 @@ void GenerateTimetableMenu::Draw()
     }
     else
     {
-        ImGui::Text(
-            "%s", (GetText("Iteration:") + " " + std::to_string(iterationData.iteration)).c_str());
-        ImGui::Text("%s", (GetText("The best score is") + " " +
-                           std::to_string(iterationData.allTimeBestScore))
-                              .c_str());
-        ImGui::Text("%s", (GetText("The best timetable has") + " " +
-                           std::to_string(
-                               iterationData.timetables[iterationData.bestTimetableIndex].errors) +
-                           " " + gettext("errors"))
-                              .c_str());
-        ImGui::Text("%s",
-                    (GetText("The best timetable has") + " " +
-                     std::to_string(
-                         iterationData.timetables[iterationData.bestTimetableIndex].bonusPoints) +
-                     " " + gettext("bonus points"))
-                        .c_str());
-        ImGui::Text("%s", (std::to_string(iterationData.iterationsPerChange) + " " +
-                           gettext("iterations have passed since last score improvement"))
-                              .c_str());
+        ImGui::Text("%s %d", gettext("Iteration:"), iterationData.iteration);
+        ImGui::Text("%s %d", gettext("The best score is"), iterationData.allTimeBestScore);
+        ImGui::Text("%s %d %s", gettext("The best timetable has"),
+                    iterationData.timetables[iterationData.bestTimetableIndex].errors,
+                    gettext("errors"));
+        ImGui::Text("%s %d %s", gettext("The best timetable has"),
+                    iterationData.timetables[iterationData.bestTimetableIndex].bonusPoints,
+                    gettext("bonus points"));
+        ImGui::Text("%d %s", iterationData.iterationsPerChange,
+                    gettext("iterations have passed since last score improvement"));
         float progressPercentage = 1;
         if (status == gettext("Generating a timetable that matches the requirements..."))
         {

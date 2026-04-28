@@ -20,9 +20,8 @@ void NewVersionMenu::Draw()
         ImGui::End();
         return;
     }
-    ImGui::Text("%s",
-                (std::string(gettext("The latest version is")) + " " + latestVersion).c_str());
-    ImGui::Text("%s", (std::string(gettext("Your version is")) + " " + version).c_str());
+    ImGui::Text("The latest version is %s", latestVersion.c_str());
+    ImGui::Text("Your version is %s", version.c_str());
     if (version == latestVersion)
         ImGui::Text("%s", gettext("There are no new versions available"));
     else if (latestVersion != gettext("loading..."))
@@ -36,7 +35,7 @@ void NewVersionMenu::Draw()
             }
             ImGui::TreePop();
         }
-        if (downloadStatus != "") ImGui::Text("%s", downloadStatus.c_str());
+        if (!downloadStatus.empty()) ImGui::Text("%s", downloadStatus.c_str());
         if (ImGui::Button(gettext("Update")))
         {
             std::thread updateThread(UpdateToLatestVersion);

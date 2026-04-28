@@ -11,7 +11,7 @@
   - [ ] Add .clang-tidy
   - [ ] Figure something out with changing daysPerWeek or lessonsPerDay deleting user data
   - [ ] Remove a dependency on cacert.pem
-  - [ ] Use the printf syntax of ImGui::Text
+  - [x] Use the printf syntax of ImGui::Text
   - [ ] Add Web.cpp
   - [ ] Doxygen documentation
 - [ ] Unit tests

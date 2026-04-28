@@ -17,7 +17,7 @@ void AboutMenu::Draw()
         ImGui::End();
         return;
     }
-    ImGui::Text("%s", (GetText("TimetableGenerator") + " " + version).c_str());
+    ImGui::Text("%s %s", gettext("TimetableGenerator"), version.c_str());
     ImGui::Text("%s", gettext("A tool for creating timetables easily"));
     ImGui::Text("%s", gettext("Developed by SemkiShow"));
     ImGui::Text("%s", gettext("Licensed under GPL v3 License"));

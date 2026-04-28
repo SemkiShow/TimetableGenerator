@@ -30,7 +30,7 @@ void ClassesMenu::Draw()
             "Warning: changing the current year can be quite destructive.\nIf something went wrong, press the Cancel button to revert all changes"));
     if (ImGui::Button(gettext("Back"))) ShiftClasses(timetable, -1);
     ImGui::SameLine();
-    ImGui::Text("%s", std::to_string(timetable.year).c_str());
+    ImGui::Text("%d", timetable.year);
     ImGui::SameLine();
     if (ImGui::Button(gettext("Next"))) ShiftClasses(timetable, 1);
     ImGui::Separator();
@@ -126,9 +126,8 @@ void ClassesMenu::Draw()
         }
         ImGui::SameLine();
 
-        ImGui::Text("%s", (timetable.classes[timetable.orderedClasses[i]].number +
-                           timetable.classes[timetable.orderedClasses[i]].letter)
-                              .c_str());
+        ImGui::Text("%s%s", timetable.classes[timetable.orderedClasses[i]].number.c_str(),
+                    timetable.classes[timetable.orderedClasses[i]].letter.c_str());
         ImGui::PopID();
         buttonId++;
         ImGui::Unindent();

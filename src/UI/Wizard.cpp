@@ -15,7 +15,6 @@
 #include <functional>
 #include <imgui.h>
 #include <memory>
-#include <string>
 #include <thread>
 #include <vector>
 
@@ -54,7 +53,7 @@ void WizardMenu::Draw()
 
     ImGui::ProgressBar(wizardStep * 1.0 / (wizardSteps - 1));
     ImGui::Text("Step %d", wizardStep + 1);
-    ImGui::Text("%s", GetText(wizardTexts[wizardStep]).c_str());
+    ImGui::Text("%s", gettext(wizardTexts[wizardStep]));
     if (wizardStep > 0 && ImGui::Button(gettext("Back"))) wizardStep--;
     if (wizardStep > 0) ImGui::SameLine();
     if (wizardStep == wizardSteps - 1)
