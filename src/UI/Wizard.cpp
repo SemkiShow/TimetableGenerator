@@ -70,7 +70,7 @@ void WizardMenu::Draw()
     {
         if (ImGui::Button(gettext("Next")))
         {
-            LogInfo("Clicked Next in the wizard menu while on step " + std::to_string(wizardStep));
+            LogInfo("Clicked Next in the wizard menu while on step %d", wizardStep);
             if (wizardStep < wizardSteps - 1)
             {
                 wizardMenus[wizardStep]()->Open();

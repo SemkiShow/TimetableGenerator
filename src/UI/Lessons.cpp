@@ -23,7 +23,7 @@ void LessonsMenu::Draw()
 
     if (ImGui::Button(gettext("+")))
     {
-        LogInfo("Adding a new lesson with id " + std::to_string(timetable.maxLessonId + 1));
+        LogInfo("Adding a new lesson with id %d", timetable.maxLessonId + 1);
         editLessonMenu->Open(&timetable, true, timetable.maxLessonId + 1);
     }
     ImGui::Separator();
@@ -35,7 +35,7 @@ void LessonsMenu::Draw()
 
         if (ImGui::Button(gettext("-")))
         {
-            LogInfo("Removed a lesson with id " + std::to_string(it->first));
+            LogInfo("Removed a lesson with id %d", it->first);
             ImGui::PopID();
             it = timetable.lessons.erase(it);
             continue;
@@ -44,7 +44,7 @@ void LessonsMenu::Draw()
 
         if (ImGui::Button(gettext("Edit")))
         {
-            LogInfo("Editing a lesson with id " + std::to_string(it->first));
+            LogInfo("Editing a lesson with id %d", it->first);
             editLessonMenu->Open(&timetable, false, it->first);
         }
         ImGui::SameLine();

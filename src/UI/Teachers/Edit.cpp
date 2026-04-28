@@ -123,7 +123,7 @@ void EditTeacherMenu::Draw()
                 .c_str(),
             &allLessons))
     {
-        LogInfo("Clicked allLessons in a teacher with id " + std::to_string(teacherId));
+        LogInfo("Clicked allLessons in a teacher with id %d", teacherId);
         for (auto& lesson: currentTimetable.lessons) lessons[lesson.first] = allLessons;
     }
 
@@ -182,8 +182,7 @@ void EditTeacherMenu::Draw()
         if (ImGui::Combo(std::to_string(i).c_str(), &allAvailableLessonsHorizontal[i],
                          lessonValues.c_str()))
         {
-            LogInfo("Clicked allAvailableLessonsHorizontal in a teacher with id " +
-                    std::to_string(teacherId));
+            LogInfo("Clicked allAvailableLessonsHorizontal in a teacher with id %d", teacherId);
             for (size_t j = 0; j < settings.daysPerWeek; j++)
             {
                 availableLessons[j * settings.lessonsPerDay + i] = allAvailableLessonsHorizontal[i];
@@ -202,8 +201,7 @@ void EditTeacherMenu::Draw()
         ImGui::PushID(pushId);
         if (ImGui::Combo("", &allAvailableLessonsVertical[i], lessonValues.c_str()))
         {
-            LogInfo("Clicked allAvailableLessonsVertical in a teacher with id " +
-                    std::to_string(teacherId));
+            LogInfo("Clicked allAvailableLessonsVertical in a teacher with id %d", teacherId);
             for (size_t j = 0; j < settings.lessonsPerDay; j++)
                 availableLessons[i * settings.lessonsPerDay + j] = allAvailableLessonsVertical[i];
         }
@@ -224,7 +222,7 @@ void EditTeacherMenu::Draw()
     // Ok and Cancel
     if (ImGui::Button(gettext("Ok")))
     {
-        LogInfo("Clicked Ok while editing a teacher with id " + std::to_string(teacherId));
+        LogInfo("Clicked Ok while editing a teacher with id %d", teacherId);
         timetable.teachers[teacherId].lessonIds.clear();
         for (auto& lesson: currentTimetable.lessons)
         {

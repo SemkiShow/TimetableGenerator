@@ -33,7 +33,7 @@ void ClassroomsMenu::Draw()
         }
         editClassroomMenu->Open(&timetable, true, timetable.maxClassroomId + 1, classroomNumber,
                                 classroomNumber);
-        LogInfo("Adding a new classroom with id " + std::to_string(timetable.maxClassroomId + 1));
+        LogInfo("Adding a new classroom with id %d", timetable.maxClassroomId + 1);
     }
 
     for (auto it = timetable.classrooms.begin(); it != timetable.classrooms.end();)
@@ -42,7 +42,7 @@ void ClassroomsMenu::Draw()
 
         if (ImGui::Button(gettext("-")))
         {
-            LogInfo("Removed a classroom with id " + std::to_string(it->first));
+            LogInfo("Removed a classroom with id %d", it->first);
             ImGui::PopID();
             it = timetable.classrooms.erase(it);
             continue;
@@ -52,7 +52,7 @@ void ClassroomsMenu::Draw()
         if (ImGui::Button(gettext("Edit")))
         {
             editClassroomMenu->Open(&timetable, false, it->first, 0, 0);
-            LogInfo("Editing a classroom with id " + std::to_string(it->first));
+            LogInfo("Editing a classroom with id %d", it->first);
         }
         ImGui::SameLine();
 

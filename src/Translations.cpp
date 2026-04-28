@@ -59,7 +59,7 @@ void ReloadLabels()
 {
     // Read the language file
     LogInfo("Reloading labels");
-    LogInfo("Current language: " + settings.language);
+    LogInfo("Current language: %s", settings.language.c_str());
     SetLanguage("TimetableGenerator", "resources/locales", settings.language);
 
     // Assign translated week days

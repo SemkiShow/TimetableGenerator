@@ -66,7 +66,7 @@ void PrintXlsxError(lxw_workbook* workbook, lxw_worksheet* worksheet, int cellWi
 
 void ExportClassesAsXlsx(Timetable& timetable)
 {
-    LogInfo("Exporting classes of timetables/" + timetable.name + ".json");
+    LogInfo("Exporting classes of timetables/%s.json", timetable.name.c_str());
     std::string fileName = "timetables/" + GetText("Classes") + "_" + timetable.name + ".xlsx";
     lxw_workbook* workbook = workbook_new(fileName.c_str());
 
@@ -85,7 +85,7 @@ void ExportClassesAsXlsx(Timetable& timetable)
 
     for (auto& classPair: timetable.classes)
     {
-        LogInfo("Exporting class with id " + std::to_string(classPair.first));
+        LogInfo("Exporting class with id %d", classPair.first);
         // Find longest combined lesson
         size_t longestCombinedLesson = 1;
         for (auto& lesson: classPair.second.timetableLessons)
@@ -207,12 +207,14 @@ std::unordered_map<int, std::vector<TeacherData>> GetTeacherData(Timetable& time
                     {
                         int weekDay = i;
                         while (weekDay >= 7) weekDay -= 7;
-                        LogError("Teacher " + timetable.teachers[teacherId].name +
-                                 " already has lesson " + timetable.lessons[data.lessonId].name +
-                                 " with class " + timetable.classes[data.classId].number +
-                                 timetable.classes[data.classId].letter + " in classroom " +
-                                 timetable.classrooms[data.lessonId].name + " on " +
-                                 weekDays[weekDay] + " at lesson number " + std::to_string(j));
+                        LogError(
+                            "Teacher %s already has lesson %s with class %s%s in classroom %s on %s at lesson number %zu",
+                            timetable.teachers[teacherId].name.c_str(),
+                            timetable.lessons[data.lessonId].name.c_str(),
+                            timetable.classes[data.classId].number.c_str(),
+                            timetable.classes[data.classId].letter.c_str(),
+                            timetable.classrooms[data.lessonId].name.c_str(),
+                            weekDays[weekDay].c_str(), j);
                     }
                     data.lessonId = lessonTeacherPair.lessonId;
                     data.classId = classPair.first;
@@ -227,7 +229,7 @@ std::unordered_map<int, std::vector<TeacherData>> GetTeacherData(Timetable& time
 
 void ExportTeachersAsXlsx(Timetable& timetable)
 {
-    LogInfo("Exporting teachers of timetables/" + timetable.name + ".json");
+    LogInfo("Exporting teachers of timetables/%s.json", timetable.name.c_str());
     std::string fileName = "timetables/" + GetText("Teachers") + "_" + timetable.name + ".xlsx";
     lxw_workbook* workbook = workbook_new(fileName.c_str());
 
@@ -246,7 +248,7 @@ void ExportTeachersAsXlsx(Timetable& timetable)
 
     for (auto& teacher: timetable.teachers)
     {
-        LogInfo("Exporting teacher with id " + std::to_string(teacher.first));
+        LogInfo("Exporting teacher with id %d", teacher.first);
         lxw_worksheet* worksheet = workbook_add_worksheet(workbook, teacher.second.name.c_str());
 
         // Write teacher name
@@ -322,12 +324,14 @@ std::unordered_map<int, std::vector<ClassroomData>> GetClassroomData(Timetable& 
                     {
                         int weekDay = i;
                         while (weekDay >= 7) weekDay -= 7;
-                        LogError("Teacher " + timetable.classrooms[classroomId].name +
-                                 " already has lesson " + timetable.lessons[data.lessonId].name +
-                                 " by teacher " + timetable.teachers[data.teacherId].name +
-                                 " with class " + timetable.classes[data.classId].number +
-                                 timetable.classes[data.classId].letter + " on " +
-                                 weekDays[weekDay] + " at lesson number " + std::to_string(j));
+                        LogError(
+                            "Classroom %s already has lesson %s by teacher %s with class %s%s on %s at lesson number %zu",
+                            timetable.classrooms[classroomId].name.c_str(),
+                            timetable.lessons[data.lessonId].name.c_str(),
+                            timetable.teachers[data.teacherId].name.c_str(),
+                            timetable.classes[data.classId].number.c_str(),
+                            timetable.classes[data.classId].letter.c_str(),
+                            weekDays[weekDay].c_str(), j);
                     }
                     data.lessonId = lessonTeacherPair.lessonId;
                     data.classId = classPair.first;
@@ -341,7 +345,7 @@ std::unordered_map<int, std::vector<ClassroomData>> GetClassroomData(Timetable& 
 
 void ExportClassroomsAsXlsx(Timetable& timetable)
 {
-    LogInfo("Exporting classrooms of timetables/" + timetable.name + ".json");
+    LogInfo("Exporting classrooms of timetables/%s.json", timetable.name.c_str());
     std::string fileName = "timetables/" + GetText("Classrooms") + "_" + timetable.name + ".xlsx";
     lxw_workbook* workbook = workbook_new(fileName.c_str());
 
@@ -360,7 +364,7 @@ void ExportClassroomsAsXlsx(Timetable& timetable)
 
     for (auto& classroom: timetable.classrooms)
     {
-        LogInfo("Exporting classroom with id " + std::to_string(classroom.first));
+        LogInfo("Exporting classroom with id %d", classroom.first);
         lxw_worksheet* worksheet = workbook_add_worksheet(workbook, classroom.second.name.c_str());
 
         // Write classroom name
@@ -405,18 +409,18 @@ void Timetable::ExportAsXlsx()
     if (std::filesystem::exists("timetables/" + name + ".json"))
     {
         timetable.Load("timetables/" + name + ".json");
-        LogInfo("Exporting timetables/" + name + ".json");
+        LogInfo("Exporting timetables/%s.json", name.c_str());
     }
     else
     {
         timetable = *this;
         printError = true;
-        LogInfo("Exporting templates/" + name + ".json");
+        LogInfo("Exporting templates/%s.json", name.c_str());
     }
 
     ExportClassesAsXlsx(timetable);
     ExportTeachersAsXlsx(timetable);
     ExportClassroomsAsXlsx(timetable);
 
-    LogInfo("Exported templates/" + name + " as timetables/*_" + name + ".xlsx");
+    LogInfo("Exported templates/%s as timetables/*_%s.xlsx", name.c_str(), name.c_str());
 }

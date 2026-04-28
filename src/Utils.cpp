@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-std::vector<std::string> Split(std::string input, char delimiter)
+std::vector<std::string> Split(const std::string& input, char delimiter)
 {
     std::vector<std::string> output;
     output.push_back("");

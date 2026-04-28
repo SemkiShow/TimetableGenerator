@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include "Logging.hpp"
 #include "Settings.hpp"
 // #include "Timetable.hpp"
 #include "Translations.hpp"
@@ -17,7 +16,6 @@
 
 int main()
 {
-    BeginLogging();
     srand(time(0));
 
     // Timetable save and load testing
@@ -68,7 +66,6 @@ int main()
     // Save settings and close the program
     settings.hasCrashed = false;
     settings.Save();
-    EndLogging();
     rlImGuiShutdown();
     FreeResources();
     CloseWindow();

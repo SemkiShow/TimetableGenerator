@@ -10,7 +10,10 @@
   - [x] Use std::mutex
   - [ ] Add .clang-tidy
   - [ ] Figure something out with changing daysPerWeek or lessonsPerDay deleting user data
-- [ ] Doxygen documentation
+  - [ ] Remove a dependency on cacert.pem
+  - [ ] Use the printf syntax of ImGui::Text
+  - [ ] Add Web.cpp
+  - [ ] Doxygen documentation
 - [ ] Unit tests
 - [ ] Switch to RayUI or Qt?
 - [ ] Automatic crash report sending

@@ -4,11 +4,10 @@
 
 #include "Widgets/Window.hpp"
 #include "Logging.hpp"
-#include <string>
 #include <typeinfo>
 
 void Window::Open()
 {
-    LogInfo(std::string("Opening ") + typeid(*this).name());
+    LogInfo("Opening %s", typeid(*this).name());
     visible = true;
 }

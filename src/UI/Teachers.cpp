@@ -31,7 +31,7 @@ void TeachersMenu::Draw()
 
     if (ImGui::Button(gettext("+")))
     {
-        LogInfo("Adding a new teacher with id " + std::to_string(timetable.maxTeacherId + 1));
+        LogInfo("Adding a new teacher with id %d", timetable.maxTeacherId + 1);
         editTeacherMenu->Open(&timetable, true, timetable.maxTeacherId + 1);
     }
     ImGui::Separator();
@@ -42,7 +42,7 @@ void TeachersMenu::Draw()
         ImGui::PushID(it->first);
         if (ImGui::Button(gettext("-")))
         {
-            LogInfo("Removed a teacher with id " + std::to_string(it->first));
+            LogInfo("Removed a teacher with id %d", it->first);
             ImGui::PopID();
             it = timetable.teachers.erase(it);
             continue;
@@ -51,7 +51,7 @@ void TeachersMenu::Draw()
 
         if (ImGui::Button(gettext("Edit")))
         {
-            LogInfo("Editing a teacher with id " + std::to_string(it->first));
+            LogInfo("Editing a teacher with id %d", it->first);
             editTeacherMenu->Open(&timetable, false, it->first);
         }
         ImGui::SameLine();

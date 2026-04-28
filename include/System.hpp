@@ -4,6 +4,6 @@
 
 #pragma once
 
-#include <string>
+#include <filesystem>
 
-void OpenInFileManager(const std::string& path);
+void OpenInFileManager(const std::filesystem::path& path);

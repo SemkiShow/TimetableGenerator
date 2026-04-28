@@ -25,7 +25,7 @@ void NewTimetableMenu::Draw()
     ImGui::InputText("##", &timetableName);
     if (ImGui::Button(gettext("Ok")))
     {
-        LogInfo("Creating a new timetable at templates/" + timetableName + ".json");
+        LogInfo("Creating a new timetable at templates/%s.json", timetableName.c_str());
         if (newTimetable) currentTimetable = Timetable();
         currentTimetable.name = timetableName;
         currentTimetable.Save("templates/" + timetableName + ".json");

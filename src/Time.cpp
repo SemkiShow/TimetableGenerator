@@ -3,12 +3,35 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include "Time.hpp"
-#include <cctype>
+#include "Logging.hpp"
 #include <chrono>
+#include <cstdio>
 #include <ctime>
-#include <iomanip>
-#include <sstream>
 #include <string>
+
+tm Time::ToTm() const
+{
+    tm tm;
+    tm.tm_year = year - FIRST_YEAR;
+    tm.tm_mon = month - 1;
+    tm.tm_mday = day;
+    tm.tm_hour = hour;
+    tm.tm_min = minute;
+    tm.tm_sec = second;
+    return tm;
+}
+
+Time Time::FromTm(const tm& tm)
+{
+    Time time;
+    time.year = tm.tm_year + FIRST_YEAR;
+    time.month = tm.tm_mon + 1;
+    time.day = tm.tm_mday;
+    time.hour = tm.tm_hour;
+    time.minute = tm.tm_min;
+    time.second = tm.tm_sec;
+    return time;
+}
 
 Time GetCurrentTime()
 {
@@ -20,67 +43,72 @@ Time GetCurrentTime()
 #else
     localtime_r(&timeTNow, &tm);
 #endif
-    return tm;
+    return Time::FromTm(tm);
 }
 
-std::string GetTimeString(const Time& time)
+std::string Time::ToString(Format format) const
 {
-    tm tm = time.ToTm();
-    std::ostringstream oss;
-    oss << std::put_time(&tm, "%Y-%m-%d %H:%M:%S");
-    return oss.str();
+    constexpr int BUF_LEN = 32;
+    char buf[BUF_LEN];
+    int res = 0;
+
+    switch (format)
+    {
+    case Format::Iso:
+        res = snprintf(buf, BUF_LEN, "%04d-%02d-%02d %02d:%02d:%02d", year, month, day, hour,
+                       minute, second);
+        break;
+    case Format::IsoDate:
+        res = snprintf(buf, BUF_LEN, "%04d-%02d-%02d", year, month, day);
+        break;
+    case Format::IsoDateTime:
+        res = snprintf(buf, BUF_LEN, "%04d-%02d-%02dT%02d:%02d:%02dZ", year, month, day, hour,
+                       minute, second);
+        break;
+    case Format::Path:
+        res = snprintf(buf, BUF_LEN, "%04d.%02d.%02d %02d-%02d-%02d", year, month, day, hour,
+                       minute, second);
+        break;
+    default:
+        LogError("Invalid Time format!");
+        break;
+    }
+    if (res < 0 || res >= BUF_LEN) return "";
+    return {buf};
 }
 
-static bool IsTimeCorrect(const std::string& timeString)
+Time Time::FromString(const std::string& str, Format format)
 {
-    const auto& s = timeString;
+    Time t;
+    int count = 0;
+    constexpr int EXPECTED_VALUES[] = {6, 6, 3, 6};
 
-    // Check size
-    if (s.size() < 19) return false;
+    switch (format)
+    {
+    case Format::Iso:
+        count = sscanf(str.c_str(), "%d-%d-%d %d:%d:%d", &t.year, &t.month, &t.day, &t.hour,
+                       &t.minute, &t.second);
+        break;
+    case Format::IsoDate:
+        count = sscanf(str.c_str(), "%d-%d-%d", &t.year, &t.month, &t.day);
+        break;
+    case Format::IsoDateTime:
+        count = sscanf(str.c_str(), "%d-%d-%dT%d:%d:%dZ", &t.year, &t.month, &t.day, &t.hour,
+                       &t.minute, &t.second);
+        break;
+    case Format::Path:
+        count = sscanf(str.c_str(), "%d.%d.%d %d-%d-%d", &t.year, &t.month, &t.day, &t.hour,
+                       &t.minute, &t.second);
+        break;
+    default:
+        LogError("Invalid Time format!");
+        return {};
+    }
 
-    // Check -
-    if (s[4] != '-' || s[7] != '-') return false;
-
-    // Check :
-    if (s[13] != ':' || s[16] != ':') return false;
-
-    // Check year digits
-    if ((isdigit(s[0]) == 0) || (isdigit(s[1]) == 0) || (isdigit(s[2]) == 0) ||
-        (isdigit(s[3]) == 0))
-        return false;
-
-    // Check month digits
-    if ((isdigit(s[5]) == 0) || (isdigit(s[6]) == 0)) return false;
-
-    // Check day digits
-    if ((isdigit(s[8]) == 0) || (isdigit(s[9]) == 0)) return false;
-
-    // Check hour digits
-    if ((isdigit(s[11]) == 0) || (isdigit(s[12]) == 0)) return false;
-
-    // Check minute digits
-    if ((isdigit(s[14]) == 0) || (isdigit(s[15]) == 0)) return false;
-
-    // Check second digits
-    if ((isdigit(s[17]) == 0) || (isdigit(s[18]) == 0)) return false;
-
-    // Success!
-    return true;
-}
-
-Time ExtractTime(const std::string& timeString)
-{
-    const auto& s = timeString;
-    Time time;
-
-    if (!IsTimeCorrect(s)) return time;
-
-    time.year = (s[0] - '0') * 1000 + (s[1] - '0') * 100 + (s[2] - '0') * 10 + (s[3] - '0');
-    time.month = (s[5] - '0') * 10 + (s[6] - '0');
-    time.day = (s[8] - '0') * 10 + (s[9] - '0');
-    time.hour = (s[11] - '0') * 10 + (s[12] - '0');
-    time.minute = (s[14] - '0') * 10 + (s[15] - '0');
-    time.second = (s[17] - '0') * 10 + (s[18] - '0');
-
-    return time;
+    if (count != EXPECTED_VALUES[static_cast<int>(format)])
+    {
+        LogError("Invalid time string: %s", str.c_str());
+        return {};
+    }
+    return t;
 }

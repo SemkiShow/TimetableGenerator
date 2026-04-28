@@ -13,32 +13,23 @@
 
 struct Time
 {
-    Time() = default;
-    Time(int year, int month, int day, int hour, int minute, int second)
-        : year(year), month(month), day(day), hour(hour), minute(minute), second(second)
-    {
-    }
-    Time(const tm& tm)
-        : year(tm.tm_year + 1900), month(tm.tm_mon + 1), day(tm.tm_mday), hour(tm.tm_hour),
-          minute(tm.tm_min), second(tm.tm_sec)
-    {
-    }
+    static constexpr int FIRST_YEAR = 1900;
 
-    tm ToTm() const
+    enum class Format
     {
-        tm tm;
-        tm.tm_year = year - 1900;
-        tm.tm_mon = month - 1;
-        tm.tm_mday = day;
-        tm.tm_hour = hour;
-        tm.tm_min = minute;
-        tm.tm_sec = second;
-        return tm;
-    }
+        Iso,         // YYYY-MM-DD hh:mm:ss
+        IsoDate,     // YYYY-MM-DD
+        IsoDateTime, // YYYY-MM-DDThh:mm:ssZ
+        Path,        // YYYY.MM.DD hh-mm-ss
+    };
 
-    void FromTm(const tm& tm) { *this = tm; }
+    tm ToTm() const;
+    static Time FromTm(const tm& tm);
 
-    int year = 1900;
+    std::string ToString(Format format = Format::Iso) const;
+    static Time FromString(const std::string& str, Format format = Format::Iso);
+
+    int year = FIRST_YEAR;
     int month = 1;
     int day = 1;
     int hour = 0;
@@ -47,19 +38,3 @@ struct Time
 };
 
 Time GetCurrentTime();
-
-/**
- * @brief Print Time as an ISO 8601 time string
- *
- * @param time
- * @return std::string
- */
-std::string GetTimeString(const Time& time);
-
-/**
- * @brief Extract time from a time string in the ISO 8601 format
- * @warning This function returns Time{} if the input string is incorrect
- * @param timeString
- * @return Time
- */
-Time ExtractTime(const std::string& timeString);

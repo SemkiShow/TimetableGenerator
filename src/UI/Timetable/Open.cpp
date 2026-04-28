@@ -39,7 +39,7 @@ void OpenTimetableMenu::Draw()
     {
         if (ImGui::Button(timetableFiles[i].c_str()))
         {
-            LogInfo("Opening a timetable at templates/" + timetableFiles[i] + ".json");
+            LogInfo("Opening a timetable at templates/%s.json", timetableFiles[i].c_str());
             currentTimetable = Timetable();
             currentTimetable.Load("templates/" + timetableFiles[i] + ".json");
             Close();

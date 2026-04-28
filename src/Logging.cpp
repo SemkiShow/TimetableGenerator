@@ -4,34 +4,68 @@
 
 #include "Logging.hpp"
 #include "Time.hpp"
+#include <cstdarg>
+#include <cstdio>
 #include <filesystem>
-#include <fstream>
-#include <iostream>
-#include <mutex>
 #include <string>
 
-static std::ofstream g_logFile;
-static std::mutex g_logMutex;
+static FILE* g_logFile;
 
-void BeginLogging()
+static void OpenLogFile()
 {
-    const std::string LOGS_DIR = "logs/";
+    const char* const LOGS_DIR = "logs/";
     if (!std::filesystem::exists(LOGS_DIR)) std::filesystem::create_directories(LOGS_DIR);
-    g_logFile.open(LOGS_DIR + GetTimeString(GetCurrentTime()) + ".log");
+    if (g_logFile != nullptr) fclose(g_logFile);
+    const std::string FILE_NAME = LOGS_DIR + GetCurrentTime().ToString(Time::Format::Path) + ".log";
+    g_logFile = fopen(FILE_NAME.c_str(), "w");
 }
 
-void LogInfo(const std::string& data)
+void LogInfo(const char* format, ...)
 {
-    std::lock_guard<std::mutex> lock(g_logMutex);
-    g_logFile << "[INFO] " << GetTimeString(GetCurrentTime()) << ": " << data << '\n';
-    std::cout << "[INFO] " << data << '\n';
+    if (g_logFile == nullptr) OpenLogFile();
+
+    va_list args;
+    va_start(args, format);
+    va_list argsCopy;
+
+    va_copy(argsCopy, args);
+    fprintf(g_logFile, "%s: [INFO] ", GetCurrentTime().ToString().c_str());
+    vfprintf(g_logFile, format, argsCopy);
+    fprintf(g_logFile, "\n");
+    fflush(g_logFile);
+    va_end(argsCopy);
+
+    va_copy(argsCopy, args);
+    printf("[INFO] ");
+    vprintf(format, argsCopy);
+    printf("\n");
+    fflush(stdout);
+    va_end(argsCopy);
+
+    va_end(args);
 }
 
-void LogError(const std::string& data)
+void LogError(const char* format, ...)
 {
-    std::lock_guard<std::mutex> lock(g_logMutex);
-    g_logFile << "[ERROR] " << GetTimeString(GetCurrentTime()) << ": " << data << '\n';
-    std::cerr << "[\033[31mERROR\033[0m] " << data << '\n';
-}
+    if (g_logFile == nullptr) OpenLogFile();
 
-void EndLogging() { g_logFile.close(); }
+    va_list args;
+    va_start(args, format);
+    va_list argsCopy;
+
+    va_copy(argsCopy, args);
+    fprintf(g_logFile, "%s: [ERROR] ", GetCurrentTime().ToString().c_str());
+    vfprintf(g_logFile, format, argsCopy);
+    fprintf(g_logFile, "\n");
+    fflush(g_logFile);
+    va_end(argsCopy);
+
+    va_copy(argsCopy, args);
+    printf("[\x1b[31mERROR\x1b[0m] ");
+    vprintf(format, argsCopy);
+    printf("\n");
+    fflush(stdout);
+    va_end(argsCopy);
+
+    va_end(args);
+}

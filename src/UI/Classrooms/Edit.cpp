@@ -70,8 +70,8 @@ void EditClassroomMenu::Draw()
             {
                 if (ImGui::InputInt(gettext("start number"), &startNumber))
                 {
-                    LogInfo("Changed startNumber to " + std::to_string(startNumber) +
-                            " in classroom with id " + std::to_string(classroomId));
+                    LogInfo("Changed startNumber to %d in classroom with id %d", startNumber,
+                            classroomId);
                     timetable.classrooms[classroomId].name = std::to_string(startNumber);
                 }
                 if (startNumber < 0) startNumber = 0;
@@ -87,8 +87,8 @@ void EditClassroomMenu::Draw()
         {
             if (ImGui::InputText(gettext("name"), &timetable.classrooms[classroomId].name))
             {
-                LogInfo("Changed classroom name to " + timetable.classrooms[classroomId].name +
-                        " in classroom with id " + std::to_string(classroomId));
+                LogInfo("Changed classroom name to %s in classroom with id %d",
+                        timetable.classrooms[classroomId].name.c_str(), classroomId);
                 try
                 {
                     startNumber = endNumber = stoi(timetable.classrooms[classroomId].name);
@@ -108,7 +108,7 @@ void EditClassroomMenu::Draw()
     // Ok and Cancel
     if (ImGui::Button(gettext("Ok")))
     {
-        LogInfo("Pressed Ok while editing a classroom with id " + std::to_string(classroomId));
+        LogInfo("Pressed Ok while editing a classroom with id %d", classroomId);
         if (newClassroom)
         {
             if (startNumber != endNumber)

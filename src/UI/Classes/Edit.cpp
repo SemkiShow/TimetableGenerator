@@ -244,8 +244,8 @@ void EditClassMenu::Draw()
         bool availableClassLessonsHorizontal = allAvailableLessonsHorizontal[i];
         if (ImGui::Checkbox(std::to_string(i).c_str(), &availableClassLessonsHorizontal))
         {
-            LogInfo("Clicked allAvailableLessonsHorizontal number  " + std::to_string(i) +
-                    " in class with id " + std::to_string(classId));
+            LogInfo("Clicked allAvailableLessonsHorizontal number %zu in class with id %d", i,
+                    classId);
             allAvailableLessonsHorizontal[i] = availableClassLessonsHorizontal;
             for (size_t j = 0; j < settings.daysPerWeek; j++)
             {
@@ -271,8 +271,8 @@ void EditClassMenu::Draw()
                 (allAvailableLessonsVertical[i] ? gettext("Deselect all") : gettext("Select all")),
                 &availableClassLessonsVertical))
         {
-            LogInfo("Clicked allAvailableLessonsVertical number  " + std::to_string(i) +
-                    " in class with id " + std::to_string(classId));
+            LogInfo("Clicked allAvailableLessonsVertical number %zu in class with id %d", i,
+                    classId);
             allAvailableLessonsVertical[i] = availableClassLessonsVertical;
             for (size_t j = 0; j < settings.lessonsPerDay; j++)
                 timetable.classes[classId].days[i].lessons[j] = allAvailableLessonsVertical[i];
@@ -285,9 +285,9 @@ void EditClassMenu::Draw()
             if (ImGui::Checkbox("", &isLessonAvailable))
             {
                 timetable.classes[classId].days[i].lessons[j] = isLessonAvailable;
-                LogInfo("Clicked isLessonAvailable in day " + std::to_string(i) +
-                        " in lesson number " + std::to_string(j) + " in class with id " +
-                        std::to_string(classId));
+                LogInfo(
+                    "Clicked isLessonAvailable in day %zu in lesson number %zu in class with id %d",
+                    i, j, classId);
             }
             ImGui::PopID();
         }
@@ -301,7 +301,7 @@ void EditClassMenu::Draw()
     ImGui::Separator();
     if (ImGui::Button(gettext("Combine lessons")))
     {
-        LogInfo("Creating a new timetable lesson in a class with id " + std::to_string(classId));
+        LogInfo("Creating a new timetable lesson in a class with id %d", classId);
         combineLessonsMenu->Open(&timetable, true, classId,
                                  timetable.classes[classId].maxTimetableLessonId + 1, lessons,
                                  lessonTeachers);
@@ -317,8 +317,8 @@ void EditClassMenu::Draw()
         ImGui::PushID(pushId++);
         if (ImGui::Button(gettext("-")))
         {
-            LogInfo("Removed a timetable lesson with id " + std::to_string(it->first) +
-                    " in a class with id " + std::to_string(it->first));
+            LogInfo("Removed a timetable lesson with id %d in a class with id %d", it->first,
+                    classId);
             ImGui::PopID();
             it = timetable.classes[classId].timetableLessons.erase(it);
             break;
@@ -326,8 +326,8 @@ void EditClassMenu::Draw()
         ImGui::SameLine();
         if (ImGui::Button(gettext("Edit")))
         {
-            LogInfo("Editing a timetable lesson with id " + std::to_string(it->first) +
-                    " in a class with id " + std::to_string(classId));
+            LogInfo("Editing a timetable lesson with id %d in a class with id %d", it->first,
+                    classId);
             combineLessonsMenu->Open(&timetable, false, classId, it->first, lessons,
                                      lessonTeachers);
         }
@@ -376,7 +376,7 @@ void EditClassMenu::Draw()
                                 .c_str(),
                             &allLessonTeachers[lesson.first]))
         {
-            LogInfo("Clicked allLessonTeachers in class with id " + std::to_string(classId));
+            LogInfo("Clicked allLessonTeachers in class with id %d", classId);
             for (auto& teacher: currentTimetable.teachers)
             {
                 lessonTeachers[std::to_string(lesson.first) + teacher.second.name + "1"] =
@@ -410,7 +410,7 @@ void EditClassMenu::Draw()
     // Additional rules
     if (ImGui::Button(gettext("Add a lesson rule")))
     {
-        LogInfo("Adding a lesson rule to a class with id " + std::to_string(classId));
+        LogInfo("Adding a lesson rule to a class with id %d", classId);
         rulesMenu->Open(&timetable, true, timetable.classes[classId].timetableLessonRules.size(),
                         classId, lessons, lessonAmounts, lessonTeachers);
     }
@@ -438,7 +438,7 @@ void EditClassMenu::Draw()
 
         if (ImGui::Button(gettext("Edit")))
         {
-            LogInfo("Editing a lesson rule in a class with id " + std::to_string(classId));
+            LogInfo("Editing a lesson rule in a class with id %d", classId);
             rulesMenu->Open(&timetable, false, i, classId, lessons, lessonAmounts, lessonTeachers);
         }
         ImGui::SameLine();
@@ -475,7 +475,7 @@ void EditClassMenu::Draw()
     // Ok and Cancel
     if (ImGui::Button(gettext("Ok")))
     {
-        LogInfo("Clicked the Ok button while editing class with id " + std::to_string(classId));
+        LogInfo("Clicked the Ok button while editing class with id %d", classId);
         LoadTimetableLessonsFromSelection(timetable, classId, lessons, lessonAmounts,
                                           lessonTeachers);
         if (bulkEdit)

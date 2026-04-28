@@ -11,6 +11,8 @@ enum class Style;
 
 struct Settings
 {
+    const char* SETTINGS_PATH = "settings.txt";
+
     unsigned int daysPerWeek = 5;
     unsigned int lessonsPerDay = 8;
     Style style = Style::Dark;

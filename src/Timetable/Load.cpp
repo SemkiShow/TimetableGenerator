@@ -245,7 +245,7 @@ Class Class::LoadJson(Json& json)
 
 void Timetable::Load(const std::filesystem::path& path)
 {
-    LogInfo("Loading timetable at " + path.string());
+    LogInfo("Loading timetable at %s", path.string().c_str());
     Json json = Json::Load(path);
 
     *this = Timetable();
@@ -324,8 +324,8 @@ void Timetable::Load(const std::filesystem::path& path)
             {
                 orderedClasses.push_back(it->first);
                 it = tmpClasses.erase(it);
-                LogInfo("Adding items to the orderedClasses list... " +
-                        std::to_string(tmpClasses.size()) + " items left");
+                LogInfo("Adding items to the orderedClasses list... %zu items left",
+                        tmpClasses.size());
                 continue;
             }
             ++it;

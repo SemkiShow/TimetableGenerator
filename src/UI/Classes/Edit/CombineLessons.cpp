@@ -110,8 +110,7 @@ void CombineLessonsMenu::Draw()
     // Ok and Cancel
     if (ImGui::Button(gettext("Ok")))
     {
-        LogInfo("Pressed the Ok button in combine lessons of class with id " +
-                std::to_string(classId));
+        LogInfo("Pressed the Ok button in combine lessons of class with id %d", classId);
         prevTimetable->classes[classId].timetableLessons[lessonId].lessonTeacherPairs.clear();
         int counter = 0;
         for (auto& lesson: prevTimetable->lessons)

@@ -37,7 +37,7 @@ void ClassesMenu::Draw()
 
     if (ImGui::Button(gettext("+")))
     {
-        LogInfo("Adding a new class with id " + std::to_string(timetable.maxClassId + 1));
+        LogInfo("Adding a new class with id %d", timetable.maxClassId + 1);
         editClassMenu->Open(&timetable, true, timetable.maxClassId + 1, true, 1);
     }
     ImGui::Separator();
@@ -54,7 +54,7 @@ void ClassesMenu::Draw()
 
             if (ImGui::Button(gettext("-")))
             {
-                LogInfo("Removed classes with number " + lastClassNumber);
+                LogInfo("Removed classes with number %s", lastClassNumber.c_str());
                 ImGui::PopID();
                 for (auto it = timetable.classes.begin(); it != timetable.classes.end();)
                 {
@@ -74,7 +74,7 @@ void ClassesMenu::Draw()
 
             if (ImGui::Button(gettext("Edit")))
             {
-                LogInfo("Bulk editing classes with number " + lastClassNumber);
+                LogInfo("Bulk editing classes with number %s", lastClassNumber.c_str());
                 int bulkAmount = 0;
                 for (auto& classPair: timetable.classes)
                 {
@@ -96,8 +96,8 @@ void ClassesMenu::Draw()
                         classId = j;
                 }
                 classId++;
-                LogInfo("Adding a new class with number " + lastClassNumber + " and Id " +
-                        std::to_string(classId));
+                LogInfo("Adding a new class with number %s and id %d", lastClassNumber.c_str(),
+                        classId);
                 editClassMenu->Open(&timetable, true, classId, false, 0);
             }
             ImGui::Unindent();
@@ -112,7 +112,7 @@ void ClassesMenu::Draw()
 
         if (ImGui::Button(gettext("-")))
         {
-            LogInfo("Removed a class with id " + std::to_string(timetable.orderedClasses[i]));
+            LogInfo("Removed a class with id %d", timetable.orderedClasses[i]);
             timetable.classes.erase(timetable.orderedClasses[i]);
             timetable.orderedClasses.erase(timetable.orderedClasses.begin() + i);
             i--;
@@ -121,7 +121,7 @@ void ClassesMenu::Draw()
 
         if (ImGui::Button(gettext("Edit")))
         {
-            LogInfo("Editing class with id " + std::to_string(timetable.orderedClasses[i]));
+            LogInfo("Editing class with id %d", timetable.orderedClasses[i]);
             editClassMenu->Open(&timetable, false, timetable.orderedClasses[i], false, 0);
         }
         ImGui::SameLine();

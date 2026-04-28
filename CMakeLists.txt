@@ -85,6 +85,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 target_link_libraries(${PROJECT_NAME} PRIVATE raylib imgui rlimgui CURL::libcurl xlsxwriter zip intl JsonFormat)
 if (WIN32)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE __USE_MINGW_ANSI_STDIO) # Add support for %z
     target_link_libraries(${PROJECT_NAME} PRIVATE ws2_32 crypt32 secur32 user32 advapi32 wldap32 bcrypt)
     set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE $<CONFIG:Release>)
 else()

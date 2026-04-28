@@ -65,7 +65,7 @@ void EditLessonMenu::Draw()
                 .c_str(),
             &allClasses))
     {
-        LogInfo("Clicked allClasses in a lesson with id " + std::to_string(lessonId));
+        LogInfo("Clicked allClasses in a lesson with id %d", lessonId);
         for (auto& classPair: currentTimetable.classes)
         {
             classGroups[classPair.second.number] = allClasses;
@@ -96,8 +96,8 @@ void EditLessonMenu::Draw()
             if (ImGui::Checkbox(currentTimetable.classes[classId].number.c_str(),
                                 &classGroups[currentTimetable.classes[classId].number]))
             {
-                LogInfo("Clicked classGroups in class Id " + std::to_string(classId) +
-                        " in lesson with id " + std::to_string(lessonId));
+                LogInfo("Clicked classGroups in class id %zu in lesson with id %d", classId,
+                        lessonId);
                 for (auto& classPair: currentTimetable.classes)
                 {
                     if (classPair.second.number == currentTimetable.classes[classId].number)
@@ -129,7 +129,7 @@ void EditLessonMenu::Draw()
                 .c_str(),
             &allClassrooms))
     {
-        LogInfo("Clicked allClassrooms in lesson with id " + std::to_string(lessonId));
+        LogInfo("Clicked allClassrooms in lesson with id %d", lessonId);
         for (auto& classroom: currentTimetable.classrooms)
             classrooms[classroom.first] = allClassrooms;
     }
@@ -157,7 +157,7 @@ void EditLessonMenu::Draw()
     // Ok and Cancel
     if (ImGui::Button(gettext("Ok")))
     {
-        LogInfo("Clicked Ok while editing a lesson with id " + std::to_string(lessonId));
+        LogInfo("Clicked Ok while editing a lesson with id %d", lessonId);
         timetable.lessons[lessonId].classIds.clear();
         for (auto& classPair: currentTimetable.classes)
         {

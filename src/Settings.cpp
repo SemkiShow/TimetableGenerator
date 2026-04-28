@@ -21,31 +21,30 @@ std::string version = "";
 
 void Settings::Save()
 {
-    // Read the file
     LogInfo("Saving settings");
-    std::ofstream settingsFile("settings.txt");
-    settingsFile << "last-timetable=" << currentTimetable.name << '\n';
-    settingsFile << "days-per-week=" << daysPerWeek << '\n';
-    settingsFile << "lessons-per-day=" << lessonsPerDay << '\n';
-    settingsFile << "style=" << static_cast<int>(style) << '\n';
-    settingsFile << "language=" << language << '\n';
-    settingsFile << "min-free-periods=" << minFreePeriods << '\n';
-    settingsFile << "max-free-periods=" << maxFreePeriods << '\n';
-    settingsFile << "vsync=" << (vsync ? "true" : "false") << '\n';
-    settingsFile << "merged-font=" << (mergedFont ? "true" : "false") << '\n';
-    settingsFile << "timetable-autosave-interval=" << timetableAutosaveInterval << '\n';
-    settingsFile << "font-size=" << fontSize << '\n';
-    settingsFile << "error-bonus-ratio=" << errorBonusRatio << '\n';
-    settingsFile << "timetables-per-generation-step=" << timetablesPerGenerationStep << '\n';
-    settingsFile << "min-timetables-per-generation=" << minTimetablesPerGeneration << '\n';
-    settingsFile << "max-timetables-per-generation=" << maxTimetablesPerGeneration << '\n';
-    settingsFile << "max-iterations=" << maxIterations << '\n';
-    settingsFile << "additional-bonus-points=" << additionalBonusPoints << '\n';
-    settingsFile << "verbose-logging=" << (verboseLogging ? "true" : "false") << '\n';
-    settingsFile << "use-prereleases=" << (usePrereleases ? "true" : "false") << '\n';
-    settingsFile << "last-ca-update=" << lastCAUpdate << '\n';
-    settingsFile << "has-crashed=" << (hasCrashed ? "true" : "false") << '\n';
-    settingsFile.close();
+    std::ofstream file(SETTINGS_PATH);
+    file << "last-timetable=" << currentTimetable.name << '\n';
+    file << "days-per-week=" << daysPerWeek << '\n';
+    file << "lessons-per-day=" << lessonsPerDay << '\n';
+    file << "style=" << static_cast<int>(style) << '\n';
+    file << "language=" << language << '\n';
+    file << "min-free-periods=" << minFreePeriods << '\n';
+    file << "max-free-periods=" << maxFreePeriods << '\n';
+    file << "vsync=" << (vsync ? "true" : "false") << '\n';
+    file << "merged-font=" << (mergedFont ? "true" : "false") << '\n';
+    file << "timetable-autosave-interval=" << timetableAutosaveInterval << '\n';
+    file << "font-size=" << fontSize << '\n';
+    file << "error-bonus-ratio=" << errorBonusRatio << '\n';
+    file << "timetables-per-generation-step=" << timetablesPerGenerationStep << '\n';
+    file << "min-timetables-per-generation=" << minTimetablesPerGeneration << '\n';
+    file << "max-timetables-per-generation=" << maxTimetablesPerGeneration << '\n';
+    file << "max-iterations=" << maxIterations << '\n';
+    file << "additional-bonus-points=" << additionalBonusPoints << '\n';
+    file << "verbose-logging=" << (verboseLogging ? "true" : "false") << '\n';
+    file << "use-prereleases=" << (usePrereleases ? "true" : "false") << '\n';
+    file << "last-ca-update=" << lastCAUpdate << '\n';
+    file << "has-crashed=" << (hasCrashed ? "true" : "false") << '\n';
+    file.close();
 
     // Save timetable
     currentTimetable.Save("templates/" + currentTimetable.name + ".json");
@@ -53,15 +52,14 @@ void Settings::Save()
 
 void Settings::Load()
 {
-    // Read the file
     LogInfo("Loading settings");
-    std::ifstream settingsFile("settings.txt");
+    std::ifstream file(SETTINGS_PATH);
     std::string buf, label, value;
-    while (std::getline(settingsFile, buf))
+    while (std::getline(file, buf))
     {
         if (Split(buf, '=').size() < 2)
         {
-            LogError("Invalid settings.txt!");
+            LogError("Invalid %s!", SETTINGS_PATH);
             continue;
         }
         label = TrimJunk(Split(buf, '=')[0]);
@@ -93,7 +91,7 @@ void Settings::Load()
         if (label == "last-ca-update") lastCAUpdate = value;
         if (label == "has-crashed") hasCrashed = value == "true";
     }
-    settingsFile.close();
+    file.close();
 
     // Load the current timetable
     if (currentTimetable.name != "")

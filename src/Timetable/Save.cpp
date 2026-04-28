@@ -141,7 +141,7 @@ Json Class::ToJson()
     json["number"] = number;
     json["letter"] = letter;
 
-    // Teacher Id
+    // Teacher id
     json["teacherId"] = teacherId;
 
     // Lessons
@@ -179,7 +179,7 @@ Json Class::ToJson()
 
 void Timetable::Save(const std::filesystem::path& path)
 {
-    LogInfo("Saving timetable at " + path.string());
+    LogInfo("Saving timetable at %s", path.string().c_str());
     if (name == "") return;
 
     Json json;

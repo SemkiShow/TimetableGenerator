@@ -1,12 +1,20 @@
 // SPDX-FileCopyrightText: 2025 SemkiShow
 //
 // SPDX-License-Identifier: GPL-3.0-only
+/**
+ * @file
+ * @brief printf syntax logging
+ */
 
 #pragma once
 
-#include <string>
+#if defined(__clang__)
+#define PRINTF_CHECK __attribute__((format(printf, 1, 2)))
+#elif defined(__GNUC__)
+#define PRINTF_CHECK __attribute__((format(gnu_printf, 1, 2)))
+#else
+#define PRINTF_CHECK
+#endif
 
-void BeginLogging();
-void LogInfo(const std::string& data);
-void LogError(const std::string& data);
-void EndLogging();
+void LogInfo(const char* format, ...) PRINTF_CHECK;
+void LogError(const char* format, ...) PRINTF_CHECK;

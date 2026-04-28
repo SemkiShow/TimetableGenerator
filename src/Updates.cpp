@@ -70,7 +70,7 @@ void GetLatestVersionName()
     CURLcode res = curl_easy_perform(curl);
     if (res != CURLE_OK)
     {
-        LogError(std::string("CURL request failed: ") + curl_easy_strerror(res));
+        LogError("CURL request failed: %s", curl_easy_strerror(res));
         latestVersion = GetText("Error: network request failed!");
     }
     else
@@ -116,7 +116,7 @@ void GetLatestVersionName()
                     releaseNotes = MultiSplit(jsonObject[releaseID]["body"], "\\n");
                 }
                 if (latestVersion != version) newVersionMenu->Open();
-                LogInfo("Fetched the newest version name: " + latestVersion);
+                LogInfo("Fetched the newest version name: %s", latestVersion.c_str());
             }
             else
             {
@@ -126,7 +126,7 @@ void GetLatestVersionName()
         }
         else
         {
-            LogError("HTTP request failed: Status " + std::to_string(responseCode));
+            LogError("HTTP request failed: Status %ld", responseCode);
             latestVersion = GetText("Error: bad HTTP status!");
         }
     }
@@ -187,7 +187,7 @@ std::string GetLatestVersionArchiveURL()
     CURLcode res = curl_easy_perform(curl);
     if (res != CURLE_OK)
     {
-        LogError(std::string("CURL request failed: ") + curl_easy_strerror(res));
+        LogError("CURL request failed: %s", curl_easy_strerror(res));
     }
     else
     {
@@ -215,7 +215,7 @@ std::string GetLatestVersionArchiveURL()
         }
         else
         {
-            LogError("HTTP request failed: Status " + std::to_string(responseCode));
+            LogError("HTTP request failed: Status %ld", responseCode);
         }
     }
 
@@ -230,7 +230,7 @@ size_t WriteFileCallback(void* ptr, size_t size, size_t nmemb, void* stream)
 
 int DownloadFile(const std::string& url, const std::string& outputPath)
 {
-    LogInfo("Downloading the file " + url);
+    LogInfo("Downloading the file %s", url.c_str());
     FILE* file = fopen(outputPath.c_str(), "wb");
     if (!file) return 1;
 
@@ -260,7 +260,7 @@ int UnzipFile(const std::string& zipPath, const std::string& extractDir)
     zip* archive = zip_open(zipPath.c_str(), ZIP_RDONLY, &err);
     if (!archive)
     {
-        LogError("Failed to open zip archive: " + zipPath);
+        LogError("Failed to open zip archive: %s", zipPath.c_str());
         return 1;
     }
 
@@ -271,7 +271,7 @@ int UnzipFile(const std::string& zipPath, const std::string& extractDir)
         const char* name = zip_get_name(archive, i, 0);
         if (!name)
         {
-            LogError("Failed to get entry name for index " + std::to_string(i));
+            LogError("Failed to get entry name for index %zu", i);
             zip_close(archive);
             return 1;
         }
@@ -289,7 +289,7 @@ int UnzipFile(const std::string& zipPath, const std::string& extractDir)
             zip_file* zfile = zip_fopen_index(archive, i, 0);
             if (!zfile)
             {
-                LogError(std::string("Failed to open file inside zip: ") + name);
+                LogError("Failed to open file inside zip: %s", name);
                 zip_close(archive);
                 return 1;
             }
@@ -297,7 +297,7 @@ int UnzipFile(const std::string& zipPath, const std::string& extractDir)
             FILE* outfile = fopen(outPath.c_str(), "wb");
             if (!outfile)
             {
-                LogError("Failed to create output file: " + outPath);
+                LogError("Failed to create output file: %s", outPath.c_str());
                 zip_fclose(zfile);
                 zip_close(archive);
                 return 1;
@@ -309,7 +309,7 @@ int UnzipFile(const std::string& zipPath, const std::string& extractDir)
             {
                 fwrite(buffer, 1, bytesRead, outfile);
             }
-            LogInfo("Successfully extracted " + zipPath + " to " + extractDir);
+            LogInfo("Successfully extracted %s to %s", zipPath.c_str(), extractDir.c_str());
 
             fclose(outfile);
             zip_fclose(zfile);
@@ -336,7 +336,7 @@ void CopyFiles(const std::filesystem::path& src, const std::filesystem::path& de
             std::filesystem::copy_file(from, to, std::filesystem::copy_options::overwrite_existing);
         }
     }
-    LogInfo("Successfully copied " + src.string() + " to " + dest.string());
+    LogInfo("Successfully copied %s to %s", src.string().c_str(), dest.string().c_str());
 }
 
 void UpdateToLatestVersion()
@@ -384,7 +384,7 @@ void UpdateToLatestVersion()
 
     downloadStatus = std::string(GetText("Successfully updated to")) + " " + latestVersion + "!\n" +
                      GetText("Restart the application to see the new features");
-    LogInfo("Successfully updated to " + latestVersion);
+    LogInfo("Successfully updated to %s", latestVersion.c_str());
 }
 
 void UpdateCACertificate()

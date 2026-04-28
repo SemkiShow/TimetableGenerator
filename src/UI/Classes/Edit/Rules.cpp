@@ -106,7 +106,7 @@ void RulesMenu::Draw()
     // Ok and Cancel
     if (ImGui::Button(gettext("Ok")))
     {
-        LogInfo("Pressed the Ok button in rules of class with id " + std::to_string(classId));
+        LogInfo("Pressed the Ok button in rules of class with id %d", classId);
         auto& rule = timetable.classes[classId].timetableLessonRules[ruleId];
         if (newRule)
         {

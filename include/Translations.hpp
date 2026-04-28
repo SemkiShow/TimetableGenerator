@@ -28,7 +28,7 @@ std::string GetText(const std::string& id);
  * @param id
  * @return const char*
  */
-const char* gettext(const char* id);
+extern "C" const char* gettext(const char* id);
 
 /**
  * @brief Set the language
