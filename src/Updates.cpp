@@ -65,7 +65,6 @@ void GetLatestVersionName()
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
     curl_easy_setopt(curl, CURLOPT_USERAGENT, ("TimetableGenerator/" + version).c_str());
-    curl_easy_setopt(curl, CURLOPT_CAINFO, "resources/cacert.pem");
 
     CURLcode res = curl_easy_perform(curl);
     if (res != CURLE_OK)
@@ -132,7 +131,6 @@ void GetLatestVersionName()
     }
 
     curl_easy_cleanup(curl);
-    return;
 }
 
 void CheckForUpdates(bool showWindow)
@@ -182,7 +180,6 @@ std::string GetLatestVersionArchiveURL()
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
     curl_easy_setopt(curl, CURLOPT_USERAGENT, ("TimetableGenerator/" + version).c_str());
-    curl_easy_setopt(curl, CURLOPT_CAINFO, "resources/cacert.pem");
 
     CURLcode res = curl_easy_perform(curl);
     if (res != CURLE_OK)
@@ -245,7 +242,6 @@ int DownloadFile(const std::string& url, const std::string& outputPath)
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteFileCallback);
     curl_easy_setopt(curl, CURLOPT_USERAGENT, ("TimetableGenerator/" + version).c_str());
-    curl_easy_setopt(curl, CURLOPT_CAINFO, "resources/cacert.pem");
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
     CURLcode res = curl_easy_perform(curl);
     curl_easy_cleanup(curl);
@@ -385,22 +381,4 @@ void UpdateToLatestVersion()
     downloadStatus = std::string(GetText("Successfully updated to")) + " " + latestVersion + "!\n" +
                      GetText("Restart the application to see the new features");
     LogInfo("Successfully updated to %s", latestVersion.c_str());
-}
-
-void UpdateCACertificate()
-{
-    if (!std::filesystem::exists("tmp")) std::filesystem::create_directory("tmp");
-    if (DownloadFile("https://curl.se/ca/cacert.pem", "tmp/cacert.pem") != 0)
-    {
-        LogError("Failed to update the CA certificate!");
-        return;
-    }
-    std::filesystem::copy_file("tmp/cacert.pem", "resources/cacert.pem",
-                               std::filesystem::copy_options::overwrite_existing);
-    std::filesystem::remove("tmp/cacert.pem");
-
-    // Update lastCAUpdate
-    time_t now = time(0);
-    settings.lastCAUpdate = asctime(localtime(&now));
-    LogInfo("Updated the CA certificate");
 }

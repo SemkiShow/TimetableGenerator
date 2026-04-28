@@ -31,7 +31,6 @@ struct Settings
     int additionalBonusPoints = 1;
     bool verboseLogging = false;
     bool usePrereleases = false;
-    std::string lastCAUpdate = "";
     bool hasCrashed = false;
 
     void Save();

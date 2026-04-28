@@ -6,13 +6,9 @@
 #include "Logging.hpp"
 #include "Timetable.hpp"
 #include "Translations.hpp"
-#include "Updates.hpp"
 #include "Utils.hpp"
-#include <ctime>
 #include <fstream>
-#include <iomanip>
 #include <iostream>
-#include <sstream>
 #include <string>
 
 Settings settings;
@@ -42,7 +38,6 @@ void Settings::Save()
     file << "additional-bonus-points=" << additionalBonusPoints << '\n';
     file << "verbose-logging=" << (verboseLogging ? "true" : "false") << '\n';
     file << "use-prereleases=" << (usePrereleases ? "true" : "false") << '\n';
-    file << "last-ca-update=" << lastCAUpdate << '\n';
     file << "has-crashed=" << (hasCrashed ? "true" : "false") << '\n';
     file.close();
 
@@ -88,7 +83,6 @@ void Settings::Load()
         if (label == "additional-bonus-points") additionalBonusPoints = stoi(value);
         if (label == "verbose-logging") verboseLogging = value == "true";
         if (label == "use-prereleases") usePrereleases = value == "true";
-        if (label == "last-ca-update") lastCAUpdate = value;
         if (label == "has-crashed") hasCrashed = value == "true";
     }
     file.close();
@@ -102,16 +96,6 @@ void Settings::Load()
     // Load the language
     GetAllLanguages();
     ReloadLabels();
-
-    // Update the CA certificate, if necessary (done monthly)
-    struct tm parsedTm;
-    std::istringstream ss(lastCAUpdate);
-    ss >> std::get_time(&parsedTm, "%a %b %d %H:%M:%S %Y");
-    time_t reconstructedTime = mktime(&parsedTm);
-    if (reconstructedTime < 0 || difftime(time(0), reconstructedTime) > 60 * 60 * 24 * 30)
-    {
-        UpdateCACertificate();
-    }
 
     // Read the version
     std::ifstream versionFile("version.txt");

@@ -14,4 +14,3 @@ extern std::string downloadStatus;
 void GetLatestVesionName();
 void CheckForUpdates(bool showWindow = true);
 void UpdateToLatestVersion();
-void UpdateCACertificate();
