@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include "Updates.hpp"
-#include "Json.hpp"
 #include "Logging.hpp"
 #include "Settings.hpp"
 #include "Translations.hpp"
 #include "UI/NewVersion.hpp"
+#include <JsonFormat.hpp>
 #include <cstdio>
 #include <cstring>
 #include <ctime>
@@ -80,12 +80,12 @@ void GetLatestVersionName()
         if (responseCode == 200)
         {
             Json jsonObject = Json::Parse(readBuffer);
-            if (!jsonObject.GetArray().empty())
+            if (!jsonObject.empty())
             {
                 LogInfo("Successfully fetched releases info");
                 size_t releaseID = 0;
-                while (jsonObject[releaseID]["draft"].GetBool() ||
-                       (jsonObject[releaseID]["prerelease"].GetBool() && !settings.usePrereleases))
+                while (jsonObject[releaseID]["draft"] ||
+                       (jsonObject[releaseID]["prerelease"] && !settings.usePrereleases))
                 {
                     releaseID++;
                     if (releaseID >= jsonObject.size())
@@ -98,7 +98,7 @@ void GetLatestVersionName()
                 if (releaseID >= jsonObject.size())
                 {
                     releaseID = 0;
-                    while (jsonObject[releaseID]["draft"].GetBool())
+                    while (jsonObject[releaseID]["draft"])
                     {
                         releaseID++;
                         if (releaseID >= jsonObject.size())
@@ -109,11 +109,11 @@ void GetLatestVersionName()
                         }
                     }
                 }
-                latestVersion = jsonObject[releaseID]["tag_name"].GetString();
-                releaseNotes = MultiSplit(jsonObject[releaseID]["body"].GetString(), "\\r\\n");
+                latestVersion = jsonObject[releaseID]["tag_name"];
+                releaseNotes = MultiSplit(jsonObject[releaseID]["body"], "\\r\\n");
                 if (releaseNotes.size() <= 1)
                 {
-                    releaseNotes = MultiSplit(jsonObject[releaseID]["body"].GetString(), "\\n");
+                    releaseNotes = MultiSplit(jsonObject[releaseID]["body"], "\\n");
                 }
                 if (latestVersion != version) newVersionMenu->Open();
                 LogInfo("Fetched the newest version name: " + latestVersion);
@@ -196,17 +196,17 @@ std::string GetLatestVersionArchiveURL()
         if (responseCode == 200)
         {
             Json jsonObject = Json::Parse(readBuffer);
-            if (!jsonObject.GetArray().empty())
+            if (!jsonObject.empty())
             {
                 LogInfo("Successfully fetched releases info");
                 size_t releaseID = 0;
-                while (jsonObject[releaseID]["draft"].GetBool() ||
-                       (jsonObject[releaseID]["prerelease"].GetBool() && !settings.usePrereleases))
+                while (jsonObject[releaseID]["draft"] ||
+                       (jsonObject[releaseID]["prerelease"] && !settings.usePrereleases))
                 {
                     releaseID++;
                     if (releaseID >= jsonObject.size()) return "";
                 }
-                return jsonObject[releaseID]["assets"][0]["browser_download_url"].GetString();
+                return jsonObject[releaseID]["assets"][0]["browser_download_url"];
             }
             else
             {

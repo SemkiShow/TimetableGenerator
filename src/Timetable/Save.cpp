@@ -2,9 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include "Json.hpp"
 #include "Logging.hpp"
 #include "Timetable.hpp"
+#include <JsonFormat.hpp>
 #include <cstddef>
 #include <filesystem>
 #include <string>

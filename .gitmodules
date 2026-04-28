@@ -34,3 +34,6 @@
 	path = thirdparty/libintl-lite
 	url = https://github.com/j-jorge/libintl-lite
 	shallow = true
+[submodule "thirdparty/JsonFormat"]
+	path = thirdparty/JsonFormat
+	url = https://github.com/SemkiShow/JsonFormat

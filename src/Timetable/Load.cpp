@@ -2,10 +2,10 @@
 //
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include "Json.hpp"
 #include "Logging.hpp"
 #include "Timetable.hpp"
 #include "Utils.hpp"
+#include <JsonFormat.hpp>
 #include <algorithm>
 #include <cstddef>
 #include <ctime>
@@ -91,7 +91,7 @@ WorkDay WorkDay::LoadJson(Json& json)
 
     for (auto& lessonId: json.GetArray())
     {
-        workDay.lessonIds.push_back(lessonId.GetInt());
+        workDay.lessonIds.push_back(lessonId);
     }
 
     return workDay;
@@ -101,7 +101,7 @@ Classroom Classroom::LoadJson(Json& json)
 {
     Classroom classroom;
 
-    classroom.name = json.GetString();
+    classroom.name = json;
 
     return classroom;
 }
@@ -110,14 +110,14 @@ Lesson Lesson::LoadJson(Json& json)
 {
     Lesson lesson;
 
-    lesson.name = json["name"].GetString();
+    lesson.name = json["name"];
     for (auto& classId: json["classIds"].GetArray())
     {
-        lesson.classIds.push_back(classId.GetInt());
+        lesson.classIds.push_back(classId);
     }
     for (auto& classroomId: json["classroomIds"].GetArray())
     {
-        lesson.classroomIds.push_back(classroomId.GetInt());
+        lesson.classroomIds.push_back(classroomId);
     }
 
     return lesson;
@@ -127,10 +127,10 @@ Teacher Teacher::LoadJson(Json& json)
 {
     Teacher teacher;
 
-    teacher.name = json["name"].GetString();
+    teacher.name = json["name"];
     for (auto& lessonId: json["lessonIds"].GetArray())
     {
-        teacher.lessonIds.push_back(lessonId.GetInt());
+        teacher.lessonIds.push_back(lessonId);
     }
     for (auto& workDay: json["workDays"].GetArray())
     {
@@ -144,8 +144,8 @@ LessonTeacherPair LessonTeacherPair::LoadJson(Json& json)
 {
     LessonTeacherPair lessonTeacherPair;
 
-    lessonTeacherPair.lessonId = json["lessonId"].GetInt();
-    lessonTeacherPair.teacherId = json["teacherId"].GetInt();
+    lessonTeacherPair.lessonId = json["lessonId"];
+    lessonTeacherPair.teacherId = json["teacherId"];
 
     return lessonTeacherPair;
 }
@@ -154,7 +154,7 @@ TimetableLesson TimetableLesson::LoadJson(Json& json)
 {
     TimetableLesson timetableLesson;
 
-    timetableLesson.amount = json["amount"].GetInt();
+    timetableLesson.amount = json["amount"];
     for (auto& lessonTeacherPair: json["lessonTeacherPairs"].GetArray())
     {
         timetableLesson.lessonTeacherPairs.push_back(
@@ -168,10 +168,10 @@ ClassroomLessonPair ClassroomLessonPair::LoadJson(Json& json)
 {
     ClassroomLessonPair classroomLessonPair;
 
-    classroomLessonPair.timetableLessonId = json["timetableLessonId"].GetInt();
+    classroomLessonPair.timetableLessonId = json["timetableLessonId"];
     for (auto& classroomId: json["classroomIds"].GetArray())
     {
-        classroomLessonPair.classroomIds.push_back(classroomId.GetInt());
+        classroomLessonPair.classroomIds.push_back(classroomId);
     }
 
     return classroomLessonPair;
@@ -193,11 +193,11 @@ TimetableLessonRule TimetableLessonRule::LoadJson(Json& json)
 {
     TimetableLessonRule timetableLessonRule;
 
-    timetableLessonRule.preserveOrder = json["preserveOrder"].GetBool();
-    timetableLessonRule.amount = json["amount"].GetInt();
+    timetableLessonRule.preserveOrder = json["preserveOrder"];
+    timetableLessonRule.amount = json["amount"];
     for (auto& timetableLessonId: json["timetableLessonIds"].GetArray())
     {
-        timetableLessonRule.timetableLessonIds.push_back(timetableLessonId.GetInt());
+        timetableLessonRule.timetableLessonIds.push_back(timetableLessonId);
     }
 
     return timetableLessonRule;
@@ -207,9 +207,9 @@ Class Class::LoadJson(Json& json)
 {
     Class classPair;
 
-    classPair.number = json["number"].GetString();
-    classPair.letter = json["letter"].GetString();
-    classPair.teacherId = json["teacherId"].GetInt();
+    classPair.number = json["number"];
+    classPair.letter = json["letter"];
+    classPair.teacherId = json["teacherId"];
 
     // Lessons
     for (auto& lesson: json["lessons"].GetObject())
@@ -229,7 +229,7 @@ Class Class::LoadJson(Json& json)
         while (i >= classPair.days.size()) classPair.days.emplace_back();
         for (size_t j = 0; j < json["lessonNumbers"][i].size(); j++)
         {
-            classPair.days[i].lessons.push_back(json["lessonNumbers"][i][j].GetBool());
+            classPair.days[i].lessons.push_back(json["lessonNumbers"][i][j]);
         }
     }
 
@@ -253,7 +253,7 @@ void Timetable::Load(const std::filesystem::path& path)
     if (json["version"].IsNull())
         version = 0;
     else
-        version = json["version"].GetInt();
+        version = json["version"];
 
     if (version == 0)
     {
@@ -269,7 +269,7 @@ void Timetable::Load(const std::filesystem::path& path)
     name = std::filesystem::path(path).stem().string();
     name = TrimJunk(name);
 
-    year = json["year"].GetInt();
+    year = json["year"];
     if (year < 1900)
     {
         time_t now = time(0);
@@ -280,7 +280,7 @@ void Timetable::Load(const std::filesystem::path& path)
     // Classrooms
     for (auto& classroom: json["classrooms"].GetObject())
     {
-        if (classroom.second.GetString() == "") continue;
+        if (classroom.second == "") continue;
         int classroomId = stoi(classroom.first);
         maxClassroomId = std::max(maxClassroomId, classroomId);
         classrooms[classroomId] = Classroom::LoadJson(classroom.second);
@@ -289,7 +289,7 @@ void Timetable::Load(const std::filesystem::path& path)
     // Lessons
     for (auto& lesson: json["lessons"].GetObject())
     {
-        if (lesson.second["name"].GetString() == "") continue;
+        if (lesson.second["name"] == "") continue;
         int lessonId = stoi(lesson.first);
         maxLessonId = std::max(maxLessonId, lessonId);
         lessons[lessonId] = Lesson::LoadJson(lesson.second);
@@ -298,7 +298,7 @@ void Timetable::Load(const std::filesystem::path& path)
     // Teachers
     for (auto& teacher: json["teachers"].GetObject())
     {
-        if (teacher.second["name"].GetString() == "") continue;
+        if (teacher.second["name"] == "") continue;
         int teacherId = stoi(teacher.first);
         maxTeacherId = std::max(maxTeacherId, teacherId);
         teachers[teacherId] = Teacher::LoadJson(teacher.second);
@@ -307,7 +307,7 @@ void Timetable::Load(const std::filesystem::path& path)
     // Classes
     for (auto& classPair: json["classes"].GetObject())
     {
-        if (classPair.second["number"].GetString() == "") continue;
+        if (classPair.second["number"] == "") continue;
         int classId = stoi(classPair.first);
         maxClassId = std::max(maxClassId, classId);
         classes[classId] = Class::LoadJson(classPair.second);
