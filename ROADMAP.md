@@ -12,7 +12,7 @@
   - [ ] Figure something out with changing daysPerWeek or lessonsPerDay deleting user data
   - [x] Remove a dependency on cacert.pem
   - [x] Use the printf syntax of ImGui::Text
-  - [ ] Add Web.cpp
+  - [x] Add Web.cpp
   - [ ] Doxygen documentation
 - [ ] Unit tests
 - [ ] Switch to RayUI or Qt?
