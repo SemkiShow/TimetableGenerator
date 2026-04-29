@@ -4,6 +4,7 @@
 
 #include "Web.hpp"
 #include "Logging.hpp"
+#include "Settings.hpp"
 #include <cstddef>
 #include <cstdio>
 #include <curl/curl.h>
@@ -43,6 +44,7 @@ Response PerformGet(GetRequest request)
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+    curl_easy_setopt(curl, CURLOPT_USERAGENT, ("TimetableGenerator/" + version).c_str());
 
     CURLcode res = curl_easy_perform(curl);
 
@@ -125,6 +127,7 @@ Response PerformPost(PostRequest request)
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+    curl_easy_setopt(curl, CURLOPT_USERAGENT, ("TimetableGenerator/" + version).c_str());
 
     CURLcode res = curl_easy_perform(curl);
 
@@ -182,6 +185,7 @@ Response PerformCustom(CustomRequest request)
     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, request.requestName.c_str());
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+    curl_easy_setopt(curl, CURLOPT_USERAGENT, ("TimetableGenerator/" + version).c_str());
 
     CURLcode res = curl_easy_perform(curl);
 

@@ -7,9 +7,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Generate compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Turn off all warning-related errors when compiling third-party code
-add_compile_options(-Wno-error)
-
 # raylib
 add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/raylib ${CMAKE_BINARY_DIR}/_deps/raylib-build SYSTEM)
 
@@ -38,10 +35,10 @@ if (NOT TARGET CURL::libcurl)
         set(CURL_USE_MBEDTLS ON CACHE BOOL "" FORCE)
 
         # mbedtls
-        add_compile_options(-Wno-format)
         set(ENABLE_TESTING OFF CACHE BOOL "" FORCE)
         set(ENABLE_PROGRAMS OFF CACHE BOOL "" FORCE)
         add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/mbedtls ${CMAKE_BINARY_DIR}/_deps/mbedtls-build SYSTEM)
+        target_compile_options(mbedtls PRIVATE -Wno-unterminated-string-initialization)
         set(MBEDTLS_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/thirdparty/mbedtls/include CACHE PATH "" FORCE)
         set(MBEDTLS_LIBRARY ${CMAKE_BINARY_DIR}/_deps/mbedtls-build/library/libmbedtls.a CACHE FILEPATH "" FORCE)
         set(MBEDX509_LIBRARY ${CMAKE_BINARY_DIR}/_deps/mbedtls-build/library/libmbedx509.a CACHE FILEPATH "" FORCE)
