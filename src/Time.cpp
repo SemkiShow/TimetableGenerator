@@ -81,7 +81,7 @@ Time Time::FromString(const std::string& str, Format format)
 {
     Time t;
     int count = 0;
-    constexpr int EXPECTED_VALUES[] = {6, 6, 3, 6};
+    constexpr int EXPECTED_VALUES[] = {6, 3, 6, 6};
 
     switch (format)
     {

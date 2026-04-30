@@ -14,6 +14,8 @@
 #include <utility>
 #include <vector>
 
+static std::string USER_AGENT = "TimetableGenerator/" + version;
+
 static size_t WriteCallback(void* ptr, size_t size, size_t nmemb, void* stream)
 {
     ((std::string*)stream)->append((char*)ptr, size * nmemb);
@@ -44,7 +46,7 @@ Response PerformGet(GetRequest request)
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-    curl_easy_setopt(curl, CURLOPT_USERAGENT, ("TimetableGenerator/" + version).c_str());
+    curl_easy_setopt(curl, CURLOPT_USERAGENT, USER_AGENT.c_str());
 
     CURLcode res = curl_easy_perform(curl);
 
@@ -127,7 +129,7 @@ Response PerformPost(PostRequest request)
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-    curl_easy_setopt(curl, CURLOPT_USERAGENT, ("TimetableGenerator/" + version).c_str());
+    curl_easy_setopt(curl, CURLOPT_USERAGENT, USER_AGENT.c_str());
 
     CURLcode res = curl_easy_perform(curl);
 
@@ -185,7 +187,7 @@ Response PerformCustom(CustomRequest request)
     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, request.requestName.c_str());
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-    curl_easy_setopt(curl, CURLOPT_USERAGENT, ("TimetableGenerator/" + version).c_str());
+    curl_easy_setopt(curl, CURLOPT_USERAGENT, USER_AGENT.c_str());
 
     CURLcode res = curl_easy_perform(curl);
 
