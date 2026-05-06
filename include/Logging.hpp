@@ -17,4 +17,5 @@
 #endif
 
 void LogInfo(const char* format, ...) PRINTF_CHECK;
+void LogWarning(const char* format, ...) PRINTF_CHECK;
 void LogError(const char* format, ...) PRINTF_CHECK;

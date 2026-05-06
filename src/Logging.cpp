@@ -45,6 +45,31 @@ void LogInfo(const char* format, ...)
     va_end(args);
 }
 
+void LogWarning(const char* format, ...)
+{
+    if (g_logFile == nullptr) OpenLogFile();
+
+    va_list args;
+    va_start(args, format);
+    va_list argsCopy;
+
+    va_copy(argsCopy, args);
+    fprintf(g_logFile, "%s: [WARNING] ", GetCurrentTime().ToString().c_str());
+    vfprintf(g_logFile, format, argsCopy);
+    fprintf(g_logFile, "\n");
+    fflush(g_logFile);
+    va_end(argsCopy);
+
+    va_copy(argsCopy, args);
+    printf("[\x1b[33mWARNING\x1b[0m] ");
+    vprintf(format, argsCopy);
+    printf("\n");
+    fflush(stdout);
+    va_end(argsCopy);
+
+    va_end(args);
+}
+
 void LogError(const char* format, ...)
 {
     if (g_logFile == nullptr) OpenLogFile();

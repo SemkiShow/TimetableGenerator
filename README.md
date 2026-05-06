@@ -22,7 +22,7 @@ A tool for creating timetables easily
 ```bash
 git clone https://github.com/SemkiShow/TimetableGenerator
 cd TimetableGenerator
-git submodule update --init --recursive --depth 1
+git submodule update --init --depth 1
 chmod +x run.sh
 ./run.sh
 ```

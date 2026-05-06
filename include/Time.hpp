@@ -19,7 +19,7 @@ struct Time
     {
         Iso,         // YYYY-MM-DD hh:mm:ss
         IsoDate,     // YYYY-MM-DD
-        IsoDateTime, // YYYY-MM-DDThh:mm:ssZ
+        IsoDateTime, // YYYY-MM-DDThh:mm:ssZ or YYYY-MM-DDThh:mm:ss[+,-]hh:mm
         Path,        // YYYY.MM.DD hh-mm-ss
     };
 
@@ -36,5 +36,12 @@ struct Time
     int minute = 0;
     int second = 0;
 };
+
+constexpr Time TIME_ZERO = {.year = 0, .month = 0, .day = 0, .hour = 0, .minute = 0, .second = 0};
+
+Time operator+(Time a, Time b);
+Time& operator+=(Time& a, Time b);
+bool operator==(Time a, Time b);
+bool operator!=(Time a, Time b);
 
 Time GetCurrentTime();

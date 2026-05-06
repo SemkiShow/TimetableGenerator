@@ -4,8 +4,10 @@
 
 #include "Time.hpp"
 #include "Logging.hpp"
+#include <cerrno>
 #include <chrono>
 #include <cstdio>
+#include <cstring>
 #include <ctime>
 #include <string>
 
@@ -32,6 +34,37 @@ Time Time::FromTm(const tm& tm)
     time.second = tm.tm_sec;
     return time;
 }
+
+Time operator+(Time a, Time b)
+{
+    tm cTm = a.ToTm();
+    cTm.tm_year += b.year;
+    cTm.tm_mon += b.month;
+    cTm.tm_mday += b.day;
+    cTm.tm_hour += b.hour;
+    cTm.tm_min += b.minute;
+    cTm.tm_sec += b.second;
+    cTm.tm_isdst = -1;
+
+    if (mktime(&cTm) == -1)
+    {
+        LogError("Failed to perform %s + %s: %s", a.ToString().c_str(), b.ToString().c_str(),
+                 strerror(errno));
+        return {};
+    }
+
+    return Time::FromTm(cTm);
+}
+
+Time& operator+=(Time& a, Time b) { return a = a + b; }
+
+bool operator==(Time a, Time b)
+{
+    return a.year == b.year && a.month == b.month && a.day == b.day && a.hour == b.hour &&
+           a.minute == b.minute && a.second == b.second;
+}
+
+bool operator!=(Time a, Time b) { return !(a == b); }
 
 Time GetCurrentTime()
 {
@@ -82,6 +115,8 @@ Time Time::FromString(const std::string& str, Format format)
     Time t;
     int count = 0;
     constexpr int EXPECTED_VALUES[] = {6, 3, 6, 6};
+    Time delta = TIME_ZERO;
+    char tzSign[2] = {0};
 
     switch (format)
     {
@@ -93,8 +128,26 @@ Time Time::FromString(const std::string& str, Format format)
         count = sscanf(str.c_str(), "%d-%d-%d", &t.year, &t.month, &t.day);
         break;
     case Format::IsoDateTime:
-        count = sscanf(str.c_str(), "%d-%d-%dT%d:%d:%dZ", &t.year, &t.month, &t.day, &t.hour,
-                       &t.minute, &t.second);
+        count = sscanf(str.c_str(), "%d-%d-%dT%d:%d:%d%1[+-Z]%d:%d", &t.year, &t.month, &t.day,
+                       &t.hour, &t.minute, &t.second, tzSign, &delta.hour, &delta.minute);
+
+        // No terminating character
+        if (count == EXPECTED_VALUES[static_cast<int>(Format::IsoDateTime)] + 1)
+        {
+            count = EXPECTED_VALUES[static_cast<int>(Format::IsoDateTime)];
+        }
+
+        // Timezone present
+        if (count == EXPECTED_VALUES[static_cast<int>(Format::IsoDateTime)] + 3)
+        {
+            count = EXPECTED_VALUES[static_cast<int>(Format::IsoDateTime)];
+            if (tzSign[0] == '+')
+            {
+                delta.hour *= -1;
+                delta.minute *= -1;
+            }
+            t += delta;
+        }
         break;
     case Format::Path:
         count = sscanf(str.c_str(), "%d.%d.%d %d-%d-%d", &t.year, &t.month, &t.day, &t.hour,
