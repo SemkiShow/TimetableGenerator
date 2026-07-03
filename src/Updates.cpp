@@ -50,12 +50,12 @@ void GetLatestVersionName()
     auto response = PerformGet(request);
     if (!response.success)
     {
-        LogError("Failed to get the latest version name!");
+        LOG_ERROR("Failed to get the latest version name!");
         latestVersion = GetText("Failed to get the latest version name!");
         return;
     }
 
-    Json json = Json::Parse(response.response);
+    Json json = Json::Parse(response.body);
     if (!json.empty())
     {
         LogInfo("Successfully fetched releases info");
@@ -94,7 +94,7 @@ void GetLatestVersionName()
     }
     else
     {
-        LogError("No releases found in Json response");
+        LOG_ERROR("No releases found in Json response");
         latestVersion = GetText("Error: no valid new version found!");
     }
 }
@@ -115,7 +115,7 @@ std::string ExtractString(const std::string& input, const std::string& prefix,
     size_t start = input.find(prefix);
     if (start == std::string::npos)
     {
-        LogError("Prefix not found");
+        LOG_ERROR("Prefix not found");
         return "";
     }
     start += prefix.length();
@@ -123,7 +123,7 @@ std::string ExtractString(const std::string& input, const std::string& prefix,
     size_t end = input.rfind(suffix);
     if (end == std::string::npos || end < start)
     {
-        LogError("Suffix not found or invalid");
+        LOG_ERROR("Suffix not found or invalid");
         return "";
     }
 
@@ -140,11 +140,11 @@ std::string GetLatestVersionArchiveURL()
     auto response = PerformGet(request);
     if (!response.success)
     {
-        LogError("Failed to fetch the latest version archive URL!");
+        LOG_ERROR("Failed to fetch the latest version archive URL!");
         return "";
     }
 
-    Json json = Json::Parse(response.response);
+    Json json = Json::Parse(response.body);
     if (!json.empty())
     {
         LogInfo("Successfully fetched releases info");
@@ -159,7 +159,7 @@ std::string GetLatestVersionArchiveURL()
     }
     else
     {
-        LogError("No releases found in Json response");
+        LOG_ERROR("No releases found in Json response");
     }
     return "";
 }
@@ -171,7 +171,7 @@ bool UnzipFile(const std::string& zipPath, const std::string& extractDir)
     zip* archive = zip_open(zipPath.c_str(), ZIP_RDONLY, &err);
     if (!archive)
     {
-        LogError("Failed to open zip archive: %s", zipPath.c_str());
+        LOG_ERROR("Failed to open zip archive: %s", zipPath.c_str());
         return false;
     }
 
@@ -182,7 +182,7 @@ bool UnzipFile(const std::string& zipPath, const std::string& extractDir)
         const char* name = zip_get_name(archive, i, 0);
         if (!name)
         {
-            LogError("Failed to get entry name for index %zu", i);
+            LOG_ERROR("Failed to get entry name for index %zu", i);
             zip_close(archive);
             return false;
         }
@@ -200,7 +200,7 @@ bool UnzipFile(const std::string& zipPath, const std::string& extractDir)
             zip_file* zfile = zip_fopen_index(archive, i, 0);
             if (!zfile)
             {
-                LogError("Failed to open file inside zip: %s", name);
+                LOG_ERROR("Failed to open file inside zip: %s", name);
                 zip_close(archive);
                 return false;
             }
@@ -208,7 +208,7 @@ bool UnzipFile(const std::string& zipPath, const std::string& extractDir)
             FILE* outfile = fopen(outPath.c_str(), "wb");
             if (!outfile)
             {
-                LogError("Failed to create output file: %s", outPath.c_str());
+                LOG_ERROR("Failed to create output file: %s", outPath.c_str());
                 zip_fclose(zfile);
                 zip_close(archive);
                 return false;
@@ -257,7 +257,7 @@ void UpdateToLatestVersion()
     if (archiveURL.empty())
     {
         downloadStatus = GetText("Failed to get archive URL");
-        LogError("Failed to get archive URL");
+        LOG_ERROR("Failed to get archive URL");
         return;
     }
 
@@ -269,7 +269,7 @@ void UpdateToLatestVersion()
     if (!DownloadFile(archiveURL, "tmp/release.zip"))
     {
         downloadStatus = GetText("Failed to download the release!");
-        LogError("Failed to download the release!");
+        LOG_ERROR("Failed to download the release!");
         return;
     }
 
@@ -281,7 +281,7 @@ void UpdateToLatestVersion()
     if (!UnzipFile("tmp/release.zip", "tmp/release"))
     {
         downloadStatus = GetText("Failed to unzip the release!");
-        LogError("Failed to uzip the release!");
+        LOG_ERROR("Failed to uzip the release!");
         return;
     }
     std::filesystem::copy_file("settings.txt", "tmp/settings.txt",

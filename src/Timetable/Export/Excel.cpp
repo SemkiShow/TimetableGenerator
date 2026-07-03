@@ -207,7 +207,7 @@ std::unordered_map<int, std::vector<TeacherData>> GetTeacherData(Timetable& time
                     {
                         int weekDay = i;
                         while (weekDay >= 7) weekDay -= 7;
-                        LogError(
+                        LOG_ERROR(
                             "Teacher %s already has lesson %s with class %s%s in classroom %s on %s at lesson number %zu",
                             timetable.teachers[teacherId].name.c_str(),
                             timetable.lessons[data.lessonId].name.c_str(),
@@ -324,7 +324,7 @@ std::unordered_map<int, std::vector<ClassroomData>> GetClassroomData(Timetable& 
                     {
                         int weekDay = i;
                         while (weekDay >= 7) weekDay -= 7;
-                        LogError(
+                        LOG_ERROR(
                             "Classroom %s already has lesson %s by teacher %s with class %s%s on %s at lesson number %zu",
                             timetable.classrooms[classroomId].name.c_str(),
                             timetable.lessons[data.lessonId].name.c_str(),

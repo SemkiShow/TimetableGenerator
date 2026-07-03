@@ -9,7 +9,62 @@
 #include <cstdio>
 #include <cstring>
 #include <ctime>
+#include <mutex>
 #include <string>
+
+Time Time::Now()
+{
+    auto now = std::chrono::system_clock::now();
+    auto timeTNow = std::chrono::system_clock::to_time_t(now);
+    tm tm;
+#ifdef _WIN32
+    localtime_s(&tm, &timeTNow);
+#else
+    localtime_r(&timeTNow, &tm);
+#endif
+    return Time::FromTm(tm);
+}
+
+Time Time::operator+(Time other) const
+{
+    tm cTm = ToTm();
+    cTm.tm_year += other.year;
+    cTm.tm_mon += other.month;
+    cTm.tm_mday += other.day;
+    cTm.tm_hour += other.hour;
+    cTm.tm_min += other.minute;
+    cTm.tm_sec += other.second;
+    cTm.tm_isdst = -1;
+
+    static std::mutex mktimeMutex;
+    std::lock_guard<std::mutex> lock(mktimeMutex);
+    if (mktime(&cTm) == -1)
+    {
+        int error = errno;
+        LOG_ERROR("Failed to perform %s + %s: %s", ToString().c_str(), other.ToString().c_str(),
+                  strerror(error));
+        return {};
+    }
+
+    return Time::FromTm(cTm);
+}
+
+Time& Time::operator+=(Time other) { return *this = *this + other; }
+
+bool Time::operator==(Time other) const
+{
+    return year == other.year && month == other.month && day == other.day && hour == other.hour &&
+           minute == other.minute && second == other.second;
+}
+
+bool Time::operator!=(Time other) const { return !(*this == other); }
+
+double Time::Diff(const Time& other) const
+{
+    auto thisTm = ToTm();
+    auto otherTm = other.ToTm();
+    return difftime(mktime(&thisTm), mktime(&otherTm));
+}
 
 tm Time::ToTm() const
 {
@@ -33,50 +88,6 @@ Time Time::FromTm(const tm& tm)
     time.minute = tm.tm_min;
     time.second = tm.tm_sec;
     return time;
-}
-
-Time operator+(Time a, Time b)
-{
-    tm cTm = a.ToTm();
-    cTm.tm_year += b.year;
-    cTm.tm_mon += b.month;
-    cTm.tm_mday += b.day;
-    cTm.tm_hour += b.hour;
-    cTm.tm_min += b.minute;
-    cTm.tm_sec += b.second;
-    cTm.tm_isdst = -1;
-
-    if (mktime(&cTm) == -1)
-    {
-        LogError("Failed to perform %s + %s: %s", a.ToString().c_str(), b.ToString().c_str(),
-                 strerror(errno));
-        return {};
-    }
-
-    return Time::FromTm(cTm);
-}
-
-Time& operator+=(Time& a, Time b) { return a = a + b; }
-
-bool operator==(Time a, Time b)
-{
-    return a.year == b.year && a.month == b.month && a.day == b.day && a.hour == b.hour &&
-           a.minute == b.minute && a.second == b.second;
-}
-
-bool operator!=(Time a, Time b) { return !(a == b); }
-
-Time GetCurrentTime()
-{
-    auto now = std::chrono::system_clock::now();
-    auto timeTNow = std::chrono::system_clock::to_time_t(now);
-    tm tm;
-#ifdef _WIN32
-    localtime_s(&tm, &timeTNow);
-#else
-    localtime_r(&timeTNow, &tm);
-#endif
-    return Time::FromTm(tm);
 }
 
 std::string Time::ToString(Format format) const
@@ -103,7 +114,7 @@ std::string Time::ToString(Format format) const
                        minute, second);
         break;
     default:
-        LogError("Invalid Time format!");
+        LOG_ERROR("Invalid Time format!");
         break;
     }
     if (res < 0 || res >= BUF_LEN) return "";
@@ -128,8 +139,8 @@ Time Time::FromString(const std::string& str, Format format)
         count = sscanf(str.c_str(), "%d-%d-%d", &t.year, &t.month, &t.day);
         break;
     case Format::IsoDateTime:
-        count = sscanf(str.c_str(), "%d-%d-%dT%d:%d:%d%1[+-Z]%d:%d", &t.year, &t.month, &t.day,
-                       &t.hour, &t.minute, &t.second, tzSign, &delta.hour, &delta.minute);
+        count = sscanf(str.c_str(), "%d-%d-%dT%d:%d:%d%*[^+-Z]%1[+-Z]%d:%d", &t.year, &t.month,
+                       &t.day, &t.hour, &t.minute, &t.second, tzSign, &delta.hour, &delta.minute);
 
         // No terminating character
         if (count == EXPECTED_VALUES[static_cast<int>(Format::IsoDateTime)] + 1)
@@ -154,13 +165,13 @@ Time Time::FromString(const std::string& str, Format format)
                        &t.minute, &t.second);
         break;
     default:
-        LogError("Invalid Time format!");
+        LOG_ERROR("Invalid Time format!");
         return {};
     }
 
     if (count != EXPECTED_VALUES[static_cast<int>(format)])
     {
-        LogError("Invalid time string: %s", str.c_str());
+        LOG_ERROR("Invalid time string: %s", str.c_str());
         return {};
     }
     return t;

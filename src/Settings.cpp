@@ -54,7 +54,7 @@ void Settings::Load()
     {
         if (Split(buf, '=').size() < 2)
         {
-            LogError("Invalid %s!", SETTINGS_PATH);
+            LOG_ERROR("Invalid %s!", SETTINGS_PATH);
             continue;
         }
         label = TrimJunk(Split(buf, '=')[0]);

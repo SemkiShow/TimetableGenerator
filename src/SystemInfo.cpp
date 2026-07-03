@@ -213,7 +213,7 @@ std::vector<std::string> GetGPUs()
     FILE* pipe = popen("lspci | grep -iE \"vga|3d controller\"", "r");
     if (!pipe)
     {
-        LogError("Failed to run the GPU searching command");
+        LOG_ERROR("Failed to run the GPU searching command");
     }
 
     char buffer[256];

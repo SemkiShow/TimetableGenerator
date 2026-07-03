@@ -63,7 +63,7 @@ void RandomizeTimetable(Timetable& timetable)
 {
     if (!IsTimetableCorrect(timetable))
     {
-        LogError("The timetable is incorrect!");
+        LOG_ERROR("The timetable is incorrect!");
         return;
     }
     for (auto& classPair: timetable.classes)
@@ -128,7 +128,7 @@ void SwapRandomTimetableLessons(Timetable& timetable)
     while (true)
     {
         // Get class id
-        if (timetable.orderedClasses.empty()) LogError("The timetable's classes are empty!");
+        if (timetable.orderedClasses.empty()) LOG_ERROR("The timetable's classes are empty!");
         classIndex = classDistribution(rng);
         classId = timetable.orderedClasses[classIndex];
 
@@ -211,7 +211,7 @@ void MutateTimetableClassroom(Timetable& timetable)
     while (true)
     {
         // Get class id
-        if (timetable.orderedClasses.empty()) LogError("The timetable's classes are empty!");
+        if (timetable.orderedClasses.empty()) LOG_ERROR("The timetable's classes are empty!");
         int classIndex = classDistribution(rng);
         int classId = timetable.orderedClasses[classIndex];
 

@@ -4,6 +4,7 @@
 /**
  * @file
  * @brief Time related functions
+ * @version 1.1.0
  */
 
 #pragma once
@@ -14,6 +15,7 @@
 struct Time
 {
     static constexpr int FIRST_YEAR = 1900;
+    static constexpr int MONTHS_PER_YEAR = 12;
 
     enum class Format
     {
@@ -22,6 +24,14 @@ struct Time
         IsoDateTime, // YYYY-MM-DDThh:mm:ssZ or YYYY-MM-DDThh:mm:ss[+,-]hh:mm
         Path,        // YYYY.MM.DD hh-mm-ss
     };
+
+    static Time Now();
+
+    Time operator+(Time other) const;
+    Time& operator+=(Time other);
+    bool operator==(Time other) const;
+    bool operator!=(Time other) const;
+    double Diff(const Time& other) const;
 
     tm ToTm() const;
     static Time FromTm(const tm& tm);
@@ -38,10 +48,3 @@ struct Time
 };
 
 constexpr Time TIME_ZERO = {.year = 0, .month = 0, .day = 0, .hour = 0, .minute = 0, .second = 0};
-
-Time operator+(Time a, Time b);
-Time& operator+=(Time& a, Time b);
-bool operator==(Time a, Time b);
-bool operator!=(Time a, Time b);
-
-Time GetCurrentTime();

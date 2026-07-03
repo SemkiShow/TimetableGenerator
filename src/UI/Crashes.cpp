@@ -31,7 +31,7 @@ int ZipFile(zip_t* archive, const std::filesystem::path& path)
     std::ifstream file(path, std::ios::binary);
     if (!fileStream)
     {
-        LogError("Failed to open file %s", path.string().c_str());
+        LOG_ERROR("Failed to open file %s", path.string().c_str());
         return 1;
     }
     std::string fileContents = "";
@@ -44,14 +44,14 @@ int ZipFile(zip_t* archive, const std::filesystem::path& path)
     zip_source_t* source = zip_source_buffer(archive, buffer, fileContents.size(), 1);
     if (source == nullptr)
     {
-        LogError("Failed to create crash report zip source: %s", zip_strerror(archive));
+        LOG_ERROR("Failed to create crash report zip source: %s", zip_strerror(archive));
         return 1;
     }
 
     // Add the source as a new file entry
     if (zip_file_add(archive, path.string().c_str(), source, ZIP_FL_OVERWRITE) < 0)
     {
-        LogError("Failed to add file to crash report zip: %s", zip_strerror(archive));
+        LOG_ERROR("Failed to add file to crash report zip: %s", zip_strerror(archive));
         zip_source_free(source);
         return 1;
     }
@@ -131,14 +131,14 @@ int ZipSystemInfo(zip_t* archive)
     zip_source_t* source = zip_source_buffer(archive, buffer, systemInfo.size(), 1);
     if (source == nullptr)
     {
-        LogError("Failed to create crash report zip source: %s", zip_strerror(archive));
+        LOG_ERROR("Failed to create crash report zip source: %s", zip_strerror(archive));
         return 1;
     }
 
     // Add the source as a new file entry
     if (zip_file_add(archive, "system_info.txt", source, ZIP_FL_OVERWRITE) < 0)
     {
-        LogError("Failed to add file to crash report zip: %s", zip_strerror(archive));
+        LOG_ERROR("Failed to add file to crash report zip: %s", zip_strerror(archive));
         zip_source_free(source);
         return 1;
     }
@@ -156,7 +156,7 @@ int CrashesMenu::CreateCrashReport()
     {
         zip_error_t ziperror;
         zip_error_init_with_code(&ziperror, error);
-        LogError("Failed to create crash report zip archive: %s", zip_error_strerror(&ziperror));
+        LOG_ERROR("Failed to create crash report zip archive: %s", zip_error_strerror(&ziperror));
         zip_error_fini(&ziperror);
         return 1;
     }
@@ -170,7 +170,7 @@ int CrashesMenu::CreateCrashReport()
     // Close the archive to write changes
     if (zip_close(archive) < 0)
     {
-        LogError("Failed to close crash report zip archive: %s", zip_strerror(archive));
+        LOG_ERROR("Failed to close crash report zip archive: %s", zip_strerror(archive));
         return 1;
     }
 
