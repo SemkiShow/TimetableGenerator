@@ -6,9 +6,13 @@
 
 #include "Widgets/Application.hpp"
 #include <memory>
-#include <string>
+#include <vector>
 
 struct Vector2;
+
+#define COLOR_ERROR   ImVec4(255, 0, 0, 255)
+#define COLOR_WARNING ImVec4(255, 255, 0, 255)
+#define COLOR_SUCCESS ImVec4(0, 255, 0, 255)
 
 enum class Style
 {
@@ -17,16 +21,13 @@ enum class Style
     Classic
 };
 
-#define DEFAULT_FONT_SIZE 16
-
-extern Vector2 windowSize;
-extern std::string weekDays[7];
+extern Vector2 g_windowSize;
+extern std::vector<const char*> g_weekDays;
 
 void LoadResources();
 void LoadFonts();
 void LoadStyle();
 void InitUI();
 void DrawFrame();
-void FreeResources();
 
-extern std::shared_ptr<Application> app;
+extern std::shared_ptr<Application> g_app;

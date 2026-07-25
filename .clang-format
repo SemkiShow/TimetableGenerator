@@ -2,15 +2,17 @@ BasedOnStyle: LLVM
 ColumnLimit: 100
 IndentWidth: 4
 UseTab: Never
-PointerAlignment: Left
 
-BreakBeforeBraces: Allman
+AccessModifierOffset: -4
+AlignConsecutiveMacros: AcrossComments
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortIfStatementsOnASingleLine: true
 AllowShortLoopsOnASingleLine: true
-BreakBeforeBinaryOperators: None
-AllowAllParametersOfDeclarationOnNextLine: false
-AllowAllArgumentsOnNextLine: false
-BreakStringLiterals: false
-SpaceBeforeRangeBasedForLoopColon: false
-InsertNewlineAtEOF: true
 AlwaysBreakTemplateDeclarations: Yes
+BreakBeforeBinaryOperators: None
+BreakBeforeBraces: Allman
+BreakStringLiterals: false
+InsertNewlineAtEOF: true
+PointerAlignment: Left
+SpaceBeforeRangeBasedForLoopColon: false

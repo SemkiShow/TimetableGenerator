@@ -6,6 +6,7 @@
 #include "Logging.hpp"
 #include "Timetable.hpp"
 #include "Translations.hpp"
+#include "UI.hpp"
 #include "UI/Classes/Edit.hpp"
 #include "UI/Classes/Utils.hpp"
 #include <algorithm>
@@ -14,56 +15,56 @@
 #include <memory>
 #include <string>
 
-std::shared_ptr<ClassesMenu> classesMenu;
+std::shared_ptr<ClassesMenu> g_classesMenu;
 
 void ClassesMenu::Draw()
 {
-    if (!ImGui::Begin(gettext("Classes"), &visible))
+    if (!ImGui::Begin(gettext("Classes"), &visible_))
     {
         ImGui::End();
         return;
     }
 
     ImGui::TextColored(
-        ImVec4(255, 255, 0, 255), "%s",
+        COLOR_WARNING, "%s",
         gettext(
             "Warning: changing the current year can be quite destructive.\nIf something went wrong, press the Cancel button to revert all changes"));
-    if (ImGui::Button(gettext("Back"))) ShiftClasses(timetable, -1);
+    if (ImGui::Button(gettext("Back"))) ShiftClasses(timetable_, -1);
     ImGui::SameLine();
-    ImGui::Text("%d", timetable.year);
+    ImGui::Text("%d", timetable_.year);
     ImGui::SameLine();
-    if (ImGui::Button(gettext("Next"))) ShiftClasses(timetable, 1);
+    if (ImGui::Button(gettext("Next"))) ShiftClasses(timetable_, 1);
     ImGui::Separator();
 
     if (ImGui::Button(gettext("+")))
     {
-        LogInfo("Adding a new class with id %d", timetable.maxClassId + 1);
-        editClassMenu->Open(&timetable, true, timetable.maxClassId + 1, true, 1);
+        LogInfo("Adding a new class with id %d", timetable_.maxClassId + 1);
+        g_editClassMenu->Open(&timetable_, true, timetable_.maxClassId + 1, true, 1);
     }
     ImGui::Separator();
 
     ImGui::Columns(2);
-    std::string lastClassNumber = "";
+    std::string lastClassNumber;
     int buttonId = 0;
-    for (size_t i = 0; i < timetable.orderedClasses.size(); i++)
+    for (size_t i = 0; i < timetable_.orderedClasses.size(); i++)
     {
-        if (lastClassNumber != timetable.classes[timetable.orderedClasses[i]].number)
+        if (lastClassNumber != timetable_.classes[timetable_.orderedClasses[i]].number)
         {
-            lastClassNumber = timetable.classes[timetable.orderedClasses[i]].number;
+            lastClassNumber = timetable_.classes[timetable_.orderedClasses[i]].number;
             ImGui::PushID(buttonId);
 
             if (ImGui::Button(gettext("-")))
             {
                 LogInfo("Removed classes with number %s", lastClassNumber.c_str());
                 ImGui::PopID();
-                for (auto it = timetable.classes.begin(); it != timetable.classes.end();)
+                for (auto it = timetable_.classes.begin(); it != timetable_.classes.end();)
                 {
                     if (it->second.number == lastClassNumber)
                     {
-                        timetable.orderedClasses.erase(std::find(timetable.orderedClasses.begin(),
-                                                                 timetable.orderedClasses.end(),
-                                                                 it->first));
-                        it = timetable.classes.erase(it);
+                        timetable_.orderedClasses.erase(std::find(timetable_.orderedClasses.begin(),
+                                                                  timetable_.orderedClasses.end(),
+                                                                  it->first));
+                        it = timetable_.classes.erase(it);
                         continue;
                     }
                     ++it;
@@ -75,13 +76,13 @@ void ClassesMenu::Draw()
             if (ImGui::Button(gettext("Edit")))
             {
                 LogInfo("Bulk editing classes with number %s", lastClassNumber.c_str());
-                int bulkAmount = 0;
-                for (auto& classPair: timetable.classes)
+                int bulkCount = 0;
+                for (auto& classPair: timetable_.classes)
                 {
-                    if (classPair.second.number == lastClassNumber) bulkAmount++;
+                    if (classPair.second.number == lastClassNumber) bulkCount++;
                 }
-                editClassMenu->Open(&timetable, false, timetable.orderedClasses[i], true,
-                                    bulkAmount);
+                g_editClassMenu->Open(&timetable_, false, timetable_.orderedClasses[i], true,
+                                      bulkCount);
             }
             ImGui::SameLine();
 
@@ -90,15 +91,15 @@ void ClassesMenu::Draw()
             if (ImGui::Button(gettext("+")))
             {
                 int classId = 0;
-                for (size_t j = 0; j < timetable.orderedClasses.size(); j++)
+                for (size_t j = 0; j < timetable_.orderedClasses.size(); j++)
                 {
-                    if (timetable.classes[timetable.orderedClasses[j]].number == lastClassNumber)
-                        classId = j;
+                    if (timetable_.classes[timetable_.orderedClasses[j]].number == lastClassNumber)
+                        classId = (int)j;
                 }
                 classId++;
                 LogInfo("Adding a new class with number %s and id %d", lastClassNumber.c_str(),
                         classId);
-                editClassMenu->Open(&timetable, true, classId, false, 0);
+                g_editClassMenu->Open(&timetable_, true, classId, false, 0);
             }
             ImGui::Unindent();
             ImGui::NextColumn();
@@ -112,33 +113,33 @@ void ClassesMenu::Draw()
 
         if (ImGui::Button(gettext("-")))
         {
-            LogInfo("Removed a class with id %d", timetable.orderedClasses[i]);
-            timetable.classes.erase(timetable.orderedClasses[i]);
-            timetable.orderedClasses.erase(timetable.orderedClasses.begin() + i);
+            LogInfo("Removed a class with id %d", timetable_.orderedClasses[i]);
+            timetable_.classes.erase(timetable_.orderedClasses[i]);
+            timetable_.orderedClasses.erase(timetable_.orderedClasses.begin() + (int)i);
             i--;
         }
         ImGui::SameLine();
 
         if (ImGui::Button(gettext("Edit")))
         {
-            LogInfo("Editing class with id %d", timetable.orderedClasses[i]);
-            editClassMenu->Open(&timetable, false, timetable.orderedClasses[i], false, 0);
+            LogInfo("Editing class with id %d", timetable_.orderedClasses[i]);
+            g_editClassMenu->Open(&timetable_, false, timetable_.orderedClasses[i], false, 0);
         }
         ImGui::SameLine();
 
-        ImGui::Text("%s%s", timetable.classes[timetable.orderedClasses[i]].number.c_str(),
-                    timetable.classes[timetable.orderedClasses[i]].letter.c_str());
+        ImGui::Text("%s%s", timetable_.classes[timetable_.orderedClasses[i]].number.c_str(),
+                    timetable_.classes[timetable_.orderedClasses[i]].letter.c_str());
         ImGui::PopID();
         buttonId++;
         ImGui::Unindent();
         ImGui::NextColumn();
 
-        if (prevTimetable->teachers.find(
-                timetable.classes[timetable.orderedClasses[i]].teacherId) !=
-            prevTimetable->teachers.end())
+        if (prevTimetable_->teachers.find(
+                timetable_.classes[timetable_.orderedClasses[i]].teacherId) !=
+            prevTimetable_->teachers.end())
             ImGui::LabelText(
                 "", "%s",
-                prevTimetable->teachers[timetable.classes[timetable.orderedClasses[i]].teacherId]
+                prevTimetable_->teachers[timetable_.classes[timetable_.orderedClasses[i]].teacherId]
                     .name.c_str());
         ImGui::NextColumn();
     }
@@ -149,11 +150,11 @@ void ClassesMenu::Draw()
     if (ImGui::Button(gettext("Ok")))
     {
         LogInfo("Clicked Ok in the classes menu");
-        prevTimetable->classes = timetable.classes;
-        prevTimetable->maxClassId = timetable.maxClassId;
-        prevTimetable->orderedClasses = timetable.orderedClasses;
-        prevTimetable->lessons = timetable.lessons;
-        prevTimetable->year = timetable.year;
+        prevTimetable_->classes = timetable_.classes;
+        prevTimetable_->maxClassId = timetable_.maxClassId;
+        prevTimetable_->orderedClasses = timetable_.orderedClasses;
+        prevTimetable_->lessons = timetable_.lessons;
+        prevTimetable_->year = timetable_.year;
         Close();
     }
     ImGui::SameLine();

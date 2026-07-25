@@ -6,7 +6,7 @@ executable_name=TimetableGenerator
 # Release build
 if [ "$1" == "" ]; then
     clear
-    cmake -B build -DCMAKE_BUILD_TYPE=RelWithDebInfo
+    cmake -B build -DCMAKE_BUILD_TYPE=Debug
     cmake --build build -j$(nproc)
     ./build/bin/$executable_name
 fi

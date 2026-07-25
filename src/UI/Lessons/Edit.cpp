@@ -6,103 +6,103 @@
 #include "Logging.hpp"
 #include "Timetable.hpp"
 #include "Translations.hpp"
+#include "UI.hpp"
 #include "Widgets/Window.hpp"
-#include <cstddef>
 #include <imgui.h>
 #include <memory>
 #include <misc/cpp/imgui_stdlib.h>
 #include <string>
 
-std::shared_ptr<EditLessonMenu> editLessonMenu;
+std::shared_ptr<EditLessonMenu> g_editLessonMenu;
 
 void EditLessonMenu::Open(Timetable* prevTimetable, bool newLesson, int lessonId)
 {
-    this->prevTimetable = prevTimetable;
-    this->newLesson = newLesson;
-    this->lessonId = lessonId;
+    this->prevTimetable_ = prevTimetable;
+    this->newLesson_ = newLesson;
+    this->lessonId_ = lessonId;
 
-    timetable = *prevTimetable;
-    if (newLesson) timetable.lessons[lessonId] = Lesson();
+    timetable_ = *prevTimetable;
+    if (newLesson) timetable_.lessons[lessonId] = Lesson();
 
     LogInfo("Resetting EditLessonMenu variables");
 
-    allClasses = allClassrooms = true;
+    allClasses_ = allClassrooms_ = true;
 
-    classGroups.clear();
-    classes.clear();
-    for (auto& classPair: currentTimetable.classes)
+    classGroups_.clear();
+    classes_.clear();
+    for (auto& classPair: g_currentTimetable.classes)
     {
-        classGroups[classPair.second.number] = true;
-        classes[classPair.first] = newLesson;
+        classGroups_[classPair.second.number] = true;
+        classes_[classPair.first] = newLesson;
     }
 
-    for (auto& classId: timetable.lessons[lessonId].classIds) classes[classId] = true;
+    for (auto& classId: timetable_.lessons[lessonId].classIds) classes_[classId] = true;
 
-    classrooms.clear();
-    for (auto& classroom: currentTimetable.classrooms) classrooms[classroom.first] = newLesson;
-    for (auto& classroomId: timetable.lessons[lessonId].classroomIds)
-        classrooms[classroomId] = true;
+    classrooms_.clear();
+    for (auto& classroom: g_currentTimetable.classrooms) classrooms_[classroom.first] = newLesson;
+    for (auto& classroomId: timetable_.lessons[lessonId].classroomIds)
+        classrooms_[classroomId] = true;
 
     Window::Open();
 }
 
 void EditLessonMenu::Draw()
 {
-    if (!ImGui::Begin((newLesson ? gettext("New lesson") : gettext("Edit lesson")), &visible))
+    if (!ImGui::Begin((newLesson_ ? gettext("New lesson") : gettext("Edit lesson")), &visible_))
     {
         ImGui::End();
         return;
     }
 
     // Basic lesson data
-    ImGui::InputText(gettext("name"), &timetable.lessons[lessonId].name);
+    ImGui::InputText(gettext("name"), &timetable_.lessons[lessonId_].name);
     ImGui::Columns(2);
     ImGui::Text("%s", gettext("classes"));
 
     // Deselect/select all classes
     if (ImGui::Checkbox(
-            (std::string(allClasses ? gettext("Deselect all") : gettext("Select all")) + "##1")
+            (std::string(allClasses_ ? gettext("Deselect all") : gettext("Select all")) + "##1")
                 .c_str(),
-            &allClasses))
+            &allClasses_))
     {
-        LogInfo("Clicked allClasses in a lesson with id %d", lessonId);
-        for (auto& classPair: currentTimetable.classes)
+        LogInfo("Clicked allClasses in a lesson with id %d", lessonId_);
+        for (auto& classPair: g_currentTimetable.classes)
         {
-            classGroups[classPair.second.number] = allClasses;
-            classes[classPair.first] = allClasses;
+            classGroups_[classPair.second.number] = allClasses_;
+            classes_[classPair.first] = allClasses_;
         }
     }
 
     // No classes warning
-    if (currentTimetable.classes.size() == 0)
+    if (g_currentTimetable.classes.size() == 0)
     {
         ImGui::TextColored(
-            ImVec4(255, 0, 0, 255), "%s",
+            COLOR_ERROR, "%s",
             gettext(
                 "You need to add classes\nin the Classes menu\nto select classes for this lesson!"));
     }
 
     // Classes
-    std::string lastClassNumber = "";
+    std::string lastClassNumber;
     int pushId = 0;
-    for (size_t classId: currentTimetable.orderedClasses)
+    for (int classId: g_currentTimetable.orderedClasses)
     {
-        if (lastClassNumber != currentTimetable.classes[classId].number)
+        if (lastClassNumber != g_currentTimetable.classes[classId].number)
         {
             ImGui::PushID(pushId);
-            lastClassNumber = currentTimetable.classes[classId].number;
+            lastClassNumber = g_currentTimetable.classes[classId].number;
 
             // Class group select
-            if (ImGui::Checkbox(currentTimetable.classes[classId].number.c_str(),
-                                &classGroups[currentTimetable.classes[classId].number]))
+            if (ImGui::Checkbox(g_currentTimetable.classes[classId].number.c_str(),
+                                &classGroups_[g_currentTimetable.classes[classId].number]))
             {
-                LogInfo("Clicked classGroups in class id %zu in lesson with id %d", classId,
-                        lessonId);
-                for (auto& classPair: currentTimetable.classes)
+                LogInfo("Clicked classGroups in class id %d in lesson with id %d", classId,
+                        lessonId_);
+                for (auto& classPair: g_currentTimetable.classes)
                 {
-                    if (classPair.second.number == currentTimetable.classes[classId].number)
-                        classes[classPair.first] =
-                            classGroups[currentTimetable.classes[classId].number];
+                    if (classPair.second.number == g_currentTimetable.classes[classId].number)
+                        classes_[classPair.first] =
+                            classGroups_[g_currentTimetable.classes[classId].number];
                 }
             }
             ImGui::PopID();
@@ -112,10 +112,10 @@ void EditLessonMenu::Draw()
         ImGui::Indent();
 
         // Individual class select
-        ImGui::Checkbox(
-            (currentTimetable.classes[classId].number + currentTimetable.classes[classId].letter)
-                .c_str(),
-            &classes[classId]);
+        ImGui::Checkbox((g_currentTimetable.classes[classId].number +
+                         g_currentTimetable.classes[classId].letter)
+                            .c_str(),
+                        &classes_[classId]);
         ImGui::Unindent();
         ImGui::PopID();
         pushId++;
@@ -125,29 +125,29 @@ void EditLessonMenu::Draw()
     // Deselect/select all classrooms
     ImGui::Text("classrooms");
     if (ImGui::Checkbox(
-            (std::string(allClassrooms ? gettext("Deselect all") : gettext("Select all")) + "##2")
+            (std::string(allClassrooms_ ? gettext("Deselect all") : gettext("Select all")) + "##2")
                 .c_str(),
-            &allClassrooms))
+            &allClassrooms_))
     {
-        LogInfo("Clicked allClassrooms in lesson with id %d", lessonId);
-        for (auto& classroom: currentTimetable.classrooms)
-            classrooms[classroom.first] = allClassrooms;
+        LogInfo("Clicked allClassrooms in lesson with id %d", lessonId_);
+        for (auto& classroom: g_currentTimetable.classrooms)
+            classrooms_[classroom.first] = allClassrooms_;
     }
 
     // No classrooms warning
-    if (currentTimetable.classrooms.size() == 0)
+    if (g_currentTimetable.classrooms.size() == 0)
     {
         ImGui::TextColored(
-            ImVec4(255, 0, 0, 255), "%s",
+            COLOR_ERROR, "%s",
             gettext(
                 "You need to add classrooms\nin the Classrooms menu\nto select classrooms for this lesson!"));
     }
 
     // Classrooms
-    for (auto& classroom: currentTimetable.classrooms)
+    for (auto& classroom: g_currentTimetable.classrooms)
     {
         ImGui::PushID(pushId);
-        ImGui::Checkbox(classroom.second.name.c_str(), &classrooms[classroom.first]);
+        ImGui::Checkbox(classroom.second.name.c_str(), &classrooms_[classroom.first]);
         ImGui::PopID();
         pushId++;
     }
@@ -157,21 +157,21 @@ void EditLessonMenu::Draw()
     // Ok and Cancel
     if (ImGui::Button(gettext("Ok")))
     {
-        LogInfo("Clicked Ok while editing a lesson with id %d", lessonId);
-        timetable.lessons[lessonId].classIds.clear();
-        for (auto& classPair: currentTimetable.classes)
+        LogInfo("Clicked Ok while editing a lesson with id %d", lessonId_);
+        timetable_.lessons[lessonId_].classIds.clear();
+        for (auto& classPair: g_currentTimetable.classes)
         {
-            if (classes[classPair.first])
-                timetable.lessons[lessonId].classIds.push_back(classPair.first);
+            if (classes_[classPair.first])
+                timetable_.lessons[lessonId_].classIds.push_back(classPair.first);
         }
-        timetable.lessons[lessonId].classroomIds.clear();
-        for (auto& classroom: currentTimetable.classrooms)
+        timetable_.lessons[lessonId_].classroomIds.clear();
+        for (auto& classroom: g_currentTimetable.classrooms)
         {
-            if (classrooms[classroom.first])
-                timetable.lessons[lessonId].classroomIds.push_back(classroom.first);
+            if (classrooms_[classroom.first])
+                timetable_.lessons[lessonId_].classroomIds.push_back(classroom.first);
         }
-        prevTimetable->lessons = timetable.lessons;
-        prevTimetable->maxLessonId = timetable.maxLessonId;
+        prevTimetable_->lessons = timetable_.lessons;
+        prevTimetable_->maxLessonId = timetable_.maxLessonId;
         Close();
     }
     ImGui::SameLine();

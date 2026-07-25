@@ -16,35 +16,26 @@
 
 int main()
 {
-    srand(time(0));
-
-    // Timetable save and load testing
-    // Timetable timetableSave;
-    // timetableSave.name = "save";
-    // GenerateRandomTimetable(&timetableSave);
-    // SaveTimetable("timetables/save.json", &timetableSave);
-    // Timetable timetableLoad;
-    // LoadTimetable("timetables/save.json", &timetableLoad);
-    // SaveTimetable("timetables/load.json", &timetableLoad);
+    srand(time(nullptr));
 
     // Load settings
     InitUI();
-    settings.Load();
-    if (settings.hasCrashed) crashesMenu->Open();
-    settings.hasCrashed = true;
-    settings.Save();
+    g_settings.Load();
+    if (g_settings.hasCrashed) g_crashesMenu->Open();
+    g_settings.hasCrashed = true;
+    g_settings.Save();
     CheckForUpdates(false);
 
     // Set raylib config flags
     int flags = 0;
-    if (settings.vsync) flags |= FLAG_VSYNC_HINT;
+    if (g_settings.vsync) flags |= FLAG_VSYNC_HINT;
     flags |= FLAG_WINDOW_HIGHDPI;
     flags |= FLAG_WINDOW_RESIZABLE;
     SetConfigFlags(flags);
 
     // Init raylib
-    InitWindow(windowSize.x, windowSize.y,
-               (GetText("Timetable Generator") + " " + version).c_str());
+    InitWindow((int)g_windowSize.x, (int)g_windowSize.y,
+               (GetText("Timetable Generator") + " " + g_version).c_str());
     SetExitKey(-1);
 
     LoadResources();
@@ -64,10 +55,9 @@ int main()
     }
 
     // Save settings and close the program
-    settings.hasCrashed = false;
-    settings.Save();
+    g_settings.hasCrashed = false;
+    g_settings.Save();
     rlImGuiShutdown();
-    FreeResources();
     CloseWindow();
 
     return 0;

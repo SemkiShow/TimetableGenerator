@@ -13,7 +13,7 @@
 
 class OpenTimetableMenu : public Window
 {
-  public:
+public:
     virtual ~OpenTimetableMenu() = default;
 
     void Draw() override;
@@ -21,4 +21,4 @@ class OpenTimetableMenu : public Window
     void Open() override;
 };
 
-extern std::shared_ptr<OpenTimetableMenu> openTimetableMenu;
+extern std::shared_ptr<OpenTimetableMenu> g_openTimetableMenu;

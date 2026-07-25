@@ -13,10 +13,10 @@
 
 class NewVersionMenu : public Window
 {
-  public:
+public:
     virtual ~NewVersionMenu() = default;
 
     void Draw() override;
 };
 
-extern std::shared_ptr<NewVersionMenu> newVersionMenu;
+extern std::shared_ptr<NewVersionMenu> g_newVersionMenu;

@@ -7,9 +7,9 @@
 #include <string>
 #include <vector>
 
-extern std::string latestVersion;
-extern std::vector<std::string> releaseNotes;
-extern std::string downloadStatus;
+extern std::string g_latestVersion;
+extern std::vector<std::string> g_releaseNotes;
+extern std::string g_downloadStatus;
 
 void GetLatestVesionName();
 void CheckForUpdates(bool showWindow = true);

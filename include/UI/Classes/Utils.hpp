@@ -13,10 +13,10 @@
 #include <unordered_map>
 
 void FetchClassLessonsFromSimularClasses(Timetable& timetable, int classId);
-void ChangeClassesAmount(Timetable& timetable, const std::string& classNumber, int classesAmount);
+void ChangeClassesCount(Timetable& timetable, const std::string& classNumber, int classesCount);
 void UpdateClassLetters(Timetable& timetable);
-void ShiftClasses(Timetable& timetable, const int direction);
+void ShiftClasses(Timetable& timetable, int direction);
 void LoadTimetableLessonsFromSelection(Timetable& timetable, int classId,
                                        std::unordered_map<std::string, bool>& lessons,
-                                       std::unordered_map<std::string, int>& lessonAmounts,
+                                       std::unordered_map<std::string, int>& lessonCounts,
                                        std::unordered_map<std::string, bool>& lessonTeachers);

@@ -31,7 +31,6 @@
 #include "Updates.hpp"
 #include "Utils.hpp"
 #include "Widgets/Application.hpp"
-#include <algorithm>
 #include <cstddef>
 #include <filesystem>
 #include <imgui.h>
@@ -40,26 +39,28 @@
 #include <rlImGui.h>
 #include <string>
 #include <thread>
+#include <vector>
 
-Vector2 windowSize = {16 * 50, 9 * 50};
-std::string weekDays[7] = {"Monday", "Tuesday",  "Wednesday", "Thursday",
-                           "Friday", "Saturday", "Sunday"};
+constexpr Vector2 INITIAL_WINDOW_SIZE = {16 * 50, 9 * 50};
+Vector2 g_windowSize = INITIAL_WINDOW_SIZE;
+std::vector<const char*> g_weekDays = {"Monday", "Tuesday",  "Wednesday", "Thursday",
+                                       "Friday", "Saturday", "Sunday"};
 
-double timetableAutosaveTimer = GetTime();
+static double g_timetableAutosaveTimer = GetTime();
 
-bool lastVsync = settings.vsync;
-bool lastMergedFont = settings.mergedFont;
-int lastFontSize = settings.fontSize;
+static bool g_lastVsync = g_settings.vsync;
+static bool g_lastMergedFont = g_settings.mergedFont;
+static int g_lastFontSize = g_settings.fontSize;
 
-std::shared_ptr<Application> app;
+std::shared_ptr<Application> g_app;
 
 void LoadResources()
 {
     auto faqScreenshotFiles = ListFiles("resources/faq-screenshots");
-    for (auto& texture: faqScreenshots) UnloadTexture(texture);
+    for (auto& texture: g_faqScreenshots) UnloadTexture(texture);
     for (size_t i = 0; i < faqScreenshotFiles.size(); i++)
     {
-        faqScreenshots.push_back(LoadTexture(faqScreenshotFiles[i].c_str()));
+        g_faqScreenshots.push_back(LoadTexture(faqScreenshotFiles[i].c_str()));
     }
 }
 
@@ -68,7 +69,8 @@ void LoadFonts()
     LogInfo("Loading fonts");
     ImGuiIO& io = ImGui::GetIO();
     io.Fonts->Clear();
-    io.Fonts->AddFontFromFileTTF("resources/fonts/ProggyClean.ttf", settings.fontSize);
+    io.Fonts->AddFontFromFileTTF("resources/fonts/ProggyClean.ttf",
+                                 static_cast<float>(g_settings.fontSize));
     ImFontGlyphRangesBuilder builder;
     builder.AddRanges(io.Fonts->GetGlyphRangesCyrillic());
     builder.AddRanges(io.Fonts->GetGlyphRangesVietnamese());
@@ -76,17 +78,18 @@ void LoadFonts()
     ImVector<ImWchar> glyphRanges;
     builder.BuildRanges(&glyphRanges);
     ImFontConfig fontConfig;
-    fontConfig.MergeMode = settings.mergedFont;
+    fontConfig.MergeMode = g_settings.mergedFont;
     fontConfig.PixelSnapH = true;
-    io.Fonts->AddFontFromFileTTF("resources/fonts/DroidSansMono.ttf", settings.fontSize,
-                                 &fontConfig, glyphRanges.Data);
+    io.Fonts->AddFontFromFileTTF("resources/fonts/DroidSansMono.ttf",
+                                 static_cast<float>(g_settings.fontSize), &fontConfig,
+                                 glyphRanges.Data);
     io.Fonts->Build();
 }
 
 void LoadStyle()
 {
     LogInfo("Loading style");
-    switch (settings.style)
+    switch (g_settings.style)
     {
     case Style::Dark:
         ImGui::StyleColorsDark();
@@ -102,86 +105,86 @@ void LoadStyle()
 
 void InitUI()
 {
-    app = std::make_shared<Application>();
+    g_app = std::make_shared<Application>();
 
-    settingsMenu = std::make_shared<SettingsMenu>();
-    settingsMenu->Close();
-    app->AddWindow(settingsMenu);
+    g_settingsMenu = std::make_shared<SettingsMenu>();
+    g_settingsMenu->Close();
+    g_app->AddWindow(g_settingsMenu);
 
-    aboutMenu = std::make_shared<AboutMenu>();
-    aboutMenu->Close();
-    app->AddWindow(aboutMenu);
+    g_aboutMenu = std::make_shared<AboutMenu>();
+    g_aboutMenu->Close();
+    g_app->AddWindow(g_aboutMenu);
 
-    newVersionMenu = std::make_shared<NewVersionMenu>();
-    newVersionMenu->Close();
-    app->AddWindow(newVersionMenu);
+    g_newVersionMenu = std::make_shared<NewVersionMenu>();
+    g_newVersionMenu->Close();
+    g_app->AddWindow(g_newVersionMenu);
 
-    newTimetableMenu = std::make_shared<NewTimetableMenu>();
-    newTimetableMenu->Close();
-    app->AddWindow(newTimetableMenu);
+    g_newTimetableMenu = std::make_shared<NewTimetableMenu>();
+    g_newTimetableMenu->Close();
+    g_app->AddWindow(g_newTimetableMenu);
 
-    openTimetableMenu = std::make_shared<OpenTimetableMenu>();
-    openTimetableMenu->Close();
-    app->AddWindow(openTimetableMenu);
+    g_openTimetableMenu = std::make_shared<OpenTimetableMenu>();
+    g_openTimetableMenu->Close();
+    g_app->AddWindow(g_openTimetableMenu);
 
-    generateTimetableMenu = std::make_shared<GenerateTimetableMenu>();
-    generateTimetableMenu->Close();
-    app->AddWindow(generateTimetableMenu);
+    g_generateTimetableMenu = std::make_shared<GenerateTimetableMenu>();
+    g_generateTimetableMenu->Close();
+    g_app->AddWindow(g_generateTimetableMenu);
 
-    wizardMenu = std::make_shared<WizardMenu>();
-    wizardMenu->Close();
-    app->AddWindow(wizardMenu);
+    g_wizardMenu = std::make_shared<WizardMenu>();
+    g_wizardMenu->Close();
+    g_app->AddWindow(g_wizardMenu);
 
-    faqMenu = std::make_shared<FaqMenu>();
-    faqMenu->Close();
-    app->AddWindow(faqMenu);
+    g_faqMenu = std::make_shared<FaqMenu>();
+    g_faqMenu->Close();
+    g_app->AddWindow(g_faqMenu);
 
-    classroomsMenu = std::make_shared<ClassroomsMenu>();
-    classroomsMenu->Close();
-    app->AddWindow(classroomsMenu);
+    g_classroomsMenu = std::make_shared<ClassroomsMenu>();
+    g_classroomsMenu->Close();
+    g_app->AddWindow(g_classroomsMenu);
 
-    editClassroomMenu = std::make_shared<EditClassroomMenu>();
-    editClassroomMenu->Close();
-    app->AddWindow(editClassroomMenu);
+    g_editClassroomMenu = std::make_shared<EditClassroomMenu>();
+    g_editClassroomMenu->Close();
+    g_app->AddWindow(g_editClassroomMenu);
 
-    lessonsMenu = std::make_shared<LessonsMenu>();
-    lessonsMenu->Close();
-    app->AddWindow(lessonsMenu);
+    g_lessonsMenu = std::make_shared<LessonsMenu>();
+    g_lessonsMenu->Close();
+    g_app->AddWindow(g_lessonsMenu);
 
-    editLessonMenu = std::make_shared<EditLessonMenu>();
-    editLessonMenu->Close();
-    app->AddWindow(editLessonMenu);
+    g_editLessonMenu = std::make_shared<EditLessonMenu>();
+    g_editLessonMenu->Close();
+    g_app->AddWindow(g_editLessonMenu);
 
-    teachersMenu = std::make_shared<TeachersMenu>();
-    teachersMenu->Close();
-    app->AddWindow(teachersMenu);
+    g_teachersMenu = std::make_shared<TeachersMenu>();
+    g_teachersMenu->Close();
+    g_app->AddWindow(g_teachersMenu);
 
-    editTeacherMenu = std::make_shared<EditTeacherMenu>();
-    editTeacherMenu->Close();
-    app->AddWindow(editTeacherMenu);
+    g_editTeacherMenu = std::make_shared<EditTeacherMenu>();
+    g_editTeacherMenu->Close();
+    g_app->AddWindow(g_editTeacherMenu);
 
-    classesMenu = std::make_shared<ClassesMenu>();
-    classesMenu->Close();
-    app->AddWindow(classesMenu);
+    g_classesMenu = std::make_shared<ClassesMenu>();
+    g_classesMenu->Close();
+    g_app->AddWindow(g_classesMenu);
 
-    editClassMenu = std::make_shared<EditClassMenu>();
-    editClassMenu->Close();
-    app->AddWindow(editClassMenu);
+    g_editClassMenu = std::make_shared<EditClassMenu>();
+    g_editClassMenu->Close();
+    g_app->AddWindow(g_editClassMenu);
 
-    combineLessonsMenu = std::make_shared<CombineLessonsMenu>();
-    combineLessonsMenu->Close();
-    app->AddWindow(combineLessonsMenu);
+    g_combineLessonsMenu = std::make_shared<CombineLessonsMenu>();
+    g_combineLessonsMenu->Close();
+    g_app->AddWindow(g_combineLessonsMenu);
 
-    rulesMenu = std::make_shared<RulesMenu>();
-    rulesMenu->Close();
-    app->AddWindow(rulesMenu);
+    g_rulesMenu = std::make_shared<RulesMenu>();
+    g_rulesMenu->Close();
+    g_app->AddWindow(g_rulesMenu);
 
-    crashesMenu = std::make_shared<CrashesMenu>();
-    crashesMenu->Close();
-    app->AddWindow(crashesMenu);
+    g_crashesMenu = std::make_shared<CrashesMenu>();
+    g_crashesMenu->Close();
+    g_app->AddWindow(g_crashesMenu);
 }
 
-void DrawMenuBar()
+static void DrawMenuBar()
 {
     if (!ImGui::BeginMainMenuBar()) return;
     if (ImGui::BeginMenu(gettext("File")))
@@ -189,55 +192,55 @@ void DrawMenuBar()
         if (ImGui::MenuItem(gettext("New")))
         {
             LogInfo("Creating a new timetable");
-            newTimetableMenu->Open(true, "");
+            g_newTimetableMenu->Open(true, "");
         }
         if (ImGui::MenuItem(gettext("Open")))
         {
             LogInfo("Opening a timetable");
-            openTimetableMenu->Open();
+            g_openTimetableMenu->Open();
         }
         if (ImGui::MenuItem(gettext("Save")))
         {
             LogInfo("Manually saving a timetable");
-            currentTimetable.Save("templates/" + currentTimetable.name + ".json");
+            g_currentTimetable.Save("templates/" + g_currentTimetable.name + ".json");
         }
         if (ImGui::MenuItem(gettext("Save As")))
         {
             LogInfo("Saving a timetable as");
-            newTimetableMenu->Open(false, currentTimetable.name);
+            g_newTimetableMenu->Open(false, g_currentTimetable.name);
         }
-        if (currentTimetable.name != "" && ImGui::BeginMenu(gettext("Export As")))
+        if (g_currentTimetable.name != "" && ImGui::BeginMenu(gettext("Export As")))
         {
             if (ImGui::MenuItem(gettext("Excel")))
             {
                 LogInfo("Exporting a timetable as Excel");
-                currentTimetable.ExportAsXlsx();
+                g_currentTimetable.ExportAsXlsx();
                 OpenInFileManager("timetables/");
             }
             ImGui::EndMenu();
         }
-        if (ImGui::MenuItem(gettext("Settings"))) settingsMenu->Open();
+        if (ImGui::MenuItem(gettext("Settings"))) g_settingsMenu->Open();
         ImGui::EndMenu();
     }
-    if (currentTimetable.name != "" && ImGui::BeginMenu(currentTimetable.name.c_str()))
+    if (g_currentTimetable.name != "" && ImGui::BeginMenu(g_currentTimetable.name.c_str()))
     {
-        if (ImGui::MenuItem(gettext("Setup wizard"))) wizardMenu->Open();
-        if (ImGui::MenuItem(gettext("Classrooms"))) classroomsMenu->Open();
-        if (ImGui::MenuItem(gettext("Lessons"))) lessonsMenu->Open();
-        if (ImGui::MenuItem(gettext("Teachers"))) teachersMenu->Open();
-        if (ImGui::MenuItem(gettext("Classes"))) classesMenu->Open();
+        if (ImGui::MenuItem(gettext("Setup wizard"))) g_wizardMenu->Open();
+        if (ImGui::MenuItem(gettext("Classrooms"))) g_classroomsMenu->Open();
+        if (ImGui::MenuItem(gettext("Lessons"))) g_lessonsMenu->Open();
+        if (ImGui::MenuItem(gettext("Teachers"))) g_teachersMenu->Open();
+        if (ImGui::MenuItem(gettext("Classes"))) g_classesMenu->Open();
         if (ImGui::MenuItem(gettext("Generate timetable")))
         {
-            std::thread beginSearchingThread(BeginSearching, currentTimetable);
+            std::thread beginSearchingThread(BeginSearching, g_currentTimetable);
             beginSearchingThread.detach();
         }
         ImGui::EndMenu();
     }
     if (ImGui::BeginMenu(gettext("Help")))
     {
-        if (ImGui::MenuItem(gettext("FAQ"))) faqMenu->Open();
+        if (ImGui::MenuItem(gettext("FAQ"))) g_faqMenu->Open();
         if (ImGui::MenuItem(gettext("Check for updates"))) CheckForUpdates();
-        if (ImGui::MenuItem(gettext("About"))) aboutMenu->Open();
+        if (ImGui::MenuItem(gettext("About"))) g_aboutMenu->Open();
         ImGui::EndMenu();
     }
     ImGui::EndMainMenuBar();
@@ -246,11 +249,10 @@ void DrawMenuBar()
 void DrawFrame()
 {
     // Begin imgui drawing
-    if (lastMergedFont != settings.mergedFont || lastFontSize != settings.fontSize)
+    if (g_lastMergedFont != g_settings.mergedFont || g_lastFontSize != g_settings.fontSize)
     {
-        lastMergedFont = settings.mergedFont;
-        settings.fontSize = std::max(5, settings.fontSize);
-        lastFontSize = settings.fontSize;
+        g_lastMergedFont = g_settings.mergedFont;
+        g_lastFontSize = g_settings.fontSize;
         LoadFonts();
     }
     ImGuiIO& io = ImGui::GetIO();
@@ -261,28 +263,28 @@ void DrawFrame()
     BeginDrawing();
 
     // Change the background color based on the style
-    if (settings.style == Style::Dark || settings.style == Style::Dark) ClearBackground(BLACK);
-    if (settings.style == Style::Light) ClearBackground(WHITE);
+    if (g_settings.style == Style::Dark || g_settings.style == Style::Dark) ClearBackground(BLACK);
+    if (g_settings.style == Style::Light) ClearBackground(WHITE);
 
     rlImGuiBegin();
 
     // Draw UI
     DrawMenuBar();
-    app->Update();
-    app->Draw();
+    g_app->Update();
+    g_app->Draw();
 
     // Autosave the timetable
-    if (GetTime() - timetableAutosaveTimer > settings.timetableAutosaveInterval)
+    if (GetTime() - g_timetableAutosaveTimer > g_settings.autosaveInterval)
     {
-        timetableAutosaveTimer = GetTime();
-        currentTimetable.Save("templates/" + currentTimetable.name + ".json");
+        g_timetableAutosaveTimer = GetTime();
+        g_currentTimetable.Save("templates/" + g_currentTimetable.name + ".json");
     }
 
     // Change vsync state
-    if (lastVsync != settings.vsync)
+    if (g_lastVsync != g_settings.vsync)
     {
-        lastVsync = settings.vsync;
-        if (!settings.vsync)
+        g_lastVsync = g_settings.vsync;
+        if (!g_settings.vsync)
             ClearWindowState(FLAG_VSYNC_HINT);
         else
             SetWindowState(FLAG_VSYNC_HINT);
@@ -293,13 +295,4 @@ void DrawFrame()
     rlImGuiEnd();
 
     EndDrawing();
-}
-
-void FreeResources()
-{
-    for (auto& texture: faqScreenshots)
-    {
-        UnloadTexture(texture);
-    }
-    faqScreenshots.clear();
 }

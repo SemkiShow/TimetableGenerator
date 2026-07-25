@@ -22,9 +22,9 @@
 #include <vector>
 #include <zip.h>
 
-std::shared_ptr<CrashesMenu> crashesMenu;
+std::shared_ptr<CrashesMenu> g_crashesMenu;
 
-int ZipFile(zip_t* archive, const std::filesystem::path& path)
+static int ZipFile(zip_t* archive, const std::filesystem::path& path)
 {
     // Read the file
     std::ifstream fileStream(path);
@@ -34,11 +34,11 @@ int ZipFile(zip_t* archive, const std::filesystem::path& path)
         LOG_ERROR("Failed to open file %s", path.string().c_str());
         return 1;
     }
-    std::string fileContents = "";
-    std::string buf = "";
+    std::string fileContents;
+    std::string buf;
     while (std::getline(fileStream, buf)) fileContents += buf + "\n";
-    char* buffer = new char[fileContents.size()];
-    memcpy(buffer, fileContents.data(), fileContents.size());
+    char* buffer = new char[fileContents.size() + 1];
+    strcpy(buffer, fileContents.data());
 
     // Add a new file to the archive
     zip_source_t* source = zip_source_buffer(archive, buffer, fileContents.size(), 1);
@@ -59,16 +59,16 @@ int ZipFile(zip_t* archive, const std::filesystem::path& path)
     return 0;
 }
 
-void ZipLogs(zip_t* archive)
+static void ZipLogs(zip_t* archive)
 {
     auto logFiles = ListFiles("logs/");
-    for (size_t i = 0; i < logFiles.size(); i++)
+    for (const auto& file: logFiles)
     {
-        ZipFile(archive, logFiles[i]);
+        ZipFile(archive, file);
     }
 }
 
-void ZipTimetables(zip_t* archive)
+static void ZipTimetables(zip_t* archive)
 {
     // Zip templates
     auto templateFiles = ListFiles("templates/");
@@ -85,10 +85,10 @@ void ZipTimetables(zip_t* archive)
     }
 }
 
-int ZipSystemInfo(zip_t* archive)
+static int ZipSystemInfo(zip_t* archive)
 {
     // Get system info
-    std::string systemInfo = "";
+    std::string systemInfo;
     systemInfo += "OS: " + GetOS() + '\n';
     systemInfo += "CPU: " + GetCPU() + '\n';
     systemInfo += "RAM: " + std::to_string(GetRAMMegabytes()) + " MB\n";
@@ -101,31 +101,32 @@ int ZipSystemInfo(zip_t* archive)
     }
     for (int i = 0; i < GetMonitorCount(); i++)
     {
-        float monitorDiagonal =
-            sqrt(pow(GetMonitorPhysicalWidth(i), 2) + pow(GetMonitorPhysicalHeight(i), 2));
-        monitorDiagonal /= 25.4;
-        char monitorDiagonalString[50];
-        snprintf(monitorDiagonalString, sizeof(monitorDiagonalString), "%.1f", monitorDiagonal);
-        systemInfo +=
-            "Display " + std::to_string(i) + " (" + GetMonitorName(i) +
-            "): " + std::to_string(GetMonitorWidth(i)) + "x" + std::to_string(GetMonitorHeight(i)) +
-            "@" + std::to_string(GetMonitorRefreshRate(i)) + "Hz " + monitorDiagonalString + "'\n";
+        float monitorDiagonal = sqrtf(powf((float)GetMonitorPhysicalWidth(i), 2) +
+                                      powf((float)GetMonitorPhysicalHeight(i), 2));
+        constexpr float MM_TO_INCH_RATIO = 25.4;
+        monitorDiagonal /= MM_TO_INCH_RATIO;
+        const char* monitorDiagonalStr = TextFormat("%.1f", monitorDiagonal);
+        systemInfo += "Display " + std::to_string(i) + " (" + GetMonitorName(i) +
+                      "): " + std::to_string(GetMonitorWidth(i)) + "x" +
+                      std::to_string(GetMonitorHeight(i)) + "@" +
+                      std::to_string(GetMonitorRefreshRate(i)) + "Hz " + monitorDiagonalStr + "'\n";
     }
     std::vector<std::string> mounts = GetAllMountPoints();
     for (size_t i = 0; i < mounts.size(); i++)
     {
+        constexpr int BYTES_IN_MB = 1024 * 1024;
         std::filesystem::space_info spaceInfo = GetDiskInfo(mounts[i]);
         systemInfo += "Disk " + std::to_string(i) + " at " + mounts[i] +
-                      " capacity: " + std::to_string(spaceInfo.capacity / 1024 / 1024) + " MB\n";
+                      " capacity: " + std::to_string(spaceInfo.capacity / BYTES_IN_MB) + " MB\n";
         systemInfo += "Disk " + std::to_string(i) + " at " + mounts[i] +
-                      " free: " + std::to_string(spaceInfo.free / 1024 / 1024) + " MB\n";
+                      " free: " + std::to_string(spaceInfo.free / BYTES_IN_MB) + " MB\n";
         systemInfo += "Disk " + std::to_string(i) + " at " + mounts[i] +
-                      " available: " + std::to_string(spaceInfo.available / 1024 / 1024) + " MB\n";
+                      " available: " + std::to_string(spaceInfo.available / BYTES_IN_MB) + " MB\n";
     }
 
     // Copy the system info into a temporary buffer
-    char* buffer = new char[systemInfo.size()];
-    memcpy(buffer, systemInfo.data(), systemInfo.size());
+    char* buffer = new char[systemInfo.size() + 1];
+    strcpy(buffer, systemInfo.data());
 
     // Add a new file to the archive
     zip_source_t* source = zip_source_buffer(archive, buffer, systemInfo.size(), 1);
@@ -146,13 +147,13 @@ int ZipSystemInfo(zip_t* archive)
     return 0;
 }
 
-int CrashesMenu::CreateCrashReport()
+int CrashesMenu::CreateCrashReport() const
 {
     int error = 0;
 
     // Create crash_report.zip
     zip_t* archive = zip_open("crash_report.zip", ZIP_CREATE | ZIP_TRUNCATE, &error);
-    if (!archive)
+    if (archive == nullptr)
     {
         zip_error_t ziperror;
         zip_error_init_with_code(&ziperror, error);
@@ -162,10 +163,10 @@ int CrashesMenu::CreateCrashReport()
     }
 
     ZipFile(archive, "version.txt");
-    if (sendLogs) ZipLogs(archive);
-    if (sendTimetables) ZipTimetables(archive);
-    if (sendSettings) ZipFile(archive, "settings.txt");
-    if (sendSystemInfo) ZipSystemInfo(archive);
+    if (sendLogs_) ZipLogs(archive);
+    if (sendTimetables_) ZipTimetables(archive);
+    if (sendSettings_) ZipFile(archive, "settings.txt");
+    if (sendSystemInfo_) ZipSystemInfo(archive);
 
     // Close the archive to write changes
     if (zip_close(archive) < 0)
@@ -180,7 +181,7 @@ int CrashesMenu::CreateCrashReport()
 
 void CrashesMenu::Draw()
 {
-    if (!ImGui::Begin(gettext("Crash report"), &visible))
+    if (!ImGui::Begin(gettext("Crash report"), &visible_))
     {
         ImGui::End();
         return;
@@ -191,10 +192,10 @@ void CrashesMenu::Draw()
         gettext(
             "The program has crashed last time it was opened!\nIf you would like to send an anonymous crash report,\nselect the data you want to share\n(by sending a crash report you can\nhelp to make Timetable Generator even better)"));
 
-    ImGui::Checkbox(gettext("send logs"), &sendLogs);
-    ImGui::Checkbox(gettext("send timetables"), &sendTimetables);
-    ImGui::Checkbox(gettext("send settings"), &sendSettings);
-    ImGui::Checkbox(gettext("send basic system information"), &sendSystemInfo);
+    ImGui::Checkbox(gettext("send logs"), &sendLogs_);
+    ImGui::Checkbox(gettext("send timetables"), &sendTimetables_);
+    ImGui::Checkbox(gettext("send settings"), &sendSettings_);
+    ImGui::Checkbox(gettext("send basic system information"), &sendSystemInfo_);
 
     if (ImGui::Button(gettext("Create crash_report.zip")))
     {

@@ -6,16 +6,16 @@
 #include "Logging.hpp"
 #include "Translations.hpp"
 #include "UI/Classrooms/Edit.hpp"
-#include <exception>
+#include <cstdlib>
 #include <imgui.h>
 #include <memory>
 #include <string>
 
-std::shared_ptr<ClassroomsMenu> classroomsMenu;
+std::shared_ptr<ClassroomsMenu> g_classroomsMenu;
 
 void ClassroomsMenu::Draw()
 {
-    if (!ImGui::Begin(gettext("Classrooms"), &visible))
+    if (!ImGui::Begin(gettext("Classrooms"), &visible_))
     {
         ImGui::End();
         return;
@@ -23,20 +23,14 @@ void ClassroomsMenu::Draw()
 
     if (ImGui::Button(gettext("+")))
     {
-        int classroomNumber = 0;
-        try
-        {
-            classroomNumber = stoi(timetable.classrooms[timetable.maxClassroomId].name) + 1;
-        }
-        catch (const std::exception&)
-        {
-        }
-        editClassroomMenu->Open(&timetable, true, timetable.maxClassroomId + 1, classroomNumber,
-                                classroomNumber);
-        LogInfo("Adding a new classroom with id %d", timetable.maxClassroomId + 1);
+        int classroomNumber =
+            atoi(timetable_.classrooms[timetable_.maxClassroomId].name.c_str()) + 1;
+        g_editClassroomMenu->Open(&timetable_, true, timetable_.maxClassroomId + 1, classroomNumber,
+                                  classroomNumber);
+        LogInfo("Adding a new classroom with id %d", timetable_.maxClassroomId + 1);
     }
 
-    for (auto it = timetable.classrooms.begin(); it != timetable.classrooms.end();)
+    for (auto it = timetable_.classrooms.begin(); it != timetable_.classrooms.end();)
     {
         ImGui::PushID(it->first);
 
@@ -44,14 +38,14 @@ void ClassroomsMenu::Draw()
         {
             LogInfo("Removed a classroom with id %d", it->first);
             ImGui::PopID();
-            it = timetable.classrooms.erase(it);
+            it = timetable_.classrooms.erase(it);
             continue;
         }
         ImGui::SameLine();
 
         if (ImGui::Button(gettext("Edit")))
         {
-            editClassroomMenu->Open(&timetable, false, it->first, 0, 0);
+            g_editClassroomMenu->Open(&timetable_, false, it->first, 0, 0);
             LogInfo("Editing a classroom with id %d", it->first);
         }
         ImGui::SameLine();
@@ -66,8 +60,8 @@ void ClassroomsMenu::Draw()
     if (ImGui::Button(gettext("Ok")))
     {
         LogInfo("Pressed Ok in the classrooms menu");
-        prevTimetable->classrooms = timetable.classrooms;
-        prevTimetable->maxClassroomId = timetable.maxClassroomId;
+        prevTimetable_->classrooms = timetable_.classrooms;
+        prevTimetable_->maxClassroomId = timetable_.maxClassroomId;
         Close();
     }
     ImGui::SameLine();

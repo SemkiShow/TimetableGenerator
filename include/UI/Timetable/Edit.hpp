@@ -14,23 +14,23 @@
 
 class NewTimetableMenu : public Window
 {
-  public:
+public:
     virtual ~NewTimetableMenu() = default;
 
     void Draw() override;
 
     void Open(bool newTimetable, const std::string& timetableName)
     {
-        this->newTimetable = newTimetable;
-        this->timetableName = timetableName;
+        this->newTimetable_ = newTimetable;
+        this->timetableName_ = timetableName;
         Window::Open();
     }
 
-  private:
+private:
     void Open() override {}
 
-    bool newTimetable = false;
-    std::string timetableName;
+    bool newTimetable_ = false;
+    std::string timetableName_;
 };
 
-extern std::shared_ptr<NewTimetableMenu> newTimetableMenu;
+extern std::shared_ptr<NewTimetableMenu> g_newTimetableMenu;

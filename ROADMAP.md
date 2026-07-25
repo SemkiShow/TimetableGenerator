@@ -15,10 +15,14 @@
   - [x] Add Web.cpp
   - [ ] Doxygen documentation
 - [ ] Unit tests
-- [ ] Switch to RayUI or Qt?
 - [ ] Automatic crash report sending
+- [ ] Change the way to make multiple lessons in one cell to groups (a more logical and flexible solution)
+
+## v1.0.0-beta.7
+
 - [ ] Exporting to HTML
 - [ ] Exporting to some image format
-- [ ] Change the way to make multiple lessons in one cell to groups (a more logical and flexible solution)
+- [ ] Switch to nlohmann/json or make JsonFormat standard-compliant and more easily usable
+- [ ] Switch to RayUI or Qt?
 - [ ] Scoring on the GPU
 - [ ] Toggle scoring functions in settings

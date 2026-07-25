@@ -13,10 +13,16 @@
 
 class WizardMenu : public Window
 {
-  public:
+public:
     virtual ~WizardMenu() = default;
 
     void Draw() override;
+
+private:
+    static constexpr int WIZARD_STEPS = 6;
+
+    int step_ = 0;
+    bool openWizard_ = false;
 };
 
-extern std::shared_ptr<WizardMenu> wizardMenu;
+extern std::shared_ptr<WizardMenu> g_wizardMenu;

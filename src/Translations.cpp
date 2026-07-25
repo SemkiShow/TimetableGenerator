@@ -14,9 +14,9 @@
 #include <string>
 #include <vector>
 
-std::vector<std::string> availableLanguages;
-std::string languageValues;
-int languageId = -1;
+std::vector<std::string> g_availableLanguages;
+std::string g_languageValues;
+int g_languageId = -1;
 
 std::string GetText(const std::string& id) { return std::string(gettext(id.c_str())); }
 
@@ -35,42 +35,39 @@ void SetLanguage(const std::string& domain, const std::filesystem::path& localeP
 
 void GetAllLanguages()
 {
-    availableLanguages.clear();
-    availableLanguages.push_back("en");
-    for (auto& lang: std::filesystem::directory_iterator("resources/locales"))
+    g_availableLanguages.clear();
+    g_availableLanguages.push_back("en");
+    for (const auto& lang: std::filesystem::directory_iterator("resources/locales"))
     {
         if (!lang.is_directory()) continue;
-        availableLanguages.push_back(lang.path().filename().string());
+        g_availableLanguages.push_back(lang.path().filename().string());
     }
 
-    languageValues = "";
-    languageId = -1;
-    for (size_t i = 0; i < availableLanguages.size(); i++)
+    g_languageValues = "";
+    g_languageId = -1;
+    for (size_t i = 0; i < g_availableLanguages.size(); i++)
     {
-        languageValues += availableLanguages[i];
-        languageValues += '\0';
-        if (std::string(availableLanguages[i]) == settings.language) languageId = i;
+        g_languageValues += g_availableLanguages[i];
+        g_languageValues += '\0';
+        if (std::string(g_availableLanguages[i]) == g_settings.language) g_languageId = (int)i;
     }
-    languageValues += '\0';
-    if (languageId == -1) languageId = 0;
+    g_languageValues += '\0';
+    if (g_languageId == -1) g_languageId = 0;
 }
 
 void ReloadLabels()
 {
     // Read the language file
     LogInfo("Reloading labels");
-    LogInfo("Current language: %s", settings.language.c_str());
-    SetLanguage("TimetableGenerator", "resources/locales", settings.language);
+    LogInfo("Current language: %s", g_settings.language.c_str());
+    SetLanguage("TimetableGenerator", "resources/locales", g_settings.language);
 
     // Assign translated week days
-    weekDays[0] = GetText("Monday");
-    weekDays[1] = GetText("Tuesday");
-    weekDays[2] = GetText("Wednesday");
-    weekDays[3] = GetText("Thursday");
-    weekDays[4] = GetText("Friday");
-    weekDays[5] = GetText("Saturday");
-    weekDays[6] = GetText("Sunday");
+    g_weekDays = {
+        gettext("Monday"), gettext("Tuesday"),  gettext("Wednesday"), gettext("Thursday"),
+        gettext("Friday"), gettext("Saturday"), gettext("Sunday"),
+    };
 
     // Assign translated style values
-    settingsMenu->ReloadLabels();
+    g_settingsMenu->ReloadLabels();
 }

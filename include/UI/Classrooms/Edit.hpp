@@ -14,7 +14,7 @@
 
 class EditClassroomMenu : public Window
 {
-  public:
+public:
     virtual ~EditClassroomMenu() = default;
 
     void Draw() override;
@@ -31,15 +31,15 @@ class EditClassroomMenu : public Window
     void Open(Timetable* prevTimetable, bool newClassroom, int classroomId, int startNumber,
               int endNumber);
 
-  private:
+private:
     void Open() override {}
 
-    bool newClassroom = false;
-    int classroomId = 0;
-    int startNumber = 0, endNumber = 0;
+    bool newClassroom_ = false;
+    int classroomId_ = 0;
+    int startNumber_ = 0, endNumber_ = 0;
 
-    Timetable* prevTimetable = nullptr;
-    Timetable timetable;
+    Timetable* prevTimetable_ = nullptr;
+    Timetable timetable_;
 };
 
-extern std::shared_ptr<EditClassroomMenu> editClassroomMenu;
+extern std::shared_ptr<EditClassroomMenu> g_editClassroomMenu;

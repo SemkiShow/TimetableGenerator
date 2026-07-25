@@ -6,68 +6,67 @@
 #include "Searching.hpp"
 #include "Settings.hpp"
 #include "Translations.hpp"
+#include "UI.hpp"
 #include <cfloat>
 #include <cmath>
-#include <cstddef>
 #include <imgui.h>
 #include <memory>
 #include <string>
 #include <thread>
 
-std::shared_ptr<GenerateTimetableMenu> generateTimetableMenu;
+std::shared_ptr<GenerateTimetableMenu> g_generateTimetableMenu;
 
 void GenerateTimetableMenu::Draw()
 {
-    if (!ImGui::Begin(gettext("Generate timetable"), &visible))
+    if (!ImGui::Begin(gettext("Generate timetable"), &visible_))
     {
         ImGui::End();
         return;
     }
-    if (status == gettext("Timetable generating done!"))
+    if (status_ == gettext("Timetable generating done!"))
     {
-        ImGui::TextColored(ImVec4(0, 255, 0, 255), "%s", gettext("Timetable generating done!"));
+        ImGui::TextColored(COLOR_SUCCESS, "%s", gettext("Timetable generating done!"));
     }
     else
     {
-        ImGui::Text("%s", status.c_str());
+        ImGui::Text("%s", status_.c_str());
     }
-    if (status == gettext("Allocating memory for the timetables..."))
+    if (status_ == gettext("Allocating memory for the timetables..."))
     {
         ImGui::LabelText("##1", "\n\n\n\n\n\n\n");
     }
     else
     {
-        ImGui::Text("%s %d", gettext("Iteration:"), iterationData.iteration);
-        ImGui::Text("%s %d", gettext("The best score is"), iterationData.allTimeBestScore);
+        ImGui::Text("%s %d", gettext("Iteration:"), g_iterationData.iteration);
+        ImGui::Text("%s %d", gettext("The best score is"), g_iterationData.allTimeBestScore);
         ImGui::Text("%s %d %s", gettext("The best timetable has"),
-                    iterationData.timetables[iterationData.bestTimetableIndex].errors,
+                    g_iterationData.timetables[g_iterationData.bestTimetableIndex].errors,
                     gettext("errors"));
         ImGui::Text("%s %d %s", gettext("The best timetable has"),
-                    iterationData.timetables[iterationData.bestTimetableIndex].bonusPoints,
+                    g_iterationData.timetables[g_iterationData.bestTimetableIndex].bonusPoints,
                     gettext("bonus points"));
-        ImGui::Text("%d %s", iterationData.iterationsPerChange,
+        ImGui::Text("%d %s", g_iterationData.iterationsPerChange,
                     gettext("iterations have passed since last score improvement"));
         float progressPercentage = 1;
-        if (status == gettext("Generating a timetable that matches the requirements..."))
+        if (status_ == gettext("Generating a timetable that matches the requirements..."))
         {
             progressPercentage =
-                (-(iterationData.maxErrors * 1.0f / 100) * iterationData.minErrors + 100) / 100;
+                1.0F - (float)g_iterationData.minErrors / (float)g_iterationData.maxErrors;
         }
-        else if (status == gettext("Finding additional bonus points..."))
+        else if (status_ == gettext("Finding additional bonus points..."))
         {
-            progressPercentage = (iterationData.maxBonusPoints - iterationData.startBonusPoints) *
-                                 1.0f / settings.additionalBonusPoints;
+            progressPercentage =
+                float(g_iterationData.maxBonusPoints - g_iterationData.startBonusPoints) /
+                (float)g_settings.additionalBonusPoints;
         }
-        ImGui::ProgressBar(pow(progressPercentage, 2));
-        ImGui::PlotLines(gettext("errors"), iterationData.errorValues,
-                         iterationData.errorValuesPoints, 0, NULL, FLT_MAX, FLT_MAX,
-                         ImVec2(0, 100));
+        ImGui::ProgressBar(powf(progressPercentage, 2));
+        constexpr int PLOT_HEIGHT = 100;
+        ImGui::PlotLines(gettext("errors"), g_iterationData.errorValues,
+                         IterationData::ERROR_VALUES_SIZE, 0, nullptr, FLT_MAX, FLT_MAX,
+                         ImVec2(0, PLOT_HEIGHT));
     }
     ImGui::End();
-}
 
-void GenerateTimetableMenu::PostDraw()
-{
     // Stop searching for a timetable if the Generate timetable window is closed
     if (!IsVisible())
     {

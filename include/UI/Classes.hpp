@@ -15,24 +15,25 @@
 
 class ClassesMenu : public Window
 {
-  public:
+public:
     virtual ~ClassesMenu() = default;
 
     void Draw() override;
 
     void Open() override
     {
-        timetable.classes = prevTimetable->classes;
-        timetable.maxClassId = prevTimetable->maxClassId;
-        timetable.orderedClasses = prevTimetable->orderedClasses;
-        timetable.lessons = prevTimetable->lessons;
-        timetable.year = prevTimetable->year;
+        timetable_.classes = prevTimetable_->classes;
+        timetable_.maxClassId = prevTimetable_->maxClassId;
+        timetable_.orderedClasses = prevTimetable_->orderedClasses;
+        timetable_.lessons = prevTimetable_->lessons;
+        timetable_.year = prevTimetable_->year;
         Window::Open();
     }
 
-  private:
-    Timetable* prevTimetable = &currentTimetable;
-    Timetable timetable;
+private:
+    Timetable* prevTimetable_ = &g_currentTimetable;
+    Timetable timetable_;
 };
 
-extern std::shared_ptr<ClassesMenu> classesMenu;
+extern std::shared_ptr<ClassesMenu> g_classesMenu;
+  

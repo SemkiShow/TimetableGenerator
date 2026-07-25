@@ -13,10 +13,10 @@
 
 class AboutMenu : public Window
 {
-  public:
+public:
     virtual ~AboutMenu() = default;
 
     void Draw() override;
 };
 
-extern std::shared_ptr<AboutMenu> aboutMenu;
+extern std::shared_ptr<AboutMenu> g_aboutMenu;

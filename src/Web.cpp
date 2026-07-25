@@ -17,7 +17,7 @@
 #include <utility>
 #include <vector>
 
-static const char* USER_AGENT = "TimetableGenerator";
+static const char* const USER_AGENT = "TimetableGenerator";
 
 static size_t WriteCallback(void* ptr, size_t size, size_t nmemb, void* stream)
 {
@@ -391,10 +391,10 @@ bool DownloadFile(const std::string& url, const std::filesystem::path& outputPat
 {
     LogInfo("Downloading the file %s", url.c_str());
     FILE* file = fopen(outputPath.string().c_str(), "wb");
-    if (!file) return false;
+    if (file == nullptr) return false;
 
     CURL* curl = curl_easy_init();
-    if (!curl)
+    if (curl == nullptr)
     {
         LOG_ERROR("Failed to initialize CURL");
         fclose(file);

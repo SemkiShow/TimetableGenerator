@@ -15,33 +15,32 @@
 #include <string>
 #include <vector>
 
-std::shared_ptr<OpenTimetableMenu> openTimetableMenu;
+std::shared_ptr<OpenTimetableMenu> g_openTimetableMenu;
 
-std::vector<std::string> timetableFiles;
+static std::vector<std::string> g_timetableFiles;
 
 void OpenTimetableMenu::Open()
 {
-    timetableFiles = ListFiles("templates/");
-    for (size_t i = 0; i < timetableFiles.size(); i++)
-        timetableFiles[i] = std::filesystem::path(timetableFiles[i]).stem().string();
+    g_timetableFiles = ListFiles("templates/");
+    for (auto& file: g_timetableFiles) file = std::filesystem::path(file).stem().string();
     Window::Open();
 }
 
 void OpenTimetableMenu::Draw()
 {
-    if (!ImGui::Begin(gettext("Open timetable"), &visible))
+    if (!ImGui::Begin(gettext("Open timetable"), &visible_))
     {
         ImGui::End();
         return;
     }
     ImGui::Text("%s", gettext("Select a timetable to open"));
-    for (size_t i = 0; i < timetableFiles.size(); i++)
+    for (size_t i = 0; i < g_timetableFiles.size(); i++)
     {
-        if (ImGui::Button(timetableFiles[i].c_str()))
+        if (ImGui::Button(g_timetableFiles[i].c_str()))
         {
-            LogInfo("Opening a timetable at templates/%s.json", timetableFiles[i].c_str());
-            currentTimetable = Timetable();
-            currentTimetable.Load("templates/" + timetableFiles[i] + ".json");
+            LogInfo("Opening a timetable at templates/%s.json", g_timetableFiles[i].c_str());
+            g_currentTimetable = Timetable();
+            g_currentTimetable.Load("templates/" + g_timetableFiles[i] + ".json");
             Close();
         }
     }

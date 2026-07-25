@@ -17,29 +17,29 @@
 
 class RulesMenu : public Window
 {
-  public:
+public:
     virtual ~RulesMenu() = default;
 
     void Draw() override;
 
     void Open(Timetable* prevTimetable, bool newRule, int ruleId, int classId,
               const std::unordered_map<std::string, bool>& lessons,
-              const std::unordered_map<std::string, int>& lessonAmounts,
+              const std::unordered_map<std::string, int>& lessonCounts,
               const std::unordered_map<std::string, bool>& lessonTeachers);
 
-  private:
+private:
     void Open() override {}
 
-    bool newRule = false;
-    int ruleId = 0, classId = 0;
-    std::unordered_map<std::string, bool> lessons;
-    std::unordered_map<std::string, int> lessonAmounts;
-    std::unordered_map<std::string, bool> lessonTeachers;
-    std::string timetableLessonValues = "";
-    int minTimetableLessonAmount = INT_MAX;
+    bool newRule_ = false;
+    int ruleId_ = 0, classId_ = 0;
+    std::unordered_map<std::string, bool> lessons_;
+    std::unordered_map<std::string, int> lessonCounts_;
+    std::unordered_map<std::string, bool> lessonTeachers_;
+    std::string timetableLessonValues_;
+    int minTimetableLessonCount_ = INT_MAX;
 
-    Timetable* prevTimetable = nullptr;
-    Timetable timetable;
+    Timetable* prevTimetable_ = nullptr;
+    Timetable timetable_;
 };
 
-extern std::shared_ptr<RulesMenu> rulesMenu;
+extern std::shared_ptr<RulesMenu> g_rulesMenu;

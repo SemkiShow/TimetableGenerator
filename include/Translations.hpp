@@ -9,6 +9,7 @@
 #pragma once
 
 #include <filesystem>
+#include <libintl.h> // IWYU pragma: export
 #include <string>
 #include <vector>
 
@@ -21,14 +22,6 @@
  * @return std::string
  */
 std::string GetText(const std::string& id);
-
-/**
- * @brief A functon from libintl-lite
- *
- * @param id
- * @return const char*
- */
-extern "C" const char* gettext(const char* id);
 
 /**
  * @brief Set the language
@@ -55,6 +48,6 @@ void GetAllLanguages();
  */
 void ReloadLabels();
 
-extern std::vector<std::string> availableLanguages;
-extern std::string languageValues;
-extern int languageId;
+extern std::vector<std::string> g_availableLanguages;
+extern std::string g_languageValues;
+extern int g_languageId;

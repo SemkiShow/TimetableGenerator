@@ -8,16 +8,16 @@
 #include <imgui.h>
 #include <memory>
 
-std::shared_ptr<AboutMenu> aboutMenu;
+std::shared_ptr<AboutMenu> g_aboutMenu;
 
 void AboutMenu::Draw()
 {
-    if (!ImGui::Begin(gettext("About"), &visible))
+    if (!ImGui::Begin(gettext("About"), &visible_))
     {
         ImGui::End();
         return;
     }
-    ImGui::Text("%s %s", gettext("TimetableGenerator"), version.c_str());
+    ImGui::Text("%s %s", gettext("TimetableGenerator"), g_version.c_str());
     ImGui::Text("%s", gettext("A tool for creating timetables easily"));
     ImGui::Text("%s", gettext("Developed by SemkiShow"));
     ImGui::Text("%s", gettext("Licensed under GPL v3 License"));

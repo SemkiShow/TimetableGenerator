@@ -7,4 +7,3 @@ Diagnostics:
   MissingIncludes: Strict
   Includes:
     AnalyzeAngledIncludes: true
-

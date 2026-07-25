@@ -13,24 +13,24 @@
 
 class CrashesMenu : public Window
 {
-  public:
+public:
     virtual ~CrashesMenu() = default;
 
     void Draw() override;
 
     void Open() override
     {
-        sendLogs = sendTimetables = sendSettings = sendSystemInfo = true;
+        sendLogs_ = sendTimetables_ = sendSettings_ = sendSystemInfo_ = true;
         Window::Open();
     }
 
-  private:
-    int CreateCrashReport();
+private:
+    int CreateCrashReport() const;
 
-    bool sendLogs = true;
-    bool sendTimetables = true;
-    bool sendSettings = true;
-    bool sendSystemInfo = true;
+    bool sendLogs_ = true;
+    bool sendTimetables_ = true;
+    bool sendSettings_ = true;
+    bool sendSystemInfo_ = true;
 };
 
-extern std::shared_ptr<CrashesMenu> crashesMenu;
+extern std::shared_ptr<CrashesMenu> g_crashesMenu;

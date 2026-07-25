@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-29 10:33+0200\n"
+"POT-Creation-Date: 2026-07-25 19:57+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,8 +17,73 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/UI/Classes/Edit.cpp:43 src/UI/Classes/Edit.cpp:221
-#: src/UI/Classes/Edit.cpp:222 src/UI/Classes/Utils.cpp:137
+#: src/Timetable/Export/Excel.cpp:70
+msgid ""
+"Press the Generate timetable button\n"
+"before exporting the timetable!"
+msgstr ""
+
+#: src/Timetable/Export/Excel.cpp:78 src/UI/Classes.cpp:22 src/UI.cpp:231
+msgid "Classes"
+msgstr ""
+
+#: src/Timetable/Export/Excel.cpp:241 src/UI/Teachers.cpp:20 src/UI.cpp:230
+msgid "Teachers"
+msgstr ""
+
+#: src/Timetable/Export/Excel.cpp:358 src/UI/Classrooms.cpp:18 src/UI.cpp:228
+msgid "Classrooms"
+msgstr ""
+
+#: src/UI/Classes/Edit/CombineLessons.cpp:79 src/UI/Classes/Edit.cpp:303
+msgid "Combine lessons"
+msgstr ""
+
+#: src/UI/Classes/Edit/CombineLessons.cpp:111 src/UI/Classes/Edit/Rules.cpp:107
+#: src/UI/Classes/Edit.cpp:480 src/UI/Classrooms/Edit.cpp:100
+#: src/UI/Lessons/Edit.cpp:158 src/UI/Teachers/Edit.cpp:227
+#: src/UI/Timetable/Edit.cpp:26 src/UI/Classes.cpp:150 src/UI/Classrooms.cpp:60
+#: src/UI/Lessons.cpp:80 src/UI/Teachers.cpp:78
+msgid "Ok"
+msgstr ""
+
+#: src/UI/Classes/Edit/CombineLessons.cpp:133 src/UI/Classes/Edit/Rules.cpp:122
+#: src/UI/Classes/Edit.cpp:518 src/UI/Classrooms/Edit.cpp:119
+#: src/UI/Lessons/Edit.cpp:178 src/UI/Teachers/Edit.cpp:267
+#: src/UI/Timetable/Edit.cpp:39 src/UI/Classes.cpp:161 src/UI/Classrooms.cpp:68
+#: src/UI/Lessons.cpp:88 src/UI/Teachers.cpp:86
+msgid "Cancel"
+msgstr ""
+
+#: src/UI/Classes/Edit/Rules.cpp:61
+msgid "New rule"
+msgstr ""
+
+#: src/UI/Classes/Edit/Rules.cpp:61
+msgid "Edit rule"
+msgstr ""
+
+#: src/UI/Classes/Edit/Rules.cpp:69
+msgid "preserve order"
+msgstr ""
+
+#: src/UI/Classes/Edit/Rules.cpp:70 src/UI/Classes/Edit.cpp:219
+msgid "count"
+msgstr ""
+
+#: src/UI/Classes/Edit/Rules.cpp:74 src/UI/Classes.cpp:39 src/UI/Classes.cpp:91
+#: src/UI/Classrooms.cpp:24 src/UI/Lessons.cpp:24 src/UI/Teachers.cpp:32
+msgid "+"
+msgstr ""
+
+#: src/UI/Classes/Edit/Rules.cpp:82 src/UI/Classes/Edit.cpp:319
+#: src/UI/Classes/Edit.cpp:432 src/UI/Classes.cpp:56 src/UI/Classes.cpp:114
+#: src/UI/Classrooms.cpp:37 src/UI/Lessons.cpp:36 src/UI/Teachers.cpp:43
+msgid "-"
+msgstr ""
+
+#: src/UI/Classes/Edit.cpp:43 src/UI/Classes/Edit.cpp:222
+#: src/UI/Classes/Edit.cpp:223 src/UI/Classes/Utils.cpp:137
 msgid "abcdefghijklmnopqrstuvwxyz"
 msgstr ""
 
@@ -50,363 +115,73 @@ msgstr ""
 msgid "number"
 msgstr ""
 
-#: src/UI/Classes/Edit.cpp:219 src/UI/Classes/Edit/Rules.cpp:70
-msgid "amount"
-msgstr ""
-
-#: src/UI/Classes/Edit.cpp:227
+#: src/UI/Classes/Edit.cpp:228
 msgid "letter"
 msgstr ""
 
-#: src/UI/Classes/Edit.cpp:228
+#: src/UI/Classes/Edit.cpp:229
 msgid "teacher"
 msgstr ""
 
-#: src/UI/Classes/Edit.cpp:233 src/UI/Teachers/Edit.cpp:174
+#: src/UI/Classes/Edit.cpp:234 src/UI/Teachers/Edit.cpp:176
 msgid "available lessons"
 msgstr ""
 
-#: src/UI/Classes/Edit.cpp:271 src/UI/Classes/Edit.cpp:373
+#: src/UI/Classes/Edit.cpp:272 src/UI/Classes/Edit.cpp:375
 #: src/UI/Lessons/Edit.cpp:64 src/UI/Lessons/Edit.cpp:128
 #: src/UI/Teachers/Edit.cpp:122
 msgid "Deselect all"
 msgstr ""
 
-#: src/UI/Classes/Edit.cpp:271 src/UI/Classes/Edit.cpp:374
+#: src/UI/Classes/Edit.cpp:272 src/UI/Classes/Edit.cpp:376
 #: src/UI/Lessons/Edit.cpp:64 src/UI/Lessons/Edit.cpp:128
 #: src/UI/Teachers/Edit.cpp:122
 msgid "Select all"
 msgstr ""
 
-#: src/UI/Classes/Edit.cpp:300 src/UI/Teachers/Edit.cpp:118
+#: src/UI/Classes/Edit.cpp:301 src/UI/Teachers/Edit.cpp:118
 msgid "lessons"
 msgstr ""
 
-#: src/UI/Classes/Edit.cpp:302 src/UI/Classes/Edit/CombineLessons.cpp:79
-msgid "Combine lessons"
-msgstr ""
-
-#: src/UI/Classes/Edit.cpp:318 src/UI/Classes/Edit.cpp:429
-#: src/UI/Classes/Edit/Rules.cpp:82 src/UI/Classes.cpp:55
-#: src/UI/Classes.cpp:113 src/UI/Classrooms.cpp:43 src/UI/Lessons.cpp:36
-#: src/UI/Teachers.cpp:43
-msgid "-"
-msgstr ""
-
-#: src/UI/Classes/Edit.cpp:327 src/UI/Classes/Edit.cpp:439
-#: src/UI/Classes.cpp:75 src/UI/Classes.cpp:122 src/UI/Classrooms.cpp:52
+#: src/UI/Classes/Edit.cpp:328 src/UI/Classes/Edit.cpp:442
+#: src/UI/Classes.cpp:76 src/UI/Classes.cpp:123 src/UI/Classrooms.cpp:46
 #: src/UI/Lessons.cpp:45 src/UI/Teachers.cpp:52
 msgid "Edit"
 msgstr ""
 
-#: src/UI/Classes/Edit.cpp:368
+#: src/UI/Classes/Edit.cpp:370
 msgid "Warning: no teacher selected for this lesson"
 msgstr ""
 
-#: src/UI/Classes/Edit.cpp:411
+#: src/UI/Classes/Edit.cpp:414
 msgid "Add a lesson rule"
 msgstr ""
 
-#: src/UI/Classes/Edit.cpp:418
+#: src/UI/Classes/Edit.cpp:421
 msgid "Rules"
 msgstr ""
 
-#: src/UI/Classes/Edit.cpp:420
+#: src/UI/Classes/Edit.cpp:423
 msgid "Preserve order"
 msgstr ""
 
-#: src/UI/Classes/Edit.cpp:422
-msgid "Amount"
+#: src/UI/Classes/Edit.cpp:425
+msgid "Count"
 msgstr ""
 
-#: src/UI/Classes/Edit.cpp:465
+#: src/UI/Classes/Edit.cpp:469
 msgid "Yes"
 msgstr ""
 
-#: src/UI/Classes/Edit.cpp:465
+#: src/UI/Classes/Edit.cpp:469
 msgid "No"
 msgstr ""
 
-#: src/UI/Classes/Edit.cpp:476 src/UI/Classes/Edit/CombineLessons.cpp:111
-#: src/UI/Classes/Edit/Rules.cpp:107 src/UI/Classes.cpp:149
-#: src/UI/Classrooms.cpp:66 src/UI/Lessons.cpp:80 src/UI/Teachers.cpp:77
-#: src/UI/Classrooms/Edit.cpp:109 src/UI/Timetable/Edit.cpp:26
-#: src/UI/Lessons/Edit.cpp:158 src/UI/Teachers/Edit.cpp:223
-msgid "Ok"
-msgstr ""
-
-#: src/UI/Classes/Edit.cpp:514 src/UI/Classes/Edit/CombineLessons.cpp:133
-#: src/UI/Classes/Edit/Rules.cpp:122 src/UI/Classes.cpp:160
-#: src/UI/Classrooms.cpp:74 src/UI/Lessons.cpp:88 src/UI/Teachers.cpp:85
-#: src/UI/Classrooms/Edit.cpp:128 src/UI/Timetable/Edit.cpp:39
-#: src/UI/Lessons/Edit.cpp:178 src/UI/Teachers/Edit.cpp:263
-msgid "Cancel"
-msgstr ""
-
-#: src/UI/Classes/Edit/Rules.cpp:61
-msgid "New rule"
-msgstr ""
-
-#: src/UI/Classes/Edit/Rules.cpp:61
-msgid "Edit rule"
-msgstr ""
-
-#: src/UI/Classes/Edit/Rules.cpp:69
-msgid "preserve order"
-msgstr ""
-
-#: src/UI/Classes/Edit/Rules.cpp:74 src/UI/Classes.cpp:38 src/UI/Classes.cpp:90
-#: src/UI/Classrooms.cpp:24 src/UI/Lessons.cpp:24 src/UI/Teachers.cpp:32
-msgid "+"
-msgstr ""
-
-#: src/UI/Classes.cpp:21 src/Timetable/Export/Excel.cpp:70 src/UI.cpp:228
-msgid "Classes"
-msgstr ""
-
-#: src/UI/Classes.cpp:30
-msgid ""
-"Warning: changing the current year can be quite destructive.\n"
-"If something went wrong, press the Cancel button to revert all changes"
-msgstr ""
-
-#: src/UI/Classes.cpp:31 src/UI/Wizard.cpp:57
-msgid "Back"
-msgstr ""
-
-#: src/UI/Classes.cpp:35 src/UI/Wizard.cpp:70
-msgid "Next"
-msgstr ""
-
-#: src/UI/Classrooms.cpp:18 src/Timetable/Export/Excel.cpp:349 src/UI.cpp:225
-msgid "Classrooms"
-msgstr ""
-
-#: src/UI/Lessons.cpp:18 src/UI.cpp:226
-msgid "Lessons"
-msgstr ""
-
-#: src/UI/Teachers.cpp:19 src/Timetable/Export/Excel.cpp:233 src/UI.cpp:227
-msgid "Teachers"
-msgstr ""
-
-#: src/UI/Teachers.cpp:25
-msgid "min free periods"
-msgstr ""
-
-#: src/UI/Teachers.cpp:27
-msgid "max free periods"
-msgstr ""
-
-#: src/UI/Wizard.cpp:27
-msgid ""
-"Welcome to the TimetableGenerator setup wizard!\n"
-"\n"
-"The first step is to add classrooms.\n"
-"After you are done, press Ok and continue to the next step."
-msgstr ""
-
-#: src/UI/Wizard.cpp:28
-msgid ""
-"The next step is to add classes.\n"
-"After you are done, press Ok and continue to the next step."
-msgstr ""
-
-#: src/UI/Wizard.cpp:29
-msgid ""
-"The next step is to add lessons.\n"
-"After you are done, press Ok and continue to the next step."
-msgstr ""
-
-#: src/UI/Wizard.cpp:30
-msgid ""
-"The next step is to add teachers.\n"
-"After you are done, press Ok and continue to the next step."
-msgstr ""
-
-#: src/UI/Wizard.cpp:31
-msgid ""
-"The next step is to assign lessons to classes.\n"
-"After you are done, press Ok and continue to the next step."
-msgstr ""
-
-#: src/UI/Wizard.cpp:32
-msgid ""
-"You are done! Now press the Generate timetable\n"
-"button to begin the timetable finding process!"
-msgstr ""
-
-#: src/UI/Wizard.cpp:48 src/UI.cpp:224
-msgid "Setup wizard"
-msgstr ""
-
-#: src/UI/Wizard.cpp:61 src/UI/Timetable/Generate.cpp:21 src/UI.cpp:229
-msgid "Generate timetable"
-msgstr ""
-
-#: src/UI/Settings.cpp:19
-msgid "dark"
-msgstr ""
-
-#: src/UI/Settings.cpp:21
-msgid "light"
-msgstr ""
-
-#: src/UI/Settings.cpp:23
-msgid "classic"
-msgstr ""
-
-#: src/UI/Settings.cpp:30 src/UI.cpp:219
-msgid "Settings"
-msgstr ""
-
-#: src/UI/Settings.cpp:35
-msgid "days per week"
-msgstr ""
-
-#: src/UI/Settings.cpp:37
-msgid "lessons per day"
-msgstr ""
-
-#: src/UI/Settings.cpp:40
-msgid "style"
-msgstr ""
-
-#: src/UI/Settings.cpp:45
-msgid "language"
-msgstr ""
-
-#: src/UI/Settings.cpp:50
-msgid "Developer options"
-msgstr ""
-
-#: src/UI/Settings.cpp:52
-msgid "vsync"
-msgstr ""
-
-#: src/UI/Settings.cpp:53
-msgid "merged-font"
-msgstr ""
-
-#: src/UI/Settings.cpp:54
-msgid "timetable-autosave-interval"
-msgstr ""
-
-#: src/UI/Settings.cpp:56
-msgid "font-size"
-msgstr ""
-
-#: src/UI/Settings.cpp:58
-msgid "error-bonus-ratio"
-msgstr ""
-
-#: src/UI/Settings.cpp:59
-msgid "timetables-per-generation-step"
-msgstr ""
-
-#: src/UI/Settings.cpp:61
-msgid "min-timetables-per-generation"
-msgstr ""
-
-#: src/UI/Settings.cpp:63
-msgid "max-timetables-per-generation"
-msgstr ""
-
-#: src/UI/Settings.cpp:67
-msgid "max-iterations"
-msgstr ""
-
-#: src/UI/Settings.cpp:68
-msgid "additional-bonus-points"
-msgstr ""
-
-#: src/UI/Settings.cpp:70
-msgid "verbose-logging"
-msgstr ""
-
-#: src/UI/Settings.cpp:74
-msgid "use-prereleases"
-msgstr ""
-
-#: src/UI/About.cpp:15 src/UI.cpp:240
-msgid "About"
-msgstr ""
-
-#: src/UI/About.cpp:20
-msgid "TimetableGenerator"
-msgstr ""
-
-#: src/UI/About.cpp:21
-msgid "A tool for creating timetables easily"
-msgstr ""
-
-#: src/UI/About.cpp:22
-msgid "Developed by SemkiShow"
-msgstr ""
-
-#: src/UI/About.cpp:23
-msgid "Licensed under GPL v3 License"
-msgstr ""
-
-#: src/UI/NewVersion.cpp:18
-msgid "Updates"
-msgstr ""
-
-#: src/UI/NewVersion.cpp:26
-msgid "There are no new versions available"
-msgstr ""
-
-#: src/UI/NewVersion.cpp:27 src/Updates.cpp:104 src/Updates.cpp:106
-msgid "loading..."
-msgstr ""
-
-#: src/UI/NewVersion.cpp:29
-msgid "A new version is available!"
-msgstr ""
-
-#: src/UI/NewVersion.cpp:30
-msgid "Release notes"
-msgstr ""
-
-#: src/UI/NewVersion.cpp:39
-msgid "Update"
-msgstr ""
-
-#: src/UI/Faq.cpp:26 src/UI.cpp:238
-msgid "FAQ"
-msgstr ""
-
-#: src/UI/Faq.cpp:31
-msgid "How do I contact the developer?"
-msgstr ""
-
-#: src/UI/Faq.cpp:34
-msgid "You can contact me by sending an email to mgdeveloper123@gmail.com"
-msgstr ""
-
-#: src/UI/Faq.cpp:37
-msgid "How do I add multiple lessons to one timetable cell?"
-msgstr ""
-
-#: src/UI/Faq.cpp:42
-msgid ""
-"To add multiple lessons to one timetable cell, click\n"
-"Combine lessons while editing a class."
-msgstr ""
-
-#: src/UI/Faq.cpp:44
-msgid "Select the lessons and teachers to combine and press Ok."
-msgstr ""
-
-#: src/UI/Faq.cpp:46
-msgid "Then set the amount per week for the created combined lesson."
-msgstr ""
-
-#: src/UI/Classrooms/Edit.cpp:48
+#: src/UI/Classrooms/Edit.cpp:50
 msgid "New classroom"
 msgstr ""
 
-#: src/UI/Classrooms/Edit.cpp:48
+#: src/UI/Classrooms/Edit.cpp:50
 msgid "Edit classroom"
 msgstr ""
 
@@ -418,72 +193,9 @@ msgstr ""
 msgid "end number"
 msgstr ""
 
-#: src/UI/Classrooms/Edit.cpp:88 src/UI/Classrooms/Edit.cpp:104
+#: src/UI/Classrooms/Edit.cpp:85 src/UI/Classrooms/Edit.cpp:95
 #: src/UI/Lessons/Edit.cpp:58 src/UI/Teachers/Edit.cpp:116
 msgid "name"
-msgstr ""
-
-#: src/UI/Timetable/Generate.cpp:26 src/UI/Timetable/Generate.cpp:28
-#: src/Searching.cpp:453 src/Searching.cpp:586
-msgid "Timetable generating done!"
-msgstr ""
-
-#: src/UI/Timetable/Generate.cpp:34 src/Searching.cpp:545
-msgid "Allocating memory for the timetables..."
-msgstr ""
-
-#: src/UI/Timetable/Generate.cpp:40
-msgid "Iteration:"
-msgstr ""
-
-#: src/UI/Timetable/Generate.cpp:41
-msgid "The best score is"
-msgstr ""
-
-#: src/UI/Timetable/Generate.cpp:42 src/UI/Timetable/Generate.cpp:45
-msgid "The best timetable has"
-msgstr ""
-
-#: src/UI/Timetable/Generate.cpp:44 src/UI/Timetable/Generate.cpp:62
-msgid "errors"
-msgstr ""
-
-#: src/UI/Timetable/Generate.cpp:47
-msgid "bonus points"
-msgstr ""
-
-#: src/UI/Timetable/Generate.cpp:49
-msgid "iterations have passed since last score improvement"
-msgstr ""
-
-#: src/UI/Timetable/Generate.cpp:51 src/Searching.cpp:605
-msgid "Generating a timetable that matches the requirements..."
-msgstr ""
-
-#: src/UI/Timetable/Generate.cpp:56 src/Searching.cpp:442
-msgid "Finding additional bonus points..."
-msgstr ""
-
-#: src/UI/Timetable/Edit.cpp:18
-msgid "New timetable"
-msgstr ""
-
-#: src/UI/Timetable/Edit.cpp:18
-msgid "Save timetable as"
-msgstr ""
-
-#: src/UI/Timetable/Edit.cpp:24
-msgid ""
-"Enter the timetable name\n"
-"(for example, the name of the school)"
-msgstr ""
-
-#: src/UI/Timetable/Open.cpp:32
-msgid "Open timetable"
-msgstr ""
-
-#: src/UI/Timetable/Open.cpp:37
-msgid "Select a timetable to open"
 msgstr ""
 
 #: src/UI/Lessons/Edit.cpp:51
@@ -535,11 +247,112 @@ msgid ""
 "to select lessons for this teacher!"
 msgstr ""
 
-#: src/UI/Crashes.cpp:183
+#: src/UI/Timetable/Edit.cpp:18
+msgid "New timetable"
+msgstr ""
+
+#: src/UI/Timetable/Edit.cpp:18
+msgid "Save timetable as"
+msgstr ""
+
+#: src/UI/Timetable/Edit.cpp:24
+msgid ""
+"Enter the timetable name\n"
+"(for example, the name of the school)"
+msgstr ""
+
+#: src/UI/Timetable/Generate.cpp:21 src/UI/Wizard.cpp:57 src/UI.cpp:232
+msgid "Generate timetable"
+msgstr ""
+
+#: src/UI/Timetable/Generate.cpp:26 src/UI/Timetable/Generate.cpp:28
+#: src/Searching.cpp:468 src/Searching.cpp:605
+msgid "Timetable generating done!"
+msgstr ""
+
+#: src/UI/Timetable/Generate.cpp:34 src/Searching.cpp:563
+msgid "Allocating memory for the timetables..."
+msgstr ""
+
+#: src/UI/Timetable/Generate.cpp:40
+msgid "Iteration:"
+msgstr ""
+
+#: src/UI/Timetable/Generate.cpp:41
+msgid "The best score is"
+msgstr ""
+
+#: src/UI/Timetable/Generate.cpp:42 src/UI/Timetable/Generate.cpp:45
+msgid "The best timetable has"
+msgstr ""
+
+#: src/UI/Timetable/Generate.cpp:44 src/UI/Timetable/Generate.cpp:64
+msgid "errors"
+msgstr ""
+
+#: src/UI/Timetable/Generate.cpp:47
+msgid "bonus points"
+msgstr ""
+
+#: src/UI/Timetable/Generate.cpp:49
+msgid "iterations have passed since last score improvement"
+msgstr ""
+
+#: src/UI/Timetable/Generate.cpp:51 src/Searching.cpp:624
+msgid "Generating a timetable that matches the requirements..."
+msgstr ""
+
+#: src/UI/Timetable/Generate.cpp:56 src/Searching.cpp:457
+msgid "Finding additional bonus points..."
+msgstr ""
+
+#: src/UI/Timetable/Open.cpp:31
+msgid "Open timetable"
+msgstr ""
+
+#: src/UI/Timetable/Open.cpp:36
+msgid "Select a timetable to open"
+msgstr ""
+
+#: src/UI/About.cpp:15 src/UI.cpp:243
+msgid "About"
+msgstr ""
+
+#: src/UI/About.cpp:20
+msgid "TimetableGenerator"
+msgstr ""
+
+#: src/UI/About.cpp:21
+msgid "A tool for creating timetables easily"
+msgstr ""
+
+#: src/UI/About.cpp:22
+msgid "Developed by SemkiShow"
+msgstr ""
+
+#: src/UI/About.cpp:23
+msgid "Licensed under GPL v3 License"
+msgstr ""
+
+#: src/UI/Classes.cpp:31
+msgid ""
+"Warning: changing the current year can be quite destructive.\n"
+"If something went wrong, press the Cancel button to revert all changes"
+msgstr ""
+
+#: src/UI/Classes.cpp:32 src/UI/Wizard.cpp:53
+msgid "Back"
+msgstr ""
+
+#: src/UI/Classes.cpp:36 src/UI/Wizard.cpp:66
+msgid "Next"
+msgstr ""
+
+#: src/UI/Crashes.cpp:184
 msgid "Crash report"
 msgstr ""
 
-#: src/UI/Crashes.cpp:192
+#: src/UI/Crashes.cpp:193
 msgid ""
 "The program has crashed last time it was opened!\n"
 "If you would like to send an anonymous crash report,\n"
@@ -548,27 +361,27 @@ msgid ""
 "help to make Timetable Generator even better)"
 msgstr ""
 
-#: src/UI/Crashes.cpp:194
+#: src/UI/Crashes.cpp:195
 msgid "send logs"
 msgstr ""
 
-#: src/UI/Crashes.cpp:195
+#: src/UI/Crashes.cpp:196
 msgid "send timetables"
 msgstr ""
 
-#: src/UI/Crashes.cpp:196
+#: src/UI/Crashes.cpp:197
 msgid "send settings"
 msgstr ""
 
-#: src/UI/Crashes.cpp:197
+#: src/UI/Crashes.cpp:198
 msgid "send basic system information"
 msgstr ""
 
-#: src/UI/Crashes.cpp:199
+#: src/UI/Crashes.cpp:200
 msgid "Create crash_report.zip"
 msgstr ""
 
-#: src/UI/Crashes.cpp:208
+#: src/UI/Crashes.cpp:209
 msgid ""
 "After pressing Create crash_report.zip\n"
 "email crash_report.zip to mgdeveloper123@gmail.com\n"
@@ -576,93 +389,199 @@ msgid ""
 "You can also provide a crash report description"
 msgstr ""
 
-#: src/Timetable/Export/Excel.cpp:62
+#: src/UI/Faq.cpp:26 src/UI.cpp:241
+msgid "FAQ"
+msgstr ""
+
+#: src/UI/Faq.cpp:31
+msgid "How do I contact the developer?"
+msgstr ""
+
+#: src/UI/Faq.cpp:34
+msgid "You can contact me by sending an email to mgdeveloper123@gmail.com"
+msgstr ""
+
+#: src/UI/Faq.cpp:37
+msgid "How do I add multiple lessons to one timetable cell?"
+msgstr ""
+
+#: src/UI/Faq.cpp:42
 msgid ""
-"Press the Generate timetable button\n"
-"before exporting the timetable!"
+"To add multiple lessons to one timetable cell, click\n"
+"Combine lessons while editing a class."
 msgstr ""
 
-#: src/UI.cpp:187
-msgid "File"
+#: src/UI/Faq.cpp:44
+msgid "Select the lessons and teachers to combine and press Ok."
 msgstr ""
 
-#: src/UI.cpp:189
-msgid "New"
+#: src/UI/Faq.cpp:46
+msgid "Then set the count per week for the created combined lesson."
 msgstr ""
 
-#: src/UI.cpp:194
-msgid "Open"
+#: src/UI/Lessons.cpp:18 src/UI.cpp:229
+msgid "Lessons"
 msgstr ""
 
-#: src/UI.cpp:199
-msgid "Save"
+#: src/UI/NewVersion.cpp:18
+msgid "Updates"
 msgstr ""
 
-#: src/UI.cpp:204
-msgid "Save As"
+#: src/UI/NewVersion.cpp:26
+msgid "There are no new versions available"
 msgstr ""
 
-#: src/UI.cpp:209
-msgid "Export As"
+#: src/UI/NewVersion.cpp:27
+msgid "loading..."
 msgstr ""
 
-#: src/UI.cpp:211
-msgid "Excel"
+#: src/UI/NewVersion.cpp:29
+msgid "A new version is available!"
 msgstr ""
 
-#: src/UI.cpp:236
-msgid "Help"
+#: src/UI/NewVersion.cpp:30
+msgid "Release notes"
 msgstr ""
 
-#: src/UI.cpp:239
-msgid "Check for updates"
+#: src/UI/NewVersion.cpp:39
+msgid "Update"
 msgstr ""
 
-#: src/Updates.cpp:54
-msgid "Failed to get the latest version name!"
+#: src/UI/Settings.cpp:19
+msgid "dark"
 msgstr ""
 
-#: src/Updates.cpp:69 src/Updates.cpp:81 src/Updates.cpp:98
-msgid "Error: no valid new version found!"
+#: src/UI/Settings.cpp:21
+msgid "light"
 msgstr ""
 
-#: src/Updates.cpp:255
-msgid "Fetching the latest version URL..."
+#: src/UI/Settings.cpp:23
+msgid "classic"
 msgstr ""
 
-#: src/Updates.cpp:259
-msgid "Failed to get archive URL"
+#: src/UI/Settings.cpp:30 src/UI.cpp:222
+msgid "Settings"
 msgstr ""
 
-#: src/Updates.cpp:264
-msgid "Downloading the latest version..."
+#: src/UI/Settings.cpp:35
+msgid "days per week"
 msgstr ""
 
-#: src/Updates.cpp:271
-msgid "Failed to download the release!"
+#: src/UI/Settings.cpp:37
+msgid "lessons per day"
 msgstr ""
 
-#: src/Updates.cpp:276
-msgid "Unzipping the release..."
+#: src/UI/Settings.cpp:40
+msgid "style"
 msgstr ""
 
-#: src/Updates.cpp:283
-msgid "Failed to unzip the release!"
+#: src/UI/Settings.cpp:45
+msgid "language"
 msgstr ""
 
-#: src/Updates.cpp:296
-msgid "Successfully updated to"
+#: src/UI/Settings.cpp:50
+msgid "Developer options"
 msgstr ""
 
-#: src/Updates.cpp:297
-msgid "Restart the application to see the new features"
+#: src/UI/Settings.cpp:68
+msgid "vsync"
 msgstr ""
 
-#: src/main.cpp:47
-msgid "Timetable Generator"
+#: src/UI/Settings.cpp:69
+msgid "merged-font"
 msgstr ""
 
-#: src/Translations.cpp:66
+#: src/UI/Settings.cpp:70
+msgid "timetable-autosave-interval"
+msgstr ""
+
+#: src/UI/Settings.cpp:72
+msgid "font-size"
+msgstr ""
+
+#: src/UI/Settings.cpp:74
+msgid "error-bonus-ratio"
+msgstr ""
+
+#: src/UI/Settings.cpp:76
+msgid "timetables-per-generation-step"
+msgstr ""
+
+#: src/UI/Settings.cpp:79
+msgid "min-timetables-per-generation"
+msgstr ""
+
+#: src/UI/Settings.cpp:82
+msgid "max-timetables-per-generation"
+msgstr ""
+
+#: src/UI/Settings.cpp:87
+msgid "max-iterations"
+msgstr ""
+
+#: src/UI/Settings.cpp:89
+msgid "additional-bonus-points"
+msgstr ""
+
+#: src/UI/Settings.cpp:91
+msgid "verbose-logging"
+msgstr ""
+
+#: src/UI/Settings.cpp:95
+msgid "use-prereleases"
+msgstr ""
+
+#: src/UI/Teachers.cpp:26
+msgid "min free periods"
+msgstr ""
+
+#: src/UI/Teachers.cpp:28
+msgid "max free periods"
+msgstr ""
+
+#: src/UI/Wizard.cpp:24
+msgid ""
+"Welcome to the TimetableGenerator setup wizard!\n"
+"\n"
+"The first step is to add classrooms.\n"
+"After you are done, press Ok and continue to the next step."
+msgstr ""
+
+#: src/UI/Wizard.cpp:25
+msgid ""
+"The next step is to add classes.\n"
+"After you are done, press Ok and continue to the next step."
+msgstr ""
+
+#: src/UI/Wizard.cpp:26
+msgid ""
+"The next step is to add lessons.\n"
+"After you are done, press Ok and continue to the next step."
+msgstr ""
+
+#: src/UI/Wizard.cpp:27
+msgid ""
+"The next step is to add teachers.\n"
+"After you are done, press Ok and continue to the next step."
+msgstr ""
+
+#: src/UI/Wizard.cpp:28
+msgid ""
+"The next step is to assign lessons to classes.\n"
+"After you are done, press Ok and continue to the next step."
+msgstr ""
+
+#: src/UI/Wizard.cpp:29
+msgid ""
+"You are done! Now press the Generate timetable\n"
+"button to begin the timetable finding process!"
+msgstr ""
+
+#: src/UI/Wizard.cpp:44 src/UI.cpp:227
+msgid "Setup wizard"
+msgstr ""
+
+#: src/Translations.cpp:67
 msgid "Monday"
 msgstr ""
 
@@ -670,22 +589,106 @@ msgstr ""
 msgid "Tuesday"
 msgstr ""
 
-#: src/Translations.cpp:68
+#: src/Translations.cpp:67
 msgid "Wednesday"
 msgstr ""
 
-#: src/Translations.cpp:69
+#: src/Translations.cpp:67
 msgid "Thursday"
 msgstr ""
 
-#: src/Translations.cpp:70
+#: src/Translations.cpp:68
 msgid "Friday"
 msgstr ""
 
-#: src/Translations.cpp:71
+#: src/Translations.cpp:68
 msgid "Saturday"
 msgstr ""
 
-#: src/Translations.cpp:72
+#: src/Translations.cpp:68
 msgid "Sunday"
+msgstr ""
+
+#: src/UI.cpp:190
+msgid "File"
+msgstr ""
+
+#: src/UI.cpp:192
+msgid "New"
+msgstr ""
+
+#: src/UI.cpp:197
+msgid "Open"
+msgstr ""
+
+#: src/UI.cpp:202
+msgid "Save"
+msgstr ""
+
+#: src/UI.cpp:207
+msgid "Save As"
+msgstr ""
+
+#: src/UI.cpp:212
+msgid "Export As"
+msgstr ""
+
+#: src/UI.cpp:214
+msgid "Excel"
+msgstr ""
+
+#: src/UI.cpp:239
+msgid "Help"
+msgstr ""
+
+#: src/UI.cpp:242
+msgid "Check for updates"
+msgstr ""
+
+#: src/Updates.cpp:54
+msgid "Failed to get the latest version name!"
+msgstr ""
+
+#: src/Updates.cpp:62 src/Updates.cpp:73
+msgid "Error: no valid new version found!"
+msgstr ""
+
+#: src/Updates.cpp:89 src/Updates.cpp:91
+msgid "Loading..."
+msgstr ""
+
+#: src/Updates.cpp:217
+msgid "Fetching the latest version URL..."
+msgstr ""
+
+#: src/Updates.cpp:221
+msgid "Failed to get archive URL"
+msgstr ""
+
+#: src/Updates.cpp:226
+msgid "Downloading the latest version..."
+msgstr ""
+
+#: src/Updates.cpp:233
+msgid "Failed to download the release!"
+msgstr ""
+
+#: src/Updates.cpp:238
+msgid "Unzipping the release..."
+msgstr ""
+
+#: src/Updates.cpp:245
+msgid "Failed to unzip the release!"
+msgstr ""
+
+#: src/Updates.cpp:258
+msgid "Successfully updated to"
+msgstr ""
+
+#: src/Updates.cpp:259
+msgid "Restart the application to see the new features"
+msgstr ""
+
+#: src/main.cpp:38
+msgid "Timetable Generator"
 msgstr ""

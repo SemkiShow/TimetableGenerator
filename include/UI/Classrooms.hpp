@@ -14,21 +14,21 @@
 
 class ClassroomsMenu : public Window
 {
-  public:
+public:
     virtual ~ClassroomsMenu() = default;
 
     void Draw() override;
 
     void Open() override
     {
-        timetable.classrooms = prevTimetable->classrooms;
-        timetable.maxClassroomId = prevTimetable->maxClassroomId;
+        timetable_.classrooms = prevTimetable_->classrooms;
+        timetable_.maxClassroomId = prevTimetable_->maxClassroomId;
         Window::Open();
     }
 
-  private:
-    Timetable* prevTimetable = &currentTimetable;
-    Timetable timetable;
+private:
+    Timetable* prevTimetable_ = &g_currentTimetable;
+    Timetable timetable_;
 };
 
-extern std::shared_ptr<ClassroomsMenu> classroomsMenu;
+extern std::shared_ptr<ClassroomsMenu> g_classroomsMenu;

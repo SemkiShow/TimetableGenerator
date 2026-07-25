@@ -19,12 +19,11 @@
 #include <zip.h>
 #include <zipconf.h>
 
-std::string latestVersion = "";
-std::vector<std::string> releaseNotes;
-bool newVersionAvailable = false;
-std::string downloadStatus = "";
+std::string g_latestVersion;
+std::vector<std::string> g_releaseNotes;
+std::string g_downloadStatus;
 
-std::vector<std::string> MultiSplit(const std::string& input, const std::string& delimiter)
+static std::vector<std::string> MultiSplit(const std::string& input, const std::string& delimiter)
 {
     std::vector<std::string> output;
     size_t start = 0;
@@ -40,103 +39,69 @@ std::vector<std::string> MultiSplit(const std::string& input, const std::string&
     return output;
 }
 
-void GetLatestVersionName()
+static void GetLatestVersionName()
 {
     LogInfo("Fetching the latest version name");
 
-    GetRequest request = {.url =
-                              "https://api.github.com/repos/SemkiShow/TimetableGenerator/releases",
-                          .headers = {}};
+    GetRequest request = {
+        .url = "https://api.github.com/repos/SemkiShow/TimetableGenerator/releases",
+        .headers = {},
+    };
     auto response = PerformGet(request);
     if (!response.success)
     {
         LOG_ERROR("Failed to get the latest version name!");
-        latestVersion = GetText("Failed to get the latest version name!");
+        g_latestVersion = GetText("Failed to get the latest version name!");
         return;
     }
 
     Json json = Json::Parse(response.body);
-    if (!json.empty())
-    {
-        LogInfo("Successfully fetched releases info");
-        size_t releaseID = 0;
-        while (json[releaseID]["draft"] ||
-               (json[releaseID]["prerelease"] && !settings.usePrereleases))
-        {
-            releaseID++;
-            if (releaseID >= json.size())
-            {
-                latestVersion = GetText("Error: no valid new version found!");
-                return;
-            }
-        }
-        if (releaseID >= json.size())
-        {
-            releaseID = 0;
-            while (json[releaseID]["draft"])
-            {
-                releaseID++;
-                if (releaseID >= json.size())
-                {
-                    latestVersion = GetText("Error: no valid new version found!");
-                    return;
-                }
-            }
-        }
-        latestVersion = json[releaseID]["tag_name"];
-        releaseNotes = MultiSplit(json[releaseID]["body"], "\\r\\n");
-        if (releaseNotes.size() <= 1)
-        {
-            releaseNotes = MultiSplit(json[releaseID]["body"], "\\n");
-        }
-        if (latestVersion != version) newVersionMenu->Open();
-        LogInfo("Fetched the newest version name: %s", latestVersion.c_str());
-    }
-    else
+    if (json.empty())
     {
         LOG_ERROR("No releases found in Json response");
-        latestVersion = GetText("Error: no valid new version found!");
+        g_latestVersion = GetText("Error: no valid new version found!");
+        return;
     }
+
+    LogInfo("Successfully fetched releases info");
+    size_t releaseId = 0;
+    while (json[releaseId]["draft"] || (json[releaseId]["prerelease"] && !g_settings.usePrereleases))
+    {
+        releaseId++;
+        if (releaseId >= json.size())
+        {
+            g_latestVersion = GetText("Error: no valid new version found!");
+            return;
+        }
+    }
+    g_latestVersion = json[releaseId]["tag_name"];
+    g_releaseNotes = MultiSplit(json[releaseId]["body"], "\\r\\n");
+    if (g_releaseNotes.size() <= 1)
+    {
+        g_releaseNotes = MultiSplit(json[releaseId]["body"], "\\n");
+    }
+    if (g_latestVersion != g_version) g_newVersionMenu->Open();
+    LogInfo("Fetched the newest version name: %s", g_latestVersion.c_str());
 }
 
 void CheckForUpdates(bool showWindow)
 {
-    latestVersion = GetText("loading...");
-    releaseNotes.clear();
-    releaseNotes.push_back(GetText("loading..."));
-    if (showWindow) newVersionMenu->Open();
+    g_latestVersion = GetText("Loading...");
+    g_releaseNotes.clear();
+    g_releaseNotes.push_back(GetText("Loading..."));
+    if (showWindow) g_newVersionMenu->Open();
     std::thread networkThread(GetLatestVersionName);
     networkThread.detach();
 }
 
-std::string ExtractString(const std::string& input, const std::string& prefix,
-                          const std::string& suffix)
-{
-    size_t start = input.find(prefix);
-    if (start == std::string::npos)
-    {
-        LOG_ERROR("Prefix not found");
-        return "";
-    }
-    start += prefix.length();
-
-    size_t end = input.rfind(suffix);
-    if (end == std::string::npos || end < start)
-    {
-        LOG_ERROR("Suffix not found or invalid");
-        return "";
-    }
-
-    return input.substr(start, end - start);
-}
-
-std::string GetLatestVersionArchiveURL()
+static std::string GetLatestVersionArchiveURL()
 {
     LogInfo("Fetching the latest version archive URL");
 
-    GetRequest request = {.url =
-                              "https://api.github.com/repos/SemkiShow/TimetableGenerator/releases",
-                          .headers = {}};
+    GetRequest request = {
+        .url = "https://api.github.com/repos/SemkiShow/TimetableGenerator/releases",
+        .headers = {},
+    };
     auto response = PerformGet(request);
     if (!response.success)
     {
@@ -145,31 +110,27 @@ std::string GetLatestVersionArchiveURL()
     }
 
     Json json = Json::Parse(response.body);
-    if (!json.empty())
+    if (json.empty())
     {
-        LogInfo("Successfully fetched releases info");
-        size_t releaseID = 0;
-        while (json[releaseID]["draft"] ||
-               (json[releaseID]["prerelease"] && !settings.usePrereleases))
-        {
-            releaseID++;
-            if (releaseID >= json.size()) return "";
-        }
-        return json[releaseID]["assets"][0]["browser_download_url"];
+        LOG_ERROR("No releases found in response");
+        return "";
     }
-    else
+
+    size_t releaseId = 0;
+    while (json[releaseId]["draft"] || (json[releaseId]["prerelease"] && !g_settings.usePrereleases))
     {
-        LOG_ERROR("No releases found in Json response");
+        releaseId++;
+        if (releaseId >= json.size()) return "";
     }
-    return "";
+    return json[releaseId]["assets"][0]["browser_download_url"];
 }
 
-bool UnzipFile(const std::string& zipPath, const std::string& extractDir)
+static bool UnzipFile(const std::string& zipPath, const std::string& extractDir)
 {
     LogInfo("Unzipping the downloaded release");
     int err = 0;
     zip* archive = zip_open(zipPath.c_str(), ZIP_RDONLY, &err);
-    if (!archive)
+    if (archive == nullptr)
     {
         LOG_ERROR("Failed to open zip archive: %s", zipPath.c_str());
         return false;
@@ -180,7 +141,7 @@ bool UnzipFile(const std::string& zipPath, const std::string& extractDir)
     for (zip_uint64_t i = 0; i < (zip_uint64_t)numEntries; i++)
     {
         const char* name = zip_get_name(archive, i, 0);
-        if (!name)
+        if (name == nullptr)
         {
             LOG_ERROR("Failed to get entry name for index %zu", i);
             zip_close(archive);
@@ -198,7 +159,7 @@ bool UnzipFile(const std::string& zipPath, const std::string& extractDir)
             std::filesystem::create_directories(std::filesystem::path(outPath).parent_path());
 
             zip_file* zfile = zip_fopen_index(archive, i, 0);
-            if (!zfile)
+            if (zfile == nullptr)
             {
                 LOG_ERROR("Failed to open file inside zip: %s", name);
                 zip_close(archive);
@@ -206,7 +167,7 @@ bool UnzipFile(const std::string& zipPath, const std::string& extractDir)
             }
 
             FILE* outfile = fopen(outPath.c_str(), "wb");
-            if (!outfile)
+            if (outfile == nullptr)
             {
                 LOG_ERROR("Failed to create output file: %s", outPath.c_str());
                 zip_fclose(zfile);
@@ -214,7 +175,8 @@ bool UnzipFile(const std::string& zipPath, const std::string& extractDir)
                 return false;
             }
 
-            char buffer[4096];
+            constexpr size_t BUFFER_SIZE = 4096;
+            char buffer[BUFFER_SIZE];
             zip_int64_t bytesRead = 0;
             while ((bytesRead = zip_fread(zfile, buffer, sizeof(buffer))) > 0)
             {
@@ -231,7 +193,7 @@ bool UnzipFile(const std::string& zipPath, const std::string& extractDir)
     return true;
 }
 
-void CopyFiles(const std::filesystem::path& src, const std::filesystem::path& dest)
+static void CopyFiles(const std::filesystem::path& src, const std::filesystem::path& dest)
 {
     for (const auto& entry: std::filesystem::recursive_directory_iterator(src))
     {
@@ -252,35 +214,35 @@ void CopyFiles(const std::filesystem::path& src, const std::filesystem::path& de
 
 void UpdateToLatestVersion()
 {
-    downloadStatus = GetText("Fetching the latest version URL...");
+    g_downloadStatus = GetText("Fetching the latest version URL...");
     std::string archiveURL = GetLatestVersionArchiveURL();
     if (archiveURL.empty())
     {
-        downloadStatus = GetText("Failed to get archive URL");
+        g_downloadStatus = GetText("Failed to get archive URL");
         LOG_ERROR("Failed to get archive URL");
         return;
     }
 
-    downloadStatus = GetText("Downloading the latest version...");
+    g_downloadStatus = GetText("Downloading the latest version...");
     if (!std::filesystem::exists("tmp"))
     {
         std::filesystem::create_directory("tmp");
     }
     if (!DownloadFile(archiveURL, "tmp/release.zip"))
     {
-        downloadStatus = GetText("Failed to download the release!");
+        g_downloadStatus = GetText("Failed to download the release!");
         LOG_ERROR("Failed to download the release!");
         return;
     }
 
-    downloadStatus = GetText("Unzipping the release...");
+    g_downloadStatus = GetText("Unzipping the release...");
     if (!std::filesystem::exists("tmp/release"))
     {
         std::filesystem::create_directory("tmp/release");
     }
     if (!UnzipFile("tmp/release.zip", "tmp/release"))
     {
-        downloadStatus = GetText("Failed to unzip the release!");
+        g_downloadStatus = GetText("Failed to unzip the release!");
         LOG_ERROR("Failed to uzip the release!");
         return;
     }
@@ -293,7 +255,7 @@ void UpdateToLatestVersion()
     std::filesystem::remove("tmp/settings.txt");
     std::filesystem::remove_all("tmp/release");
 
-    downloadStatus = std::string(GetText("Successfully updated to")) + " " + latestVersion + "!\n" +
+    g_downloadStatus = GetText("Successfully updated to") + " " + g_latestVersion + "!\n" +
                      GetText("Restart the application to see the new features");
-    LogInfo("Successfully updated to %s", latestVersion.c_str());
+    LogInfo("Successfully updated to %s", g_latestVersion.c_str());
 }

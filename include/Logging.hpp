@@ -44,9 +44,9 @@ void VLogInfoLine(const char* file, int line, const char* format, va_list args);
 void VLogWarningLine(const char* file, int line, const char* format, va_list args);
 void VLogErrorLine(const char* file, int line, const char* format, va_list args);
 
-#define LOG_INFO(format, ...) LogInfoLine(__FILE__, __LINE__, format, ##__VA_ARGS__)
+#define LOG_INFO(format, ...)    LogInfoLine(__FILE__, __LINE__, format, ##__VA_ARGS__)
 #define LOG_WARNING(format, ...) LogWarningLine(__FILE__, __LINE__, format, ##__VA_ARGS__)
-#define LOG_ERROR(format, ...) LogErrorLine(__FILE__, __LINE__, format, ##__VA_ARGS__)
+#define LOG_ERROR(format, ...)   LogErrorLine(__FILE__, __LINE__, format, ##__VA_ARGS__)
 #define THROW_ERROR(format, ...)                                                                   \
     do                                                                                             \
     {                                                                                              \

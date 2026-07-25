@@ -9,5 +9,5 @@
 void Window::Open()
 {
     LogInfo("Opening %s", typeid(*this).name());
-    visible = true;
+    visible_ = true;
 }

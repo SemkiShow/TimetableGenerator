@@ -5,8 +5,9 @@
 #pragma once
 
 #include "Timetable.hpp"
+#include <Settings.hpp>
+#include <climits>
 #include <cstddef>
-#include <limits.h>
 #include <unordered_map>
 #include <vector>
 
@@ -27,24 +28,24 @@ struct IterationData
     int startBonusPoints = INT_MAX;
     int maxBonusPoints = INT_MIN;
     std::unordered_map<int, std::vector<std::vector<TimetableLessonRule>>> classRuleVariants;
-    const static size_t errorValuesPoints = 1000;
-    float errorValues[errorValuesPoints];
+    static constexpr size_t ERROR_VALUES_SIZE = 1000;
+    float errorValues[ERROR_VALUES_SIZE];
 
     // Settings copy (I can't use the real settings data, because if settings are changed while
     // searching for a timetable, the program crashes)
-    unsigned int daysPerWeek = 5;
-    unsigned int lessonsPerDay = 8;
-    int minTimetablesPerGeneration = 100;
-    int maxTimetablesPerGeneration = 5000;
+    int daysPerWeek = Settings::DEFAULT_DAYS_PER_WEEK;
+    int lessonsPerDay = Settings::DEFAULT_LESSONS_PER_DAY;
+    int minTimetablesPerGeneration = Settings::DEFAULT_MIN_TIMETABLES_PER_GENERATION;
+    int maxTimetablesPerGeneration = Settings::DEFAULT_MAX_TIMETABLES_PER_GENERATION;
 
     // Timetables used for searching
     std::vector<Timetable> timetables, population, newPopulation;
 };
 
-extern IterationData iterationData;
-extern size_t threadsNumber;
+extern IterationData g_iterationData;
+extern size_t g_threadsNumber;
 
-std::vector<TimetableLessonRule> GetAllRuleVariants(const TimetableLessonRule timetableLessonRule);
+std::vector<TimetableLessonRule> GetAllRuleVariants(const TimetableLessonRule& timetableLessonRule);
 void ScoreTimetable(Timetable& timetable);
 void BeginSearching(const Timetable& timetable);
 void RunASearchIteration();

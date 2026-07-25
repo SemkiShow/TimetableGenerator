@@ -17,29 +17,29 @@
 
 class EditTeacherMenu : public Window
 {
-  public:
+public:
     virtual ~EditTeacherMenu() = default;
 
     void Draw() override;
 
     void Open(Timetable* prevTimetable, bool newTeacher, int teacherId);
 
-  private:
+private:
     void Open() override {}
 
     void ResetTeacherLessonValues();
 
-    bool newTeacher = false;
-    int teacherId = 0;
-    bool allLessons = true;
-    std::unordered_map<int, bool> lessons;
-    std::vector<int> allAvailableLessonsVertical;
-    std::vector<int> allAvailableLessonsHorizontal;
-    std::unordered_map<int, int> availableLessons;
-    std::string lessonValues = "";
+    bool newTeacher_ = false;
+    int teacherId_ = 0;
+    bool allLessons_ = true;
+    std::unordered_map<int, bool> lessons_;
+    std::vector<int> allAvailableLessonsVertical_;
+    std::vector<int> allAvailableLessonsHorizontal_;
+    std::unordered_map<int, int> availableLessons_;
+    std::string lessonValues_;
 
-    Timetable* prevTimetable = nullptr;
-    Timetable timetable;
+    Timetable* prevTimetable_ = nullptr;
+    Timetable timetable_;
 };
 
-extern std::shared_ptr<EditTeacherMenu> editTeacherMenu;
+extern std::shared_ptr<EditTeacherMenu> g_editTeacherMenu;

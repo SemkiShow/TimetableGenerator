@@ -11,8 +11,8 @@
 
 class Json;
 
-#define ANY_LESSON -2
-#define NO_LESSON -3
+#define ANY_LESSON (-2)
+#define NO_LESSON  (-3)
 
 struct WorkDay
 {
@@ -25,7 +25,7 @@ struct WorkDay
 
 struct Classroom
 {
-    std::string name = "";
+    std::string name;
 
     Json ToJson();
     static Classroom LoadJson(Json& json);
@@ -34,7 +34,7 @@ struct Classroom
 
 struct Lesson
 {
-    std::string name = "";
+    std::string name;
     std::vector<int> classIds;
     std::vector<int> classroomIds;
 
@@ -45,7 +45,7 @@ struct Lesson
 
 struct Teacher
 {
-    std::string name = "";
+    std::string name;
     std::vector<int> lessonIds;
     std::vector<WorkDay> workDays;
 
@@ -66,7 +66,7 @@ struct LessonTeacherPair
 
 struct TimetableLesson
 {
-    int amount = 1;
+    int count = 1;
     std::vector<LessonTeacherPair> lessonTeacherPairs;
 
     Json ToJson();
@@ -99,7 +99,7 @@ struct Day
 struct TimetableLessonRule
 {
     bool preserveOrder = false;
-    int amount = 1;
+    int count = 1;
     std::vector<int> timetableLessonIds;
 
     Json ToJson();
@@ -109,8 +109,8 @@ struct TimetableLessonRule
 
 struct Class
 {
-    std::string number = "";
-    std::string letter = "";
+    std::string number;
+    std::string letter;
     int teacherId = -1;
     int maxTimetableLessonId = -1;
     std::map<int, TimetableLesson> timetableLessons;
@@ -124,8 +124,8 @@ struct Class
 
 class Timetable
 {
-  public:
-    std::string name = "";
+public:
+    std::string name;
     int version = 1;
     int year = -1;
     int errors = -1;
@@ -143,7 +143,7 @@ class Timetable
     void Save(const std::filesystem::path& path);
     void Load(const std::filesystem::path& path);
     static Timetable GetRandom();
-    void ExportAsXlsx();
+    void ExportAsXlsx() const;
 };
 
-inline Timetable currentTimetable;
+inline Timetable g_currentTimetable;

@@ -19,49 +19,50 @@
 #include <random>
 #include <string>
 #include <thread>
+#include <utility>
 #include <vector>
 
-std::random_device dev;
-static thread_local std::mt19937 rng(dev());
-size_t threadsNumber = std::max(1u, std::thread::hardware_concurrency());
-IterationData iterationData;
-static std::mutex iterationMutex;
+static std::random_device g_dev;
+static thread_local std::mt19937 g_rng(g_dev());
+size_t g_threadsNumber = std::max(1U, std::thread::hardware_concurrency());
+IterationData g_iterationData;
+static std::mutex g_iterationMutex;
+constexpr int LOGGING_PERIOD = 10;
 
-int GetLessonsAmount(const std::map<int, TimetableLesson> timetableLessons)
+static int GetLessonsCount(const std::map<int, TimetableLesson>& timetableLessons)
 {
     int output = 0;
-    for (auto& lesson: timetableLessons) output += lesson.second.amount;
+    for (const auto& lesson: timetableLessons) output += lesson.second.count;
     return output;
 }
 
-int GetLessonPlacesAmount(const std::vector<Day> days)
+static int GetLessonPlacesCount(const std::vector<Day>& days)
 {
     int output = 0;
-    for (size_t i = 0; i < iterationData.daysPerWeek; i++)
+    for (int i = 0; i < g_iterationData.daysPerWeek; i++)
     {
-        for (size_t j = 0; j < days[i].lessons.size(); j++)
+        for (bool lesson: days[i].lessons)
         {
-            if (days[i].lessons[j]) output++;
+            if (lesson) output++;
         }
     }
     return output;
 }
 
-bool IsTimetableCorrect(const Timetable& timetable)
+static bool IsTimetableValid(const Timetable& timetable)
 {
-    for (auto& classPair: timetable.classes)
-    {
-        if (GetLessonsAmount(classPair.second.timetableLessons) >
-            GetLessonPlacesAmount(classPair.second.days))
-            return false;
-    }
-    return true;
+    return std::all_of(timetable.classes.begin(), timetable.classes.end(),
+                       [](const std::pair<int, Class>& classPair)
+                       {
+                           return GetLessonsCount(classPair.second.timetableLessons) <=
+                                  GetLessonPlacesCount(classPair.second.days);
+                       });
 }
 
 // Shuffle assign timetable lessons to classes
-void RandomizeTimetable(Timetable& timetable)
+static void RandomizeTimetable(Timetable& timetable)
 {
-    if (!IsTimetableCorrect(timetable))
+    if (!IsTimetableValid(timetable))
     {
         LOG_ERROR("The timetable is incorrect!");
         return;
@@ -71,13 +72,13 @@ void RandomizeTimetable(Timetable& timetable)
         std::vector<int> timetableLessonIds;
         for (auto& lesson: classPair.second.timetableLessons)
         {
-            for (int i = 0; i < lesson.second.amount; i++)
+            for (int i = 0; i < lesson.second.count; i++)
                 timetableLessonIds.push_back(lesson.first);
         }
-        std::shuffle(timetableLessonIds.begin(), timetableLessonIds.end(), rng);
+        std::shuffle(timetableLessonIds.begin(), timetableLessonIds.end(), g_rng);
         size_t counter = 0;
-        classPair.second.days.resize(iterationData.daysPerWeek);
-        for (size_t i = 0; i < iterationData.daysPerWeek; i++)
+        classPair.second.days.resize(g_iterationData.daysPerWeek);
+        for (int i = 0; i < g_iterationData.daysPerWeek; i++)
         {
             classPair.second.days[i].classroomLessonPairs.clear();
             for (size_t j = 0; j < classPair.second.days[i].lessons.size(); j++)
@@ -118,34 +119,40 @@ void RandomizeTimetable(Timetable& timetable)
     }
 }
 
-void SwapRandomTimetableLessons(Timetable& timetable)
+static void SwapRandomTimetableLessons(Timetable& timetable)
 {
-    std::uniform_int_distribution<int> classDistribution(0, timetable.orderedClasses.size() - 1);
-    std::uniform_int_distribution<int> dayDistribution(0, iterationData.daysPerWeek - 1);
+    std::uniform_int_distribution<int> classDistribution(0,
+                                                         (int)timetable.orderedClasses.size() - 1);
+    std::uniform_int_distribution<int> dayDistribution(0, g_iterationData.daysPerWeek - 1);
     std::uniform_int_distribution<int> lesson1Distribution;
     std::uniform_int_distribution<int> lesson2Distribution;
-    int classId, classIndex, lesson1Day, lesson2Day, lesson1Index, lesson2Index;
+    int classId;
+    int classIndex;
+    int lesson1Day;
+    int lesson2Day;
+    int lesson1Index;
+    int lesson2Index;
     while (true)
     {
         // Get class id
         if (timetable.orderedClasses.empty()) LOG_ERROR("The timetable's classes are empty!");
-        classIndex = classDistribution(rng);
+        classIndex = classDistribution(g_rng);
         classId = timetable.orderedClasses[classIndex];
 
         // Get day id
-        lesson1Day = dayDistribution(rng);
-        lesson2Day = dayDistribution(rng);
+        lesson1Day = dayDistribution(g_rng);
+        lesson2Day = dayDistribution(g_rng);
 
         // Get ClassroomLessonPair id
         if (timetable.classes[classId].days[lesson1Day].classroomLessonPairs.empty() ||
             timetable.classes[classId].days[lesson2Day].classroomLessonPairs.empty())
             continue;
         lesson1Distribution = std::uniform_int_distribution<int>(
-            0, timetable.classes[classId].days[lesson1Day].classroomLessonPairs.size() - 1);
+            0, (int)timetable.classes[classId].days[lesson1Day].classroomLessonPairs.size() - 1);
         lesson2Distribution = std::uniform_int_distribution<int>(
-            0, timetable.classes[classId].days[lesson2Day].classroomLessonPairs.size() - 1);
-        lesson1Index = lesson1Distribution(rng);
-        lesson2Index = lesson2Distribution(rng);
+            0, (int)timetable.classes[classId].days[lesson2Day].classroomLessonPairs.size() - 1);
+        lesson1Index = lesson1Distribution(g_rng);
+        lesson2Index = lesson2Distribution(g_rng);
 
         // Exit if found a valid lesson
         if (timetable.classes[classId]
@@ -166,21 +173,21 @@ void SwapRandomTimetableLessons(Timetable& timetable)
     timetable.classes[classId].days[lesson1Day].classroomLessonPairs[lesson1Index] = buf;
 }
 
-double EvaluateFitness(const Timetable& timetable)
+static int EvaluateFitness(const Timetable& timetable)
 {
-    return timetable.bonusPoints - (timetable.errors * settings.errorBonusRatio);
+    return timetable.bonusPoints - (int)((float)timetable.errors * g_settings.errorBonusRatio);
 }
 
-Timetable TournamentSelection(const std::vector<Timetable>& population)
+static Timetable TournamentSelection(const std::vector<Timetable>& population)
 {
-    const size_t tournamentSize = 7;
+    const size_t TOURNAMENT_SIZE = 7;
     auto populationDistribution =
-        std::uniform_int_distribution<int>(0, iterationData.timetablesPerGeneration - 1);
-    int bestId = populationDistribution(rng);
+        std::uniform_int_distribution<int>(0, g_iterationData.timetablesPerGeneration - 1);
+    int bestId = populationDistribution(g_rng);
 
-    for (size_t i = 0; i < tournamentSize; i++)
+    for (size_t i = 0; i < TOURNAMENT_SIZE; i++)
     {
-        int challengerId = populationDistribution(rng);
+        int challengerId = populationDistribution(g_rng);
         if (EvaluateFitness(population[challengerId]) > EvaluateFitness(population[bestId]))
             bestId = challengerId;
     }
@@ -188,23 +195,24 @@ Timetable TournamentSelection(const std::vector<Timetable>& population)
     return population[bestId];
 }
 
-Timetable Crossover(const Timetable& parent1, const Timetable& parent2)
+static Timetable Crossover(const Timetable& parent1, const Timetable& parent2)
 {
     Timetable child = parent1;
     auto distribution2 = std::uniform_int_distribution<int>(0, 1);
 
-    for (auto& parent2Classes: parent2.classes)
+    for (const auto& parent2Classes: parent2.classes)
     {
-        if (distribution2(rng) == 0) child.classes[parent2Classes.first] = parent2Classes.second;
+        if (distribution2(g_rng) == 0) child.classes[parent2Classes.first] = parent2Classes.second;
     }
 
     return child;
 }
 
-void MutateTimetableClassroom(Timetable& timetable)
+static void MutateTimetableClassroom(Timetable& timetable)
 {
-    std::uniform_int_distribution<int> classDistribution(0, timetable.orderedClasses.size() - 1);
-    std::uniform_int_distribution<int> dayDistribution(0, iterationData.daysPerWeek - 1);
+    std::uniform_int_distribution<int> classDistribution(0,
+                                                         (int)timetable.orderedClasses.size() - 1);
+    std::uniform_int_distribution<int> dayDistribution(0, g_iterationData.daysPerWeek - 1);
     std::uniform_int_distribution<int> lessonDistribution;
     std::uniform_int_distribution<int> classroomDistribution;
     std::uniform_int_distribution<int> lessonTeacherPairDistribution;
@@ -212,17 +220,17 @@ void MutateTimetableClassroom(Timetable& timetable)
     {
         // Get class id
         if (timetable.orderedClasses.empty()) LOG_ERROR("The timetable's classes are empty!");
-        int classIndex = classDistribution(rng);
+        int classIndex = classDistribution(g_rng);
         int classId = timetable.orderedClasses[classIndex];
 
         // Get day id
-        int dayId = dayDistribution(rng);
+        int dayId = dayDistribution(g_rng);
 
         // Get ClassroomLessonPair id
         if (timetable.classes[classId].days[dayId].classroomLessonPairs.empty()) continue;
         lessonDistribution = std::uniform_int_distribution<int>(
-            0, timetable.classes[classId].days[dayId].classroomLessonPairs.size() - 1);
-        int classroomLessonPairId = lessonDistribution(rng);
+            0, (int)timetable.classes[classId].days[dayId].classroomLessonPairs.size() - 1);
+        int classroomLessonPairId = lessonDistribution(g_rng);
 
         // Get classroom id
         if (timetable.classes[classId]
@@ -231,12 +239,12 @@ void MutateTimetableClassroom(Timetable& timetable)
                 .classroomIds.empty())
             continue;
         classroomDistribution = std::uniform_int_distribution<int>(
-            0, timetable.classes[classId]
+            0, (int)timetable.classes[classId]
                        .days[dayId]
                        .classroomLessonPairs[classroomLessonPairId]
                        .classroomIds.size() -
                    1);
-        int classroomId = classroomDistribution(rng);
+        int classroomId = classroomDistribution(g_rng);
 
         // Get timetable lesson id
         if (timetable.classes[classId]
@@ -256,11 +264,11 @@ void MutateTimetableClassroom(Timetable& timetable)
                 .lessonTeacherPairs.empty())
             continue;
         lessonTeacherPairDistribution =
-            std::uniform_int_distribution<int>(0, timetable.classes[classId]
+            std::uniform_int_distribution<int>(0, (int)timetable.classes[classId]
                                                           .timetableLessons[timetableLessonId]
                                                           .lessonTeacherPairs.size() -
                                                       1);
-        int lessonTeacherPairId = lessonTeacherPairDistribution(rng);
+        int lessonTeacherPairId = lessonTeacherPairDistribution(g_rng);
 
         // Generate a lessonId
         int lessonId = timetable.classes[classId]
@@ -271,8 +279,8 @@ void MutateTimetableClassroom(Timetable& timetable)
 
         // Generate and replace a new classroom id
         classroomDistribution = std::uniform_int_distribution<int>(
-            0, timetable.lessons[lessonId].classroomIds.size() - 1);
-        int newClassroomId = timetable.lessons[lessonId].classroomIds[classroomDistribution(rng)];
+            0, (int)timetable.lessons[lessonId].classroomIds.size() - 1);
+        int newClassroomId = timetable.lessons[lessonId].classroomIds[classroomDistribution(g_rng)];
         timetable.classes[classId]
             .days[dayId]
             .classroomLessonPairs[classroomLessonPairId]
@@ -281,128 +289,133 @@ void MutateTimetableClassroom(Timetable& timetable)
     }
 }
 
-void MutateTimetable(Timetable& timetable)
+static void MutateTimetable(Timetable& timetable)
 {
-    size_t swapsAmount = std::uniform_int_distribution<int>(0, 30)(rng);
-    for (size_t i = 0; i < swapsAmount; i++)
+    constexpr int MAX_SWAPS = 30;
+    size_t swapsNumber = std::uniform_int_distribution<int>(0, MAX_SWAPS)(g_rng);
+    for (size_t i = 0; i < swapsNumber; i++)
     {
         SwapRandomTimetableLessons(timetable);
     }
-    size_t classroomsMutationsAmount = std::uniform_int_distribution<int>(0, 10)(rng);
-    for (size_t i = 0; i < classroomsMutationsAmount; i++)
+
+    constexpr int MAX_MUTATIONS = 10;
+    size_t classroomsMutationsNumber = std::uniform_int_distribution<int>(0, MAX_MUTATIONS)(g_rng);
+    for (size_t i = 0; i < classroomsMutationsNumber; i++)
     {
         MutateTimetableClassroom(timetable);
     }
 }
 
-void GeneticAlgorithm(int threadId, std::vector<Timetable>& population,
-                      std::vector<Timetable>& newPopulation)
+static void GeneticAlgorithm(int threadId, std::vector<Timetable>& population,
+                             std::vector<Timetable>& newPopulation)
 {
-    for (size_t i = threadId * iterationData.timetablesPerGeneration / threadsNumber;
-         i < (threadId + 1) * iterationData.timetablesPerGeneration / threadsNumber; i++)
+    int firstId = threadId * g_iterationData.timetablesPerGeneration / (int)g_threadsNumber;
+    int lastId = (threadId + 1) * g_iterationData.timetablesPerGeneration / (int)g_threadsNumber;
+    for (int i = firstId; i < lastId; i++)
     {
         Timetable parent1 = TournamentSelection(population);
         Timetable parent2 = TournamentSelection(population);
 
         Timetable child = Crossover(parent1, parent2);
         MutateTimetable(child);
-        if (settings.verboseLogging)
+        if (g_settings.verboseLogging)
         {
-            LogInfo("\x1b[32mScoring timetable %zu\x1b[0m", i);
+            LogInfo("\x1b[32mScoring timetable %d\x1b[0m", i);
         }
         ScoreTimetable(child);
         newPopulation[i] = child;
     }
 }
 
-void GetBestSpecies(std::vector<Timetable>& timetables, std::vector<Timetable>& population,
-                    std::vector<Timetable>& newPopulation, int& minErrors)
+static void GetBestSpecies(std::vector<Timetable>& timetables, std::vector<Timetable>& population,
+                           std::vector<Timetable>& newPopulation, int& minErrors)
 {
     double averageFitness = 0;
-    for (int i = 0; i < iterationData.timetablesPerGeneration; i++)
+    for (int i = 0; i < g_iterationData.timetablesPerGeneration; i++)
     {
         averageFitness += EvaluateFitness(population[i]);
         averageFitness += EvaluateFitness(newPopulation[i]);
     }
-    averageFitness /= iterationData.timetablesPerGeneration * 2;
+    averageFitness /= g_iterationData.timetablesPerGeneration * 2;
 
     int counter = 1;
 
     // Selecting the new population with above average fitness and minimal errors
-    for (int i = 0; i < iterationData.timetablesPerGeneration; i++)
+    for (int i = 0; i < g_iterationData.timetablesPerGeneration; i++)
     {
-        if (counter >= iterationData.timetablesPerGeneration) break;
-        if (newPopulation[i].errors < minErrors) minErrors = newPopulation[i].errors;
+        if (counter >= g_iterationData.timetablesPerGeneration) break;
+        minErrors = std::min(newPopulation[i].errors, minErrors);
         if (EvaluateFitness(newPopulation[i]) >= averageFitness &&
             newPopulation[i].errors <= minErrors)
             timetables[counter++] = newPopulation[i];
     }
 
     // Selecting the new population with above average fitness and more than minimal errors
-    for (int i = 0; i < iterationData.timetablesPerGeneration; i++)
+    for (int i = 0; i < g_iterationData.timetablesPerGeneration; i++)
     {
-        if (counter >= iterationData.timetablesPerGeneration) break;
-        if (newPopulation[i].errors < minErrors) minErrors = newPopulation[i].errors;
+        if (counter >= g_iterationData.timetablesPerGeneration) break;
+        minErrors = std::min(newPopulation[i].errors, minErrors);
         if (EvaluateFitness(newPopulation[i]) >= averageFitness &&
             newPopulation[i].errors > minErrors)
             timetables[counter++] = newPopulation[i];
     }
 
     // Selecting the old population with above average fitness and minimal errors
-    for (int i = 0; i < iterationData.timetablesPerGeneration; i++)
+    for (int i = 0; i < g_iterationData.timetablesPerGeneration; i++)
     {
-        if (counter >= iterationData.timetablesPerGeneration) break;
-        if (population[i].errors < minErrors) minErrors = population[i].errors;
+        if (counter >= g_iterationData.timetablesPerGeneration) break;
+        minErrors = std::min(population[i].errors, minErrors);
         if (EvaluateFitness(population[i]) >= averageFitness && population[i].errors <= minErrors)
             timetables[counter++] = population[i];
     }
 
     // Selecting the old population with above average fitness and more than minimal errors
-    for (int i = 0; i < iterationData.timetablesPerGeneration; i++)
+    for (int i = 0; i < g_iterationData.timetablesPerGeneration; i++)
     {
-        if (counter >= iterationData.timetablesPerGeneration) break;
-        if (population[i].errors < minErrors) minErrors = population[i].errors;
+        if (counter >= g_iterationData.timetablesPerGeneration) break;
+        minErrors = std::min(population[i].errors, minErrors);
         if (EvaluateFitness(population[i]) >= averageFitness && population[i].errors > minErrors)
             timetables[counter++] = population[i];
     }
 
     // Choosing the rest of the population randomly from the old and new populations
-    for (int i = counter; i < iterationData.timetablesPerGeneration; i++)
+    for (int i = counter; i < g_iterationData.timetablesPerGeneration; i++)
     {
-        if (std::uniform_int_distribution<int>(0, 1)(rng) == 0)
+        if (std::uniform_int_distribution<int>(0, 1)(g_rng) == 0)
         {
             timetables[i] = population[std::uniform_int_distribution<int>(
-                0, iterationData.timetablesPerGeneration - 1)(rng)];
+                0, g_iterationData.timetablesPerGeneration - 1)(g_rng)];
         }
         else
         {
             timetables[i] = newPopulation[std::uniform_int_distribution<int>(
-                0, iterationData.timetablesPerGeneration - 1)(rng)];
+                0, g_iterationData.timetablesPerGeneration - 1)(g_rng)];
         }
     }
 
-    if (iterationData.iteration % 10 == 0)
+    if (g_iterationData.iteration % LOGGING_PERIOD == 0)
     {
-        LogInfo("Selected %d/%d random timetables", iterationData.timetablesPerGeneration - counter,
-                iterationData.timetablesPerGeneration);
+        LogInfo("Selected %d/%d random timetables",
+                g_iterationData.timetablesPerGeneration - counter,
+                g_iterationData.timetablesPerGeneration);
     }
 }
 
-int GetBestTimetableIndex(const std::vector<Timetable>& timetables)
+static int GetBestTimetableIndex(const std::vector<Timetable>& timetables)
 {
     double bestTimetableScore = INT_MIN;
     int bestTimetableIndex = 0;
     double timetableScore = INT_MIN;
-    for (int i = 0; i < iterationData.timetablesPerGeneration; i++)
+    for (int i = 0; i < g_iterationData.timetablesPerGeneration; i++)
     {
         timetableScore = EvaluateFitness(timetables[i]);
-        if (timetables[i].errors < iterationData.minErrors)
-            iterationData.minErrors = timetables[i].errors;
-        if (timetables[i].errors == 0 && timetables[i].bonusPoints > iterationData.maxBonusPoints)
+        g_iterationData.minErrors = std::min(timetables[i].errors, g_iterationData.minErrors);
+        if (timetables[i].errors == 0 && timetables[i].bonusPoints > g_iterationData.maxBonusPoints)
         {
-            iterationData.maxBonusPoints = timetables[i].bonusPoints;
+            g_iterationData.maxBonusPoints = timetables[i].bonusPoints;
         }
-        if (timetableScore > bestTimetableScore && timetables[i].errors <= iterationData.minErrors)
+        if (timetableScore > bestTimetableScore &&
+            timetables[i].errors <= g_iterationData.minErrors)
         {
             bestTimetableScore = timetableScore;
             bestTimetableIndex = i;
@@ -411,15 +424,17 @@ int GetBestTimetableIndex(const std::vector<Timetable>& timetables)
     return bestTimetableIndex;
 }
 
-void InjectRandomImmigrants(std::vector<Timetable>& population)
+static void InjectRandomImmigrants(std::vector<Timetable>& population)
 {
-    for (int i = 0;
-         i < std::uniform_int_distribution<int>(0, iterationData.timetablesPerGeneration / 10)(rng);
-         i++)
+    constexpr int MAX_IMMIGRANTS_PERCENT = 10;
+    constexpr int ONE_HUNDRED = 100; // Just to tell clang-tidy to shut up
+    int immigrantsCount = std::uniform_int_distribution<int>(
+        0, g_iterationData.timetablesPerGeneration * MAX_IMMIGRANTS_PERCENT / ONE_HUNDRED)(g_rng);
+    for (int i = 0; i < immigrantsCount; i++)
     {
-        int idx =
-            std::uniform_int_distribution<int>(1, iterationData.timetablesPerGeneration - 1)(rng);
-        Timetable immigrant = currentTimetable;
+        int idx = std::uniform_int_distribution<int>(1, g_iterationData.timetablesPerGeneration -
+                                                            1)(g_rng);
+        Timetable immigrant = g_currentTimetable;
         RandomizeTimetable(immigrant);
         ScoreTimetable(immigrant);
         population[idx] = immigrant;
@@ -429,101 +444,104 @@ void InjectRandomImmigrants(std::vector<Timetable>& population)
 void RunASearchIteration()
 {
     // Lock the mutex
-    std::lock_guard<std::mutex> lock(iterationMutex);
+    std::lock_guard<std::mutex> lock(g_iterationMutex);
 
     // Change the status is a timetable with 0 errors is found
-    if (iterationData.timetables[iterationData.bestTimetableIndex].errors == 0)
+    if (g_iterationData.timetables[g_iterationData.bestTimetableIndex].errors == 0)
     {
-        if (iterationData.startBonusPoints == INT_MAX)
+        if (g_iterationData.startBonusPoints == INT_MAX)
         {
-            iterationData.startBonusPoints =
-                iterationData.timetables[iterationData.bestTimetableIndex].bonusPoints;
+            g_iterationData.startBonusPoints =
+                g_iterationData.timetables[g_iterationData.bestTimetableIndex].bonusPoints;
         }
-        generateTimetableMenu->SetStatus(GetText("Finding additional bonus points..."));
+        g_generateTimetableMenu->SetStatus(GetText("Finding additional bonus points..."));
     }
 
     // Exit if there are the additional bonus points counter is over the limit or the iteratiuon
     // count is over the limit
-    if (iterationData.timetables[iterationData.bestTimetableIndex].bonusPoints -
-                iterationData.startBonusPoints >=
-            settings.additionalBonusPoints ||
-        (settings.maxIterations != -1 && iterationData.iteration >= settings.maxIterations))
+    if (g_iterationData.timetables[g_iterationData.bestTimetableIndex].bonusPoints -
+                g_iterationData.startBonusPoints >=
+            g_settings.additionalBonusPoints ||
+        (g_settings.maxIterations != -1 && g_iterationData.iteration >= g_settings.maxIterations))
     {
-        iterationData.isDone = true;
-        generateTimetableMenu->SetStatus(GetText("Timetable generating done!"));
+        g_iterationData.isDone = true;
+        g_generateTimetableMenu->SetStatus(GetText("Timetable generating done!"));
         return;
     }
 
     // Init the threads
-    std::vector<std::thread> threads(threadsNumber);
+    std::vector<std::thread> threads(g_threadsNumber);
 
-    iterationData.iteration++;
+    g_iterationData.iteration++;
 
     // Output debug info
-    if (iterationData.iteration % 10 == 0)
+    if (g_iterationData.iteration % LOGGING_PERIOD == 0)
     {
-        LogInfo("\x1b[34mIteration: %d\x1b[0m", iterationData.iteration);
-        LogInfo("The best score is %d", iterationData.allTimeBestScore);
+        LogInfo("\x1b[34mIteration: %d\x1b[0m", g_iterationData.iteration);
+        LogInfo("The best score is %d", g_iterationData.allTimeBestScore);
         LogInfo("The best timetable has %d errors",
-                iterationData.timetables[iterationData.bestTimetableIndex].errors);
+                g_iterationData.timetables[g_iterationData.bestTimetableIndex].errors);
         LogInfo("The best timetable has %d bonus points",
-                iterationData.timetables[iterationData.bestTimetableIndex].bonusPoints);
+                g_iterationData.timetables[g_iterationData.bestTimetableIndex].bonusPoints);
         LogInfo("%d iterations have passed since last score improvement",
-                iterationData.iterationsPerChange);
+                g_iterationData.iterationsPerChange);
     }
 
     // Change timetables per generation dynamically
-    iterationData.timetablesPerGeneration = std::min(
-        iterationData.maxTimetablesPerGeneration,
-        std::max(iterationData.minTimetablesPerGeneration,
-                 (iterationData.iterationsPerChange + 1) * settings.timetablesPerGenerationStep));
+    g_iterationData.timetablesPerGeneration =
+        std::min(g_iterationData.maxTimetablesPerGeneration,
+                 std::max(g_iterationData.minTimetablesPerGeneration,
+                          (g_iterationData.iterationsPerChange + 1) *
+                              g_settings.timetablesPerGenerationStep));
 
     // Inject random immigrants
-    if (iterationData.iteration % 10 == 0)
+    constexpr int IMMIGRANTS_PERIOD = 10;
+    if (g_iterationData.iteration % IMMIGRANTS_PERIOD == 0)
     {
-        InjectRandomImmigrants(iterationData.timetables);
+        InjectRandomImmigrants(g_iterationData.timetables);
     }
 
     // Run worker threads
-    for (size_t i = 0; i < threadsNumber; i++)
+    for (size_t i = 0; i < g_threadsNumber; i++)
     {
-        threads[i] = std::thread(GeneticAlgorithm, i, std::ref(iterationData.timetables),
-                                 std::ref(iterationData.newPopulation));
+        threads[i] = std::thread(GeneticAlgorithm, i, std::ref(g_iterationData.timetables),
+                                 std::ref(g_iterationData.newPopulation));
     }
-    for (size_t i = 0; i < threadsNumber; i++) threads[i].join();
+    for (size_t i = 0; i < g_threadsNumber; i++) threads[i].join();
 
     // Get the best timetable from the current generation
-    iterationData.bestTimetableIndex = GetBestTimetableIndex(iterationData.timetables);
-    iterationData.bestScore =
-        EvaluateFitness(iterationData.timetables[iterationData.bestTimetableIndex]);
+    g_iterationData.bestTimetableIndex = GetBestTimetableIndex(g_iterationData.timetables);
+    g_iterationData.bestScore =
+        EvaluateFitness(g_iterationData.timetables[g_iterationData.bestTimetableIndex]);
 
     // Save the best timetable at index 0 (elitism)
-    Timetable bufTimetable = iterationData.timetables[0];
-    iterationData.timetables[0] = iterationData.timetables[iterationData.bestTimetableIndex];
-    iterationData.timetables[iterationData.bestTimetableIndex] = bufTimetable;
+    Timetable bufTimetable = g_iterationData.timetables[0];
+    g_iterationData.timetables[0] = g_iterationData.timetables[g_iterationData.bestTimetableIndex];
+    g_iterationData.timetables[g_iterationData.bestTimetableIndex] = bufTimetable;
 
     // Save only the best species from the old and new populations
-    for (int i = 0; i < iterationData.timetablesPerGeneration; i++)
-        iterationData.population[i] = iterationData.timetables[i];
-    GetBestSpecies(iterationData.timetables, iterationData.population, iterationData.newPopulation,
-                   iterationData.minErrors);
+    for (int i = 0; i < g_iterationData.timetablesPerGeneration; i++)
+        g_iterationData.population[i] = g_iterationData.timetables[i];
+    GetBestSpecies(g_iterationData.timetables, g_iterationData.population,
+                   g_iterationData.newPopulation, g_iterationData.minErrors);
 
     // Change allTimeBestScore if current best score is better
-    if (iterationData.bestScore > iterationData.allTimeBestScore)
-        iterationData.allTimeBestScore = iterationData.bestScore;
-    if (iterationData.lastAllTimeBestScore == iterationData.allTimeBestScore)
-        iterationData.iterationsPerChange++;
+    g_iterationData.allTimeBestScore =
+        std::max(g_iterationData.bestScore, g_iterationData.allTimeBestScore);
+    if (g_iterationData.lastAllTimeBestScore == g_iterationData.allTimeBestScore)
+        g_iterationData.iterationsPerChange++;
     else
-        iterationData.iterationsPerChange = 0;
-    iterationData.lastAllTimeBestScore = iterationData.allTimeBestScore;
-    iterationData.lastBestScore = iterationData.bestScore;
+        g_iterationData.iterationsPerChange = 0;
+    g_iterationData.lastAllTimeBestScore = g_iterationData.allTimeBestScore;
+    g_iterationData.lastBestScore = g_iterationData.bestScore;
 
     // Update the error plot
-    for (size_t i = 0; i < iterationData.errorValuesPoints - 1; i++)
+    for (size_t i = 0; i < IterationData::ERROR_VALUES_SIZE - 1; i++)
     {
-        iterationData.errorValues[i] = iterationData.errorValues[i + 1];
+        g_iterationData.errorValues[i] = g_iterationData.errorValues[i + 1];
     }
-    iterationData.errorValues[iterationData.errorValuesPoints - 1] = iterationData.minErrors;
+    g_iterationData.errorValues[IterationData::ERROR_VALUES_SIZE - 1] =
+        static_cast<float>(g_iterationData.minErrors);
 }
 
 void BeginSearching(const Timetable& timetable)
@@ -531,79 +549,80 @@ void BeginSearching(const Timetable& timetable)
     // Lock the mutex
     // This has to be done manually, because RunASearchIteration() uses the same mutex, which causes
     // a deadlock, because the mutex isn't unlocked before running the function
-    iterationMutex.lock();
+    g_iterationMutex.lock();
 
     // Print debug info
     LogInfo("Starting to search for the perfect timetable");
 
     // Stop the previous search proces, if present
-    if (!iterationData.isDone) StopSearching();
+    if (!g_iterationData.isDone) StopSearching();
 
     // Open the Generate timetable window
-    iterationData = {};
-    iterationData.isDone = false;
-    generateTimetableMenu->SetStatus(GetText("Allocating memory for the timetables..."));
-    generateTimetableMenu->Open();
+    g_iterationData = {};
+    g_iterationData.isDone = false;
+    g_generateTimetableMenu->SetStatus(GetText("Allocating memory for the timetables..."));
+    g_generateTimetableMenu->Open();
     // wasGenerateTimetable = true;
 
     // Make a copy of settings
-    iterationData.daysPerWeek = settings.daysPerWeek;
-    iterationData.lessonsPerDay = settings.lessonsPerDay;
-    iterationData.minTimetablesPerGeneration = settings.minTimetablesPerGeneration;
-    iterationData.maxTimetablesPerGeneration = settings.maxTimetablesPerGeneration;
+    g_iterationData.daysPerWeek = g_settings.daysPerWeek;
+    g_iterationData.lessonsPerDay = g_settings.lessonsPerDay;
+    g_iterationData.minTimetablesPerGeneration = g_settings.minTimetablesPerGeneration;
+    g_iterationData.maxTimetablesPerGeneration = g_settings.maxTimetablesPerGeneration;
 
     // Initialize a starting population
-    iterationData.timetables.resize(iterationData.maxTimetablesPerGeneration);
-    iterationData.population.resize(iterationData.maxTimetablesPerGeneration);
-    iterationData.newPopulation.resize(iterationData.maxTimetablesPerGeneration);
-    iterationData.timetablesPerGeneration = iterationData.maxTimetablesPerGeneration;
-    for (int i = 0; i < iterationData.maxTimetablesPerGeneration; i++)
+    g_iterationData.timetables.resize(g_iterationData.maxTimetablesPerGeneration);
+    g_iterationData.population.resize(g_iterationData.maxTimetablesPerGeneration);
+    g_iterationData.newPopulation.resize(g_iterationData.maxTimetablesPerGeneration);
+    g_iterationData.timetablesPerGeneration = g_iterationData.maxTimetablesPerGeneration;
+    for (int i = 0; i < g_iterationData.maxTimetablesPerGeneration; i++)
     {
-        iterationData.timetables[i] = timetable;
-        RandomizeTimetable(iterationData.timetables[i]);
-        ScoreTimetable(iterationData.timetables[i]);
-        iterationData.population[i] = iterationData.timetables[i];
-        iterationData.newPopulation[i] = iterationData.timetables[i];
+        g_iterationData.timetables[i] = timetable;
+        RandomizeTimetable(g_iterationData.timetables[i]);
+        ScoreTimetable(g_iterationData.timetables[i]);
+        g_iterationData.population[i] = g_iterationData.timetables[i];
+        g_iterationData.newPopulation[i] = g_iterationData.timetables[i];
     }
 
     // Initialize the iteration variables
-    iterationData.bestTimetableIndex = GetBestTimetableIndex(iterationData.timetables);
-    iterationData.bestScore =
-        EvaluateFitness(iterationData.timetables[iterationData.bestTimetableIndex]);
-    iterationData.maxErrors = iterationData.timetables[iterationData.bestTimetableIndex].errors;
-    iterationData.allTimeBestScore = iterationData.bestScore;
-    iterationData.iteration = 0;
-    for (size_t i = 0; i < iterationData.errorValuesPoints; i++)
+    g_iterationData.bestTimetableIndex = GetBestTimetableIndex(g_iterationData.timetables);
+    g_iterationData.bestScore =
+        EvaluateFitness(g_iterationData.timetables[g_iterationData.bestTimetableIndex]);
+    g_iterationData.maxErrors =
+        g_iterationData.timetables[g_iterationData.bestTimetableIndex].errors;
+    g_iterationData.allTimeBestScore = g_iterationData.bestScore;
+    g_iterationData.iteration = 0;
+    for (size_t i = 0; i < IterationData::ERROR_VALUES_SIZE; i++)
     {
-        iterationData.errorValues[i] = 0;
+        g_iterationData.errorValues[i] = 0;
     }
 
     // Empty classes failsafe
     if (timetable.classes.size() == 0)
     {
         LogInfo("The timetable has no classes!");
-        iterationData.isDone = true;
-        generateTimetableMenu->SetStatus(GetText("Timetable generating done!"));
+        g_iterationData.isDone = true;
+        g_generateTimetableMenu->SetStatus(GetText("Timetable generating done!"));
         return;
     }
 
     // Pre-cache class rule variants
-    for (auto& classPair: timetable.classes)
+    for (const auto& classPair: timetable.classes)
     {
         for (size_t i = 0; i < classPair.second.timetableLessonRules.size(); i++)
         {
-            iterationData.classRuleVariants[classPair.first].push_back(
+            g_iterationData.classRuleVariants[classPair.first].push_back(
                 GetAllRuleVariants(classPair.second.timetableLessonRules[i]));
         }
     }
 
     // Unlock the mutex
-    iterationMutex.unlock();
+    g_iterationMutex.unlock();
 
     // Run the iterations
-    generateTimetableMenu->SetStatus(
+    g_generateTimetableMenu->SetStatus(
         GetText("Generating a timetable that matches the requirements..."));
-    while (!iterationData.isDone)
+    while (!g_iterationData.isDone)
     {
         RunASearchIteration();
         // Avoid always locking iterationMutex
@@ -614,25 +633,26 @@ void BeginSearching(const Timetable& timetable)
 void StopSearching()
 {
     // Lock the mutex
-    std::lock_guard<std::mutex> lock(iterationMutex);
+    std::lock_guard<std::mutex> lock(g_iterationMutex);
 
     LogInfo("Finished searching. The final timetable has %d errors and %d bonus points",
-            iterationData.timetables[iterationData.bestTimetableIndex].errors,
-            iterationData.timetables[iterationData.bestTimetableIndex].bonusPoints);
-    iterationData.isDone = true;
-    iterationData.timetables[0].Save("timetables/" + iterationData.timetables[0].name + ".json");
-    iterationData.timetables.clear();
-    iterationData.population.clear();
-    iterationData.newPopulation.clear();
+            g_iterationData.timetables[g_iterationData.bestTimetableIndex].errors,
+            g_iterationData.timetables[g_iterationData.bestTimetableIndex].bonusPoints);
+    g_iterationData.isDone = true;
+    g_iterationData.timetables[0].Save("timetables/" + g_iterationData.timetables[0].name +
+                                       ".json");
+    g_iterationData.timetables.clear();
+    g_iterationData.population.clear();
+    g_iterationData.newPopulation.clear();
 }
 
 void ToggleVerboseLoggingThreads()
 {
     // Lock the mutex
-    std::lock_guard<std::mutex> lock(iterationMutex);
+    std::lock_guard<std::mutex> lock(g_iterationMutex);
 
-    if (settings.verboseLogging)
-        threadsNumber = 1;
+    if (g_settings.verboseLogging)
+        g_threadsNumber = 1;
     else
-        threadsNumber = std::max(1u, std::thread::hardware_concurrency());
+        g_threadsNumber = std::max(1U, std::thread::hardware_concurrency());
 }

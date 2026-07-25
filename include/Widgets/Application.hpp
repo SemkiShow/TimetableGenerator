@@ -14,14 +14,14 @@
 
 class Application
 {
-  public:
+public:
     virtual ~Application() = default;
 
     virtual void Update();
     virtual void Draw();
 
-    void AddWindow(std::shared_ptr<Window> window) { windows.push_back(window); }
+    void AddWindow(std::shared_ptr<Window> window) { windows_.push_back(window); }
 
-  private:
-    std::vector<std::shared_ptr<Window>> windows;
+private:
+    std::vector<std::shared_ptr<Window>> windows_;
 };

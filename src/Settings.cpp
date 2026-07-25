@@ -11,15 +11,15 @@
 #include <iostream>
 #include <string>
 
-Settings settings;
+Settings g_settings;
 
-std::string version = "";
+std::string g_version;
 
-void Settings::Save()
+void Settings::Save() const
 {
     LogInfo("Saving settings");
     std::ofstream file(SETTINGS_PATH);
-    file << "last-timetable=" << currentTimetable.name << '\n';
+    file << "last-timetable=" << g_currentTimetable.name << '\n';
     file << "days-per-week=" << daysPerWeek << '\n';
     file << "lessons-per-day=" << lessonsPerDay << '\n';
     file << "style=" << static_cast<int>(style) << '\n';
@@ -28,7 +28,7 @@ void Settings::Save()
     file << "max-free-periods=" << maxFreePeriods << '\n';
     file << "vsync=" << (vsync ? "true" : "false") << '\n';
     file << "merged-font=" << (mergedFont ? "true" : "false") << '\n';
-    file << "timetable-autosave-interval=" << timetableAutosaveInterval << '\n';
+    file << "timetable-autosave-interval=" << autosaveInterval << '\n';
     file << "font-size=" << fontSize << '\n';
     file << "error-bonus-ratio=" << errorBonusRatio << '\n';
     file << "timetables-per-generation-step=" << timetablesPerGenerationStep << '\n';
@@ -42,14 +42,16 @@ void Settings::Save()
     file.close();
 
     // Save timetable
-    currentTimetable.Save("templates/" + currentTimetable.name + ".json");
+    g_currentTimetable.Save("templates/" + g_currentTimetable.name + ".json");
 }
 
 void Settings::Load()
 {
     LogInfo("Loading settings");
     std::ifstream file(SETTINGS_PATH);
-    std::string buf, label, value;
+    std::string buf;
+    std::string label;
+    std::string value;
     while (std::getline(file, buf))
     {
         if (Split(buf, '=').size() < 2)
@@ -62,8 +64,8 @@ void Settings::Load()
 
         if (label == "last-timetable" && value != "")
         {
-            currentTimetable = Timetable();
-            currentTimetable.name = value;
+            g_currentTimetable = Timetable();
+            g_currentTimetable.name = value;
         }
         if (label == "days-per-week") daysPerWeek = stoi(value);
         if (label == "lessons-per-day") lessonsPerDay = stoi(value);
@@ -73,7 +75,7 @@ void Settings::Load()
         if (label == "max-free-periods") maxFreePeriods = stoi(value);
         if (label == "vsync") vsync = value == "true";
         if (label == "merged-font") mergedFont = value == "true";
-        if (label == "timetable-autosave-interval") timetableAutosaveInterval = stoi(value);
+        if (label == "timetable-autosave-interval") autosaveInterval = stoi(value);
         if (label == "font-size") fontSize = stoi(value);
         if (label == "timetables-per-generation-step") timetablesPerGenerationStep = stoi(value);
         if (label == "min-timetables-per-generation") minTimetablesPerGeneration = stoi(value);
@@ -88,9 +90,9 @@ void Settings::Load()
     file.close();
 
     // Load the current timetable
-    if (currentTimetable.name != "")
+    if (g_currentTimetable.name != "")
     {
-        currentTimetable.Load("templates/" + currentTimetable.name + ".json");
+        g_currentTimetable.Load("templates/" + g_currentTimetable.name + ".json");
     }
 
     // Load the language
@@ -99,6 +101,6 @@ void Settings::Load()
 
     // Read the version
     std::ifstream versionFile("version.txt");
-    std::getline(versionFile, version);
+    std::getline(versionFile, g_version);
     versionFile.close();
 }

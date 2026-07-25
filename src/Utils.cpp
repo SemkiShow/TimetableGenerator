@@ -13,14 +13,14 @@
 std::vector<std::string> Split(const std::string& input, char delimiter)
 {
     std::vector<std::string> output;
-    output.push_back("");
+    output.emplace_back("");
     int index = 0;
     for (size_t i = 0; i < input.size(); i++)
     {
         if (input[i] == delimiter)
         {
             index++;
-            output.push_back("");
+            output.emplace_back("");
             continue;
         }
         output[index] += input[i];
@@ -46,7 +46,7 @@ std::string TrimJunk(const std::string& input)
 {
     auto first = input.find_first_not_of("\t\n\r\f\v");
     auto last = input.find_last_not_of("\t\n\r\f\v");
-    return (first == input.npos) ? "" : input.substr(first, last - first + 1);
+    return (first == std::string::npos) ? "" : input.substr(first, last - first + 1);
 }
 
 std::string GetNthUtf8Character(const std::string& utf8String, int index)
@@ -67,5 +67,5 @@ std::string GetNthUtf8Character(const std::string& utf8String, int index)
     if (ptr[bytesProcessed] == '\0') return "";
 
     int resultCodepoint = GetCodepointNext(&ptr[bytesProcessed], &codepointSize);
-    return std::string(CodepointToUTF8(resultCodepoint, &codepointSize));
+    return {CodepointToUTF8(resultCodepoint, &codepointSize)};
 }

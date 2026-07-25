@@ -10,18 +10,17 @@
 
 class Window
 {
-  public:
+public:
     virtual ~Window() = default;
 
     virtual void Update() {}
     virtual void Draw() {}
-    virtual void PostDraw() {}
 
     virtual void Open();
-    virtual void Close() { visible = false; }
+    virtual void Close() { visible_ = false; }
 
-    bool IsVisible() { return visible; }
+    bool IsVisible() const { return visible_; }
 
-  protected:
-    bool visible = true;
+protected:
+    bool visible_ = true;
 };

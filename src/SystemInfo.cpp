@@ -69,9 +69,9 @@ std::string GetOS()
     return product.empty() ? "macOS (unknown)" : product;
 
 #elif defined(__linux__)
-    std::ifstream os_release("/etc/os-release");
-    std::string line, name, version;
-    while (std::getline(os_release, line))
+    std::ifstream osRelease("/etc/os-release");
+    std::string line;
+    while (std::getline(osRelease, line))
     {
         if (line.rfind("PRETTY_NAME=", 0) == 0)
         {
@@ -159,12 +159,13 @@ long GetRAMMegabytes()
 #elif defined(__linux__)
     std::ifstream meminfo("/proc/meminfo");
     std::string label;
-    long mem_kb;
-    while (meminfo >> label >> mem_kb)
+    long memKb;
+    while (meminfo >> label >> memKb)
     {
         if (label == "MemTotal:")
         {
-            return mem_kb / 1024;
+            constexpr int BYTES_IN_KB = 1024;
+            return memKb / BYTES_IN_KB;
         }
     }
     return -1;
@@ -211,15 +212,16 @@ std::vector<std::string> GetGPUs()
 
 #elif defined(__linux__)
     FILE* pipe = popen("lspci | grep -iE \"vga|3d controller\"", "r");
-    if (!pipe)
+    if (pipe == nullptr)
     {
         LOG_ERROR("Failed to run the GPU searching command");
     }
 
-    char buffer[256];
-    while (fgets(buffer, sizeof(buffer), pipe))
+    constexpr int BUFFER_SIZE = 256;
+    char buffer[BUFFER_SIZE];
+    while (fgets(buffer, sizeof(buffer), pipe) != nullptr)
     {
-        gpus.push_back(buffer);
+        gpus.emplace_back(buffer);
     }
     pclose(pipe);
 
@@ -248,7 +250,8 @@ std::vector<std::string> GetAllMountPoints()
 
 #elif defined(__linux__) || defined(__APPLE__)
     std::ifstream mountsFile("/proc/mounts");
-    std::string device, mountpoint;
+    std::string device;
+    std::string mountpoint;
     while (mountsFile >> device >> mountpoint)
     {
         mounts.push_back(mountpoint);
@@ -268,7 +271,6 @@ std::filesystem::space_info GetDiskInfo(const std::filesystem::path& path)
     }
     catch (const std::exception&)
     {
+        return {};
     }
-    std::filesystem::space_info emptySpaceInfo;
-    return emptySpaceInfo;
 }

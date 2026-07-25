@@ -14,16 +14,15 @@
 
 class GenerateTimetableMenu : public Window
 {
-  public:
+public:
     virtual ~GenerateTimetableMenu() = default;
 
     void Draw() override;
-    void PostDraw() override;
 
-    void SetStatus(const std::string& val) { status = val; }
+    void SetStatus(const std::string& val) { status_ = val; }
 
-  private:
-    std::string status;
+private:
+    std::string status_;
 };
 
-extern std::shared_ptr<GenerateTimetableMenu> generateTimetableMenu;
+extern std::shared_ptr<GenerateTimetableMenu> g_generateTimetableMenu;

@@ -6,7 +6,7 @@
 
 void Application::Update()
 {
-    for (auto& window: windows)
+    for (auto& window: windows_)
     {
         if (window->IsVisible()) window->Update();
     }
@@ -14,12 +14,11 @@ void Application::Update()
 
 void Application::Draw()
 {
-    for (auto& window: windows)
+    for (auto& window: windows_)
     {
         if (window->IsVisible())
         {
             window->Draw();
-            window->PostDraw();
         }
     }
 }

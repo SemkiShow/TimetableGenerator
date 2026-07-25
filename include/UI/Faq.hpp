@@ -16,11 +16,11 @@ struct Texture;
 
 class FaqMenu : public Window
 {
-  public:
+public:
     virtual ~FaqMenu() = default;
 
     void Draw() override;
 };
 
-extern std::shared_ptr<FaqMenu> faqMenu;
-extern std::vector<Texture> faqScreenshots;
+extern std::shared_ptr<FaqMenu> g_faqMenu;
+extern std::vector<Texture> g_faqScreenshots;

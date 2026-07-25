@@ -14,15 +14,15 @@
 
 class SettingsMenu : public Window
 {
-  public:
+public:
     virtual ~SettingsMenu() = default;
 
     void Draw() override;
 
     void ReloadLabels();
 
-  private:
-    std::string styleValues = "";
+private:
+    std::string styleValues_;
 };
 
-extern std::shared_ptr<SettingsMenu> settingsMenu;
+extern std::shared_ptr<SettingsMenu> g_settingsMenu;

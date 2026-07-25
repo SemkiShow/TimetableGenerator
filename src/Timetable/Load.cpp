@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include "Logging.hpp"
+#include "Time.hpp"
 #include "Timetable.hpp"
 #include "Utils.hpp"
 #include <JsonFormat.hpp>
@@ -13,7 +14,7 @@
 #include <string>
 #include <utility>
 
-void MigrateV0(Json& json)
+static void MigrateV0(Json& json)
 {
     Json newJson = json;
     for (auto& classPair: json["classes"].GetObject())
@@ -37,7 +38,7 @@ void MigrateV0(Json& json)
     json = newJson;
 }
 
-void MigrateV1(Json& json)
+static void MigrateV1(Json& json)
 {
     // Lessons
     for (auto& lesson: json["lessons"].GetObject())
@@ -154,7 +155,7 @@ TimetableLesson TimetableLesson::LoadJson(Json& json)
 {
     TimetableLesson timetableLesson;
 
-    timetableLesson.amount = json["amount"];
+    timetableLesson.count = json["amount"];
     for (auto& lessonTeacherPair: json["lessonTeacherPairs"].GetArray())
     {
         timetableLesson.lessonTeacherPairs.push_back(
@@ -194,7 +195,7 @@ TimetableLessonRule TimetableLessonRule::LoadJson(Json& json)
     TimetableLessonRule timetableLessonRule;
 
     timetableLessonRule.preserveOrder = json["preserveOrder"];
-    timetableLessonRule.amount = json["amount"];
+    timetableLessonRule.count = json["amount"];
     for (auto& timetableLessonId: json["timetableLessonIds"].GetArray())
     {
         timetableLessonRule.timetableLessonIds.push_back(timetableLessonId);
@@ -270,11 +271,11 @@ void Timetable::Load(const std::filesystem::path& path)
     name = TrimJunk(name);
 
     year = json["year"];
-    if (year < 1900)
+    if (year < Time::FIRST_YEAR)
     {
         time_t now = time(0);
         tm* localTime = localtime(&now);
-        year = 1900 + localTime->tm_year;
+        year = Time::FIRST_YEAR + localTime->tm_year;
     }
 
     // Classrooms

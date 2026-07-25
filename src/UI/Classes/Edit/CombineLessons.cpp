@@ -13,60 +13,60 @@
 #include <string>
 #include <unordered_map>
 
-std::shared_ptr<CombineLessonsMenu> combineLessonsMenu;
+std::shared_ptr<CombineLessonsMenu> g_combineLessonsMenu;
 
 void CombineLessonsMenu::Open(Timetable* prevTimetable, bool newCombinedLesson, int classId,
                               int lessonId,
                               const std::unordered_map<std::string, bool>& classLessons,
                               const std::unordered_map<std::string, bool>& classLessonTeachers)
 {
-    this->prevTimetable = prevTimetable;
-    this->newCombinedLesson = newCombinedLesson;
-    this->classId = classId;
-    this->lessonId = lessonId;
-    this->classLessons = classLessons;
-    this->classLessonTeachers = classLessonTeachers;
+    this->prevTimetable_ = prevTimetable;
+    this->newCombinedLesson_ = newCombinedLesson;
+    this->classId_ = classId;
+    this->lessonId_ = lessonId;
+    this->classLessons_ = classLessons;
+    this->classLessonTeachers_ = classLessonTeachers;
 
-    timetable = *prevTimetable;
+    timetable_ = *prevTimetable;
     if (newCombinedLesson)
     {
-        timetable.classes[classId].timetableLessons[lessonId] = TimetableLesson();
+        timetable_.classes[classId].timetableLessons[lessonId] = TimetableLesson();
     }
 
     // Set everything to false
-    lessons.clear();
-    lessonTeachers.clear();
-    for (auto& lesson: timetable.lessons)
+    lessons_.clear();
+    lessonTeachers_.clear();
+    for (auto& lesson: timetable_.lessons)
     {
-        if (!this->classLessons[std::to_string(lesson.first) + "0"]) continue;
-        lessons[lesson.first] = false;
-        for (auto& teacher: currentTimetable.teachers)
+        if (!this->classLessons_[std::to_string(lesson.first) + "0"]) continue;
+        lessons_[lesson.first] = false;
+        for (auto& teacher: g_currentTimetable.teachers)
         {
-            if (!this->classLessonTeachers[std::to_string(lesson.first) + teacher.second.name +
+            if (!this->classLessonTeachers_[std::to_string(lesson.first) + teacher.second.name +
                                            "0"])
                 continue;
-            lessonTeachers[std::to_string(lesson.first) + teacher.second.name] = false;
+            lessonTeachers_[std::to_string(lesson.first) + teacher.second.name] = false;
         }
     }
 
     // Load already selected stuff, if editing
     if (!newCombinedLesson)
     {
-        TimetableLesson& currentLesson = timetable.classes[classId].timetableLessons[lessonId];
+        TimetableLesson& currentLesson = timetable_.classes[classId].timetableLessons[lessonId];
         for (size_t j = 0; j < currentLesson.lessonTeacherPairs.size(); j++)
         {
-            if (!this->classLessons[std::to_string(currentLesson.lessonTeacherPairs[j].lessonId) +
+            if (!this->classLessons_[std::to_string(currentLesson.lessonTeacherPairs[j].lessonId) +
                                     "0"])
                 continue;
-            if (!this->classLessonTeachers
+            if (!this->classLessonTeachers_
                      [std::to_string(currentLesson.lessonTeacherPairs[j].lessonId) +
-                      currentTimetable.teachers[currentLesson.lessonTeacherPairs[j].teacherId]
+                      g_currentTimetable.teachers[currentLesson.lessonTeacherPairs[j].teacherId]
                           .name +
                       "0"])
                 continue;
-            lessons[currentLesson.lessonTeacherPairs[j].lessonId] = true;
-            lessonTeachers[std::to_string(currentLesson.lessonTeacherPairs[j].lessonId) +
-                           currentTimetable.teachers[currentLesson.lessonTeacherPairs[j].teacherId]
+            lessons_[currentLesson.lessonTeacherPairs[j].lessonId] = true;
+            lessonTeachers_[std::to_string(currentLesson.lessonTeacherPairs[j].lessonId) +
+                           g_currentTimetable.teachers[currentLesson.lessonTeacherPairs[j].teacherId]
                                .name] = true;
         }
     }
@@ -76,7 +76,7 @@ void CombineLessonsMenu::Open(Timetable* prevTimetable, bool newCombinedLesson, 
 
 void CombineLessonsMenu::Draw()
 {
-    if (!ImGui::Begin(gettext("Combine lessons"), &visible))
+    if (!ImGui::Begin(gettext("Combine lessons"), &visible_))
     {
         ImGui::End();
         return;
@@ -85,20 +85,20 @@ void CombineLessonsMenu::Draw()
     // Lessons
     ImGui::Columns(2);
     int pushId = 0;
-    for (auto& lesson: prevTimetable->lessons)
+    for (auto& lesson: prevTimetable_->lessons)
     {
-        if (!classLessons[std::to_string(lesson.first) + "0"]) continue;
+        if (!classLessons_[std::to_string(lesson.first) + "0"]) continue;
         ImGui::PushID(pushId);
-        ImGui::Checkbox(lesson.second.name.c_str(), &lessons[lesson.first]);
+        ImGui::Checkbox(lesson.second.name.c_str(), &lessons_[lesson.first]);
         ImGui::NextColumn();
         ImGui::PopID();
         pushId++;
-        for (auto& teacher: currentTimetable.teachers)
+        for (auto& teacher: g_currentTimetable.teachers)
         {
-            if (!lessonTeachers[std::to_string(lesson.first) + teacher.second.name + "0"]) continue;
+            if (!lessonTeachers_[std::to_string(lesson.first) + teacher.second.name + "0"]) continue;
             ImGui::PushID(pushId);
             ImGui::Checkbox(teacher.second.name.c_str(),
-                            &lessonTeachers[std::to_string(lesson.first) + teacher.second.name]);
+                            &lessonTeachers_[std::to_string(lesson.first) + teacher.second.name]);
             ImGui::PopID();
             pushId++;
         }
@@ -110,17 +110,17 @@ void CombineLessonsMenu::Draw()
     // Ok and Cancel
     if (ImGui::Button(gettext("Ok")))
     {
-        LogInfo("Pressed the Ok button in combine lessons of class with id %d", classId);
-        prevTimetable->classes[classId].timetableLessons[lessonId].lessonTeacherPairs.clear();
+        LogInfo("Pressed the Ok button in combine lessons of class with id %d", classId_);
+        prevTimetable_->classes[classId_].timetableLessons[lessonId_].lessonTeacherPairs.clear();
         int counter = 0;
-        for (auto& lesson: prevTimetable->lessons)
+        for (auto& lesson: prevTimetable_->lessons)
         {
-            if (!lessons[lesson.first]) continue;
-            for (auto& teacher: currentTimetable.teachers)
+            if (!lessons_[lesson.first]) continue;
+            for (auto& teacher: g_currentTimetable.teachers)
             {
-                if (!lessonTeachers[std::to_string(lesson.first) + teacher.second.name]) continue;
+                if (!lessonTeachers_[std::to_string(lesson.first) + teacher.second.name]) continue;
                 auto& lessonTeacherPairs =
-                    prevTimetable->classes[classId].timetableLessons[lessonId].lessonTeacherPairs;
+                    prevTimetable_->classes[classId_].timetableLessons[lessonId_].lessonTeacherPairs;
                 lessonTeacherPairs.push_back(LessonTeacherPair());
                 lessonTeacherPairs[counter].lessonId = lesson.first;
                 lessonTeacherPairs[counter].teacherId = teacher.first;

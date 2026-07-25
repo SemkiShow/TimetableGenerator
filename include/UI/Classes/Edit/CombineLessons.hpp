@@ -16,7 +16,7 @@
 
 class CombineLessonsMenu : public Window
 {
-  public:
+public:
     virtual ~CombineLessonsMenu() = default;
 
     void Draw() override;
@@ -25,18 +25,18 @@ class CombineLessonsMenu : public Window
               const std::unordered_map<std::string, bool>& classLessons,
               const std::unordered_map<std::string, bool>& classLessonTeachers);
 
-  private:
+private:
     void Open() override {}
 
-    bool newCombinedLesson = false;
-    int classId = 0, lessonId = 0;
-    std::unordered_map<int, bool> lessons;
-    std::unordered_map<std::string, bool> lessonTeachers;
-    std::unordered_map<std::string, bool> classLessons;
-    std::unordered_map<std::string, bool> classLessonTeachers;
+    bool newCombinedLesson_ = false;
+    int classId_ = 0, lessonId_ = 0;
+    std::unordered_map<int, bool> lessons_;
+    std::unordered_map<std::string, bool> lessonTeachers_;
+    std::unordered_map<std::string, bool> classLessons_;
+    std::unordered_map<std::string, bool> classLessonTeachers_;
 
-    Timetable* prevTimetable = nullptr;
-    Timetable timetable;
+    Timetable* prevTimetable_ = nullptr;
+    Timetable timetable_;
 };
 
-extern std::shared_ptr<CombineLessonsMenu> combineLessonsMenu;
+extern std::shared_ptr<CombineLessonsMenu> g_combineLessonsMenu;

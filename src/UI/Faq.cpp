@@ -5,25 +5,25 @@
 #include "UI/Faq.hpp"
 #include "Settings.hpp"
 #include "Translations.hpp"
-#include "UI.hpp"
 #include <imgui.h>
 #include <memory>
 #include <raylib.h>
 #include <vector>
 
-std::shared_ptr<FaqMenu> faqMenu;
-std::vector<Texture> faqScreenshots;
+std::shared_ptr<FaqMenu> g_faqMenu;
+std::vector<Texture> g_faqScreenshots;
 
-void DrawImage(const Texture& texture)
+static void DrawImage(const Texture& texture)
 {
-    ImGui::Image(static_cast<ImTextureID>(texture.id),
-                 ImVec2(texture.width * 1.0f * settings.fontSize / DEFAULT_FONT_SIZE,
-                        texture.height * 1.0f * settings.fontSize / DEFAULT_FONT_SIZE));
+    ImGui::Image(
+        static_cast<ImTextureID>(texture.id),
+        ImVec2((float)texture.width * (float)g_settings.fontSize / Settings::DEFAULT_FONT_SIZE,
+               (float)texture.height * (float)g_settings.fontSize / Settings::DEFAULT_FONT_SIZE));
 }
 
 void FaqMenu::Draw()
 {
-    if (!ImGui::Begin(gettext("FAQ"), &visible))
+    if (!ImGui::Begin(gettext("FAQ"), &visible_))
     {
         ImGui::End();
         return;
@@ -40,11 +40,11 @@ void FaqMenu::Draw()
             "%s",
             gettext(
                 "To add multiple lessons to one timetable cell, click\nCombine lessons while editing a class."));
-        DrawImage(faqScreenshots[0]);
+        DrawImage(g_faqScreenshots[0]);
         ImGui::Text("%s", gettext("Select the lessons and teachers to combine and press Ok."));
-        DrawImage(faqScreenshots[1]);
-        ImGui::Text("%s", gettext("Then set the amount per week for the created combined lesson."));
-        DrawImage(faqScreenshots[2]);
+        DrawImage(g_faqScreenshots[1]);
+        ImGui::Text("%s", gettext("Then set the count per week for the created combined lesson."));
+        DrawImage(g_faqScreenshots[2]);
         ImGui::TreePop();
     }
     ImGui::End();
