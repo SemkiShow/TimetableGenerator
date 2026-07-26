@@ -86,6 +86,21 @@ static void MigrateV1(Json& json)
     }
 }
 
+static void MigrateV2(Json& json)
+{
+    for (auto& classPair: json["classes"].GetObject())
+    {
+        for (auto& lesson: classPair.second["lessons"].GetObject())
+        {
+            lesson.second["count"] = lesson.second["amount"];
+        }
+        for (auto& rule: classPair.second["timetableLessonRules"].GetArray())
+        {
+            rule["count"] = rule["amount"];
+        }
+    }
+}
+
 WorkDay WorkDay::LoadJson(Json& json)
 {
     WorkDay workDay;
@@ -155,7 +170,7 @@ TimetableLesson TimetableLesson::LoadJson(Json& json)
 {
     TimetableLesson timetableLesson;
 
-    timetableLesson.count = json["amount"];
+    timetableLesson.count = json["count"];
     for (auto& lessonTeacherPair: json["lessonTeacherPairs"].GetArray())
     {
         timetableLesson.lessonTeacherPairs.push_back(
@@ -195,7 +210,7 @@ TimetableLessonRule TimetableLessonRule::LoadJson(Json& json)
     TimetableLessonRule timetableLessonRule;
 
     timetableLessonRule.preserveOrder = json["preserveOrder"];
-    timetableLessonRule.count = json["amount"];
+    timetableLessonRule.count = json["count"];
     for (auto& timetableLessonId: json["timetableLessonIds"].GetArray())
     {
         timetableLessonRule.timetableLessonIds.push_back(timetableLessonId);
@@ -265,6 +280,11 @@ void Timetable::Load(const std::filesystem::path& path)
     {
         MigrateV1(json);
         version = 2;
+    }
+    if (version == 2)
+    {
+        MigrateV2(json);
+        version = 3;
     }
 
     name = std::filesystem::path(path).stem().string();

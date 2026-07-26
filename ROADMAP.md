@@ -8,15 +8,17 @@
 - [ ] Refactor the rest of the codebase
   - [x] Use JsonFormat
   - [x] Use std::mutex
-  - [ ] Add .clang-tidy
+  - [x] Add .clang-tidy
   - [ ] Figure something out with changing daysPerWeek or lessonsPerDay deleting user data
   - [x] Remove a dependency on cacert.pem
   - [x] Use the printf syntax of ImGui::Text
   - [x] Add Web.cpp
   - [ ] Doxygen documentation
+  - [x] amount -> count in Timetable
 - [ ] Unit tests
 - [ ] Automatic crash report sending
 - [ ] Change the way to make multiple lessons in one cell to groups (a more logical and flexible solution)
+- [ ] Back up timetables on every load and especially migrate
 
 ## v1.0.0-beta.7
 

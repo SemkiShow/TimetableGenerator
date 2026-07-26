@@ -82,7 +82,7 @@ Json TimetableLesson::ToJson()
     Json json;
 
     json = Json(JsonFormat::Inline);
-    json["amount"] = count;
+    json["count"] = count;
     json["lessonTeacherPairs"] = Json::array_t();
     json["lessonTeacherPairs"].format = JsonFormat::Inline;
     for (auto& lessonTeacherPair: lessonTeacherPairs)
@@ -122,7 +122,7 @@ Json TimetableLessonRule::ToJson()
     Json json;
 
     json["preserveOrder"] = preserveOrder;
-    json["amount"] = count;
+    json["count"] = count;
     json["timetableLessonIds"] = Json::array_t();
     json["timetableLessonIds"].format = JsonFormat::Inline;
     for (int id: timetableLessonIds)
