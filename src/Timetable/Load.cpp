@@ -262,6 +262,18 @@ Class Class::LoadJson(Json& json)
 void Timetable::Load(const std::filesystem::path& path)
 {
     LogInfo("Loading timetable at %s", path.string().c_str());
+
+    // Back up the current file just in case
+    if (std::filesystem::exists(path))
+    {
+        auto parentDir = path.parent_path().string();
+        std::filesystem::create_directory(parentDir + "/backups");
+        auto filename = path.filename();
+        auto backupPath = parentDir + "/backups/" + filename.stem().string() + "-" +
+                          Time::Now().ToString(Time::Format::Path) + filename.extension().string();
+        std::filesystem::copy_file(path, backupPath);
+    }
+
     Json json = Json::Load(path);
 
     *this = Timetable();

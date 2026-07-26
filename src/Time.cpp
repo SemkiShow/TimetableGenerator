@@ -110,7 +110,7 @@ std::string Time::ToString(Format format) const
                        minute, second);
         break;
     case Format::Path:
-        res = snprintf(buf, BUF_LEN, "%04d.%02d.%02d %02d-%02d-%02d", year, month, day, hour,
+        res = snprintf(buf, BUF_LEN, "%04d.%02d.%02d_%02d-%02d-%02d", year, month, day, hour,
                        minute, second);
         break;
     default:

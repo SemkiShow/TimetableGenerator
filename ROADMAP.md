@@ -18,13 +18,16 @@
 - [ ] Unit tests
 - [ ] Automatic crash report sending
 - [ ] Change the way to make multiple lessons in one cell to groups (a more logical and flexible solution)
-- [ ] Back up timetables on every load and especially migrate
+- [x] Back up timetables on load
+- [ ] Don't make languages separate in releases
+- [ ] Use the system language by default
+- [ ] Optimise GetRuleCount
+- [ ] Switch to nlohmann/json or make JsonFormat standard-compliant and more easily usable
 
 ## v1.0.0-beta.7
 
 - [ ] Exporting to HTML
 - [ ] Exporting to some image format
-- [ ] Switch to nlohmann/json or make JsonFormat standard-compliant and more easily usable
 - [ ] Switch to RayUI or Qt?
 - [ ] Scoring on the GPU
 - [ ] Toggle scoring functions in settings

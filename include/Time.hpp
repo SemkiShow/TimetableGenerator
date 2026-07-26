@@ -4,7 +4,7 @@
 /**
  * @file
  * @brief Time related functions
- * @version 1.1.0
+ * @version 1.1.1
  */
 
 #pragma once
@@ -15,7 +15,11 @@
 struct Time
 {
     static constexpr int FIRST_YEAR = 1900;
-    static constexpr int MONTHS_PER_YEAR = 12;
+    static constexpr int MONTHS_IN_YEAR = 12;
+    static constexpr int DAYS_IN_WEEK = 7;
+    static constexpr int HOURS_IN_DAY = 24;
+    static constexpr int MINUTES_IN_HOUR = 60;
+    static constexpr int SECONDS_IN_MINUTE = 60;
 
     enum class Format
     {
