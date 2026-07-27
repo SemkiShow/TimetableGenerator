@@ -15,6 +15,7 @@
   - [x] Add Web.cpp
   - [ ] Doxygen documentation
   - [x] amount -> count in Timetable
+  - [ ] Move every button's functionality to a member function
 - [ ] Unit tests
 - [ ] Automatic crash report sending
 - [ ] Change the way to make multiple lessons in one cell to groups (a more logical and flexible solution)
@@ -22,7 +23,9 @@
 - [ ] Don't make languages separate in releases
 - [ ] Use the system language by default
 - [ ] Optimise GetRuleCount
-- [ ] Switch to nlohmann/json or make JsonFormat standard-compliant and more easily usable
+- [ ] Switch to nlohmann/json
+- [ ] Make the user choose which update to install instead of trying to do it with an algorithm
+- [ ] Fix UTF-8 handling
 
 ## v1.0.0-beta.7
 
