@@ -10,6 +10,7 @@
 #include <vector>
 
 class Json;
+class Timetable;
 
 #define ANY_LESSON (-2)
 #define NO_LESSON  (-3)
@@ -73,8 +74,6 @@ struct TimetableLesson
     static TimetableLesson LoadJson(Json& json);
     static TimetableLesson GetRandom();
 };
-
-class Timetable;
 
 struct ClassroomLessonPair
 {

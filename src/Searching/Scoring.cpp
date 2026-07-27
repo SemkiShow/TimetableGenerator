@@ -8,7 +8,6 @@
 #include "Timetable.hpp"
 #include <algorithm>
 #include <cstddef>
-#include <set>
 #include <unordered_map>
 #include <vector>
 
@@ -139,7 +138,8 @@ static void GetClassroomCollisionErrors(Timetable& timetable)
         classroomLessons[classroom.first].resize(g_iterationData.daysPerWeek);
         for (int i = 0; i < g_iterationData.daysPerWeek; i++)
         {
-            classroomLessons[classroom.first][i].lessons.resize(g_iterationData.lessonsPerDay, false);
+            classroomLessons[classroom.first][i].lessons.resize(g_iterationData.lessonsPerDay,
+                                                                false);
         }
     }
     for (auto& classPair: timetable.classes)
@@ -325,84 +325,98 @@ static void GetLessonGapErrors(Timetable& timetable)
     }
 }
 
-std::vector<TimetableLessonRule> GetAllRuleVariants(const TimetableLessonRule& timetableLessonRule)
+static int GetRuleCountOrdered(const Class& clazz, const TimetableLessonRule& rule)
 {
-    std::vector<TimetableLessonRule> ruleVariants;
-    if (timetableLessonRule.preserveOrder)
-    {
-        ruleVariants.push_back(TimetableLessonRule());
-        ruleVariants[0].timetableLessonIds = timetableLessonRule.timetableLessonIds;
-        ruleVariants[0].count = timetableLessonRule.count;
-        return ruleVariants;
-    }
-    std::vector<int> timetableLessonIds = timetableLessonRule.timetableLessonIds;
-    std::set<std::vector<int>> idSet;
-    std::sort(timetableLessonIds.begin(), timetableLessonIds.end());
-    size_t index = 0;
-    do
-    {
-        idSet.insert(timetableLessonIds);
-    } while (std::next_permutation(timetableLessonIds.begin(), timetableLessonIds.end()));
-    for (const auto& ids: idSet)
-    {
-        ruleVariants.push_back(TimetableLessonRule());
-        ruleVariants[index].timetableLessonIds = ids;
-        ruleVariants[index].count = timetableLessonRule.count;
-        index++;
-    }
-    return ruleVariants;
-}
+    int ruleCount = 0;
 
-static int GetRuleCount(Class classPair, const std::vector<int>& timetableLessonIds)
-{
-    int output = 0;
-    classPair.days.resize(g_iterationData.daysPerWeek);
     for (int i = 0; i < g_iterationData.daysPerWeek; i++)
     {
-        std::vector<int> classTimetableLessonIds;
-        for (auto& classroomLessonPair: classPair.days[i].classroomLessonPairs)
-        {
-            classTimetableLessonIds.push_back(classroomLessonPair.timetableLessonId);
-        }
-        for (size_t j = 0; j + timetableLessonIds.size() < classTimetableLessonIds.size(); j++)
+        for (int j = 0; j + (int)rule.timetableLessonIds.size() - 1 <
+                        (int)clazz.days[i].classroomLessonPairs.size();
+             j++)
         {
             bool match = true;
-            for (size_t k = 0; k < timetableLessonIds.size(); k++)
+            for (size_t k = 0; k < rule.timetableLessonIds.size(); k++)
             {
-                if (j + k >= classTimetableLessonIds.size() || k >= timetableLessonIds.size() ||
-                    classTimetableLessonIds[j + k] != timetableLessonIds[k])
+                if (clazz.days[i].classroomLessonPairs[j + k].timetableLessonId !=
+                    rule.timetableLessonIds[k])
                 {
                     match = false;
                     break;
                 }
             }
-            if (match)
-            {
-                output++;
-            }
+            if (match) ruleCount++;
         }
     }
-    return output;
+
+    return ruleCount;
+}
+
+static int GetRuleCountUnordered(const Class& clazz, const TimetableLessonRule& rule,
+                                 int maxLessonId)
+{
+    int ruleCount = 0;
+
+    for (int i = 0; i < g_iterationData.daysPerWeek; i++)
+    {
+        std::vector<int> ruleProfile(maxLessonId + 1, 0);
+        for (const auto& lesson: rule.timetableLessonIds)
+        {
+            int lessonId = lesson;
+            if (lessonId < 0) lessonId = maxLessonId;
+            ruleProfile[lessonId]++;
+        }
+
+        std::vector<int> dayProfile(maxLessonId + 1, 0);
+        for (size_t j = 0;
+             j < rule.timetableLessonIds.size() && j < clazz.days[i].classroomLessonPairs.size();
+             j++)
+        {
+            int lessonId = clazz.days[i].classroomLessonPairs[j].timetableLessonId;
+            if (lessonId < 0) lessonId = maxLessonId;
+            dayProfile[lessonId]++;
+        }
+
+        if (ruleProfile == dayProfile) ruleCount++;
+        for (int j = 0; j + (int)rule.timetableLessonIds.size() - 1 <
+                        (int)clazz.days[i].classroomLessonPairs.size();
+             j++)
+        {
+            // Remove start
+            int startId = clazz.days[i].classroomLessonPairs[j].timetableLessonId;
+            if (startId < 0) startId = maxLessonId;
+            dayProfile[startId]--;
+
+            // Add end
+            int endId = clazz.days[i]
+                            .classroomLessonPairs[j + rule.timetableLessonIds.size() - 1]
+                            .timetableLessonId;
+            if (endId < 0) endId = maxLessonId;
+            dayProfile[endId]++;
+
+            if (ruleProfile == dayProfile) ruleCount++;
+        }
+    }
+
+    return ruleCount;
 }
 
 static void GetTimetableLessonRulesErrors(Timetable& timetable)
 {
-    for (auto& classPair: timetable.classes)
+    for (const auto& classPair: timetable.classes)
     {
-        for (size_t i = 0; i < g_iterationData.classRuleVariants[classPair.first].size(); i++)
+        for (const auto& rule: classPair.second.timetableLessonRules)
         {
-            int totalRuleCount = 0;
-            std::vector<TimetableLessonRule>& ruleVariants =
-                g_iterationData.classRuleVariants[classPair.first][i];
-            for (size_t j = 0; j < g_iterationData.classRuleVariants[classPair.first][i].size(); j++)
-            {
-                totalRuleCount +=
-                    GetRuleCount(classPair.second, ruleVariants[j].timetableLessonIds);
-            }
-            if (totalRuleCount < ruleVariants[0].count || totalRuleCount > ruleVariants[0].count)
+            int ruleCount = rule.preserveOrder ? GetRuleCountOrdered(classPair.second, rule)
+                                               : GetRuleCountUnordered(classPair.second, rule,
+                                                                       timetable.maxLessonId);
+            if (ruleCount != rule.count)
             {
                 timetable.errors++;
-                if (g_settings.verboseLogging) LogInfo("Class rule error");
+                if (g_settings.verboseLogging)
+                {
+                    LogInfo("Class rule error: expected %d, got %d", rule.count, ruleCount);
+                }
             }
         }
     }
@@ -433,7 +447,7 @@ static void GetTimetableErrors(Timetable& timetable,
     GetLessonGapErrors(timetable);
 
     // Get timetable lesson rules errors
-    GetTimetableLessonRulesErrors(timetable);
+    // GetTimetableLessonRulesErrors(timetable);
 }
 
 static void GetTeacherMovementBonusPoints(Timetable& timetable)

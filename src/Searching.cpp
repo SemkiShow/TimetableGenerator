@@ -606,16 +606,6 @@ void BeginSearching(const Timetable& timetable)
         return;
     }
 
-    // Pre-cache class rule variants
-    for (const auto& classPair: timetable.classes)
-    {
-        for (size_t i = 0; i < classPair.second.timetableLessonRules.size(); i++)
-        {
-            g_iterationData.classRuleVariants[classPair.first].push_back(
-                GetAllRuleVariants(classPair.second.timetableLessonRules[i]));
-        }
-    }
-
     // Unlock the mutex
     g_iterationMutex.unlock();
 

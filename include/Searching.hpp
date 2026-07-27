@@ -8,7 +8,6 @@
 #include <Settings.hpp>
 #include <climits>
 #include <cstddef>
-#include <unordered_map>
 #include <vector>
 
 struct IterationData
@@ -27,7 +26,6 @@ struct IterationData
     bool isDone = true;
     int startBonusPoints = INT_MAX;
     int maxBonusPoints = INT_MIN;
-    std::unordered_map<int, std::vector<std::vector<TimetableLessonRule>>> classRuleVariants;
     static constexpr size_t ERROR_VALUES_SIZE = 1000;
     float errorValues[ERROR_VALUES_SIZE];
 
@@ -45,7 +43,6 @@ struct IterationData
 extern IterationData g_iterationData;
 extern size_t g_threadsNumber;
 
-std::vector<TimetableLessonRule> GetAllRuleVariants(const TimetableLessonRule& timetableLessonRule);
 void ScoreTimetable(Timetable& timetable);
 void BeginSearching(const Timetable& timetable);
 void RunASearchIteration();

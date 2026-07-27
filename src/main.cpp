@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include "Settings.hpp"
-// #include "Timetable.hpp"
 #include "Translations.hpp"
 #include "UI.hpp"
 #include "UI/Crashes.hpp"

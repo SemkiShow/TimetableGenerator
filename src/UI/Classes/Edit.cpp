@@ -218,7 +218,6 @@ void EditClassMenu::Draw()
     {
         ImGui::InputInt(gettext("count"), &bulkCount_);
         bulkCount_ = std::max(1, bulkCount_);
-        // TODO: This is incorrect in UTF-8
         if (bulkCount_ >= (int)GetText("abcdefghijklmnopqrstuvwxyz").size())
             bulkCount_ = (int)GetText("abcdefghijklmnopqrstuvwxyz").size() - 1;
     }
@@ -414,8 +413,9 @@ void EditClassMenu::Draw()
     if (ImGui::Button(gettext("Add a lesson rule")))
     {
         LogInfo("Adding a lesson rule to a class with id %d", classId_);
-        g_rulesMenu->Open(&timetable_, true, timetable_.classes[classId_].maxTimetableLessonId + 1,
-                          classId_, lessons_, lessonCounts_, lessonTeachers_);
+        g_rulesMenu->Open(&timetable_, true,
+                          (int)timetable_.classes[classId_].timetableLessonRules.size(), classId_,
+                          lessons_, lessonCounts_, lessonTeachers_);
     }
     ImGui::Columns(3);
     ImGui::Text("%s", gettext("Rules"));
