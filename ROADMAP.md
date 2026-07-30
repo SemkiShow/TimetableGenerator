@@ -34,3 +34,4 @@
 - [ ] Switch to RayUI or Qt?
 - [ ] Scoring on the GPU
 - [ ] Toggle scoring functions in settings
+- [ ] Make JsonFormat standard compliant and switch back to it

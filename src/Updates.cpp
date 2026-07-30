@@ -8,16 +8,18 @@
 #include "Translations.hpp"
 #include "UI/NewVersion.hpp"
 #include "Web.hpp"
-#include <JsonFormat.hpp>
 #include <cstdio>
 #include <cstring>
 #include <ctime>
 #include <filesystem>
+#include <nlohmann/json.hpp>
+#include <nlohmann/json_fwd.hpp>
 #include <string>
 #include <thread>
 #include <vector>
 #include <zip.h>
 #include <zipconf.h>
+using json = nlohmann::json;
 
 std::string g_latestVersion;
 std::vector<std::string> g_releaseNotes;
@@ -55,30 +57,31 @@ static void GetLatestVersionName()
         return;
     }
 
-    Json json = Json::Parse(response.body);
-    if (json.empty())
+    json responseJson = json::parse(response.body);
+    if (responseJson.empty())
     {
-        LOG_ERROR("No releases found in Json response");
+        LOG_ERROR("No releases found in json response");
         g_latestVersion = GetText("Error: no valid new version found!");
         return;
     }
 
     LogInfo("Successfully fetched releases info");
     size_t releaseId = 0;
-    while (json[releaseId]["draft"] || (json[releaseId]["prerelease"] && !g_settings.usePrereleases))
+    while (responseJson[releaseId]["draft"] ||
+           (responseJson[releaseId]["prerelease"] && !g_settings.usePrereleases))
     {
         releaseId++;
-        if (releaseId >= json.size())
+        if (releaseId >= responseJson.size())
         {
             g_latestVersion = GetText("Error: no valid new version found!");
             return;
         }
     }
-    g_latestVersion = json[releaseId]["tag_name"];
-    g_releaseNotes = MultiSplit(json[releaseId]["body"], "\\r\\n");
+    g_latestVersion = responseJson[releaseId]["tag_name"];
+    g_releaseNotes = MultiSplit(responseJson[releaseId]["body"], "\\r\\n");
     if (g_releaseNotes.size() <= 1)
     {
-        g_releaseNotes = MultiSplit(json[releaseId]["body"], "\\n");
+        g_releaseNotes = MultiSplit(responseJson[releaseId]["body"], "\\n");
     }
     if (g_latestVersion != g_version) g_newVersionMenu->Open();
     LogInfo("Fetched the newest version name: %s", g_latestVersion.c_str());
@@ -109,20 +112,21 @@ static std::string GetLatestVersionArchiveURL()
         return "";
     }
 
-    Json json = Json::Parse(response.body);
-    if (json.empty())
+    json responseJson = json::parse(response.body);
+    if (responseJson.empty())
     {
         LOG_ERROR("No releases found in response");
         return "";
     }
 
     size_t releaseId = 0;
-    while (json[releaseId]["draft"] || (json[releaseId]["prerelease"] && !g_settings.usePrereleases))
+    while (responseJson[releaseId]["draft"] ||
+           (responseJson[releaseId]["prerelease"] && !g_settings.usePrereleases))
     {
         releaseId++;
-        if (releaseId >= json.size()) return "";
+        if (releaseId >= responseJson.size()) return "";
     }
-    return json[releaseId]["assets"][0]["browser_download_url"];
+    return responseJson[releaseId]["assets"][0]["browser_download_url"];
 }
 
 static bool UnzipFile(const std::string& zipPath, const std::string& extractDir)
@@ -256,6 +260,6 @@ void UpdateToLatestVersion()
     std::filesystem::remove_all("tmp/release");
 
     g_downloadStatus = GetText("Successfully updated to") + " " + g_latestVersion + "!\n" +
-                     GetText("Restart the application to see the new features");
+                       GetText("Restart the application to see the new features");
     LogInfo("Successfully updated to %s", g_latestVersion.c_str());
 }

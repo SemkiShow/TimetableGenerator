@@ -78,15 +78,17 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/libzip ${CMAKE_BINARY_DIR}/_deps
 # libintl-lite
 add_subdirectory(thirdparty/libintl-lite ${CMAKE_BINARY_DIR}/_deps/libintl-lite-build)
 
-# JsonFormat
-add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/JsonFormat ${CMAKE_BINARY_DIR}/_deps/JsonFormat-build SYSTEM)
+# nlohmann/json
+set(JSON_BuildTests OFF CACHE BOOL "" FORCE)
+set(JSON_MultipleHeaders ON CACHE BOOL "" FORCE)
+add_subdirectory(${CMAKE_SOURCE_DIR}/thirdparty/json ${CMAKE_BINARY_DIR}/_deps/json-build SYSTEM)
 
 file(GLOB_RECURSE SOURCES src/*.cpp)
 add_executable(${PROJECT_NAME} ${SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE include/)
 target_compile_options(${PROJECT_NAME} PRIVATE $<IF:$<CXX_COMPILER_ID:MSVC>,/W4,-Wall -Wextra>)
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-target_link_libraries(${PROJECT_NAME} PRIVATE raylib imgui rlimgui CURL::libcurl xlsxwriter zip intl JsonFormat)
+target_link_libraries(${PROJECT_NAME} PRIVATE raylib imgui rlimgui CURL::libcurl xlsxwriter zip intl nlohmann_json)
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} PRIVATE ws2_32 crypt32 secur32 user32 advapi32 wldap32 bcrypt)
     set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE $<CONFIG:Release>)

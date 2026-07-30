@@ -6,10 +6,12 @@
 
 #include <filesystem>
 #include <map>
+#include <nlohmann/detail/macro_scope.hpp>
+#include <nlohmann/json.hpp> // IWYU pragma: keep
+#include <nlohmann/json_fwd.hpp>
 #include <string>
 #include <vector>
 
-class Json;
 class Timetable;
 
 #define ANY_LESSON (-2)
@@ -19,18 +21,14 @@ struct WorkDay
 {
     std::vector<int> lessonIds;
 
-    Json ToJson();
-    static WorkDay LoadJson(Json& json);
-    static WorkDay GetRandom();
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(WorkDay, lessonIds);
 };
 
 struct Classroom
 {
     std::string name;
 
-    Json ToJson();
-    static Classroom LoadJson(Json& json);
-    static Classroom GetRandom();
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(Classroom, name);
 };
 
 struct Lesson
@@ -39,9 +37,7 @@ struct Lesson
     std::vector<int> classIds;
     std::vector<int> classroomIds;
 
-    Json ToJson();
-    static Lesson LoadJson(Json& json);
-    static Lesson GetRandom();
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(Lesson, name, classIds, classroomIds);
 };
 
 struct Teacher
@@ -50,9 +46,7 @@ struct Teacher
     std::vector<int> lessonIds;
     std::vector<WorkDay> workDays;
 
-    Json ToJson();
-    static Teacher LoadJson(Json& json);
-    static Teacher GetRandom();
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(Teacher, name, lessonIds, workDays);
 };
 
 struct LessonTeacherPair
@@ -60,9 +54,7 @@ struct LessonTeacherPair
     int lessonId = -1;
     int teacherId = -1;
 
-    Json ToJson();
-    static LessonTeacherPair LoadJson(Json& json);
-    static LessonTeacherPair GetRandom();
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(LessonTeacherPair, lessonId, teacherId);
 };
 
 struct TimetableLesson
@@ -70,9 +62,7 @@ struct TimetableLesson
     int count = 1;
     std::vector<LessonTeacherPair> lessonTeacherPairs;
 
-    Json ToJson();
-    static TimetableLesson LoadJson(Json& json);
-    static TimetableLesson GetRandom();
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(TimetableLesson, count, lessonTeacherPairs);
 };
 
 struct ClassroomLessonPair
@@ -80,9 +70,7 @@ struct ClassroomLessonPair
     int timetableLessonId = -1;
     std::vector<int> classroomIds;
 
-    Json ToJson();
-    static ClassroomLessonPair LoadJson(Json& json);
-    static ClassroomLessonPair GetRandom(Timetable& timetable, int classId);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(ClassroomLessonPair, timetableLessonId, classroomIds);
 };
 
 struct Day
@@ -90,9 +78,7 @@ struct Day
     std::vector<bool> lessons;
     std::vector<ClassroomLessonPair> classroomLessonPairs;
 
-    Json ToJson();
-    static Day LoadJson(Json& json);
-    static Day GetRandom(Timetable& timetable, int classId);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(Day, lessons, classroomLessonPairs);
 };
 
 struct TimetableLessonRule
@@ -101,9 +87,7 @@ struct TimetableLessonRule
     int count = 1;
     std::vector<int> timetableLessonIds;
 
-    Json ToJson();
-    static TimetableLessonRule LoadJson(Json& json);
-    static TimetableLessonRule GetRandom();
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(TimetableLessonRule, preserveOrder, count, timetableLessonIds);
 };
 
 struct Class
@@ -116,10 +100,11 @@ struct Class
     std::vector<Day> days;
     std::vector<TimetableLessonRule> timetableLessonRules;
 
-    Json ToJson();
-    static Class LoadJson(Json& json);
-    static Class GetRandom(Timetable& timetable, int classId);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_ONLY_SERIALIZE(Class, number, letter, teacherId,
+                                                  timetableLessons, days, timetableLessonRules);
 };
+// NOLINTNEXTLINE (readability-identifier-naming)
+void from_json(const nlohmann::json& clazzJson, Class& clazz);
 
 class Timetable
 {
@@ -141,8 +126,12 @@ public:
 
     void Save(const std::filesystem::path& path);
     void Load(const std::filesystem::path& path);
-    static Timetable GetRandom();
     void ExportAsXlsx() const;
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_ONLY_SERIALIZE(Timetable, version, year, classrooms, lessons,
+                                                  teachers, classes);
 };
+// NOLINTNEXTLINE (readability-identifier-naming)
+void from_json(const nlohmann::json& json, Timetable& timetable);
 
 inline Timetable g_currentTimetable;
